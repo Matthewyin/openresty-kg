@@ -1,0 +1,562 @@
+# B03 字段证据记录
+
+范围：nginx ngx_http_proxy_module，共 68 条。固定 revision：nginx release-1.27.1（e06bdbd4…）；涉及补丁的条目按已有补丁来源核对。
+
+## nginx--ngx_http_proxy_module--proxy_pass
+
+- 语法（`proxy_pass URL;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_proxy_pass 取 value[1] 作为 URL，要求 http:// 或 https:// 前缀（或含变量），与 `proxy_pass URL;` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, runtime-proxy-handler, implementation-3
+  - 判据：ngx_http_proxy_pass 解析 URL 并设置 clcf->handler=ngx_http_proxy_handler；含变量时编译为 proxy_lengths，请求时由 ngx_http_proxy_eval 求值并写入 u->resolved；ngx_http_upstream_init_request 先遍历 upstream 组匹配 host/port，未命中且无现成地址才调用 ngx_resolve_name。
+
+## nginx--ngx_http_proxy_module--proxy_redirect
+
+- 语法（`proxy_redirect default | off; ⏎ proxy_redirect redirect replacement;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_proxy_redirect 在 1 个参数时只接受 off/default，2 个参数时为 redirect replacement（`~`/`~*` 为正则），与语法两行一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-install, summary-header-table
+  - 判据：setter 把 default 或 redirect/replacement 规则追加到 plcf->redirects；ngx_http_proxy_handler 在其非空时安装 u->rewrite_redirect；上游头表把 Location、Refresh 映射到 rewrite_location/rewrite_refresh，二者调用该回调；ngx_http_proxy_rewrite_redirect 按数组顺序调用各规则，首个非 DECLINED 即返回。
+- 新增片段：summary-install（src/http/modules/ngx_http_proxy_module.c:991-997）；summary-header-table（src/http/ngx_http_upstream.c:236-249）
+
+## nginx--ngx_http_proxy_module--proxy_cookie_domain
+
+- 语法（`proxy_cookie_domain off; ⏎ proxy_cookie_domain domain replacement;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；setter 在 1 个参数时只接受 off，2 个参数时为 domain replacement（`~` 开头为正则），与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-install, summary-header-table
+  - 判据：setter 把规则存入 plcf->cookie_domains（文本与替换值经复合值编译，故可含变量；`~` 走正则，开头的点被剥掉）；ngx_http_proxy_handler 在 cookie_domains/cookie_paths/cookie_flags 任一非空时安装 u->rewrite_cookie；上游头表把 Set-Cookie 映射到 ngx_http_upstream_rewrite_set_cookie，后者调用该回调。ngx_http_proxy_rewrite_cookie 对名为 domain 的属性调用 rewrite_cookie_value 逐条匹配；文本规则的 domain_handler 用 ngx_rstrncasecmp 忽略大小写并跳过值开头的点。
+- 新增片段：summary-install（src/http/modules/ngx_http_proxy_module.c:991-997）；summary-header-table（src/http/ngx_http_upstream.c:246-249）
+
+## nginx--ngx_http_proxy_module--proxy_cookie_path
+
+- 语法（`proxy_cookie_path off; ⏎ proxy_cookie_path path replacement;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；setter 在 1 个参数时只接受 off，2 个参数时为 path replacement（`~`/`~*` 为正则），与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-install, summary-header-table
+  - 判据：setter 把规则存入 plcf->cookie_paths（文本/替换值为复合值，可含变量）；ngx_http_proxy_handler 在 cookie_domains/cookie_paths/cookie_flags 任一非空时安装 u->rewrite_cookie；上游头表把 Set-Cookie 映射到 ngx_http_upstream_rewrite_set_cookie，后者调用该回调。rewrite_cookie 对名为 path 的属性逐条匹配；文本规则使用 rewrite_complex_handler 做前缀比较后替换，正则规则走 rewrite_regex_handler。
+- 新增片段：summary-install（src/http/modules/ngx_http_proxy_module.c:991-997）；summary-header-table（src/http/ngx_http_upstream.c:246-249）
+
+## nginx--ngx_http_proxy_module--proxy_cookie_flags
+
+- 语法（`proxy_cookie_flags off; ⏎ proxy_cookie_flags cookie flag [flag [flag]];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1234，即 1–4 个参数；setter 中 1 个参数仅接受 off，其余为 cookie 加 1–3 个 flag（i=2..nelts 逐个编译），与 `cookie flag [flag [flag]]` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-install, summary-header-table
+  - 判据：setter 存储 cookie 名（复合值或 `~` 正则）与 flag 复合值数组；ngx_http_proxy_handler 在 cookie_domains/cookie_paths/cookie_flags 任一非空时安装 u->rewrite_cookie；上游头表把 Set-Cookie 映射到 ngx_http_upstream_rewrite_set_cookie，后者调用该回调。rewrite_cookie_flags 按名称/正则选中规则，flag 值求值后查 cookie_flags_masks（secure/nosecure/httponly/nohttponly/samesite=strict|lax|none/nosamesite），edit_cookie_flags 对 Secure、HttpOnly、SameSite 属性增删或改写。
+- 新增片段：summary-install（src/http/modules/ngx_http_proxy_module.c:991-997）；summary-header-table（src/http/ngx_http_upstream.c:246-249）
+
+## nginx--ngx_http_proxy_module--proxy_store
+
+- 语法（`proxy_store on | off | string;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_proxy_store 对 value[1] 分别处理 off、on，其余作为含变量的脚本路径，与 `on | off | string` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, summary-store-init, summary-store-pipe, summary-conf-assign
+  - 判据：setter 置 upstream.store=1，字符串形式编译为 store_lengths/store_values；请求初始化时 u->store=u->conf->store，响应走事件管道时 p->cacheable 含 u->store 以写临时文件；响应结束且状态为 200、读完并与 Content-Length 一致时调用 ngx_http_upstream_store：store_lengths 为空（on）用 ngx_http_map_uri_to_path 按 URI 映射，否则运行脚本得到路径，再 ngx_ext_rename_file 落定。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-store-init（src/http/ngx_http_upstream.c:612-612）；summary-store-pipe（src/http/ngx_http_upstream.c:3242-3242）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_store_access
+
+- 语法（`proxy_store_access users:permissions ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE123；ngx_conf_set_access_slot 逐参数接受 user:/group:/all: 前缀加 r 或 rw，参数个数 1–3 对应三类对象，与 `users:permissions ...` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, summary-conf-assign
+  - 判据：upstream.store_access 在 ngx_http_upstream_store 中同时赋给 ext.access（文件）与 ext.path_access（创建路径目录），ngx_ext_rename_file 据此改文件权限并以 ngx_dir_access(path_access) 创建路径；access slot 把 user/group/all 的 r/rw 移位组合为权限位。权限在落定（重命名）步骤施加。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_buffering
+
+- 语法（`proxy_buffering on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2
+  - 判据：ngx_http_proxy_handler 把 upstream.buffering 赋给 u->buffering；ngx_http_upstream_send_response 中 !u->buffering 走非缓冲转发（process_non_buffered_*），否则配置事件管道（p->bufs、临时文件 p->temp_file）进行缓冲。
+
+## nginx--ngx_http_proxy_module--proxy_request_buffering
+
+- 语法（`proxy_request_buffering on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-body-no-buffering
+  - 判据：ngx_http_proxy_handler 在 request_buffering 为 off 且无 proxy_set_body、允许传递请求体、且非分块或 HTTP/1.1 时置 r->request_body_no_buffering；ngx_http_read_client_request_body 在该标志下读到数据即调用 post_handler（启动上游）；ngx_http_upstream_send_request_body 在该标志下边读客户端边 ngx_output_chain 发送，否则一次性发送已缓冲的 request_bufs。
+- 新增片段：summary-body-no-buffering（src/http/ngx_http_request_body.c:204-221）
+
+## nginx--ngx_http_proxy_module--proxy_ignore_client_abort
+
+- 语法（`proxy_ignore_client_abort on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：ngx_http_upstream_init_request 仅在 !u->store 且 !ignore_client_abort 时安装 rd/wr_check_broken_connection；该检查发现客户端断开且响应不可缓存时以 499 终结上游请求；ignore_client_abort 为 on 则不安装检查。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_bind
+
+- 语法（`proxy_bind address [transparent] | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_upstream_bind_set_slot 在 2 参数且为 off 时清除，否则 value[1] 为地址（ngx_parse_addr_port 可含端口），可选第 2 个参数仅接受 transparent，与 `address [transparent] | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, summary-conf-assign
+  - 判据：setter 把地址存入 upstream.local（含变量时存复合值，off 存 NULL）；请求初始化时 ngx_http_upstream_set_local 求值并写入 u->peer.local（空值保持未设置）；ngx_event_connect_peer 在 pc->local 非空时对新套接字 bind（可选 transparent），off 的 NULL 经合并保留，不继承上级。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_socket_keepalive
+
+- 语法（`proxy_socket_keepalive on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, merge-default, summary-conf-assign
+  - 判据：ngx_http_upstream_init_request 在 upstream.socket_keepalive 为真时置 u->peer.so_keepalive=1；ngx_event_connect_peer 创建套接字后对 pc->so_keepalive 调用 setsockopt(SO_KEEPALIVE)。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_connect_timeout
+
+- 语法（`proxy_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值，对应 `time`。
+- 功能：verified；source_ids：implementation-0, implementation-1, upstream-timeout-fields, runtime-proxy-conf, runtime-send-handler, summary-conf-assign
+  - 判据：OpenResty 补丁 upstream_timeout_fields 在 ngx_http_upstream_init 把 u->conf->connect_timeout 复制到 u->connect_timeout，并把下列定时器改读 u->connect_timeout；ngx_http_proxy_handler 令 u->conf=&plcf->upstream，故 proxy_connect_timeout 的值经 upstream.connect_timeout 进入。补丁后 ngx_http_upstream_connect 在 rc==NGX_AGAIN 时给 c->write 加 u->connect_timeout 定时器，TLS 握手未完成时 ssl_init_connection 同样使用它；定时器触发时 send_request_handler 按 FT_TIMEOUT 处理。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_send_timeout
+
+- 语法（`proxy_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, upstream-timeout-fields, runtime-proxy-conf, summary-conf-assign
+  - 判据：OpenResty 补丁 upstream_timeout_fields 在 ngx_http_upstream_init 把 u->conf->send_timeout 复制到 u->send_timeout，并把下列定时器改读 u->send_timeout；ngx_http_proxy_handler 令 u->conf=&plcf->upstream，故 proxy_send_timeout 的值经 upstream.send_timeout 进入。ngx_http_upstream_send_request 在写返回 NGX_AGAIN 且 !c->write->ready 或请求体被阻塞时加 u->send_timeout 定时器，否则（定时器已设）删除；写完成（NGX_OK）也删除定时器；触发时 send_request_handler 按 FT_TIMEOUT 处理。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_send_lowat
+
+- 语法（`proxy_send_lowat size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小；后置检查 ngx_http_proxy_lowat_check 仅处理平台支持性。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-handle-write, summary-send-lowat, merge-default, summary-conf-assign
+  - 判据：upstream.send_lowat 传给 ngx_http_upstream_send_request 中 NGX_AGAIN 分支的 ngx_handle_write_event(c->write, lowat)；其在 lowat 非 0 时调用 ngx_send_lowat，对套接字设 SO_SNDLOWAT（kqueue 则设 write->available），epoll/kqueue 另带 NGX_LOWAT_EVENT 标志；不支持 SO_SNDLOWAT 的平台由 lowat_check 清零并告警。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）按审核收窄后的文字仅陈述低水位设置，不含目的句。
+- 新增片段：summary-handle-write（src/event/ngx_event.c:360-377）；summary-send-lowat（src/event/ngx_event.c:951-983）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（功能）：设置向上游发送请求时使用的写事件低水位值（经 ngx_send_lowat 设为 SO_SNDLOWAT，kqueue 下设为 write->available）。
+  - 理由：“尝试减少小块发送触发”是目的描述，源码只证明该值被设为 SO_SNDLOWAT / write->available 并带 NGX_LOWAT_EVENT。
+
+## nginx--ngx_http_proxy_module--proxy_intercept_errors
+
+- 语法（`proxy_intercept_errors on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, no-error-pages, summary-finalize-status, summary-finalize-special, summary-error-page-lookup, summary-conf-assign
+  - 判据：ngx_http_upstream_process_header 在上游状态码 >=300 时调用 ngx_http_upstream_intercept_errors：upstream.intercept_errors 为 off 或 clcf->error_pages 为空即 DECLINED（OpenResty no_error_pages 补丁把 error_pages 无配置时合并为 NULL，同一判断仍适用）；有匹配 error_page 的状态则以该状态终结上游请求，ngx_http_finalize_request 对 >=300 调用 ngx_http_special_response_handler，后者按 error_pages 查找本地页面。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-finalize-status（src/http/ngx_http_upstream.c:4630-4636）；summary-finalize-special（src/http/ngx_http_request.c:2544-2568）；summary-error-page-lookup（src/http/ngx_http_special_response.c:456-470）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_set_header
+
+- 语法（`proxy_set_header field value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 取两个参数作为 field 与 value。
+- 功能：verified；source_ids：implementation-2, implementation-3, implementation-4, runtime-header-lengths, runtime-header-values, runtime-header-pass, runtime-header-hash-script
+  - 判据：keyval 数组存入 headers_source；merge 阶段 ngx_http_proxy_init_headers 先放入配置项，默认头仅在同名（不区分大小写）未配置时追加，并把所有名称建入 headers->hash；值经脚本编译（可含变量）。create_request 计算/生成时 val_len==0 的项整项跳过，复制客户端原始头时命中该 hash 的字段一律跳过，从而屏蔽原始头。
+
+## nginx--ngx_http_proxy_module--proxy_headers_hash_max_size
+
+- 语法（`proxy_headers_hash_max_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析整数，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-hash-init
+  - 判据：merge 阶段把 headers_hash_max_size 赋给 hash.max_size，同一 hash 描述分别用于 ngx_http_proxy_init_headers 的请求头表与 ngx_http_upstream_hide_headers_hash 的响应隐藏头表，ngx_hash_init 在 size<=max_size 范围内尝试桶数，故其为桶数上限。
+- 新增片段：summary-hash-init（src/core/ngx_hash.c:296-346）
+
+## nginx--ngx_http_proxy_module--proxy_headers_hash_bucket_size
+
+- 语法（`proxy_headers_hash_bucket_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析整数，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-hash-init
+  - 判据：merge 阶段先 ngx_align(bucket_size, ngx_cacheline_size) 再赋给 hash.bucket_size，供请求头表与响应隐藏头表的 ngx_hash_init 作每桶容量，ngx_hash_init 据此检查元素能否放入。
+- 新增片段：summary-hash-init（src/core/ngx_hash.c:278-336）
+
+## nginx--ngx_http_proxy_module--proxy_set_body
+
+- 语法（`proxy_set_body value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]（后续 merge 再按脚本编译），对应 `value`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, d340-use
+  - 判据：merge 阶段把 body_source 编译为 body_lengths/body_values（可含变量）；create_request 有 body_lengths 时以其长度作正文长度并写入 body_values 结果，且仅在 body_values==NULL 时才复制客户端原始 request_bufs，故取代原正文；同时该配置令 request_body_no_buffering 不被置位。
+
+## nginx--ngx_http_proxy_module--proxy_method
+
+- 语法（`proxy_method method;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_http_set_complex_value_slot 把 value[1] 编译为复合值。
+- 功能：verified；source_ids：implementation-0, d340-use, summary-request-line
+  - 判据：create_request 选择方法：u->method（缓存时 HEAD 转 GET）优先，其次 plcf->method 经 ngx_http_complex_value 求值（可含变量），否则用 r->method_name；所选 method 被写入请求行。
+- 新增片段：summary-request-line（src/http/modules/ngx_http_proxy_module.c:1411-1454）
+
+## nginx--ngx_http_proxy_module--proxy_pass_request_headers
+
+- 语法（`proxy_pass_request_headers on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2
+  - 判据：create_request 的长度计算与写入两处均以 upstream.pass_request_headers 为条件遍历 r->headers_in，命中代理头 hash（已覆盖或置空的字段）的头被 continue 跳过，其余复制；配置的代理头不受该开关影响。
+
+## nginx--ngx_http_proxy_module--proxy_pass_request_body
+
+- 语法（`proxy_pass_request_body on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：create_request 仅在 request_body_no_buffering 为假、body_values==NULL 且 upstream.pass_request_body 为真时把客户端 request_bufs 复制进发送链，否则只发送头部缓冲（或 proxy_set_body 的正文）；handler 中该开关也参与是否启用无缓冲读取。
+
+## nginx--ngx_http_proxy_module--proxy_buffer_size
+
+- 语法（`proxy_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-nonbuf-upstream, summary-nonbuf-buf, summary-nonbuf-recv
+  - 判据：ngx_http_upstream_process_header 以 u->conf->buffer_size 分配 u->buffer 读取响应首部；process_header 返回 NGX_AGAIN 而缓冲区已满时记录 too big header 并按 FT_INVALID_HEADER 处理；非缓冲转发路径继续使用该 u->buffer 读取后端数据。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）非缓冲读事件处理函数 process_non_buffered_upstream 调用 process_non_buffered_request，后者令 b=&u->buffer 并向 b->last 处 recv（size=b->end-b->last），故非缓冲路径使用该缓冲大小。
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-nonbuf-upstream（src/http/ngx_http_upstream.c:3662-3682）；summary-nonbuf-buf（src/http/ngx_http_upstream.c:3702-3702）；summary-nonbuf-recv（src/http/ngx_http_upstream.c:3751-3755）
+
+## nginx--ngx_http_proxy_module--proxy_read_timeout
+
+- 语法（`proxy_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-3, implementation-4, upstream-timeout-fields, runtime-proxy-conf, summary-conf-assign
+  - 判据：OpenResty 补丁 upstream_timeout_fields 在 ngx_http_upstream_init 把 u->conf->read_timeout 复制到 u->read_timeout，并把下列定时器改读 u->read_timeout；ngx_http_proxy_handler 令 u->conf=&plcf->upstream，故 proxy_read_timeout 的值经 upstream.read_timeout 进入。补丁后：发送完成后 ngx_add_timer(c->read, u->read_timeout) 等待响应头；缓冲路径 p->read_timeout=u->read_timeout，ngx_event_pipe 仅在上游读事件未就绪时加该定时器；非缓冲/升级路径同样在读事件未就绪时加/删定时器，因此是读等待间隔而非整个响应的总时限。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_buffers
+
+- 语法（`proxy_buffers number size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_bufs_slot 解析 number 与 size 两个参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：upstream.bufs 经 ngx_http_upstream_send_response 赋给事件管道 p->bufs；ngx_event_pipe_read_upstream 在 p->allocated < p->bufs.num 时按 p->bufs.size 创建缓冲，已分配的空闲缓冲 free_raw_bufs 被复用；merge 默认 8 个、页大小，且至少 2 个。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_busy_buffers_size
+
+- 语法（`proxy_busy_buffers_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：merge 阶段计算 upstream.busy_buffers_size（默认 2 倍缓冲，并校验范围），send_response 把它赋给 p->busy_size；ngx_event_pipe_write_to_downstream 累计 p->busy 中 recycled 缓冲的大小 bsize，达到或将超过 busy_size 即置 flush 停止继续向下游交付新缓冲。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（功能）：限制上游响应尚在接收时，已交给下游发送而仍忙碌的缓冲容量；累计达到该值时先 flush，不再向下游交付新缓冲。
+  - 理由：原文“给继续读取或写临时文件留出缓冲空间”为目的推断，源码只证明 bsize 达到 busy_size 即 flush 并停止交付新缓冲。
+
+## nginx--ngx_http_proxy_module--proxy_force_ranges
+
+- 语法（`proxy_force_ranges on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-range-filter, summary-conf-assign
+  - 判据：process_headers 在 u->conf->force_ranges 为真时置 r->allow_ranges=1；copy_allow_ranges 在该开关为真时不再转发上游 Accept-Ranges；range 过滤器仅当 r->allow_ranges 为真才继续处理 Range。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-range-filter（src/http/modules/ngx_http_range_filter_module.c:155-162）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_limit_rate
+
+- 语法（`proxy_limit_rate rate;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_http_set_complex_value_size_slot 把 value[1] 编译为复合值并在无变量时按 ngx_parse_size 解析大小。
+- 功能：verified；source_ids：implementation-0, implementation-1, proxy-rate-value-size, runtime-pipe-rate-read, runtime-pipe-rate-delay, summary-conf-assign
+  - 判据：send_response 每个请求以 ngx_http_complex_value_size(r, upstream.limit_rate) 求值（变量按 ngx_parse_size 解析）赋给 p->limit_rate；ngx_event_pipe_read_upstream 以 limit_rate*(已用秒+1)-已读字节 计算可读额度，用尽则 read->delayed 并加定时器，读取后按 n*1000/limit_rate 延迟，单位为字节/秒。非缓冲路径不使用该管道。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache
+
+- 语法（`proxy_cache zone | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_proxy_cache 对 value[1] 先判 off，其余编译为复合值，无变量时作为共享内存区名，与 `zone | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, summary-cache-gate, summary-cache-open, summary-key-install, summary-conf-assign
+  - 判据：setter 置 upstream.cache（off 为 0）并记录区或含变量的 cache_value；ngx_http_upstream_init_request 在 u->conf->cache 为真时调用 ngx_http_upstream_cache：cache_get 取区（变量求值，空或 off 则不缓存），create_key 构造键并 ngx_http_file_cache_create_key，ngx_http_file_cache_open 命中则 cache_send 直接发送磁盘缓存响应。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-cache-gate（src/http/ngx_http_upstream.c:569-590）；summary-cache-open（src/http/ngx_http_upstream.c:901-948）；summary-key-install（src/http/modules/ngx_http_proxy_module.c:977-982）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_key
+
+- 语法（`proxy_cache_key string;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_proxy_cache_key 把 value[1] 编译为复合值，对应 `string`。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, d340-merge, summary-key-install
+  - 判据：setter 存入 plcf->cache_key；ngx_http_proxy_handler 令 u->create_key=ngx_http_proxy_create_key，ngx_http_upstream_cache 调用它：cache_key 已设置则求复合值为键；否则键由 vars.key_start（协议+主机端口，由 proxy_set_vars 得到）与按变量 URL/未解析 URI/location 替换后的 URI 加参数三分支构造。
+- 新增片段：summary-key-install（src/http/modules/ngx_http_proxy_module.c:977-982）
+
+## nginx--ngx_http_proxy_module--proxy_cache_path
+
+- 语法（`proxy_cache_path path [levels=levels] [use_temp_path=on|off] keys_zone=name:size [inactive=time] [max_size=size] [min_free=size] [manager_files=number] [manager_sleep=time] [manager_threshold=time] [loader_files=number] [loader_sleep=time] [loader_threshold=time];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_2MORE（仅 http 级）；ngx_http_file_cache_set_slot 的 value[1] 为 path，其后逐项解析 levels=、use_temp_path=、keys_zone=、inactive=、max_size=、min_free=、loader_/manager_ 的 files/sleep/threshold，与语法逐项对应。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-cache-name, summary-hashed-filename
+  - 判据：setter 把 path、levels、keys_zone 共享区及 manager/loader 参数存入 ngx_http_file_cache_t；manager 与 loader 在 ngx_http_file_cache_manager/loader 中按这些 files、sleep、threshold 限批并休眠；ngx_http_file_cache_create_key 对键做 MD5，cache_name 以其十六进制作文件名并经 ngx_create_hashed_filename 按 levels 分层。
+- 新增片段：summary-cache-name（src/http/ngx_http_file_cache.c:994-1025）；summary-hashed-filename（src/core/ngx_file.c:241-262）
+
+## nginx--ngx_http_proxy_module--proxy_cache_bypass
+
+- 语法（`proxy_cache_bypass string ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE，ngx_http_set_predicate_slot 把每个参数各编译为复合值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：ngx_http_upstream_cache 在打开缓存前以 cache_bypass 调 ngx_http_test_predicates；任一复合值求值非空且不是单字符 0 即返回 DECLINED，置 CACHE_BYPASS 并转向上游而不读缓存。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_no_cache
+
+- 语法（`proxy_no_cache string ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE，ngx_http_set_predicate_slot 把每个参数各编译为复合值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：上游响应处理中以 no_cache 调 ngx_http_test_predicates；任一值非空且不是单字符 0 返回 DECLINED，随即 u->cacheable=0，响应不再写入缓存。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_valid
+
+- 语法（`proxy_cache_valid [code ...] time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_file_cache_valid_set_slot 末参为 time，前面的参数为状态码或 any（缺省则取 200/301/302），与 `[code ...] time` 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-valid-expires, summary-valid-xae, summary-conf-assign
+  - 判据：响应头处理中 X-Accel-Expires、Expires、Cache-Control 若给出有效期先写入 r->cache->valid_sec；valid_sec 仍为 0 时 ngx_http_upstream_send_response 以 ngx_http_file_cache_valid(upstream.cache_valid, 状态码) 查本指令设置的时长（按状态码或 any 匹配）。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-valid-expires（src/http/ngx_http_upstream.c:4972-4990）；summary-valid-xae（src/http/ngx_http_upstream.c:5036-5064）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（语法）：proxy_cache_valid [code | any ...] time;
+  - 理由：ngx_http_file_cache_valid_set_slot 除状态码外还接受关键字 any（status=0），原语法未列。
+
+## nginx--ngx_http_proxy_module--proxy_cache_min_uses
+
+- 语法（`proxy_cache_min_uses number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析整数。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-scarce
+  - 判据：upstream.cache_min_uses 在 ngx_http_upstream_cache 赋给 c->min_uses；ngx_http_file_cache_open 在 min_uses>1 且节点不存在时返回 SCARCE（不建缓存），ngx_http_file_cache_exists 中仅当 fcn->exists 或 fcn->uses>=c->min_uses 才视为可用。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）SCARCE 返回到 ngx_http_upstream_cache 后 u->cacheable=0（不建缓存）。
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-scarce（src/http/ngx_http_upstream.c:972-977）
+
+## nginx--ngx_http_proxy_module--proxy_cache_max_range_offset
+
+- 语法（`proxy_cache_max_range_offset number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_off_slot 解析偏移量。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：ngx_http_upstream_cache 末尾调用 ngx_http_upstream_cache_check_range：存在 Range 且 cache_max_range_offset 有限时，解析 bytes= 起始偏移，>= 阈值（或 0 阈值/后缀范围）返回 DECLINED，随即 u->cacheable=0，不缓存本次响应。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_use_stale
+
+- 语法（`proxy_cache_use_stale error | timeout | invalid_header | updating | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | off ...;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE，ngx_conf_set_bitmask_slot 按 ngx_http_proxy_next_upstream_masks 取值表逐个匹配；表含 error、timeout、invalid_header、updating、http_500/502/503/504/403/404/429、off，语法所列均在表中（表另含 non_idempotent，语法未列，不构成冲突）。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, implementation-3, summary-conf-assign
+  - 判据：合并后的 upstream.cache_use_stale 在三处生效：缓存过期且含 updating 时（或 stale_updating）直接用旧缓存/后台更新；响应状态在 test_next 中匹配 un->mask 时发旧缓存；ngx_http_upstream_next 在不再重试且错误类型命中 cache_use_stale 时发旧缓存；merge 中 error 附带 NOLIVE。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：syntax-values（src/http/modules/ngx_http_proxy_module.c:251-266）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（语法）：proxy_cache_use_stale error | timeout | invalid_header | non_idempotent | updating | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | off ...;
+  - 理由：取值表 ngx_http_proxy_next_upstream_masks 另含 non_idempotent，bitmask setter 会接受，原语法未列。
+
+## nginx--ngx_http_proxy_module--proxy_cache_methods
+
+- 语法（`proxy_cache_methods GET | HEAD | POST ...;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_upstream_cache_method_mask 取值表（GET、HEAD、POST）匹配，与语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：ngx_http_upstream_cache 仅当 r->method & cache_methods 才继续缓存流程；merge 阶段 cache_methods |= GET|HEAD，故二者总在内，POST 可由取值表选入。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：syntax-values（src/http/ngx_http_upstream.c:452-457）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_lock
+
+- 语法（`proxy_cache_lock on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-cache-gate, summary-lock-wait, summary-conf-assign
+  - 判据：upstream.cache_lock 赋给 c->lock；ngx_http_file_cache_lock 在其为真时抢占 node->updating（成功者 c->updating 去填充），其余请求置 waiting 并等待；ngx_http_file_cache_lock_wait 在 node 仍 updating 时继续计时，释放后返回 OK，等待事件触发 write_event_handler（NGX_BUSY 时设为 init_request）重新进入缓存查找。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-cache-gate（src/http/ngx_http_upstream.c:569-590）；summary-lock-wait（src/http/ngx_http_file_cache.c:502-539）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_lock_timeout
+
+- 语法（`proxy_cache_lock_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-open-lock
+  - 判据：upstream.cache_lock_timeout 赋给 c->lock_timeout；file_cache_lock 以它设 wait_time；lock_wait 在 wait_time 到期时记录 cache lock timeout 并把 lock_timeout 置 0；之后 lock 对 lock_timeout==0 返回 SCARCE，ngx_http_upstream_cache 对 SCARCE 置 u->cacheable=0 并转向上游。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）ngx_http_file_cache_open 的 done 处 return ngx_http_file_cache_lock，故 lock 的 SCARCE 返回传给 ngx_http_upstream_cache。
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-open-lock（src/http/ngx_http_file_cache.c:391-398）
+
+## nginx--ngx_http_proxy_module--proxy_cache_lock_age
+
+- 语法（`proxy_cache_lock_age time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：upstream.cache_lock_age 赋给 c->lock_age；ngx_http_file_cache_lock 取得锁时设 node->lock_time=now+lock_age，若 node 已 updating 但 lock_time 已过（timer<=0），后来的请求重新取得 updating 资格。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_cache_revalidate
+
+- 语法（`proxy_cache_revalidate on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-cache-headers, summary-headers-select, summary-headers-init
+  - 判据：缓存请求使用 headers_cache 默认头，其中 If-Modified-Since/If-None-Match 取 $upstream_cache_last_modified/$upstream_cache_etag；这两个变量仅在 cache_revalidate 为真且状态为 EXPIRED 时有值；上游返回 304 且 cache_revalidate 为真时，改用旧缓存响应并更新有效期头（ngx_http_file_cache_update_header）。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）create_request 对可缓存请求选用 headers_cache；merge 阶段在启用缓存时用 ngx_http_proxy_cache_headers 初始化它，该表含 If-Modified-Since/If-None-Match。
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-cache-headers（src/http/modules/ngx_http_proxy_module.c:850-866）；summary-headers-select（src/http/modules/ngx_http_proxy_module.c:1259-1263）；summary-headers-init（src/http/modules/ngx_http_proxy_module.c:3916-3924）
+
+## nginx--ngx_http_proxy_module--proxy_cache_convert_head
+
+- 语法（`proxy_cache_convert_head on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：ngx_http_upstream_cache 在方法为 HEAD 且 cache_convert_head 为真时令 u->method 为 GET；create_request 优先使用 u->method 作为上游请求行方法。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（功能）：在缓存流程中把客户端 HEAD 请求的上游方法转换为 GET，以便缓存该响应。
+  - 理由：原文“可与 GET 共用”是推断，源码注释仅说明 HEAD 转为 GET 是为缓存响应（u->method 处 “HEAD was changed to GET to cache response”）。
+
+## nginx--ngx_http_proxy_module--proxy_cache_background_update
+
+- 语法（`proxy_cache_background_update on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-conf-assign
+  - 判据：缓存为 STALE 且 cache_use_stale 含 updating（或 stale_updating）、当前非后台请求、cache_background_update 为真时，ngx_http_upstream_cache_background_update 发起后台子请求，成功则 rc=NGX_OK，当前请求直接发送旧缓存。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_temp_path
+
+- 语法（`proxy_temp_path path [level1 [level2 [level3]]];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1234；ngx_conf_set_path_slot 以 value[1] 为路径，其后最多三级为正整数层宽（总长校验），与 `path [level1 [level2 [level3]]]` 一致。
+- 功能：verified；source_ids：implementation-0, summary-store-temp, d340-path-default, summary-conf-assign
+  - 判据：upstream.temp_path 在 send_response 赋给响应管道的 p->temp_file->path，缓冲溢出写入该目录；proxy_store 落定前的空响应临时文件也使用 u->conf->temp_path；层级由 ngx_create_hashed_filename 展开。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-store-temp（src/http/ngx_http_upstream.c:4252-4272）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_max_temp_file_size
+
+- 语法（`proxy_max_temp_file_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, implementation-3, summary-conf-assign
+  - 判据：merge 阶段设 upstream.max_temp_file_size（默认 1G，0 允许），send_response 赋给 p->max_temp_file_size；事件管道仅在 p->cacheable 或 temp_file->offset < max_temp_file_size 时写临时文件，write_chain_to_temp_file 另限总偏移，故 0 使非缓存响应不写临时文件，内存缓冲照常使用。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_temp_file_write_size
+
+- 语法（`proxy_temp_file_write_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，对应 `size`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：merge 阶段设 upstream.temp_file_write_size（默认 2*size），send_response 赋给 p->temp_file_write_size；ngx_event_pipe_write_chain_to_temp_file 累计待写大小，超过它或使偏移超过 max_temp_file_size 即停止选取。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_next_upstream
+
+- 语法（`proxy_next_upstream error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | non_idempotent | off ...;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_proxy_next_upstream_masks 匹配；语法所列 error、timeout、invalid_header、http_500/502/503/504/403/404/429、non_idempotent、off 均在表中（表另含 updating，语法未列，不构成冲突）。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-next-connect, summary-next-send, summary-next-send-timeout, summary-next-header, summary-next-invalid
+  - 判据：upstream.next_upstream 在 test_next 与 ngx_http_upstream_next 中与失败类型掩码比较；仅当 peer.tries 未耗尽、掩码命中、非（已发送且请求体无缓冲）、且未超 next_upstream_timeout 才重试下一个上游，POST/LOCK/PATCH 已发送时还需 non_idempotent。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）各失败点调用 ngx_http_upstream_next(FT_*)：连接 DECLINED/BUSY、发送错误与发送超时、读响应头超时/错误、无效响应头。
+- 新增片段：syntax-values（src/http/modules/ngx_http_proxy_module.c:251-266）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-next-connect（src/http/ngx_http_upstream.c:1568-1577）；summary-next-send（src/http/ngx_http_upstream.c:2101-2106）；summary-next-send-timeout（src/http/ngx_http_upstream.c:2322-2324）；summary-next-header（src/http/ngx_http_upstream.c:2384-2392）；summary-next-invalid（src/http/ngx_http_upstream.c:2493-2495）
+- 修正（语法）：proxy_next_upstream error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | non_idempotent | updating | off ...;
+  - 理由：取值表 ngx_http_proxy_next_upstream_masks 另含 updating，bitmask setter 会接受，原语法未列。
+
+## nginx--ngx_http_proxy_module--proxy_next_upstream_tries
+
+- 语法（`proxy_next_upstream_tries number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析整数。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：peer.init 之后若 next_upstream_tries 非 0 且 u->peer.tries 更大，则 u->peer.tries 收紧为该值（resolve 路径同样处理）；ngx_http_upstream_next 在 peer.tries==0 时不再重试。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_next_upstream_timeout
+
+- 语法（`proxy_next_upstream_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-start-time, summary-conf-assign
+  - 判据：u->peer.start_time 在 peer 初始化后设为当前时刻；test_next 与 ngx_http_upstream_next 在 next_upstream_timeout 非 0 且 now-start_time>=timeout 时不再切换上游。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-start-time（src/http/ngx_http_upstream.c:809-812）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_pass_header
+
+- 语法（`proxy_pass_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 每次追加一个字符串，对应 `field`。
+- 功能：verified；source_ids：implementation-0, implementation-1, d340-header-builtins, summary-conf-assign
+  - 判据：ngx_http_upstream_hide_headers_hash 构造隐藏表时，先放入默认隐藏头（Date、Server、X-Pad、X-Accel-*），再把 pass_headers 中同名项从隐藏列表置空，之后才建 hash；复制上游响应头时命中隐藏 hash 的被跳过，故被移除者得以转发。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_hide_header
+
+- 语法（`proxy_hide_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 每次追加一个字符串，对应 `field`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：hide_headers 数组由 ngx_http_upstream_hide_headers_hash 并入默认隐藏表并建 hide_headers_hash；process_headers 复制响应头时 ngx_hash_find 命中该表的头被 continue 跳过。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ignore_headers
+
+- 语法（`proxy_ignore_headers field ...;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_upstream_ignore_headers_masks 匹配头名（X-Accel-Redirect/Expires/Limit-Rate/Buffering/Charset、Expires、Cache-Control、Set-Cookie、Vary），语法 `field ...` 对应这些名称。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, summary-ign-charset, summary-conf-assign
+  - 判据：ignore_headers 位掩码在各头处理函数中生效：X-Accel-Redirect（内部跳转）、Set-Cookie、Cache-Control/Expires/X-Accel-Expires（缓存期限）、X-Accel-Limit-Rate（下游限速）、X-Accel-Buffering（响应缓冲）、X-Accel-Charset（字符集），命中位即直接返回而不执行特殊处理。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：syntax-values（src/http/ngx_http_upstream.c:460-471）；summary-ign-charset（src/http/ngx_http_upstream.c:5147-5163）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+- 修正（语法）：proxy_ignore_headers X-Accel-Redirect | X-Accel-Expires | X-Accel-Limit-Rate | X-Accel-Buffering | X-Accel-Charset | Expires | Cache-Control | Set-Cookie | Vary ...;
+  - 理由：bitmask setter 只接受 ngx_http_upstream_ignore_headers_masks 中的九个头名，原语法仅写 field，未体现可取值。
+
+## nginx--ngx_http_proxy_module--proxy_http_version
+
+- 语法（`proxy_http_version 1.0 | 1.1;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_enum_slot 按 ngx_http_proxy_http_version 取值表（仅 1.0、1.1）匹配，与语法一致。
+- 功能：verified；source_ids：implementation-1, implementation-0, implementation-2, summary-request-line
+  - 判据：取值表把 1.0/1.1 映射为 NGX_HTTP_VERSION_10/11 存入 plcf->http_version；create_request 在为 1.1 时写入 " HTTP/1.1" 否则写入 " HTTP/1.0"；取值表仅含这两项，故固定实现中仅接受 1.0 或 1.1。
+- 新增片段：syntax-values（src/http/modules/ngx_http_proxy_module.c:287-291）；summary-request-line（src/http/modules/ngx_http_proxy_module.c:1411-1454）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_session_reuse
+
+- 语法（`proxy_ssl_session_reuse on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：ngx_http_upstream_ssl_init_connection 在 upstream.ssl_session_reuse 为真时设 save_session 回调并 peer.set_session 装载旧会话，握手后 ngx_http_upstream_ssl_save_session 保存；配置阶段 set_ssl 以该值调用 ngx_ssl_client_session_cache。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_protocols
+
+- 语法（`proxy_ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_proxy_ssl_protocols 取值表（SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2、TLSv1.3）匹配，与语法一致。
+- 功能：verified；source_ids：implementation-1, implementation-2, implementation-3, summary-set-ssl-gate
+  - 判据：ngx_http_proxy_merge_loc_conf 在 conf->ssl（proxy_pass 为 https）时调用 ngx_http_proxy_set_ssl，其中 ngx_ssl_create(ssl, plcf->ssl_protocols) 把位掩码传入；ngx_ssl_create 对未选协议设置 SSL_OP_NO_*，从而限定允许的协议集合。
+- 新增片段：syntax-values（src/http/modules/ngx_http_proxy_module.c:271-279）；summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_ciphers
+
+- 语法（`proxy_ssl_ciphers ciphers;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]，对应 `ciphers`。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-set-ssl-gate
+  - 判据：ngx_http_proxy_merge_loc_conf 在 conf->ssl（proxy_pass 为 https）时调用 ngx_http_proxy_set_ssl，以 ngx_ssl_ciphers(cf, ssl, &plcf->ssl_ciphers, 0) 应用，后者对字符串调用 SSL_CTX_set_cipher_list，失败则配置报错。
+- 新增片段：summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_name
+
+- 语法（`proxy_ssl_name name;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_http_set_complex_value_slot 把 value[1] 编译为复合值（可含变量）。
+- 功能：verified；source_ids：implementation-1, implementation-2, implementation-3, implementation-4, summary-conf-assign
+  - 判据：ngx_http_upstream_ssl_name 在 upstream.ssl_name 存在时求复合值，否则用 u->ssl_name（init_request 由 upstream 组或 resolved host 设置），随后剥去端口；仅当 ssl_server_name 为真才发送 SNI，ngx_http_upstream_ssl_handshake 在 ssl_verify 为真时以 ngx_ssl_check_host(c, &u->ssl_name) 做主机名校验；进入该函数的条件为 ssl_server_name 或 ssl_verify。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_server_name
+
+- 语法（`proxy_ssl_server_name on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, summary-name-gate, summary-default-name, summary-conf-assign
+  - 判据：ssl_init_connection 在 ssl_server_name 或 ssl_verify 为真时调用 ngx_http_upstream_ssl_name；其中名称取 proxy_ssl_name 求值结果或默认 u->ssl_name（upstream 组 host / resolved host），去端口后仅在 ssl_server_name 为真且不是字面 IP 时 SSL_set_tlsext_host_name 发送 SNI。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-name-gate（src/http/ngx_http_upstream.c:1705-1711）；summary-default-name（src/http/ngx_http_upstream.c:798-803）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_verify
+
+- 语法（`proxy_ssl_verify on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-set-ssl-gate, summary-conf-assign
+  - 判据：配置阶段 ssl_verify 为真时 set_ssl 要求 proxy_ssl_trusted_certificate 并载入信任库；握手完成后 ngx_http_upstream_ssl_handshake 在其为真时检查 SSL_get_verify_result 是否 X509_V_OK，并以 ngx_ssl_check_host 校验证书与 u->ssl_name 匹配，失败则按 FT_ERROR 处理。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_verify_depth
+
+- 语法（`proxy_ssl_verify_depth number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析整数。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-set-ssl-gate
+  - 判据：set_ssl 在 ssl_verify 为真时把 plcf->ssl_verify_depth 传给 ngx_ssl_trusted_certificate，后者调用 SSL_CTX_set_verify_depth；ssl_verify 为 off 时不加载。
+- 新增片段：summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_trusted_certificate
+
+- 语法（`proxy_ssl_trusted_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]，对应 `file`。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-set-ssl-gate
+  - 判据：set_ssl 在 ssl_verify 为真时要求该值非空，并传给 ngx_ssl_trusted_certificate，后者以 SSL_CTX_load_verify_locations 载入为信任位置；文件格式由 OpenSSL 接口决定，修正后文字不再陈述格式。
+- 新增片段：summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）
+- 修正（功能）：指定用于校验 HTTPS 上游证书的信任证书文件，在验证开启时经 SSL_CTX_load_verify_locations 载入 TLS 上下文的信任位置。
+  - 理由：原文“PEM 格式”不在锁定源码内，文件格式由 OpenSSL 的 SSL_CTX_load_verify_locations 决定。
+
+## nginx--ngx_http_proxy_module--proxy_ssl_crl
+
+- 语法（`proxy_ssl_crl file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]，对应 `file`。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-set-ssl-gate
+  - 判据：set_ssl 在 ssl_verify 为真时以 plcf->ssl_crl 调用 ngx_ssl_crl：非空则以 X509_LOOKUP_load_file(…, X509_FILETYPE_PEM) 载入证书存储，并设 X509_V_FLAG_CRL_CHECK|CRL_CHECK_ALL。
+- 新增片段：summary-set-ssl-gate（src/http/modules/ngx_http_proxy_module.c:3764-3768）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_certificate
+
+- 语法（`proxy_ssl_certificate file;`）：verified；source_ids：registration, configuration-definition, syntax-parser
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_http_set_complex_value_zero_slot 把 value[1] 编译为（零结尾的）复合值，对应 `file`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, implementation-3, summary-conf-assign
+  - 判据：set_ssl 对不含变量的证书与私钥直接 ngx_ssl_certificate 载入 TLS 上下文；任一含变量时仅保存口令，改由 ssl_init_connection 调用 ngx_http_upstream_ssl_certificate 在请求时求值，并经 ngx_ssl_connection_certificate 对该连接加载。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；syntax-parser（src/event/ngx_event_openssl.c:651-690）
+- 修正（语法）：proxy_ssl_certificate file | data:certificate;
+  - 理由：ngx_ssl_load_certificate 另接受 data: 前缀（BIO_new_mem_buf 内存载入），原语法未列。
+
+## nginx--ngx_http_proxy_module--proxy_ssl_certificate_key
+
+- 语法（`proxy_ssl_certificate_key file | engine:name:id;`）：verified；source_ids：registration, configuration-definition, syntax-parser
+  - 判据：注册为 NGX_CONF_TAKE1，复合值 setter 保存字符串；私钥字符串由 ngx_ssl_load_certificate_key 解析：以 engine: 开头时取 ENGINE id 与 key id（engine:name:id），否则按文件路径载入，与 `file | engine:name:id` 对应（源码另接受 data: 前缀，语法未列）。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign, summary-load-static, summary-load-dynamic
+  - 判据：set_ssl 要求配置了证书就必须有私钥，静态值经 ngx_ssl_certificate、动态值经 ngx_ssl_connection_certificate 载入，二者均调用 ngx_ssl_load_certificate_key：engine: 开头走 ENGINE_load_private_key，否则读文件；该值可含变量（请求时求值）。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：syntax-parser（src/event/ngx_event_openssl.c:748-818）；summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）；summary-load-static（src/event/ngx_event_openssl.c:551-554）；summary-load-dynamic（src/event/ngx_event_openssl.c:622-625）
+- 修正（功能）：指定连接 HTTPS 上游所用客户端证书的私钥来源，支持文件路径变量，也可使用源码支持的 engine:name:id 形式。
+  - 理由：原文称“静态配置还可使用 engine”，但静态（ngx_ssl_certificate）与请求时（ngx_ssl_connection_certificate）两条路径都调用 ngx_ssl_load_certificate_key，engine: 形式并不限于静态配置。
+- 修正（语法）：proxy_ssl_certificate_key file | engine:name:id | data:key;
+  - 理由：ngx_ssl_load_certificate_key 另接受 data: 前缀（BIO_new_mem_buf 内存载入），原语法未列。
+
+## nginx--ngx_http_proxy_module--proxy_ssl_password_file
+
+- 语法（`proxy_ssl_password_file file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_proxy_ssl_password_file 取 value[1] 作为文件，对应 `file`。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-conf-assign
+  - 判据：setter 调用 ngx_ssl_read_password_file 按行读入口令数组并存入 upstream.ssl_passwords；set_ssl 把它传给 ngx_ssl_certificate/connection_certificate，ngx_ssl_load_certificate_key 对其逐个作为密码回调尝试。（本指令的值经 plcf->upstream 字段，由 ngx_http_proxy_handler 的 u->conf=&plcf->upstream 赋值后被上游逻辑读取。）
+- 新增片段：summary-conf-assign（src/http/modules/ngx_http_proxy_module.c:956-975）
+
+## nginx--ngx_http_proxy_module--proxy_ssl_conf_command
+
+- 语法（`proxy_ssl_conf_command name value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 取 name 与 value 两个参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2
+  - 判据：ssl_conf_commands 键值数组在 set_ssl 末尾（ngx_ssl_ciphers、证书、验证、会话缓存之后）传给 ngx_ssl_conf_commands，后者经 SSL_CONF_cmd 逐项应用；平台缺 SSL_CONF_FLAG_FILE 时配置报错。

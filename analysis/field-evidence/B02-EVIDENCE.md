@@ -1,0 +1,651 @@
+# B02 字段证据记录
+
+范围：nginx ngx_http_core_module，共 84 条。固定 revision：nginx release-1.27.1（e06bdbd4…）；补丁条目另引用固定发行补丁。
+
+## nginx--ngx_http_core_module--variables_hash_max_size
+
+- 语法（`variables_hash_max_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数，与 number 一致；官方文档写作 size，但 1.27.1 源码为数值 setter，以源码为准。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder, summary-vars-cmcf
+  - 判据：值写入 cmcf->variables_hash_max_size（未设时 init_main_conf 默认 1024），ngx_http_variables_init_vars 赋给 hash.max_size 传入 ngx_hash_init；后者以 size 从 start 递增到 max_size 逐个尝试桶数，故为桶数上限而非变量数量限制。
+- 新增片段：summary-vars-cmcf（src/http/ngx_http_variables.c:2741-2741）
+
+## nginx--ngx_http_core_module--variables_hash_bucket_size
+
+- 语法（`variables_hash_bucket_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数，与 number 一致；官方文档写作 size，但 1.27.1 源码为数值 setter，以源码为准。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder, summary-vars-cmcf
+  - 判据：值写入 cmcf->variables_hash_bucket_size，init_main_conf 用 ngx_align 按 ngx_cacheline_size 对齐，随后赋给 hash.bucket_size 传入 ngx_hash_init，该函数以其限制单个桶可容纳的元素长度。
+- 新增片段：summary-vars-cmcf（src/http/ngx_http_variables.c:2741-2741）
+
+## nginx--ngx_http_core_module--server_names_hash_max_size
+
+- 语法（`server_names_hash_max_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数，与 number 一致；官方文档写作 size，但 1.27.1 源码为数值 setter，以源码为准。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder
+  - 判据：值写入 cmcf->server_names_hash_max_size，在 ngx_http_server_names 中赋给 hash.max_size，分别用于精确名称 ngx_hash_init 与 dns_wc_head/dns_wc_tail 的 ngx_hash_wildcard_init。
+
+## nginx--ngx_http_core_module--server_names_hash_bucket_size
+
+- 语法（`server_names_hash_bucket_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数，与 number 一致；官方文档写作 size，但 1.27.1 源码为数值 setter，以源码为准。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder
+  - 判据：值写入 cmcf->server_names_hash_bucket_size，init_main_conf 按缓存行对齐，ngx_http_server_names 赋给 hash.bucket_size 供精确与通配名称哈希共用。
+
+## nginx--ngx_http_core_module--server
+
+- 语法（`server { ... }`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS，即无参数的块指令，与 server { ... } 一致；configuration-definition 为 ngx_http_core_server 本身。
+- 功能：verified；source_ids：implementation-0, http-server-merge, runtime-server-default-address, implementation-1, runtime-server-name-switch
+  - 判据：ngx_http_core_server 为每个 server 块创建独立 srv_conf/loc_conf 上下文并登记到 cmcf->servers；合并阶段逐 server 合并配置；运行时先取监听地址的 default_server，再由 ngx_http_find_virtual_server 按名称哈希/正则选择并切换 r->srv_conf、r->loc_conf。
+
+## nginx--ngx_http_core_module--connection_pool_size
+
+- 语法（`connection_pool_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1，size setter 解析一个大小值，并经 ngx_http_core_pool_size_p 校验下限与对齐。
+- 功能：verified；source_ids：implementation-0, summary-accept-pool, summary-create-pool
+  - 判据：ngx_http_add_listening 取地址 default_server 的 cscf->connection_pool_size 写入 ls->pool_size；接受连接时 ngx_create_pool(ls->pool_size) 创建连接池，该函数把 size 作为首个内存块大小（pool->d.end），不限制后续扩展。
+- 新增片段：summary-accept-pool（src/event/ngx_event_accept.c:157-161）；summary-create-pool（src/core/ngx_palloc.c:19-43）
+
+## nginx--ngx_http_core_module--request_pool_size
+
+- 语法（`request_pool_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1，size setter 解析一个大小值并经 ngx_http_core_pool_size_p 校验。
+- 功能：verified；source_ids：implementation-0, summary-create-pool
+  - 判据：ngx_http_create_request 以 cscf->request_pool_size 调用 ngx_create_pool，该函数把它作为首个内存块大小；该值只进入创建池的调用，与正文大小或并发数无关。
+- 新增片段：summary-create-pool（src/core/ngx_palloc.c:19-43）
+
+## nginx--ngx_http_core_module--client_header_timeout
+
+- 语法（`client_header_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值，与 time 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_read_request_header 在读不到数据时以 cscf->client_header_timeout 设置读事件定时器；请求行处理函数遇 rev->timedout 记录 client timed out，置 c->timedout 并 ngx_http_close_request(r, 408)，该路径只关闭请求，不在片段内发送响应。
+
+## nginx--ngx_http_core_module--client_header_buffer_size
+
+- 语法（`client_header_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1，size setter 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_init_connection 之后的等待处理函数以 cscf->client_header_buffer_size 创建连接读缓冲；ngx_http_alloc_large_header_buffer 在缓冲放不下时按 large_client_header_buffers 的数量与大小另行申请。
+
+## nginx--ngx_http_core_module--large_client_header_buffers
+
+- 语法（`large_client_header_buffers number size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE2，ngx_conf_set_bufs_slot 取 num 与 size 两个参数，与 number size 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_alloc_large_header_buffer 以 .num 限制已占用缓冲数、以 .size 创建每个缓冲，并在 r->state!=0 且已占字节 >= .size 时返回 NGX_DECLINED，故单个请求行/请求头不能靠增加数量越过单缓冲大小。
+
+## nginx--ngx_http_core_module--ignore_invalid_headers
+
+- 语法（`ignore_invalid_headers on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：请求头解析在 rc==NGX_OK 且 r->invalid_header 与 cscf->ignore_invalid_headers 同为真时记录日志并 continue 丢弃该头；off 时不走该分支，其余解析失败仍由 ngx_http_parse_header_line 的返回码处理，故不等于接受畸形报文；下划线是否置 invalid_header 由 underscores_in_headers 传入解析器。
+
+## nginx--ngx_http_core_module--merge_slashes
+
+- 语法（`merge_slashes on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-find-location, summary-static-location, summary-after-slash, summary-uri-start, summary-uri-len, summary-complex-cond
+  - 判据：URI 含需处理的标志时 ngx_http_process_request_uri 调用 ngx_http_parse_complex_uri(r, cscf->merge_slashes)；解析器遇 / 在 !merge_slashes 时才写入输出，故 on 压缩连续斜杠；结果存入 r->uri，find_location 的静态与正则匹配均以 r->uri 为输入，处理对象是请求 URI 内存副本而非磁盘路径。 补充：sw_after_slash_in_uri 遇 / 置 r->complex_uri 进入该函数（parse.c:507-509）；输出指针 u 起于 r->uri.data（1264），结束后 r->uri.len = u - r->uri.data（1582），即压缩结果写入 r->uri。 复审补充：调用条件 `r->complex_uri || r->quoted_uri || r->empty_path_in_uri`（request.c 1256）进入 ngx_http_parse_complex_uri 分支，与 implementation-0（1266-1279）衔接。
+- 新增片段：summary-find-location（src/http/ngx_http_core_module.c:1396-1441）；summary-static-location（src/http/ngx_http_core_module.c:1478-1483）；summary-after-slash（src/http/ngx_http_parse.c:478-510）；summary-uri-start（src/http/ngx_http_parse.c:1262-1265）；summary-uri-len（src/http/ngx_http_parse.c:1580-1582）；summary-complex-cond（src/http/ngx_http_request.c:1256-1257）
+
+## nginx--ngx_http_core_module--underscores_in_headers
+
+- 语法（`underscores_in_headers on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-name-underscore, summary-parse-signature
+  - 判据：ngx_http_parse_header_line 的 allow_underscores 来自 cscf->underscores_in_headers；头名称出现 _ 且不允许时置 r->invalid_header=1，随后由 ignore_invalid_headers 分支决定是否丢弃；解析对象为客户端请求头，未涉及上游响应头。 补充：sw_name 状态（名称中间字符）遇 _ 时同样按 allow_underscores 决定是否置 r->invalid_header（parse.c:918-926），allow_underscores 为 ngx_http_parse_header_line 的第三个形参。
+- 新增片段：summary-name-underscore（src/http/ngx_http_parse.c:908-929）；summary-parse-signature（src/http/ngx_http_parse.c:815-818）
+
+## nginx--ngx_http_core_module--location
+
+- 语法（`location [ = | ~ | ~* | ^~ ] uri { ... } / location @name { ... }`）：verified；source_ids：registration, configuration-definition, location-match-definition
+  - 判据：注册为 NGX_CONF_BLOCK|NGX_CONF_TAKE12（块，1 或 2 个参数）；location-match-definition 对两参数形式依次识别 =、^~、~、~*，其他修饰符报 invalid location modifier；单参数形式将 @ 开头标记为 named，与 [修饰符] uri 及 @name 一致（源码另允许修饰符与 uri 连写，文档语法未列出但不冲突）。
+- 功能：verified；source_ids：implementation-0, location-match-definition, runtime-location-named-consume
+  - 判据：location-match-definition 把参数分别置为 exact_match、noregex（^~）、正则或 named；find_location 先静态前缀/精确匹配，再对非 noregex 的 regex_locations 执行 ngx_http_regex_exec；ngx_http_named_location 在 cscf->named_locations 中按名称切换 loc_conf 供内部跳转。
+
+## nginx--ngx_http_core_module--listen
+
+- 语法（`listen address[:port] [parameters]; / listen port [parameters]; / listen unix:path [parameters];`）：verified；source_ids：registration, configuration-definition, syntax-parse-url, syntax-port-only
+  - 判据：注册为 NGX_CONF_1MORE（至少一个参数，其后为参数列表）；ngx_http_core_listen 以 value[1] 调用 ngx_parse_url(listen=1, default_port=80)：unix: 前缀走 unix 域套接字，否则按 address[:port] 解析，无冒号时以整个值尝试作为端口；其余 value[i] 逐项作为 parameters 解析。源码另允许 port 范围写法，文档语法未列出但不冲突。
+- 功能：verified；source_ids：implementation-0, listen-port-group, summary-listen-add-call, summary-listening-options
+  - 判据：ngx_http_core_listen 对每个解析出的地址调用 ngx_http_add_listen 登记到端口/地址表；ngx_http_add_listening 把 lsopt 中的 type、backlog、rcvbuf、keepalive、reuseport 等选项复制到 ngx_listening_t，并设置 ls->handler = ngx_http_init_connection 作为接入连接的 HTTP 入口。
+- 新增片段：syntax-parse-url（src/core/ngx_inet.c:684-701）；syntax-port-only（src/core/ngx_inet.c:872-900）；summary-listening-options（src/http/ngx_http.c:1847-1883）；summary-listen-add-call（src/http/ngx_http_core_module.c:4356-4380）
+
+## nginx--ngx_http_core_module--server_name
+
+- 语法（`server_name name ...;`）：verified；source_ids：registration, configuration-definition, d340-setter
+  - 判据：注册为 NGX_HTTP_SRV_CONF|NGX_CONF_1MORE；d340-setter（ngx_http_core_server_name）对 value[1..] 逐个作为名称处理，与 name ... 一致。
+- 功能：verified；source_ids：d340-setter, implementation-0
+  - 判据：ngx_http_core_server_name 把每个参数登记进 cscf->server_names，校验 *. / . 形式的通配并对以 ~ 开头者编译正则；ngx_http_find_virtual_server 先用 ngx_hash_find_combined 查名称哈希再遍历正则。源码中正则名称仅在 NGX_PCRE 下可用，否则报错。
+- 修正（功能）：声明 HTTP 虚拟服务器的名称，供请求的服务器名称查找使用；支持普通名称、规定形式的通配名称，以及（需 PCRE 支持时）以 ~ 开头的正则表达式。
+  - 理由：ngx_http_core_server_name 在未定义 NGX_PCRE 时对 ~ 名称返回 “requires PCRE library” 错误，原文未写出该条件。
+
+## nginx--ngx_http_core_module--types_hash_max_size
+
+- 语法（`types_hash_max_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder
+  - 判据：conf->types_hash_max_size（默认 1024）在 merge_loc_conf 中赋给 types_hash.max_size 并调用 ngx_hash_init，该函数从 start 到 max_size 逐个尝试桶数；被构建的是 types 扩展名数组的 types_hash。
+
+## nginx--ngx_http_core_module--types_hash_bucket_size
+
+- 语法（`types_hash_bucket_size number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, hash-builder
+  - 判据：conf->types_hash_bucket_size（默认 64）经 ngx_align 按 ngx_cacheline_size 对齐，随后赋给 types_hash.bucket_size 传入 ngx_hash_init，用于限制桶容量。
+
+## nginx--ngx_http_core_module--types
+
+- 语法（`types { mime-type extension ...; ... }`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS；ngx_http_core_types 把块内每行交给 ngx_http_core_type，后者以 value[0] 为 MIME 类型、value[1..] 为扩展名（另识别 include），与 mime-type extension ...; 一致。
+- 功能：verified；source_ids：implementation-0, implementation-2
+  - 判据：ngx_http_core_type 对每个扩展名用 ngx_hash_strlow 计算哈希并登记同一 content_type，从而一个类型可列多个扩展名；ngx_http_set_content_type 查找时把含大写的 r->exten 转小写再 ngx_hash_find，故大小写不敏感。
+
+## nginx--ngx_http_core_module--default_type
+
+- 语法（`default_type mime-type;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1] 作为 MIME 类型字符串。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_set_content_type 在 r->headers_out.content_type.len 已非零时直接返回，不覆盖；否则按 r->exten 查 types_hash，未命中才把 clcf->default_type（默认 text/plain）写入响应 Content-Type。
+
+## nginx--ngx_http_core_module--root
+
+- 语法（`root path;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_TAKE1；ngx_http_core_root 取 value[1] 作为路径（可含变量，经脚本编译）。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_core_root 对 root 令 clcf->alias=0 并保存路径；ngx_http_map_uri_to_path 先拷贝 root，再 ngx_copy(r->uri.data + alias, r->uri.len - alias)，alias=0 时完整追加 r->uri，不剥离 location 前缀。
+
+## nginx--ngx_http_core_module--alias
+
+- 语法（`alias path;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，与 root 共用 ngx_http_core_root，取 value[1] 作为路径。
+- 功能：verified；source_ids：implementation-1, implementation-0
+  - 判据：ngx_http_core_root 对 alias 设 clcf->alias = clcf->name.len（前缀长度），在 NGX_PCRE 且为正则 location 时置 NGX_MAX_SIZE_T_VALUE 并强制脚本编译；ngx_http_map_uri_to_path 以 r->uri.data + alias 拷贝，即跳过匹配的前缀；正则情形仅在 add_uri_to_alias 时追加 URI，路径主要由变量构造。
+
+## nginx--ngx_http_core_module--limit_except
+
+- 语法（`limit_except method ... { ... }`）：verified；source_ids：registration, configuration-definition, summary-methods-table
+  - 判据：注册为 NGX_HTTP_LOC_CONF|NGX_CONF_BLOCK|NGX_CONF_1MORE；d340 setter 遍历 value[1..] 并在 ngx_methods_names 中匹配方法名，未知方法报错，与 method ... { ... } 一致。
+- 功能：verified；source_ids：implementation-0, configuration-definition, summary-methods-table
+  - 判据：ngx_methods_names 保存方法的按位取反，setter 对各方法取 &，使 limit_except 为所列方法以外的位集合；setter 另建独立 loc_conf（limit_except_loc_conf）并解析块内指令；ngx_http_update_location_config 在 r->method & clcf->limit_except 时把 r->loc_conf 切换到该配置。
+- 新增片段：summary-methods-table（src/http/ngx_http_core_module.c:4587-4603）
+
+## nginx--ngx_http_core_module--client_max_body_size
+
+- 语法（`client_max_body_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_off_slot 解析一个大小值（off_t）。
+- 功能：verified；source_ids：implementation-0, implementation-1, runtime-body-chunk-account, runtime-body-declared-length
+  - 判据：ngx_http_core_find_config_phase 在 client_max_body_size 非零且小于已知 Content-Length 时返回 413；分块正文在 chunked filter 中以已累计的 content_length_n 加当前块大小与之比较，超限同样返回 413；条件均含“非零”，故 0 不做这项检查。
+
+## nginx--ngx_http_core_module--client_body_buffer_size
+
+- 语法（`client_body_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-body-save
+  - 判据：ngx_http_read_client_request_body 以 clcf->client_body_buffer_size 创建读取缓冲（剩余正文更小时缩小）；save filter 在缓冲写满且仍有剩余时调用 ngx_http_write_request_body 写入 client_body_temp_path 临时文件，说明缓冲大小只决定内存缓冲容量，不是正文大小限制。
+- 新增片段：summary-body-save（src/http/ngx_http_request_body.c:1334-1363）
+
+## nginx--ngx_http_core_module--client_body_timeout
+
+- 语法（`client_body_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：读取正文需等待更多数据（!c->read->ready 或 rb->rest==0）时以 clcf->client_body_timeout 设置读事件定时器；到期后 ngx_http_read_client_request_body_handler 置 timedout 并以 408 终止，说明是两次读之间的等待时限而非总时长。
+
+## nginx--ngx_http_core_module--client_body_temp_path
+
+- 语法（`client_body_temp_path path [level1 [level2 [level3]]];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1234（路径加至多三个层级参数）；ngx_conf_set_path_slot 取 value[1] 为路径并解析其后的层级数字。
+- 功能：verified；source_ids：implementation-0, implementation-3, d340-setter
+  - 判据：ngx_http_write_request_body 创建临时文件时 tf->path = clcf->client_body_temp_path；merge 时回落到 ngx_http_client_temp_path；路径对象的层级由 ngx_conf_set_path_slot 解析（参数个数由注册标志限制为最多三级）；字段只用于请求正文临时文件。
+
+## nginx--ngx_http_core_module--client_body_in_file_only
+
+- 语法（`client_body_in_file_only off | on | clean;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 按 ngx_http_core_request_body_in_file 表接受 off、on、clean。
+- 功能：verified；source_ids：implementation-1, implementation-2, implementation-3, summary-body-save, summary-ulc-head, summary-temp-create-call, summary-temp-cleanup, summary-open-tempfile, summary-pool-delete-file
+  - 判据：非零时 ngx_http_update_location_config 置 request_body_in_file_only 与 persistent，clean 另置 request_body_in_clean_file；save filter 在 in_file_only 时写临时文件；off 时只在缓冲写满且仍有剩余时写文件。 补充：tf->persistent/tf->clean 传入 ngx_create_temp_file；ngx_open_tempfile 仅在 !persistent 时 unlink，故 on 保留文件；clean 令清理句柄为 ngx_pool_delete_file（删除文件），否则为 ngx_pool_cleanup_file（仅关闭）。
+- 新增片段：summary-body-save（src/http/ngx_http_request_body.c:1334-1363）；summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）；summary-temp-create-call（src/core/ngx_file.c:113-115）；summary-temp-cleanup（src/core/ngx_file.c:196-217）；summary-open-tempfile（src/os/unix/ngx_files.c:279-291）；summary-pool-delete-file（src/core/ngx_palloc.c:363-399）
+
+## nginx--ngx_http_core_module--client_body_in_single_buffer
+
+- 语法（`client_body_in_single_buffer on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, protocol-dispatch, summary-ulc-head
+  - 判据：update_location_config 把该值赋给 r->request_body_in_single_buf；HTTP/1 读取函数仅在 !chunked 且 rb->rest < 缓冲阈值时对 preread 计入单缓冲；HTTP/2、HTTP/3 在此之前分流到各自读取函数，不经该分支；源码注释亦标明 TODO: honor。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--sendfile
+
+- 语法（`sendfile on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, runtime-sendfile-linux-io-table, runtime-sendfile-buffer-decisions, runtime-sendfile-linux-dispatch, summary-ulc-head
+  - 判据：update_location_config 仅在 ngx_io.flags 含 NGX_IO_SENDFILE（Linux 下由 NGX_HAVE_SENDFILE 决定）且 clcf->sendfile 为真时置 c->sendfile；输出链按缓冲类型决定是否保持文件缓冲，ngx_linux_sendfile_chain 才对文件缓冲调用 sendfile，其余仍走普通发送。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--sendfile_max_chunk
+
+- 语法（`sendfile_max_chunk size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-write-clcf, summary-linux-io-table, summary-chain-limit-init, summary-chain-limit-file, summary-chain-limit-exit
+  - 判据：写过滤器把 clcf->sendfile_max_chunk 作为 limit（与剩余限速额度取较小者）传入 c->send_chain(c, r->out, limit)，限制单次发送链处理的字节数而非响应总量；“避免长期占用 worker”为官方文档所述目的，源码仅体现 limit 的传递。 补充：Linux 下 send_chain 为 ngx_linux_sendfile_chain，limit 在 iovec 收集（limit - send）、文件合并与循环退出（send >= limit）三处限制单次发送量。“避免长期占用 worker”仅见于官方文档，源码无对应片段，已用修正删去。
+- 修正（功能）：限制写过滤器一次向连接发送链交付的数据量（Linux 下由 ngx_linux_sendfile_chain 按该上限截断单次发送）；不是整个响应大小上限。
+  - 理由：“避免一个快速连接长期占用 worker”只见于官方文档，源码仅体现 limit 的传递与截断，无法证明该目的；并补上截断发生的位置。
+- 新增片段：summary-write-clcf（src/http/ngx_http_write_filter_module.c:211-211）；summary-linux-io-table（src/os/unix/ngx_linux_init.c:16-30）；summary-chain-limit-init（src/os/unix/ngx_linux_sendfile_chain.c:70-88）；summary-chain-limit-file（src/os/unix/ngx_linux_sendfile_chain.c:162-168）；summary-chain-limit-exit（src/os/unix/ngx_linux_sendfile_chain.c:224-226）
+
+## nginx--ngx_http_core_module--subrequest_output_buffer_size
+
+- 语法（`subrequest_output_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_postpone_filter_in_memory（子请求 in-memory 路径）在已知 content_length_n 大于 clcf->subrequest_output_buffer_size 时记录 too big 并返回 NGX_ERROR，否则以该大小分配缓冲，之后追加数据时空间不足同样报错；仅此收集路径使用。
+
+## nginx--ngx_http_core_module--aio
+
+- 语法（`aio on | off | threads[=pool];`）：verified；source_ids：registration, configuration-definition, d340-enum
+  - 判据：注册为 NGX_CONF_TAKE1；自定义 ngx_http_core_set_aio 依次识别 off、on（需 NGX_HAVE_FILE_AIO）、threads 或 threads=pool（需 NGX_THREADS，pool 可含变量），其余返回 invalid value，与 on | off | threads[=pool] 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, d340-setter
+  - 判据：ngx_http_copy_filter 在 aio==ON（且 ngx_file_aio 可用）时设置 ctx->aio_handler，在 aio==THREADS（NGX_THREADS）时设置 thread_handler；文件读取函数在有 aio_handler 时改用 ngx_file_aio_read，对应构建能力与调用路径限定。
+
+## nginx--ngx_http_core_module--aio_write
+
+- 语法（`aio_write on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, summary-event-pipe-thread, summary-upstream-clcf
+  - 判据：ngx_http_upstream_send_response 在 NGX_THREADS 下仅当 clcf->aio == NGX_HTTP_AIO_THREADS 且 clcf->aio_write 为真时设置 p->thread_handler 与 thread_ctx，该处理器用于事件管道写临时文件，与 summary 一致。 补充：ngx_event_pipe_write_chain_to_temp_file 在 p->thread_handler 非空时令 temp_file->thread_write=1 并装入 thread_handler/thread_ctx，写临时文件走线程任务；clcf 取自 upstream 当前请求的 core loc_conf（3070）。
+- 新增片段：summary-event-pipe-thread（src/event/ngx_event_pipe.c:838-845）；summary-upstream-clcf（src/http/ngx_http_upstream.c:3070-3070）
+
+## nginx--ngx_http_core_module--read_ahead
+
+- 语法（`read_ahead size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-static-ofc
+  - 判据：静态文件处理把 clcf->read_ahead 赋给 of.read_ahead；ngx_open_cached_file 在 of->read_ahead 非零且文件大于 NGX_MIN_READ_AHEAD 时调用 ngx_read_ahead，后者在 Linux 外按 F_READAHEAD 或 posix_fadvise 实现，均无时为空操作。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）
+
+## nginx--ngx_http_core_module--directio
+
+- 语法（`directio size | off;`）：verified；source_ids：registration, configuration-definition, d340-setter
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_core_directio 对 off 取 NGX_OPEN_FILE_DIRECTIO_OFF，否则 ngx_parse_offset 解析大小，与 size | off 一致。
+- 功能：verified；source_ids：implementation-0, summary-directio-off, implementation-1, summary-static-ofc, summary-static-directio
+  - 判据：of.directio = clcf->directio；ngx_open_cached_file 在 of->directio <= 文件大小时调用 ngx_directio_on 并置 is_directio，off 对应 NGX_MAX_OFF_T_VALUE 不会满足；输出链在 buf->file->directio 为真（且无 NGX_HAVE_SENDFILE_NODISKIO）时禁用 sendfile。 补充：静态模块 b->file->directio = of.is_directio（272），输出链据此判断文件缓冲。
+- 新增片段：summary-directio-off（src/core/ngx_open_file_cache.h:16-16）；summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）；summary-static-directio（src/http/modules/ngx_http_static_module.c:272-272）
+
+## nginx--ngx_http_core_module--directio_alignment
+
+- 语法（`directio_alignment size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_off_slot 经 ngx_parse_offset 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-copy-clcf
+  - 判据：copy filter 把 clcf->directio_alignment 赋给 ctx->alignment；ngx_output_chain_align_file_buf 用其计算文件偏移对齐量，directio 缓冲以 ngx_pmemalign(..., ctx->alignment) 分配。
+- 新增片段：summary-copy-clcf（src/http/ngx_http_copy_filter_module.c:106-107）
+
+## nginx--ngx_http_core_module--tcp_nopush
+
+- 语法（`tcp_nopush on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, implementation-3, summary-ulc-head
+  - 判据：update_location_config 在 !clcf->tcp_nopush 时置 NGX_TCP_NOPUSH_DISABLED，否则保持 UNSET；Linux sendfile_chain 在 UNSET 且头部后有文件缓冲时设 TCP_CORK，FreeBSD sendfile_chain 在 UNSET 时调用 ngx_tcp_nopush；两处均为发送路径中的套接字选项，与压缩无关。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--tcp_nodelay
+
+- 语法（`tcp_nodelay on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-keepalive-clcf
+  - 判据：TLS 握手探测分支与 keep-alive 转换处理均以 clcf->tcp_nodelay 为真作为调用 ngx_tcp_nodelay 的条件（后者另要求 tcp_nopush 已清除或平台允许共存），因此该值只决定这些路径是否设置 TCP_NODELAY，不改变其余缓冲逻辑。
+- 新增片段：summary-keepalive-clcf（src/http/ngx_http_request.c:3112-3112）
+
+## nginx--ngx_http_core_module--send_timeout
+
+- 语法（`send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2
+  - 判据：ngx_http_set_write_handler 与 writer 在需等待写事件/延迟时以 clcf->send_timeout 设置写定时器；ngx_http_writer 遇 wev->timedout 置 c->timedout 并以 408 finalize 请求，定时器随每次等待重设，故不是总时长。
+
+## nginx--ngx_http_core_module--send_lowat
+
+- 语法（`send_lowat size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值，并经 ngx_http_core_lowat_check 校验。
+- 功能：verified；source_ids：implementation-0, summary-handle-write, summary-send-lowat, implementation-1
+  - 判据：ngx_http_set_write_handler 把 clcf->send_lowat 传给 ngx_handle_write_event，非零时调用 ngx_send_lowat：kqueue 设置 available，否则 setsockopt(SO_SNDLOWAT)；lowat_check 在不支持 SO_SNDLOWAT 的平台告警并置 0；仅影响写事件触发门槛，与速率限制无关。
+- 新增片段：summary-handle-write（src/event/ngx_event.c:348-364）；summary-send-lowat（src/event/ngx_event.c:951-983）
+
+## nginx--ngx_http_core_module--postpone_output
+
+- 语法（`postpone_output size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析一个大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：写过滤器在 !last && !flush && in && size < clcf->postpone_output 时直接返回 NGX_OK 暂不发送，条件仅由缓冲标记与字节数构成，无定时器。
+
+## nginx--ngx_http_core_module--limit_rate
+
+- 语法（`limit_rate rate;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_TAKE1，ngx_http_set_complex_value_size_slot 解析一个可含变量的大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, complex-size, summary-write-clcf
+  - 判据：写过滤器首次发送时以 ngx_http_complex_value_size 求值 clcf->limit_rate 存入 r->limit_rate（可含变量）；仅在 r->limit_rate 非零时按“已用时间×速率-已发送”计算 limit 并延迟写定时器；状态保存在 r 上，因此是每请求限速。
+- 新增片段：summary-write-clcf（src/http/ngx_http_write_filter_module.c:211-211）
+
+## nginx--ngx_http_core_module--limit_rate_after
+
+- 语法（`limit_rate_after size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_TAKE1，ngx_http_set_complex_value_size_slot 解析一个可含变量的大小值。
+- 功能：verified；source_ids：implementation-0, implementation-1, complex-size, summary-write-clcf
+  - 判据：r->limit_rate_after 仅在 r->limit_rate 非零的分支内由 ngx_http_complex_value_size 求值，并从已发送字节数中扣除；r->limit_rate 为 0 时该分支不执行，故单独设置不限速。
+- 新增片段：summary-write-clcf（src/http/ngx_http_write_filter_module.c:211-211）
+
+## nginx--ngx_http_core_module--keepalive_time
+
+- 语法（`keepalive_time time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-ulc-head
+  - 判据：update_location_config 在 r->keepalive 为真时比较 ngx_current_msec - c->start_time 与 clcf->keepalive_time，超过即置 r->keepalive=0（默认 1 小时）；这是对后续保持连接的撤销，不设置定时器中断进行中的响应。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--keepalive_timeout
+
+- 语法（`keepalive_timeout timeout [header_timeout];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_core_keepalive 以 ngx_parse_time 解析 value[1] 为 keepalive_timeout，有第 2 个参数时解析为 keepalive_header，与 timeout [header_timeout] 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, runtime-keepalive-finalize-call, configuration-definition, summary-ulc-head, summary-keepalive-clcf, summary-finalize-clcf, summary-header-clcf
+  - 判据：keepalive_timeout 为 0 时 r->keepalive=0 且 finalize 不进入 set_keepalive；否则 ngx_http_set_keepalive 以其设置空闲读定时器；响应头 Keep-Alive: timeout 取的是 clcf->keepalive_header（第二参数），与空闲等待值分开保存。 补充：ngx_http_core_keepalive 以 ngx_parse_time(value[1]) 写 keepalive_timeout，value[2]（若有）写 keepalive_header，响应头 Keep-Alive: timeout 取后者。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）；summary-keepalive-clcf（src/http/ngx_http_request.c:3112-3112）；summary-finalize-clcf（src/http/ngx_http_request.c:2771-2771）；summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）
+
+## nginx--ngx_http_core_module--keepalive_requests
+
+- 语法（`keepalive_requests number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-ulc-head
+  - 判据：update_location_config 在 c->requests >= clcf->keepalive_requests（默认 1000）时置 r->keepalive=0，响应后不再保持该连接；计数对象是单连接已处理请求数，不涉及并发。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--keepalive_disable
+
+- 语法（`keepalive_disable none | msie6 | safari ...;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_TAKE12，ngx_conf_set_bitmask_slot 按 ngx_http_core_keepalive_disable 表接受 none、msie6、safari（逐参数合并位）；文档写的 “...” 与源码允许最多两个值一致。
+- 功能：verified；source_ids：implementation-1, implementation-2, summary-ulc-head
+  - 判据：update_location_config 对 r->headers_in.msie6 且 POST 且位含 MSIE6、或 r->headers_in.safari 且位含 SAFARI 时置 r->keepalive=0；none 位不参与这两个判断；默认值含 MSIE6。
+- 新增片段：summary-ulc-head（src/http/ngx_http_core_module.c:1305-1314）
+
+## nginx--ngx_http_core_module--satisfy
+
+- 语法（`satisfy all | any;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 仅接受 ngx_http_core_satisfy 表内取值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_core_access_phase 依 clcf->satisfy：ALL 时某检查返回 NGX_OK 仅进入下一处理器、被拒则立即处理拒绝；ANY 分支在任一检查通过时继续，全部拒绝才返回拒绝码；该处只组合已有访问检查结果，不产生认证规则。
+
+## nginx--ngx_http_core_module--auth_delay
+
+- 语法（`auth_delay time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：访问阶段在 access_code 为 NGX_HTTP_UNAUTHORIZED 时调用 ngx_http_core_auth_delay，该函数据 clcf->auth_delay 用写事件定时器推迟 finalize；默认 0，其余状态码直接 finalize。
+
+## nginx--ngx_http_core_module--internal
+
+- 语法（`internal;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS，由 ngx_http_core_internal 置 clcf->internal=1，无参数，与 internal; 一致。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：find_config_phase 在 !r->internal && clcf->internal 时 finalize 为 404，其余处理照常；internal 请求（内部重定向、error_page 等）不受该判断拒绝。
+
+## nginx--ngx_http_core_module--lingering_close
+
+- 语法（`lingering_close off | on | always;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 仅接受 ngx_http_core_lingering_close 表内取值。
+- 功能：verified；source_ids：implementation-1, implementation-2, summary-finalize-clcf
+  - 判据：finalize 后依 clcf->lingering_close：ALWAYS 一律、ON 在 r->lingering_close、缓冲有残余、读就绪或 pipeline 时调用 ngx_http_set_lingering_close；该函数设置读处理器与超时，读取并丢弃剩余数据后关闭；OFF 直接 ngx_http_close_request。
+- 新增片段：summary-finalize-clcf（src/http/ngx_http_request.c:2771-2771）
+
+## nginx--ngx_http_core_module--lingering_time
+
+- 语法（`lingering_time time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：set_lingering_close 首次将 r->lingering_time 设为当前时间 + clcf->lingering_time/1000；读处理器在 timer <= 0 时 ngx_http_close_request，故为 lingering 读取阶段总上限，与响应生成无关。
+
+## nginx--ngx_http_core_module--lingering_timeout
+
+- 语法（`lingering_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：set_lingering_close 以 clcf->lingering_timeout 设置读定时器；lingering 读处理器每次读后重设定时器为 min(剩余 lingering_time, lingering_timeout)，rev->timedout 时关闭请求。
+
+## nginx--ngx_http_core_module--reset_timedout_connection
+
+- 语法（`reset_timedout_connection on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：r->connection->timedout 为真（含 NGX_HTTP_CLOSE 路径置 c->timedout=1）且 clcf->reset_timedout_connection 时，释放请求时对套接字设置 SO_LINGER{on,0} 使关闭发送 RST；其他关闭路径不经此分支。
+
+## nginx--ngx_http_core_module--absolute_redirect
+
+- 语法（`absolute_redirect on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-header-clcf
+  - 判据：header filter 仅在 Location 以 / 开头且 clcf->absolute_redirect 为真时补全 scheme 与主机；为 off 则条件不成立，Location 原样输出。
+- 新增片段：summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）
+
+## nginx--ngx_http_core_module--server_name_in_redirect
+
+- 语法（`server_name_in_redirect on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-header-clcf
+  - 判据：补全绝对地址时 server_name_in_redirect 为真取 cscf->server_name；否则取 r->headers_in.server，为空再取 ngx_connection_local_sockaddr 的本地地址。
+- 新增片段：summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）
+
+## nginx--ngx_http_core_module--port_in_redirect
+
+- 语法（`port_in_redirect on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-header-clcf
+  - 判据：补全绝对地址时 port_in_redirect 为真保留本地端口，但 SSL 连接的 443、非 SSL 的 80 置 0 省略；为 off 时端口恒置 0。
+- 新增片段：summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）
+
+## nginx--ngx_http_core_module--msie_padding
+
+- 语法（`msie_padding on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, summary-special-sig
+  - 判据：ngx_http_send_special_response 仅在 clcf->msie_padding、headers_in.msie 或 chrome、HTTP>=1.0 且状态码 >=4xx 时增加 ngx_http_msie_padding 长度并追加该缓冲；其余响应不受影响。
+- 新增片段：summary-special-sig（src/http/ngx_http_special_response.c:672-675）
+
+## nginx--ngx_http_core_module--msie_refresh
+
+- 语法（`msie_refresh on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-send-refresh, summary-refresh-strings, summary-special-clcf
+  - 判据：special response 路径在 clcf->msie_refresh 且 headers_in.msie 且状态为 301/302（及 3xx 内部页）时改调 ngx_http_send_refresh，其余请求与状态走原有响应。 补充：ngx_http_send_refresh 把状态改为 200、content-type 设为 text/html，并输出含 <meta http-equiv="Refresh" content="0; URL=…"> 的 HTML 页面。
+- 新增片段：summary-send-refresh（src/http/ngx_http_special_response.c:788-857）；summary-refresh-strings（src/http/ngx_http_special_response.c:52-57）；summary-special-clcf（src/http/ngx_http_special_response.c:454-454）
+
+## nginx--ngx_http_core_module--log_not_found
+
+- 语法（`log_not_found on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-static-clcf
+  - 判据：静态文件打开失败时 rc 为 404 才受 clcf->log_not_found 约束（!= 404 或开关为真才 ngx_log_error）；NGX_EACCES 等映射为 403/500 的分支不经该开关，且返回码不变。同类判断也见于 index/flv/mp4 模块（未纳入片段）。
+- 修正（功能）：控制静态文件处理打开文件得到404时是否记录错误日志；off仍返回原错误状态，也不会屏蔽权限错误等其他文件错误日志。
+  - 理由：本条只引用静态文件处理的片段（static_module），index、flv、mp4 等模块的同类判断未纳入证据，原文“文件查找”泛指范围超出证据；收窄到已证范围。
+- 新增片段：summary-static-clcf（src/http/modules/ngx_http_static_module.c:88-88）
+
+## nginx--ngx_http_core_module--log_subrequest
+
+- 语法（`log_subrequest on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_finalize_request 在 r==c->data 或后台请求且尚未 logged 时，仅当 clcf->log_subrequest 为真才调用 ngx_http_log_request；该函数运行 log 阶段处理器（access_log 等），不涉及 error_log。
+
+## nginx--ngx_http_core_module--recursive_error_pages
+
+- 语法（`recursive_error_pages on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_special_response_handler 在 !r->error_page 且 uri_changes != 0 时匹配 error_pages；recursive_error_pages 为 0 时置 r->error_page=1，使后续错误不再查表；uri_changes 判断独立于该开关，限制仍在。
+
+## nginx--ngx_http_core_module--server_tokens
+
+- 语法（`server_tokens on | off | build;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 按 ngx_http_core_server_tokens 表接受 off、on、build。
+- 功能：verified；source_ids：implementation-1, implementation-3, implementation-5, server-header-patch, builtin-footer-patch, summary-header-clcf, summary-v3-clcf, summary-special-sig
+  - 判据：HTTP/1 header filter 与错误页尾按 clcf->server_tokens 选 ON/BUILD/默认字符串；server_header 补丁把 NGINX_VER 与 Server 字面串改为 openresty，builtin_error_page_footer 补丁把错误页尾字面串改为 openresty；HTTP/3 filter 的 off 分支仍为字面 "nginx"。
+- 新增片段：summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）；summary-v3-clcf（src/http/v3/ngx_http_v3_filter_module.c:159-159）；summary-special-sig（src/http/ngx_http_special_response.c:672-675）
+
+## nginx--ngx_http_core_module--if_modified_since
+
+- 语法（`if_modified_since off | exact | before;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 按 ngx_http_core_if_modified_since 表接受 off、exact、before。
+- 功能：verified；source_ids：implementation-1, implementation-2
+  - 判据：ngx_http_test_if_modified：OFF 直接返回 1（视为已修改，不返回 304）；IMS 等于 Last-Modified 时返回 0（未修改）；EXACT 时不等即返回 1；BEFORE 时仅当 ims < Last-Modified 返回 1，故允许 Last-Modified 不晚于 IMS 时判为未修改。
+
+## nginx--ngx_http_core_module--max_ranges
+
+- 语法（`max_ranges number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-range-limit
+  - 判据：range filter 在 clcf->max_ranges==0 时直接交给下一过滤器；否则以 max_ranges（single_range 时为 1）调用 ngx_http_range_parse，解析中 ranges-- == 0 返回 NGX_DECLINED，调用方 default 分支走 next_filter 不改状态为 206，故退回完整响应而非截断。
+- 新增片段：summary-range-limit（src/http/modules/ngx_http_range_filter_module.c:372-393）
+
+## nginx--ngx_http_core_module--chunked_transfer_encoding
+
+- 语法（`chunked_transfer_encoding on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：chunked header filter 仅在长度未知（或需 trailers）时检查：HTTP>=1.1 且 clcf->chunked_transfer_encoding 为真则置 r->chunked 并装 ctx；否则长度未知时置 r->keepalive=0；响应体内容本身不在此处改写。
+
+## nginx--ngx_http_core_module--etag
+
+- 语法（`etag on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1
+  - 判据：ngx_http_set_etag 在 !clcf->etag 时直接返回；否则以 "%xT-%xO" 格式用 last_modified_time 与 content_length_n 生成 ETag 值并挂入响应头，未读取正文计算哈希。
+
+## nginx--ngx_http_core_module--error_page
+
+- 语法（`error_page code ... [=[response]] uri;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_2MORE；ngx_http_core_error_page 检查倒数第二个参数是否以 = 开头（可带 response 数值），其前各参数以 ngx_atoi 解析为 300-599 状态码，最后一个参数作为 uri 编译为复杂值（可为 @name 或 URL），与语法一致；补丁只在其前增加 no_error_pages 冲突检查。
+- 功能：verified；source_ids：implementation-0, implementation-1, no-error-pages-patch
+  - 判据：special_response_handler 按 error 状态在 clcf->error_pages 中匹配后调用 ngx_http_send_error_page：overwrite>=0 时重设 r->err_status，对 uri 求值后按 @ 命名 location、带 scheme 的重定向或内部重定向分别处理；no_error_pages 补丁令 error_pages 以 UNSET/NULL 区分未设置与显式禁用并在两指令同层出现时报冲突。
+
+## nginx--ngx_http_core_module--post_action
+
+- 语法（`post_action uri | @name;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1] 作为 uri 或 @name 字符串。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2
+  - 判据：请求出错结束与正常完成路径均先调用 ngx_http_post_action；该函数在 clcf->post_action 非空且尚未重复触发时，对 @name 走命名 location，否则内部重定向，并置 r->post_action、header_only；其他阶段不调用。
+
+## nginx--ngx_http_core_module--error_log
+
+- 语法（`error_log file [level];`）：verified；source_ids：registration, configuration-definition, implementation-0, implementation-1, syntax-syslog-comma, syntax-syslog-tag, syntax-syslog-nohostname
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE；ngx_http_core_error_log 委托 ngx_log_set_log：value[1] 为 file（含 stderr、syslog:、memory: 等写法），ngx_log_set_levels 从 value[2] 起按级别名解析（仅两个参数时默认 error），与 file [level] 一致；源码允许多个级别名（调试子级别），文档语法未列出但不冲突。 回查（裁定 2）：ngx_log_set_log 另接受 stderr、syslog: 与 memory:（仅 NGX_DEBUG 构建）目标写法，原语法只写 file，已补齐。 复审补充：syslog: 之后的 value[1] 由 ngx_syslog_parse_args 按逗号分隔解析 server=、facility=、severity=、tag=、nohostname 等，为单个参数内的逗号列表，故写作 syslog:parameters。
+- 功能：verified；source_ids：implementation-1, implementation-2, runtime-http-error-log-location, runtime-connection-log-select, configuration-definition
+  - 判据：ngx_http_core_error_log 调用 ngx_log_set_log 把目标与级别存入 clcf->error_log；ngx_http_update_location_config 对主请求 r==r->main 调用 ngx_set_connection_log，把连接日志的 file/writer/log_level 切到新 location 的 error_log。 复审补充：ngx_http_core_error_log（configuration-definition）调用 ngx_log_set_log(cf, &clcf->error_log)，把配置存入 clcf->error_log。
+- 修正（语法）：error_log file | stderr | syslog:parameters | memory:size [level];
+  - 理由：ngx_log_set_log 对 value[1] 依次识别 stderr（576）、memory:（585，仅 NGX_DEBUG 构建，否则报错）、syslog:（644，其后按逗号分隔解析），其余作为文件名；原语法只列 file。
+- 新增片段：syntax-syslog-comma（src/core/ngx_syslog.c:93-129）；syntax-syslog-tag（src/core/ngx_syslog.c:182-183）；syntax-syslog-nohostname（src/core/ngx_syslog.c:215-216）
+
+## nginx--ngx_http_core_module--open_file_cache
+
+- 语法（`open_file_cache off; / open_file_cache max=N [inactive=time];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12；ngx_http_core_open_file_cache 遍历参数，识别 max=、inactive=、off，与 off 及 max=N [inactive=time] 两种写法一致。
+- 功能：verified；source_ids：summary-static-ofc, implementation-0, implementation-1, implementation-2, summary-cache-init, configuration-definition
+  - 判据：静态文件处理以 clcf->open_file_cache 调用 ngx_open_cached_file，缓存条目保存 fd、stat 信息及错误；创建条目前若 cache->current >= cache->max 先 ngx_expire_old_cached_files，后者按 LRU 强制淘汰一个并清理超过 cache->inactive 的条目。 补充：ngx_http_core_open_file_cache 解析 max=/inactive= 后调用 ngx_open_file_cache_init(cf->pool, max, inactive)，cache->max = max、cache->inactive = inactive（73-74）。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）；summary-cache-init（src/core/ngx_open_file_cache.c:56-75）
+
+## nginx--ngx_http_core_module--open_file_cache_valid
+
+- 语法（`open_file_cache_valid time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_sec_slot 解析一个时间值（秒）。
+- 功能：verified；source_ids：summary-static-ofc, implementation-0
+  - 判据：静态文件处理把 clcf->open_file_cache_valid 赋给 of.valid；ngx_open_cached_file 命中条目时仅当 file->use_event，或 file->event 为空且 uniq 相符且 now - file->created < of->valid 才直接复用，否则进入 retest（重新打开并 stat）。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）
+
+## nginx--ngx_http_core_module--open_file_cache_min_uses
+
+- 语法（`open_file_cache_min_uses number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析一个数值参数。
+- 功能：verified；source_ids：summary-static-ofc, implementation-0, implementation-1, summary-cleanup-assign, summary-cleanup-call
+  - 判据：of.min_uses 取自该指令并保存到清理对象；ngx_close_cached_file 在 file->uses >= min_uses 或 file->count 非零时保留描述符，否则关闭；命中但 fd 已关闭的条目会重新打开。 补充：ofcln->min_uses = of->min_uses（444），清理函数 ngx_open_file_cleanup 以 c->min_uses 调用 ngx_close_cached_file（1024）。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）；summary-cleanup-assign（src/core/ngx_open_file_cache.c:442-445）；summary-cleanup-call（src/core/ngx_open_file_cache.c:1017-1028）
+
+## nginx--ngx_http_core_module--open_file_cache_errors
+
+- 语法（`open_file_cache_errors on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：summary-static-ofc, implementation-0, implementation-1
+  - 判据：of.errors 取自该指令；open 失败时仅当 of->err 非零且 of->errors 为真才不走 failed 而继续创建缓存条目，命中时 file->err 非零则返回缓存的 of->err，从而复用错误结果。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）
+
+## nginx--ngx_http_core_module--open_file_cache_events
+
+- 语法（`open_file_cache_events on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：summary-static-ofc, implementation-0, implementation-1
+  - 判据：of.events 取自该指令；ngx_open_file_add_event 仅在 NGX_USE_VNODE_EVENT、of->events 且 uses>=min_uses 等条件满足时注册 vnode 事件，事件触发 ngx_open_file_cache_remove 从缓存移除条目；注册失败源码注释写明回退到周期性重检。
+- 新增片段：summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）
+
+## nginx--ngx_http_core_module--resolver
+
+- 语法（`resolver address ... [valid=time] [ipv4=on|off] [ipv6=on|off]; / resolver local=on|off|path [address ...] [valid=time] [ipv4=on|off] [ipv6=on|off];`）：verified；source_ids：registration, configuration-definition, resolver-create, implementation-0, resolver-local-patch
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE，经 ngx_resolver_create 解析：valid=、ipv4=、ipv6=（implementation-0）按关键字识别，其余参数作为 DNS 服务器地址以 ngx_parse_url 处理；resolver_conf_parsing 补丁（非 Windows）新增 local=on|off|path 关键字，与两行语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, resolver-local-patch, configuration-definition, runtime-core-conf
+  - 判据：ngx_resolver_create 把 valid/ipv4/ipv6 与服务器地址写入解析器对象；补丁新增的 local=on 读取 /etc/resolv.conf、local=path 读取指定文件（均在 !NGX_WIN32 内）；upstream 运行时以 clcf->resolver 调用 ngx_resolve_start 解析目标主机名。 补充：ngx_http_core_resolver 调用 ngx_resolver_create 并保存为 clcf->resolver（configuration-definition），upstream 以 clcf->resolver 调用 ngx_resolve_start（648 取 clcf）。
+
+## nginx--ngx_http_core_module--resolver_timeout
+
+- 语法（`resolver_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，msec setter 解析一个时间值。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-timeout-handler, summary-upstream-core-clcf
+  - 判据：upstream 创建解析上下文时 ctx->timeout = clcf->resolver_timeout；ngx_resolver_set_timeout 在 timeout 非零时 ngx_add_timer；到期的 ngx_resolver_timeout_handler 置 ctx->state = NGX_RESOLVE_TIMEDOUT 并调用 ctx->handler。
+- 新增片段：summary-timeout-handler（src/core/ngx_resolver.c:4096-4106）；summary-upstream-core-clcf（src/http/ngx_http_upstream.c:648-648）
+
+## nginx--ngx_http_core_module--gzip_vary
+
+- 语法（`gzip_vary on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG，flag setter 仅接受 on/off。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-header-clcf
+  - 判据：header filter 仅当 r->gzip_vary（由 gzip 路径标记）为真时才检查 clcf->gzip_vary：开启则计入并写出 "Vary: Accept-Encoding"，关闭则把 r->gzip_vary 清零，不输出；整段在 NGX_HTTP_GZIP 构建内。
+- 新增片段：summary-header-clcf（src/http/ngx_http_header_filter_module.c:284-284）
+
+## nginx--ngx_http_core_module--gzip_http_version
+
+- 语法（`gzip_http_version 1.0 | 1.1;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1，ngx_conf_set_enum_slot 按 ngx_http_gzip_http_version 表接受 1.0、1.1。
+- 功能：verified；source_ids：implementation-1
+  - 判据：ngx_http_gzip_ok 在 r->http_version < clcf->gzip_http_version 时返回 NGX_DECLINED（该函数整体位于 NGX_HTTP_GZIP 内）；默认值 NGX_HTTP_VERSION_11。
+
+## nginx--ngx_http_core_module--gzip_proxied
+
+- 语法（`gzip_proxied off | expired | no-cache | no-store | private | no_last_modified | no_etag | auth | any ...;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE，ngx_conf_set_bitmask_slot 按 ngx_http_gzip_proxied_mask 表（off、expired、no-cache、no-store、private、no_last_modified、no_etag、auth、any）逐参数合并位，与语法列出的取值一致。
+- 功能：verified；source_ids：implementation-1, implementation-0, summary-gzip-clcf
+  - 判据：ngx_http_gzip_ok 在 r->headers_in.via 非空时才读取 clcf->gzip_proxied：OFF 拒绝，ANY 放行，AUTH 且有 Authorization 放行，其后按 Expires、Cache-Control、Last-Modified、ETag 与对应位决定；无 Via 时直接放行。
+- 新增片段：syntax-values（src/http/ngx_http_core_module.c:162-173）；summary-gzip-clcf（src/http/ngx_http_core_module.c:2061-2061）
+
+## nginx--ngx_http_core_module--gzip_disable
+
+- 语法（`gzip_disable regex ...;`）：verified；source_ids：registration, configuration-definition, d340-setter
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE；ngx_http_gzip_disable 对每个参数先识别 msie6（及 NGX_HTTP_DEGRADATION 下的 degradation），其余作为正则以 NGX_REGEX_CASELESS 编译，与 regex ... 一致；msie6 为文档与源码共有的内建值。 回查（裁定 2）：源码另接受内建 msie6（及 NGX_HTTP_DEGRADATION 构建下的 degradation），原语法只写 regex，已补齐 msie6。
+- 功能：verified；source_ids：implementation-0, implementation-1, d340-setter, summary-gzip-clcf
+  - 判据：setter 对 msie6 置 gzip_disable_msie6，其余参数以 NGX_REGEX_CASELESS 编译入 clcf->gzip_disable；ngx_http_gzip_ok 对 msie6 请求拒绝，并在 User-Agent 存在时 ngx_regex_exec_array 匹配，命中即 NGX_DECLINED。无 PCRE 时 setter 对其他取值报错，仅支持 msie6。
+- 修正（功能）：根据 User-Agent 禁用 gzip，可配置不区分大小写的正则表达式（需 PCRE 支持），也可使用内建 msie6 匹配项。
+  - 理由：ngx_http_gzip_disable 在未定义 NGX_PCRE 时对正则参数返回 “without PCRE library … supports builtin msie6 and degradation mask only” 错误，原文未写出该条件。
+- 修正（语法）：gzip_disable regex | msie6 ...;
+  - 理由：ngx_http_gzip_disable 逐参数先匹配内建关键字 msie6（5139），其余才作为正则，原语法未列出该取值；degradation 仅在 NGX_HTTP_DEGRADATION 构建下接受，本站未列入。
+- 新增片段：summary-gzip-clcf（src/http/ngx_http_core_module.c:2061-2061）
+
+## nginx--ngx_http_core_module--disable_symlinks
+
+- 语法（`disable_symlinks off; / disable_symlinks on | if_not_owner [from=part];`）：verified；source_ids：registration, configuration-definition, summary-openat-registration
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12（整体位于 #if NGX_HAVE_OPENAT 内）；ngx_http_disable_symlinks 逐参数识别 off、if_not_owner、on 与 from=（复杂值），无前三者之一报错，from= 不得与 off 并用，与两行语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, implementation-2, d340-setter, summary-openat-registration, summary-static-ofc
+  - 判据：ngx_http_set_disable_symlinks 把 clcf->disable_symlinks 写入 of->disable_symlinks，from= 求值后若 path 以该前缀开头则记录 disable_symlinks_from 仅检查其后分量；打开路径时逐分量 openat：NOTOWNER 用 ngx_openat_file_owner 比较 uid，否则带 NOFOLLOW 拒绝符号链接。该指令及上述代码仅在 NGX_HAVE_OPENAT 下存在。 补充：注册项位于 #if (NGX_HAVE_OPENAT)（core_module.c:770-779），静态模块把 clcf 与 of 传给 ngx_http_set_disable_symlinks（99）。
+- 修正（功能）：（仅在支持 openat 的构建中提供）限制文件路径中的符号链接：on 拒绝符号链接，if_not_owner 检查链接及其目标的所有者；可用 from= 指定跳过检查的路径前缀。
+  - 理由：disable_symlinks 的注册、配置解析与检查代码均包在 #if (NGX_HAVE_OPENAT) 内，原文未写出该平台条件。
+- 新增片段：summary-openat-registration（src/http/ngx_http_core_module.c:770-779）；summary-static-ofc（src/http/modules/ngx_http_static_module.c:88-105）
+
+## nginx--ngx_http_core_module--no_error_pages
+
+- 语法（`no_error_pages;`）：verified；source_ids：registration, configuration-definition
+  - 判据：补丁中注册为 NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_NOARGS，处理函数不读取参数，与 no_error_pages; 一致。
+- 功能：verified；source_ids：error-page-patch, custom-error-dispatch, builtin-response
+  - 判据：补丁中 ngx_http_core_no_error_pages 把 clcf->error_pages 置 NULL，merge 改用 ngx_conf_merge_ptr_value（NULL 不同于 UNSET，不再继承父层）；special response 处理仅在 clcf->error_pages 非空时匹配自定义页，为空则落到 ngx_http_send_special_response 的内置响应，故该指令只取消映射，不关闭内置正文。
