@@ -1,0 +1,2231 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_conn_module",
+    "name": "limit_conn_zone",
+    "summary": "定义按 key 维护并发计数的共享内存区，供 limit_conn 使用；key 支持文字与变量组合，多个 worker 使用该区保存的状态。",
+    "syntax": "limit_conn_zone key zone=name:size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_limit_conn_module.c",
+      "start_line": 562,
+      "end_line": 659
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 147,
+        "end_line": 160
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 180,
+        "end_line": 308
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 392,
+        "end_line": 417
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 437,
+        "end_line": 495
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 518,
+        "end_line": 558
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 743,
+        "end_line": 758
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_conn_module.xml",
+        "start_line": 165,
+        "end_line": 217
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "必须显式提供共享区名称和大小，定义共享区本身不会启用 limit_conn 检查。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义共享区，不做 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享区至少8个内存页；同一名称不能重复绑定配置键。key为空时不计数，超过255字节时记录错误并跳过该区，不是自动截断。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "它维护HTTP请求处理中的并发计数，不限制尚未进入该处理阶段的所有TCP连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_conn_module.xml#L165-L217",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_conn_module",
+    "name": "limit_conn",
+    "summary": "在 preaccess 阶段按共享区中的 key 限制同时处理的请求计数；到达上限或无法分配新状态时，进入拒绝或 dry_run 分支。",
+    "syntax": "limit_conn zone number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_limit_conn_module.c",
+      "start_line": 663,
+      "end_line": 720
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 147,
+        "end_line": 160
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 180,
+        "end_line": 308
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 392,
+        "end_line": 417
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 437,
+        "end_line": 495
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 518,
+        "end_line": 558
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 743,
+        "end_line": 758
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_conn_module.xml",
+        "start_line": 56,
+        "end_line": 109
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置或继承任何 limit_conn 时没有本模块的限制列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有任何 limit_conn 时整体继承父层列表；本层配置任一条后不再追加父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "number 必须为1至65535；可配置多个不同共享区，同层同一区重复会报错。空key跳过，超过255字节的key记录错误后跳过。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "计数在请求处理期间增加，随请求池清理减少；不统计全部TCP连接。HTTP/2和HTTP/3中的并发请求分别参与计数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "拒绝路径返回 limit_conn_status 给请求处理框架；dry_run下标记模拟拒绝并继续，不保证最终响应状态仅由这一指令决定。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_conn_module.xml#L56-L109",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_conn_module",
+    "name": "limit_conn_log_level",
+    "summary": "选择连接计数超过 limit_conn 阈值时记录提示日志的级别，dry_run 超限也走相同日志级别。",
+    "syntax": "limit_conn_log_level info | notice | warn | error;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1386
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 147,
+        "end_line": 160
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 76,
+        "end_line": 89
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 180,
+        "end_line": 308
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 392,
+        "end_line": 417
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 437,
+        "end_line": 495
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 518,
+        "end_line": 558
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 743,
+        "end_line": 758
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_conn_module.xml",
+        "start_line": 130,
+        "end_line": 147
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认 error。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只控制该超限提示的级别，不会改共享内存分配错误、key过长错误或整个 error_log 的过滤设置；能否看到日志仍取决于日志目标与阈值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_conn_module.xml#L130-L147",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_conn_module",
+    "name": "limit_conn_status",
+    "summary": "设置 limit_conn 因达到阈值或无法分配计数节点而拒绝请求时，交给请求处理框架的状态码。",
+    "syntax": "limit_conn_status code;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 147,
+        "end_line": 160
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 84,
+        "end_line": 89
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 180,
+        "end_line": 308
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 392,
+        "end_line": 417
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 437,
+        "end_line": 495
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 518,
+        "end_line": 558
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 743,
+        "end_line": 758
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_conn_module.xml",
+        "start_line": 150,
+        "end_line": 162
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "503。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认503。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置值限制在400至599；dry_run模拟拒绝时不会从这些分支返回该状态码。它不是 $limit_conn_status 状态变量，也不配置限额。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_conn_module.xml#L150-L162",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_conn_module",
+    "name": "limit_conn_dry_run",
+    "summary": "启用连接限制的观察模式：仍执行 key 与共享计数检查，但原本拒绝的分支记录 REJECTED_DRY_RUN 并继续处理。",
+    "syntax": "limit_conn_dry_run on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 147,
+        "end_line": 160
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 166,
+        "end_line": 176
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 180,
+        "end_line": 308
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 392,
+        "end_line": 417
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 437,
+        "end_line": 495
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 518,
+        "end_line": 558
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 743,
+        "end_line": 758
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "start_line": 421,
+        "end_line": 433
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_conn_module.xml",
+        "start_line": 112,
+        "end_line": 127
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅绕过本模块的限额或节点分配失败拒绝，不代表其他模块放行，复杂值计算或请求池清理登记等内部失败仍可返回500。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "超限分支会清理本次已登记的限制计数后返回，不应理解为所有超限请求都长期占用共享连接计数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_conn_module.xml#L112-L127",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_req_module",
+    "name": "limit_req_zone",
+    "summary": "定义请求速率限制的共享区、key表达式和处理速率；按key维护随时间衰减的超额请求状态，供 limit_req 使用。",
+    "syntax": "limit_req_zone key zone=name:size rate=rate;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_limit_req_module.c",
+      "start_line": 833,
+      "end_line": 960
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 160,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 195,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 405,
+        "end_line": 606
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 699,
+        "end_line": 760
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 784,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 1087,
+        "end_line": 1102
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_req_module.xml",
+        "start_line": 186,
+        "end_line": 264
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动创建限速共享区；正常配置须明确给出key、zone和rate。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不做 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "速率为正整数，支持 r/s 或 r/m；共享区至少8个内存页，空key不计数，超过65535字节的key记录错误后跳过。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定开源回调不接受文档中商业版的 sync 参数；定义zone本身不安装某个location的限速规则。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "这是请求速率状态，不是连接上限或响应带宽；共享区无法在清理后分配新节点时会进入limit_req的拒绝或观察分支。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_req_module.xml#L186-L264",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_req_module",
+    "name": "limit_req",
+    "summary": "在 preaccess 阶段按指定共享区检查请求速率；超额未超过 burst 时可延迟处理，超过 burst 时拒绝，nodelay 或 delay 调整延迟阈值。",
+    "syntax": "limit_req zone=name [burst=number] [nodelay | delay=number];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_limit_req_module.c",
+      "start_line": 964,
+      "end_line": 1064
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 160,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 195,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 405,
+        "end_line": 606
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 699,
+        "end_line": 760
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 784,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 1087,
+        "end_line": 1102
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_req_module.xml",
+        "start_line": 52,
+        "end_line": 125
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未定义限制列表时不检查；配置后未写 burst 和 delay 时内部阈值均为0，nodelay默认未启用。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有任何 limit_req 时整体继承父层列表；本层有规则则使用本层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "显式 burst 与 delay 只接受正整数，默认内部0不代表显式 burst=0 或 delay=0 会被接受。nodelay消除限速产生的等待，不取消burst拒绝条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "可同时应用不同共享区，同层同区重复配置报错；多个通过检查的限制共同计算所需最大延迟。不是按每个整秒简单清零的请求计数器。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "dry_run仍做限速计算，但不执行本模块产生的延迟或拒绝；其他处理错误不因此被忽略。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_req_module.xml#L52-L125",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_req_module",
+    "name": "limit_req_log_level",
+    "summary": "设置请求速率超限拒绝的提示日志级别，并据此选择延迟处理提示的级别，dry_run提示也遵循该设置。",
+    "syntax": "limit_req_log_level info | notice | warn | error;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1386
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 160,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 89,
+        "end_line": 102
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 195,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 405,
+        "end_line": 606
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 699,
+        "end_line": 760
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 784,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 1087,
+        "end_line": 1102
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_req_module.xml",
+        "start_line": 146,
+        "end_line": 168
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "拒绝为error，延迟为warn。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；延迟级别由合并后的拒绝级别计算。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "延迟提示通常比拒绝低一级；拒绝设置为info时延迟仍为info，不继续降为debug。仅影响这两类提示，不控制key异常或共享内存分配失败的日志。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_req_module.xml#L146-L168",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_req_module",
+    "name": "limit_req_status",
+    "summary": "设置 limit_req 超过burst或无法分配限速状态时，拒绝分支交给请求处理框架的状态码。",
+    "syntax": "limit_req_status code;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 160,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 98,
+        "end_line": 102
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 195,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 405,
+        "end_line": 606
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 699,
+        "end_line": 760
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 784,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 1087,
+        "end_line": 1102
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_req_module.xml",
+        "start_line": 171,
+        "end_line": 183
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "503。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认503。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅接受400至599；普通延迟等待和dry_run模拟拒绝不从该分支返回此状态。它不是 $limit_req_status 变量，不改变限速算法。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_req_module.xml#L171-L183",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_limit_req_module",
+    "name": "limit_req_dry_run",
+    "summary": "对请求速率限制执行观察：继续计算共享区超额状态，将本应延迟或拒绝的请求标为 DELAYED_DRY_RUN 或 REJECTED_DRY_RUN，并继续处理。",
+    "syntax": "limit_req_dry_run on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 160,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 179,
+        "end_line": 191
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 195,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 405,
+        "end_line": 606
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 699,
+        "end_line": 760
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 784,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 1087,
+        "end_line": 1102
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_limit_req_module.c",
+        "start_line": 765,
+        "end_line": 780
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_limit_req_module.xml",
+        "start_line": 128,
+        "end_line": 143
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仍有共享区查找与计量开销；不关闭限制配置，不绕过其他模块，也不把复杂值求值等内部错误转换为成功。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "本模块的观察状态不是最终HTTP响应码；可以配合 $limit_req_status 查看判定结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_limit_req_module.xml#L128-L143",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mirror_module",
+    "name": "mirror",
+    "summary": "为主请求创建发往指定内部URI的后台镜像子请求，保留当前请求方法和参数，可在同一层定义多个镜像目标。",
+    "syntax": "mirror uri | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_mirror_module.c",
+      "start_line": 209,
+      "end_line": 245
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 69,
+        "end_line": 82
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 86,
+        "end_line": 175
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 179,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 249,
+        "end_line": 264
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2386,
+        "end_line": 2469
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mirror_module.xml",
+        "start_line": 47,
+        "end_line": 59
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off，即镜像目标为空。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未定义mirror时继承父层整个目标列表；本层目标列表或off替代父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只对主请求执行，避免镜像子请求再次递归镜像；目标按固定字符串保存，不是直接指定外部服务器地址的proxy_pass。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "镜像响应不作为主响应内容；但读取主请求正文或创建子请求失败仍可能影响主请求，不能理解为完全无成本、所有失败都无影响。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "precontent",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mirror_module.xml#L47-L59",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mirror_module",
+    "name": "mirror_request_body",
+    "summary": "控制镜像创建前是否先读取客户端请求正文；on时在读取回调中创建镜像并保留正文，再继续请求处理。",
+    "syntax": "mirror_request_body on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 69,
+        "end_line": 82
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 86,
+        "end_line": 175
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 179,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mirror_module.c",
+        "start_line": 249,
+        "end_line": 264
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2386,
+        "end_line": 2414
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mirror_module.xml",
+        "start_line": 62,
+        "end_line": 98
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终默认on；只有配置了mirror目标才走镜像读取逻辑。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on会在后续代理处理之前读取正文，文档所列代理模块的非缓冲请求体转发因此不能按原方式工作。off仅跳过镜像模块主动读取，不等于清空已经存在的请求正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "如果镜像目标需要禁止向上游发送正文，还应在目标处理配置中使用相应协议的请求体开关；本项本身不设置Content-Length。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "precontent",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mirror_module.xml#L62-L98",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_degradation_module",
+    "name": "degradation",
+    "summary": "设置基于 sbrk 的进程内存增长估算阈值；当估算值达到阈值时，供 degrade 的 preaccess 处理判定进入降级。",
+    "syntax": "degradation sbrk=size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_degradation_module.c",
+      "start_line": 197,
+      "end_line": 224
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 74,
+        "end_line": 87
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 91,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 228,
+        "end_line": 243
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_parse.c",
+        "start_line": 13,
+        "end_line": 57
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "主配置由零初始化得到阈值0，不触发该阈值检查。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅http主层配置，不做server/location继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "源码用 sbrk(0) 减去按4MiB边界对齐的函数地址估算；不是RSS、cgroup额度或整个服务器可用内存监测，依赖进程地址布局。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "阈值非0时，估算值按当前秒缓存，仅在有相关请求调用时更新，不是后台采样器；单独设置阈值不会选择降级返回码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本模块源码",
+        "url": "https://github.com/nginx/nginx/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/http/modules/ngx_http_degradation_module.c#L74-L87",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_degradation_module",
+    "name": "degrade",
+    "summary": "在 preaccess 阶段命中 degradation 阈值时，向请求处理框架返回配置的204或444；未命中时继续后续处理。",
+    "syntax": "degrade 204 | 444;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1386
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 74,
+        "end_line": 87
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 23,
+        "end_line": 27
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 91,
+        "end_line": 151
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 169,
+        "end_line": 193
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_degradation_module.c",
+        "start_line": 228,
+        "end_line": 243
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 885,
+        "end_line": 918
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 2534,
+        "end_line": 2558
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未设置时内部值0，不启用本项降级动作；0不是可配置枚举值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终内部默认0。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受204或444，不接受on/off、0或其他状态码；还需要非0的degradation阈值才可能命中。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "444进入请求终止处理，不应解释为客户端收到普通HTTP 444响应，也不据此保证所有协议下整条传输连接关闭。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对所引注册、配置入口与使用片段；仅核本条所述本地判定，不据此保证后续响应链或其他模块不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本模块源码",
+        "url": "https://github.com/nginx/nginx/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/http/modules/ngx_http_degradation_module.c#L74-L87",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

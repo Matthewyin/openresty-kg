@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "nginx--ngx_http_ssl_module--ssl_crl",
+  "name": "ssl_crl",
+  "module": "ngx_http_ssl_module",
+  "component": "nginx",
+  "contexts": [
+    "http",
+    "http.server"
+  ],
+  "contexts_verified": true,
+  "syntax": null,
+  "summary": null,
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "registration_only",
+  "verification_notes": [
+    "仅核实注册信息；配置回调定义、功能与限制尚未完成研究。",
+    "源码存在不代表实际环境启用相应模块。",
+    "上游 Nginx 1.27.1 注册表；OpenResty 补丁影响尚未逐项核定。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_conf_set_str_slot",
+    "source_ids": [
+      "registration"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/http/modules/ngx_http_ssl_module.c",
+      "start_line": 216,
+      "end_line": 221,
+      "code": "    { ngx_string(\"ssl_crl\"),\n      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,\n      ngx_conf_set_str_slot,\n      NGX_HTTP_SRV_CONF_OFFSET,\n      offsetof(ngx_http_ssl_srv_conf_t, crl),\n      NULL },",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/http/modules/ngx_http_ssl_module.c#L216-L221",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [],
+  "patch_status": {
+    "status": "unverified",
+    "note": "需要对 OpenResty 的有效 Nginx 补丁逐项核对，当前仅引用上游代码。",
+    "source_ids": []
+  },
+  "phases": [],
+  "mechanism": null,
+  "related": []
+}

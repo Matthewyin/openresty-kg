@@ -1,0 +1,2500 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "daemon",
+    "summary": "控制非 Windows 启动时是否转为后台守护进程；不是开关 HTTP 服务或 worker 数量。",
+    "syntax": "daemon on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 337,
+        "end_line": 363
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 78,
+        "end_line": 88
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-daemon_destroy_pool.patch",
+        "start_line": 1,
+        "end_line": 12
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "后台化的父进程退出前，OpenResty 补丁额外释放 cycle 内存池；on/off 的注册和后台化条件未改变。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "master_process",
+    "summary": "控制采用 master/worker 管理模式，还是在 single 进程中运行事件循环；off 不等于关闭请求处理。",
+    "syntax": "master_process on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 337,
+        "end_line": 341
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/nginx.c",
+        "start_line": 379,
+        "end_line": 386
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 347,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process.patch",
+        "start_line": 1,
+        "end_line": 203
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "master 启动及重载路径额外支持 privileged agent；不能把 master 管理的全部进程都当成普通 worker。本说明区分 master/worker 与 single 模式，不假定特权 agent 已启用。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "timer_resolution",
+    "summary": "设置事件循环更新缓存时间的时间精度，减少频繁获取系统时间的开销；不是请求超时或定时任务执行周期。",
+    "syntax": "timer_resolution interval;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1299
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event.c",
+        "start_line": 195,
+        "end_line": 223
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/ngx_event.c",
+        "start_line": 690,
+        "end_line": 751
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 462,
+        "end_line": 502
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-delayed_posted_events.patch",
+        "start_line": 1,
+        "end_line": 98
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "配置值与事件后端计时器的接入未变；有效补丁在延迟事件队列非空时把本轮轮询等待改成 0，所以本值不能解释为每轮固定等待时间。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "pid",
+    "summary": "指定保存主进程 PID 的文件路径；启动、信号控制及二进制升级使用该路径，升级时还构造 oldpid 路径。",
+    "syntax": "pid file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1105
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1167,
+        "end_line": 1183
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/nginx.c",
+        "start_line": 363,
+        "end_line": 365
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 405,
+        "end_line": 414
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "相对路径由运行 prefix 补全；未设置时取构建常量 NGX_PID_PATH，不能仅凭官方示例确定部门环境的实际路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "lock_file",
+    "summary": "指定基于文件锁实现互斥时使用的锁文件名称前缀；支持原子操作的平台通常不用这种文件锁。",
+    "syntax": "lock_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1105
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1215,
+        "end_line": 1261
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 330,
+        "end_line": 344
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "重载时不能切换已经使用的锁文件前缀；初始化记录告警并保留旧路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "debug_points",
+    "summary": "选择遇到指定内部调试点时停止进程（stop）或触发中止（abort），用于调试内部错误；不是正常错误日志级别。",
+    "syntax": "debug_points abort | stop;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1391
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/os/unix/ngx_process.c",
+        "start_line": 612,
+        "end_line": 631
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 129,
+        "end_line": 146
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "abort 的 core 文件能否产生取决于系统限制和写入条件；不是配置此项就保证有 core 文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "user",
+    "summary": "设置普通 worker 使用的用户和组身份；省略组名时，解析器按同名组查找。不是修改 master 的运行身份。",
+    "syntax": "user user [group];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/nginx.c",
+      "start_line": 1268,
+      "end_line": 1307
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1268,
+        "end_line": 1327
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 799,
+        "end_line": 833
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 520,
+        "end_line": 532
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process.patch",
+        "start_line": 1,
+        "end_line": 203
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "Windows 上忽略；在非 root master 下记录告警并忽略。指定的用户及组必须能被系统查到。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "有效补丁使 privileged agent 保持 master 权限，跳过普通 worker 的 setgid/setuid 路径。本条只把 user 描述为普通 worker 的身份配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "worker_priority",
+    "summary": "设置普通 worker 的操作系统调度 nice 优先级，负数表示较高调度优先级；不是 Nginx 请求队列优先级。",
+    "syntax": "worker_priority number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/nginx.c",
+      "start_line": 1361,
+      "end_line": 1400
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1361,
+        "end_line": 1399
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 770,
+        "end_line": 775
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 628,
+        "end_line": 648
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "解析支持带正负号的整数；实际优先级能否生效依赖操作系统和进程权限，setpriority 失败会记录告警。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "worker_cpu_affinity",
+    "summary": "为普通 worker 配置 CPU 位掩码，或用 auto 自动选取可用 CPU；可给 auto 附加掩码以限制选择范围。",
+    "syntax": "worker_cpu_affinity cpumask ...;\nworker_cpu_affinity auto [cpumask];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/nginx.c",
+      "start_line": 1401,
+      "end_line": 1440
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1401,
+        "end_line": 1545
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 846,
+        "end_line": 857
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 576,
+        "end_line": 625
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际 CPU 绑定依赖 NGX_HAVE_CPU_AFFINITY；不支持的平台会忽略并告警。掩码是允许 CPU 的集合，不是 CPU 使用率。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "worker_rlimit_nofile",
+    "summary": "在 worker 初始化时尝试设置 RLIMIT_NOFILE 的软、硬限制，控制进程可打开文件描述符的资源上限；不是同时服务客户端数量。",
+    "syntax": "worker_rlimit_nofile number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 777,
+        "end_line": 786
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 690,
+        "end_line": 701
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "设置失败会记录告警；本项不能保证系统权限或系统全局限制允许该值。上游连接和其他文件也占用描述符。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "worker_rlimit_core",
+    "summary": "在 worker 初始化时尝试设置 RLIMIT_CORE 的软、硬限制，控制允许的 core 文件大小。",
+    "syntax": "worker_rlimit_core size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1229,
+      "end_line": 1268
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 788,
+        "end_line": 797
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 676,
+        "end_line": 687
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "设置失败会记录告警；允许大小不等于保证产生 core 文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "worker_shutdown_timeout",
+    "summary": "为普通 worker 的优雅退出设置等待时间；到期后关闭符合条件的仍存连接，以推动进程退出。不是请求处理的通用超时。",
+    "syntax": "worker_shutdown_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1299
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 1423,
+        "end_line": 1470
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 704,
+        "end_line": 717
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "超时处理跳过监听、channel、resolver 及无读事件的连接；不能理解为到期直接杀死每一种连接或进程。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "working_directory",
+    "summary": "设置 worker 初始化时切换到的当前工作目录，常用于确定 core 文件的写入位置；不是 HTTP root 或 alias。",
+    "syntax": "working_directory directory;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1105
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 872,
+        "end_line": 880
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 720,
+        "end_line": 732
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置值非空时调用 chdir；失败会导致该进程初始化退出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "env",
+    "summary": "保留父进程已有环境变量，或用 name=value 定义传给 worker 等子进程的新值；不是 Nginx 的请求变量。",
+    "syntax": "env variable[=value];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/nginx.c",
+      "start_line": 1331,
+      "end_line": 1370
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 520,
+        "end_line": 604
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/nginx.c",
+        "start_line": 1331,
+        "end_line": 1357
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 149,
+        "end_line": 208
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "通常不能改变已在更早初始化阶段读取环境的系统库行为；NGINX 是内部使用变量，不应直接覆盖。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_core_module",
+    "name": "load_module",
+    "summary": "在主配置解析期间加载动态模块文件，读取其模块列表并加入本轮配置可用模块集合；不是 include 配置文件。",
+    "syntax": "load_module file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/nginx.c",
+      "start_line": 1582,
+      "end_line": 1621
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/nginx.c",
+        "start_line": 1582,
+        "end_line": 1666
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 310,
+        "end_line": 327
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要平台支持动态加载；在模块索引已使用后配置会被拒绝。加载成功仍取决于文件存在及模块兼容性，本站不执行加载。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_conf_module",
+    "name": "include",
+    "summary": "在实际 Nginx 配置解析时载入一个配置文件或匹配通配模式的文件；本站只记录该引用，不读取外部文件内容。",
+    "syntax": "include file | mask;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 821,
+      "end_line": 860
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 821,
+        "end_line": 883
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 287,
+        "end_line": 307
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "相对路径按配置 prefix 补全；被包含文件需要符合所在上下文的配置语法。本站不能根据未提供的文件判断最终配置内容。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_errlog_module",
+    "name": "error_log",
+    "summary": "配置 main 层错误日志的目的地与记录级别；可使用文件、stderr、syslog，调试构建还支持 memory 缓冲区。",
+    "syntax": "error_log file [level];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_log.c",
+      "start_line": 542,
+      "end_line": 581
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/ngx_log.c",
+        "start_line": 542,
+        "end_line": 682
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 211,
+        "end_line": 271
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-intercept_error_log.patch",
+        "start_line": 1,
+        "end_line": 60
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "其他 http/mail/stream 层同名指令有各自注册身份；本条是 main 层 ngx_errlog_module。debug 日志及 memory 模式有调试构建条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "OpenResty 在错误日志生成路径增加可重入保护的捕获回调；main 指令的目的地与级别配置入口未变。本说明不把整条日志处理链视为未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_regex_module",
+    "name": "pcre_jit",
+    "summary": "控制为配置解析阶段已知的正则表达式尝试启用 PCRE/PCRE2 的 JIT 编译；不是 LuaJIT 开关。",
+    "syntax": "pcre_jit on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/ngx_regex.c",
+        "start_line": 634,
+        "end_line": 707
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/ngx_regex.c",
+        "start_line": 762,
+        "end_line": 804
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 380,
+        "end_line": 402
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要实际 PCRE 库支持 JIT；post 检查发现不支持时会告警并把开关回置为 off。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_thread_pool_module",
+    "name": "thread_pool",
+    "summary": "定义命名线程池及其线程数、待执行任务队列容量，供 aio threads 等文件任务使用；队列溢出时任务会报错。",
+    "syntax": "thread_pool name threads=number [max_queue=number];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_thread_pool.c",
+      "start_line": 456,
+      "end_line": 495
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/core/ngx_thread_pool.c",
+        "start_line": 456,
+        "end_line": 521
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/ngx_thread_pool.c",
+        "start_line": 223,
+        "end_line": 253
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 429,
+        "end_line": 459
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "runtime-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process_thread_pool.patch",
+        "start_line": 1,
+        "end_line": 12
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖线程支持；threads 必须为非零有效数字，已定义的同名线程池不能重复定义。线程池不等于 worker 进程池。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "有效补丁还允许 privileged agent 初始化线程池；名称、线程数、max_queue 的解析规则不变。本条不限定线程池只能由普通 worker 使用。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "runtime-patch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_devpoll_module",
+    "name": "devpoll_changes",
+    "summary": "设置 /dev/poll 后端待提交事件注册变更列表的容量；列表用于批量向 /dev/poll 写入监视变更。",
+    "syntax": "devpoll_changes number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_devpoll_module.c",
+        "start_line": 133,
+        "end_line": 172
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/modules/ngx_devpoll_module.c",
+        "start_line": 297,
+        "end_line": 335
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 /dev/poll 事件后端，不是客户端连接数限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_devpoll_module",
+    "name": "devpoll_events",
+    "summary": "设置 /dev/poll 后端接收就绪事件的数组容量，作为一次轮询可返回的事件批量上限。",
+    "syntax": "devpoll_events number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_devpoll_module.c",
+        "start_line": 171,
+        "end_line": 187
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/modules/ngx_devpoll_module.c",
+        "start_line": 355,
+        "end_line": 379
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 /dev/poll 后端；就绪事件批量与同时连接数是不同概念。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_epoll_module",
+    "name": "epoll_events",
+    "summary": "设置 epoll 后端的就绪事件接收数组容量，作为 epoll_wait 一次返回事件数的上限。",
+    "syntax": "epoll_events number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_epoll_module.c",
+        "start_line": 353,
+        "end_line": 365
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/modules/ngx_epoll_module.c",
+        "start_line": 784,
+        "end_line": 803
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅在 epoll 后端实际使用；不能用该值替代 worker_connections。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_epoll_module",
+    "name": "worker_aio_requests",
+    "summary": "设置每个 worker 的 Linux 原生文件 AIO 上下文请求容量，初始化时传给 io_setup；不是 Lua 异步请求或 aio threads 的线程数。",
+    "syntax": "worker_aio_requests number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_epoll_module.c",
+        "start_line": 255,
+        "end_line": 291
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 535,
+        "end_line": 550
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 Linux 文件 AIO 支持且实际使用相应路径；io_setup 失败不会因配置数值有效而自动恢复。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_eventport_module",
+    "name": "eventport_events",
+    "summary": "设置 Solaris eventport 后端获取就绪事件的数组容量，作为 port_getn 一次获取事件的批量上限。",
+    "syntax": "eventport_events number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_eventport_module.c",
+        "start_line": 232,
+        "end_line": 275
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/modules/ngx_eventport_module.c",
+        "start_line": 439,
+        "end_line": 465
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 eventport 后端；不是同时在线连接数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_iocp_module",
+    "name": "iocp_threads",
+    "summary": "设置传给 Windows CreateIoCompletionPort 的并发参数；不是创建该数目的 worker 进程或直接创建同数目的线程。",
+    "syntax": "iocp_threads number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_iocp_module.c",
+        "start_line": 113,
+        "end_line": 133
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 Windows IOCP；本项只配置完成端口参数，不能据此推算实际运行线程数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_iocp_module",
+    "name": "post_acceptex",
+    "summary": "设置 Windows IOCP 初始化时为每个监听项预先投递的 AcceptEx 接收操作数量。连接接收完成后的补投递另有运行路径。",
+    "syntax": "post_acceptex number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event.c",
+        "start_line": 864,
+        "end_line": 880
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/ngx_event_acceptex.c",
+        "start_line": 93,
+        "end_line": 111
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/event/ngx_event_acceptex.c",
+        "start_line": 177,
+        "end_line": 205
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 IOCP/AcceptEx，不是 worker_connections，也不是对每个现有客户端投递请求的数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_iocp_module",
+    "name": "acceptex_read",
+    "summary": "控制 Windows HTTP 监听项的 AcceptEx 是否使用请求头缓冲大小预读初始数据；off 时不设置这段预接收数据空间。",
+    "syntax": "acceptex_read on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http.c",
+        "start_line": 1833,
+        "end_line": 1848
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/ngx_event_acceptex.c",
+        "start_line": 177,
+        "end_line": 205
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖 Windows IOCP/AcceptEx 的 HTTP 监听路径，不改变整个应用的读写超时策略。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_kqueue_module",
+    "name": "kqueue_changes",
+    "summary": "设置 kqueue 后端缓存事件注册变更的列表容量，用于批量提交给 kevent。",
+    "syntax": "kqueue_changes number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_kqueue_module.c",
+        "start_line": 143,
+        "end_line": 169
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 kqueue 后端；不是连接数或每秒变更数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_kqueue_module",
+    "name": "kqueue_events",
+    "summary": "设置 kqueue 后端接收就绪事件的数组容量，限制一次 kevent 调用返回的事件批量。",
+    "syntax": "kqueue_events number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/modules/ngx_kqueue_module.c",
+        "start_line": 171,
+        "end_line": 220
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/modules/ngx_kqueue_module.c",
+        "start_line": 498,
+        "end_line": 538
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅适用于 kqueue 后端；不能按此数值判断系统最大并发。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_events_module",
+    "name": "events",
+    "summary": "建立 main 下的事件配置块，创建各事件模块的配置并在 events 上下文解析块内指令，随后执行事件配置初始化。",
+    "syntax": "events { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/event/ngx_event.c",
+      "start_line": 987,
+      "end_line": 1026
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event.c",
+        "start_line": 995,
+        "end_line": 1064
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 274,
+        "end_line": 284
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同一配置不能重复建立 events 块；它是块指令，没有分号结尾的普通参数列表。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_event_core_module",
+    "name": "use",
+    "summary": "选择当前二进制已经编入的连接事件处理后端，例如 epoll 或 kqueue；不通过配置动态安装缺失的后端。",
+    "syntax": "use method;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/event/ngx_event.c",
+      "start_line": 1091,
+      "end_line": 1130
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event.c",
+        "start_line": 1094,
+        "end_line": 1150
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/ngx_event.c",
+        "start_line": 1307,
+        "end_line": 1370
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 505,
+        "end_line": 517
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "后端名必须匹配实际事件模块；single 模式下不能在重载中改成不同的事件类型。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_event_core_module",
+    "name": "debug_connection",
+    "summary": "为选定地址、CIDR 网络或 unix: 连接开启连接级调试日志；其他连接继续使用其正常日志配置。",
+    "syntax": "debug_connection address | CIDR | unix:;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/event/ngx_event.c",
+      "start_line": 1154,
+      "end_line": 1193
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event.c",
+        "start_line": 1154,
+        "end_line": 1255
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/event/ngx_event_accept.c",
+        "start_line": 519,
+        "end_line": 572
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 91,
+        "end_line": 126
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_DEBUG；非调试构建下告警并忽略。IPv6 与 UNIX-domain 形式还受对应平台支持限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "event",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_openssl_module",
+    "name": "ssl_engine",
+    "summary": "指定 OpenSSL ENGINE 的设备标识，查找该 ENGINE 并把它设为默认方法提供者；不是 ssl_certificate 或 TLS 协议版本配置。",
+    "syntax": "ssl_engine device;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/event/ngx_event_openssl.c",
+      "start_line": 6010,
+      "end_line": 6049
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 6010,
+        "end_line": 6060
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 417,
+        "end_line": 426
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 OpenSSL 模块及 ENGINE 支持；OPENSSL_NO_ENGINE 时拒绝，设备查找或设为默认失败也会拒绝配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_quic_bpf_module",
+    "name": "quic_bpf",
+    "summary": "启用 QUIC 的 eBPF 数据包路由，使 reuseport 监听组能按 QUIC 连接信息选择 socket，支持 QUIC 连接迁移。",
+    "syntax": "quic_bpf on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/event/quic/ngx_event_quic_bpf.c",
+        "start_line": 123,
+        "end_line": 170
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 164,
+        "end_line": 181
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅支持 Linux 5.7+，需要实际 QUIC/eBPF 构建和系统能力；不能仅因目录收录就认定部门部署可用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_google_perftools_module",
+    "name": "google_perftools_profiles",
+    "summary": "设置 worker 的 gperftools CPU 性能分析输出文件前缀；每个 worker 输出文件名在该前缀后附加点号和 PID。",
+    "syntax": "google_perftools_profiles file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1105
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "file": "src/misc/ngx_google_perftools_module.c",
+        "start_line": 86,
+        "end_line": 126
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_google_perftools_module.xml",
+        "start_line": 51,
+        "end_line": 63
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要显式构建 google_perftools 模块及 gperftools 库；不是错误日志或 HTTP 访问日志。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "对固定发行版34项有效补丁回放逐段核对：本条所列配置入口、功能对象及限制保持；不把这一局部结论推广为完整事件循环、进程生命周期或实际环境未受影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "distribution-processing",
+        "implementation-0"
+      ]
+    },
+    "related": []
+  }
+]

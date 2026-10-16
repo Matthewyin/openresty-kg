@@ -1,0 +1,15 @@
+{
+  "publicOrigin": "https://knowledge.example.invalid",
+  "port": 51808,
+  "stateDir": ".state/deployment",
+  "timeoutMs": 180000,
+  "maxInputBytes": 32768,
+  "maxHistoryBytes": 262144,
+  "maxJobs": 100,
+  "jobTtlMs": 3600000,
+  "maxStateBytes": 536870912,
+  "retentionEnabled": false,
+  "sessionTtlMs": 2592000000,
+  "cacheTtlMs": 604800000,
+  "logRequests": true
+}

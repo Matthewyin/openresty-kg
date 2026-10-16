@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OpenResty 配置知识站</title>
+  <meta name="description" content="从配置项追溯功能、限制和锁定版本的实现代码。">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./bootstrap.js"></script>
+  <script type="module" src="./agent.mjs"></script>
+  <script type="module" src="./layout.mjs"></script>
+</head>
+<body>
+  <!-- 顶栏：品牌、Agent 连接状态、锁定版本；只放“现在能不能用”的信息 -->
+  <header class="topbar">
+    <a class="brand" href="./index.html">
+      <span class="brand-mark" aria-hidden="true">OR</span>
+      <span class="brand-text"><strong>OpenResty 配置知识站</strong><small>配置 → 实现 · 源码可追溯</small></span>
+    </a>
+    <div class="topbar-meta">
+      <span class="pill pill-agent"><span class="pill-dot" aria-hidden="true"></span><span id="agent-environment">正在检测 Agent</span></span>
+      <span class="pill pill-edition" id="edition">正在加载知识发布…</span>
+    </div>
+  </header>
+
+  <!-- 左右分栏：左侧“我输入 / 我选择”，右侧“我阅读的结果”；中间分隔条可拖动调整宽度 -->
+  <main id="split" class="split">
+    <!-- ================= 左栏：输入与目录 ================= -->
+    <div id="pane-left" class="pane pane-left">
+      <!-- 站点级状态：正常时只是一行灰字，加载失败时由脚本加 error 类变成醒目提示 -->
+      <p id="global-status" class="site-status" role="status">正在读取静态知识索引… 若一直没有结果，请先运行 npm run build 和 npm run preview，再打开输出的 HTTP 地址；不要直接双击 site/index.html。</p>
+
+      <!-- 第 1 步：唯一输入框。Agent 表单与本地查询表单是并列的两个 form，共用同一个 textarea -->
+      <section id="agent-panel" class="step step-ask" aria-labelledby="query-heading" data-probe-timeout-ms="5000">
+        <header class="step-head">
+          <span class="step-no" aria-hidden="true">1</span>
+          <div>
+            <h2 id="query-heading">粘贴配置，或直接提问</h2>
+            <p class="step-hint">只贴配置：默认讲功能、限制与实现 · 加一句问题：只答你问的 · 可在同一框继续追问</p>
+          </div>
+        </header>
+        <form id="agent-form">
+          <label class="sr-only" for="configuration">配置、问题或追问</label>
+          <div class="editor">
+            <div class="editor-bar" aria-hidden="true"><span></span><span></span><span></span><em>nginx.conf · 问题 · 追问</em></div>
+            <textarea id="configuration" spellcheck="false" rows="10" placeholder="events { multi_accept on; worker_connections 65535; }&#10;&#10;或者直接问：worker_connections 的默认值和实现原理是什么？"></textarea>
+          </div>
+          <div class="ask-bar">
+            <div class="examples-wrap"><span class="examples-label">试试</span><div id="examples" class="examples" aria-label="示例配置"></div></div>
+            <div class="agent-actions">
+              <button id="agent-cancel" class="ghost-button" type="button" disabled>取消</button>
+              <button id="agent-submit" class="primary-button" type="submit" disabled>提交给 Agent</button>
+            </div>
+          </div>
+        </form>
+        <!-- 状态行：当前进度/错误放最显眼处；会话相关操作退为次级文字按钮 -->
+        <div class="agent-meta">
+          <p id="agent-status" class="query-message" role="status" aria-live="polite">正在检测 Agent；不可用时仍可使用下方本地查询。</p>
+          <div class="session-tools">
+            <span class="session-id">会话 <code id="agent-session">未创建</code></span>
+            <button id="agent-new" class="text-button" type="button">新会话</button>
+            <button id="agent-restore" class="text-button" type="button" disabled>恢复会话</button>
+            <button id="agent-retry" class="text-button" type="button">重新检测服务</button>
+          </div>
+        </div>
+        <p class="privacy-note">提交后，整段内容（含配置原文）会发送到服务端 Pi 及所配置的模型，并保存会话用于追问；回答里的说明与源码均取自固定版本知识库。</p>
+        <details class="local-query-options">
+          <summary>仅本地查询（不调用 Agent，只识别配置或指令名称）</summary>
+          <form id="query-form">
+            <p class="verification-notes">使用上方同一输入框，只适用于指令名称或纯配置；不理解自然语言问题，也不会把配置发到服务端。</p>
+            <div class="query-controls">
+              <label>输入方式<select id="input-mode"><option value="single">指令名称 / 单条配置</option><option value="config">配置片段 / 自动识别根块</option><option value="main">完整主配置（顶层为 main）</option></select></label>
+              <label>单项 context（可选）<select id="query-context"><option value="">未知 / 不指定</option></select></label>
+              <label>单项模块（可选）<select id="query-module"><option value="">未知 / 不指定</option></select></label>
+            </div>
+            <p id="input-mode-note" class="verification-notes">单项查询可指定所属 context 和模块；配置片段不猜测缺失的外层。</p>
+            <button id="query-submit" class="secondary-button" type="submit">仅本地识别并查询</button>
+          </form>
+        </details>
+      </section>
+
+      <!-- 候选与目录：本次输入的候选或全部目录；点选后详情显示在右栏第 3 步 -->
+      <section class="step step-catalog catalog-panel" aria-labelledby="catalog-heading">
+        <header class="step-head">
+          <span class="step-no step-no-aside" aria-hidden="true">≡</span>
+          <div>
+            <h2 id="catalog-heading">候选与目录</h2>
+            <p class="step-hint">点选指令，详情显示在右侧第 3 步</p>
+          </div>
+          <span id="catalog-count" class="count-chip"></span>
+        </header>
+        <div class="catalog-toolbar">
+          <p id="catalog-scope">全部目录浏览 · 不代表本次输入匹配</p>
+          <button id="browse-all" class="secondary-button" type="button">浏览全部目录</button>
+        </div>
+        <label for="catalog-search" class="sr-only">搜索指令或模块</label>
+        <input id="catalog-search" type="search" placeholder="搜索指令或模块，如 lua_shared_dict" autocomplete="off">
+        <label class="checkbox-label"><input id="verified-only" type="checkbox">只看基础内容已核对项</label>
+        <details class="catalog-more">
+          <summary>按来源 / 模块 / context / 阶段筛选</summary>
+          <div class="catalog-filters">
+            <label for="catalog-source">来源<select id="catalog-source"><option value="">全部来源</option><option value="bundled">固定发行版</option><option value="department_extension">部门扩展</option></select></label>
+            <label>模块<select id="catalog-module"><option value="">全部模块</option></select></label>
+            <label>context<select id="catalog-context"><option value="">全部 context</option></select></label>
+            <label>相关阶段<select id="catalog-phase"><option value="">全部阶段</option></select></label>
+          </div>
+          <p class="verification-notes">筛选只作用于“全部目录”；查看本次输入候选时自动停用。</p>
+        </details>
+        <nav id="catalog-list" aria-label="指令条目"></nav>
+      </section>
+    </div>
+
+    <!-- 分隔条：拖动或用左右方向键调整宽度，双击恢复默认；逻辑见 layout.mjs -->
+    <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" aria-controls="pane-left" aria-label="调整左右栏宽度（方向键调整，双击恢复默认）" tabindex="0"><span aria-hidden="true"></span></div>
+
+    <!-- ================= 右栏：结果 ================= -->
+    <div id="pane-right" class="pane pane-right">
+      <!-- 第 2 步：回答。没有内容时显示占位，提示结果会出现在这里 -->
+      <section class="step step-answer" aria-labelledby="answer-heading">
+        <header class="step-head">
+          <span class="step-no" aria-hidden="true">2</span>
+          <div>
+            <h2 id="answer-heading">看回答</h2>
+            <p class="step-hint">按指令分组的知识要点；展开可看源码证据，或点“完整知识详情”</p>
+          </div>
+        </header>
+        <div id="agent-result" aria-busy="false"></div>
+        <div class="parse-block">
+          <h3 class="block-title">逐条识别结果<span>点击候选模块，在第 3 步查看详情</span></h3>
+          <div id="query-status" role="status"></div>
+          <div id="result-toolbar" hidden>
+            <label for="result-filter">显示</label>
+            <select id="result-filter"><option value="all">全部条目</option><option value="attention">仅看需关注项（含外部引用）</option></select>
+            <p id="result-count" class="verification-notes" role="status"></p>
+          </div>
+          <div id="parsed-results" class="parsed-results"></div>
+          <p id="result-empty" class="verification-notes" hidden>当前筛选下没有需关注条目；这不代表参数或运行环境验证通过。</p>
+        </div>
+      </section>
+
+      <!-- 第 3 步：所选指令的完整知识 -->
+      <section class="step step-detail" aria-labelledby="detail-heading">
+        <header class="step-head">
+          <span class="step-no" aria-hidden="true">3</span>
+          <div>
+            <h2 id="detail-heading">完整知识与源码</h2>
+            <p class="step-hint">功能、默认值、继承、限制和锁定版本源码；在左侧目录或识别结果中选择指令</p>
+          </div>
+        </header>
+        <article id="detail-panel" aria-live="polite"><p class="empty-state">选择指令，查看说明和源码。</p></article>
+      </section>
+
+      <!-- 附加：API 与变量参考，独立于配置匹配 -->
+      <section class="step step-reference reference-panel" aria-labelledby="reference-heading">
+        <header class="step-head">
+          <span class="step-no step-no-aside" aria-hidden="true">+</span>
+          <div>
+            <h2 id="reference-heading">API 与变量参考</h2>
+            <p class="step-hint">Lua API 与 Nginx 变量的独立参考，不参与配置匹配</p>
+          </div>
+          <span id="reference-count" class="count-chip">—</span>
+        </header>
+        <p id="reference-status" class="verification-notes" role="status">正在读取本发布参考库…</p>
+        <div class="reference-controls">
+          <label for="reference-search">搜索名称<input id="reference-search" type="search" placeholder="例如 ngx.log 或 $remote_addr" disabled></label>
+          <label for="reference-kind">类型<select id="reference-kind" disabled><option value="">全部参考</option><option value="lua_api">Lua API</option><option value="variable">Nginx 变量</option></select></label>
+        </div>
+        <div class="reference-workspace">
+          <nav id="reference-list" aria-label="API 与变量条目"></nav>
+          <article id="reference-detail" aria-live="polite"><p class="verification-notes">选择参考条目，查看说明、限制和来源。所列事实已核对，不代表 API、变量全量收录或运行环境已验证。</p></article>
+        </div>
+      </section>
+
+      <!-- 页脚放在右栏底部：覆盖统计与待验收事项折叠收起 -->
+      <footer>
+        <details class="about-panel">
+          <summary>知识范围与待验收事项</summary>
+          <div class="coverage" aria-label="内容覆盖情况">
+            <div><strong id="registration-count">—</strong><span>已盘点注册项</span></div>
+            <div><strong id="verified-count">—</strong><span>基础内容已核对</span></div>
+            <p id="coverage-note">通用链路 · 不代表全发行版覆盖</p>
+          </div>
+          <p id="coverage-groups" class="verification-notes" aria-label="按来源分组的覆盖情况"></p>
+          <ul id="coverage-gaps"></ul>
+        </details>
+        <p class="footer-line"><span>知识用于理解与追溯，不替代运行环境检查。</span><span id="release-label"></span></p>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>

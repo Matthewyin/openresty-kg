@@ -1,0 +1,9 @@
+{
+  "basePath": "/pi/",
+  "staticRoot": "/usr/local/openresty/nginx/data/pi-site",
+  "upstream": "pi-agent:51808",
+  "publicPort": 30000,
+  "resolver": "127.0.0.11",
+  "proxyTimeoutSeconds": 190,
+  "bodyLimit": "64k"
+}

@@ -1,0 +1,6 @@
+[
+  { "label": "共享字典", "mode": "single", "context": "http", "text": "lua_shared_dict cache 10m;" },
+  { "label": "Lua 内容处理", "mode": "single", "context": "http.location", "text": "content_by_lua_block {\n    ngx.say(\"hello\")\n}" },
+  { "label": "嵌套配置", "mode": "config", "context": "", "text": "http {\n    lua_shared_dict cache 10m;\n    server {\n        location / {\n            content_by_lua_block {\n                ngx.say(\"hello\")\n            }\n        }\n    }\n}" },
+  { "label": "Stream 预读", "mode": "single", "context": "stream.server", "text": "preread_by_lua_block {\n    local data = ngx.req.socket():peek(2)\n}" }
+]

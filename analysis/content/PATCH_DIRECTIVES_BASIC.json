@@ -1,0 +1,183 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_log_module",
+    "name": "log_escape_non_ascii",
+    "summary": "控制 HTTP 访问日志默认转义模式下，变量值中的非 ASCII 字节是否输出为十六进制转义；off 保留这些字节，仍转义需要处理的 ASCII 字符。不是日志开关或 JSON 转义开关。",
+    "syntax": "log_escape_non_ascii on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "escape-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-log_escape_non_ascii.patch",
+        "start_line": 1,
+        "end_line": 117
+      },
+      {
+        "id": "format-branches",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 912,
+        "end_line": 946
+      },
+      {
+        "id": "default-escaping",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 993,
+        "end_line": 1048
+      },
+      {
+        "id": "format-selection",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1592,
+        "end_line": 1616
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 198,
+        "end_line": 202
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on；补丁中的 location 配置 merge 对未设置且父层未设置的值使用 1。",
+      "source_ids": [
+        "escape-patch"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层 escape_non_ascii；父层也未设置时采用 on。本层显式设置覆盖父层值。",
+      "source_ids": [
+        "escape-patch"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只进入默认 escape 模式的变量转义路径；log_format 的 escape=json 与 escape=none 使用各自函数，不受本开关控制。",
+        "source_ids": [
+          "escape-patch",
+          "format-branches",
+          "format-selection"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "按字节处理 0x80–0xFF，不校验或修复 UTF-8；off 不会同时关闭引号、反斜杠等 ASCII 字符的默认转义。",
+        "source_ids": [
+          "escape-patch",
+          "default-escaping"
+        ]
+      }
+    ],
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "由固定 OpenResty 有效 log_escape_non_ascii 补丁新增；注册、变量长度/输出、非 ASCII 转义表、默认值和继承均已对照实际补丁回放。",
+      "source_ids": [
+        "registration",
+        "escape-patch",
+        "distribution-processing"
+      ]
+    },
+    "phase": "log",
+    "related": [
+      "log_format",
+      "access_log"
+    ]
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "no_error_pages",
+    "summary": "在当前 HTTP 配置层把 error_page 映射列表显式置空，取消从父层继承的自定义错误页映射。它不是关闭 Nginx 内置错误响应正文的开关。",
+    "syntax": "no_error_pages;",
+    "callback_definition": {
+      "component": "openresty",
+      "file": "patches/nginx-1.27.1-no_error_pages.patch",
+      "start_line": 71,
+      "end_line": 86
+    },
+    "evidence": [
+      {
+        "id": "error-page-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-no_error_pages.patch",
+        "start_line": 1,
+        "end_line": 91
+      },
+      {
+        "id": "custom-error-dispatch",
+        "file": "src/http/ngx_http_special_response.c",
+        "start_line": 454,
+        "end_line": 471
+      },
+      {
+        "id": "builtin-response",
+        "file": "src/http/ngx_http_special_response.c",
+        "start_line": 671,
+        "end_line": 738
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 169,
+        "end_line": 172
+      }
+    ],
+    "defaults": {
+      "status": "not_applicable",
+      "text": "无参数配置命令，没有 on/off 默认值；未出现时沿 error_page 的正常配置和继承规则处理。",
+      "source_ids": [
+        "error-page-patch"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层执行本项后，不再继承父层 error_page 映射。未另行配置的子层可继续继承这个空值；子层仍能建立自己的 error_page 映射。",
+      "source_ids": [
+        "error-page-patch"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层重复本项会拒绝；同层与 error_page 不论先后顺序都会冲突。语法没有参数，no_error_pages on; 不受支持。",
+        "source_ids": [
+          "registration",
+          "error-page-patch"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "列表为空时跳过该层的自定义 error_page 查找，不保证错误响应没有正文。本命令自身不直接改写状态码，但取消父层映射可能改变最终响应状态；内置特殊响应仍有独立处理路径。",
+        "source_ids": [
+          "error-page-patch",
+          "custom-error-dispatch",
+          "builtin-response"
+        ]
+      }
+    ],
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "由固定 OpenResty 有效 no_error_pages 补丁新增；配置回调及 UNSET/NULL 的创建、合并、同层冲突判断均位于补丁原文。注册和归属已通过34项有效补丁实际回放，引用不冒充上游文件行号。",
+      "source_ids": [
+        "registration",
+        "error-page-patch",
+        "distribution-processing"
+      ]
+    },
+    "related": [
+      "error_page",
+      "recursive_error_pages"
+    ]
+  }
+]

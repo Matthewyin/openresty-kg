@@ -1,0 +1,3323 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter",
+    "summary": "选择图像响应处理模式：检测格式、返回尺寸JSON、旋转、按比例缩小或缩小后裁剪，由图像头/体过滤器执行。",
+    "syntax": "image_filter off | test | size; image_filter rotate 90 | 180 | 270; image_filter resize width height; image_filter crop width height;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_image_filter_module.c",
+      "start_line": 1372,
+      "end_line": 1521
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 424,
+        "end_line": 577
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 579,
+        "end_line": 629
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 820,
+        "end_line": 1090
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1238,
+        "end_line": 1271
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 63,
+        "end_line": 155
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置模式时整体继承父层模式、尺寸、角度及其动态表达式；无父配置时关闭。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "test只检查输入前部格式标记后放行，支持JPEG/GIF/PNG/WebP标记，不等于完整解码校验；size在格式或尺寸无法识别的对应分支返回空JSON，处理或缓冲错误仍可返回415。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "resize/crop不把小图放大；尺寸可用变量，单维不限用-；rotate支持90/180/270且可组合。只有进入实际转换的路径才使用质量/锐化等选项，原样返回的分支不会重新编码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "已知Content-Length超过图像缓冲上限会被拒绝；304跳过处理，multipart/x-mixed-replace有单独错误分支，不支持任意媒体响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L63-L155",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_jpeg_quality",
+    "summary": "设置转换后JPEG重新编码时传给GD库的质量参数，可含变量。",
+    "syntax": "image_filter_jpeg_quality quality;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_image_filter_module.c",
+      "start_line": 1525,
+      "end_line": 1568
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 525,
+        "end_line": 577
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1167,
+        "end_line": 1227
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1238,
+        "end_line": 1271
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 190,
+        "end_line": 205
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "75。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未提供有效静态配置时，merge按数值和动态表达式字段分别继承；具体以配置回调和merge为准。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定文档使用1–100作为质量范围；Nginx本模块校验器只检查解析值大于0，不把文档上限误写成源码强制上限。动态值在输出时解析。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅JPEG转换输出分支使用，不改变GIF/PNG/WebP编码质量；原样透传不会应用此质量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L190-L205",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_webp_quality",
+    "summary": "设置转换后WebP重新编码时传给GD库的质量参数，可含变量。",
+    "syntax": "image_filter_webp_quality quality;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_image_filter_module.c",
+      "start_line": 1572,
+      "end_line": 1615
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 525,
+        "end_line": 577
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1167,
+        "end_line": 1227
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1238,
+        "end_line": 1271
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 242,
+        "end_line": 257
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "80。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未提供有效静态配置时，merge按数值和动态表达式字段分别继承；具体以配置回调和merge为准。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定文档使用1–100作为质量范围；Nginx本模块校验器只检查解析值大于0，不把文档上限误写成源码强制上限。动态值在输出时解析。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅WebP转换输出分支使用，要求NGX_HAVE_GD_WEBP；不将其他格式自动转换成WebP，原样透传不会应用此质量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L242-L257",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_sharpen",
+    "summary": "设置图像转换输出前传给GD锐化函数的强度百分比，支持变量。",
+    "syntax": "image_filter_sharpen percent;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_image_filter_module.c",
+      "start_line": 1619,
+      "end_line": 1662
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 820,
+        "end_line": 859
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1040,
+        "end_line": 1089
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1238,
+        "end_line": 1271
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 208,
+        "end_line": 222
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0；不锐化。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际值大于0时才调用gdImageSharpen；百分比可超过100，不是质量上限或缩放比例。原样返回的分支不会应用锐化。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L208-L222",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_transparency",
+    "summary": "控制图像转换时是否保留调色板图像的透明色，适用于GIF及使用调色板的PNG。",
+    "syntax": "image_filter_transparency on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 820,
+        "end_line": 1090
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 225,
+        "end_line": 239
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它控制调色板透明色提取/恢复，不是所有图像Alpha通道的总开关；真彩色重采样/裁剪路径另有保存Alpha处理，原样返回不重新处理透明色。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L225-L239",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_interlace",
+    "summary": "设置图像转换后编码前的GD交错扫描标志；JPEG可输出渐进式格式。",
+    "syntax": "image_filter_interlace on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 820,
+        "end_line": 859
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1040,
+        "end_line": 1089
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1167,
+        "end_line": 1227
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 174,
+        "end_line": 187
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际在转换路径调用gdImageInterlace；不是网络分片或Nginx流式发送开关，原样返回的图像不因它自动重编码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L174-L187",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_image_filter_module",
+    "name": "image_filter_buffer",
+    "summary": "限制图像过滤器用于收集待处理响应原始图像字节的缓冲容量。",
+    "syntax": "image_filter_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 192,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 221,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1311,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 1666,
+        "end_line": 1675
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_image_filter_module.c",
+        "start_line": 471,
+        "end_line": 521
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_image_filter_module.xml",
+        "start_line": 158,
+        "end_line": 171
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1M（1048576字节）。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "已知响应长度先与上限比较；未知长度以配置大小分配，在收集数据超出剩余容量时失败并走415。test可在标记检查后直接透传，不能据此称所有模式都累计完整响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "该值不限制GD解码后的像素内存或重新编码输出大小，也不等同于客户端上传请求体限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_image_filter_module.xml#L158-L171",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xml_entities",
+    "summary": "在配置时解析声明字符实体的DTD，供XSLT模块解析响应XML的外部子集回调使用。",
+    "syntax": "xml_entities path;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+      "start_line": 821,
+      "end_line": 871
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 370,
+        "end_line": 460
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 53,
+        "end_line": 73
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未指定DTD。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置DTD时继承父层DTD指针；同层重复定义拒绝。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "该回调用配置的DTD替代XML文档指定的外部子集，不按文档外部子集位置直接选取；不能把这一个替换分支扩展为所有XML外部访问均已隔离。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "文件在配置阶段交xmlParseDTD处理，不是请求期变量路径；配置文件本身不是用来定义响应路由或完整XML结构验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L53-L73",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xslt_stylesheet",
+    "summary": "配置一个或多个XSLT样式表，在响应XML完整解析后按声明顺序转换，并序列化最终结果。",
+    "syntax": "xslt_stylesheet stylesheet [parameter=value ...];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+      "start_line": 876,
+      "end_line": 981
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 310,
+        "end_line": 366
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 489,
+        "end_line": 765
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 151,
+        "end_line": 194
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有样式表；不启动XSLT响应转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层样式表列表为空时整体继承父层；本层配置列表不拼接父层样式表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "样式表在配置阶段解析；附带参数可含变量，多参数串按冒号切分并对值进行URI反转义，值内冒号按文档需写%3A。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "响应须匹配xslt_types，304跳过；输入XML被收集为文档后转换，不是逐字节直接输出。XML解析/转换失败、空结果等分支返回500。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L151-L194",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xslt_param",
+    "summary": "为XSLT样式表定义参数，先计算Nginx变量，再把值作为XPath表达式交给XSLT处理。",
+    "syntax": "xslt_param parameter value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+      "start_line": 985,
+      "end_line": 1023
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 489,
+        "end_line": 556
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 629,
+        "end_line": 765
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无此类额外参数。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "xslt_param和xslt_string_param共用一个列表；只有本层两者均未设置时整体继承父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值不是自动引用的字符串；需要字符串语义时使用xslt_string_param或按XPath规则引用。参数名按字面保存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只有样式表转换被实际执行时消费参数；单独配置参数不会启动XSLT。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L99-L123",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xslt_string_param",
+    "summary": "为XSLT样式表定义字符串参数，先计算Nginx变量，再以引用字符串方式传入，不把值作为XPath求值。",
+    "syntax": "xslt_string_param parameter value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+      "start_line": 985,
+      "end_line": 1023
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 489,
+        "end_line": 556
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 629,
+        "end_line": 765
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 126,
+        "end_line": 148
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无此类额外参数。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "xslt_param和xslt_string_param共用一个列表；只有本层两者均未设置时整体继承父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值可含Nginx变量，但参数名按字面保存；通过xsltQuoteOneUserParam传入，不是转义整个输出XML。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只有样式表转换被实际执行时消费参数；单独配置参数不会启动XSLT。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L126-L148",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xslt_types",
+    "summary": "选择允许XSLT响应转换的MIME类型，配合样式表列表使用。",
+    "syntax": "xslt_types mime-type ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http.c",
+      "start_line": 2030,
+      "end_line": 2103
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 112,
+        "end_line": 115
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http.c",
+        "start_line": 2107,
+        "end_line": 2168
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 550,
+        "end_line": 625
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 197,
+        "end_line": 212
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "text/xml。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置集合时继承父层；显式集合加入text/xml并独立构建，不拼接父层其他类型。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "*匹配所有类型，但仍需样式表且跳过304；转换后的Content-Type由最后样式表或HTML文档结果分支确定，不只是原MIME白名单的复制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L197-L212",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_xslt_filter_module",
+    "name": "xslt_last_modified",
+    "summary": "控制XSLT结果发送时是否保留主响应原Last-Modified头。",
+    "syntax": "xslt_last_modified on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 181,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 202,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1069,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 1140,
+        "end_line": 1149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_xslt_filter_module.c",
+        "start_line": 310,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_xslt_module.xml",
+        "start_line": 76,
+        "end_line": 96
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off清除Last-Modified和ETag，on保留时间并弱化ETag；结果长度按新正文计算，不计算样式表或实体依赖的最新修改时间。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_xslt_module.xml#L76-L96",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_perl_module",
+    "name": "perl_modules",
+    "summary": "为嵌入式Perl解释器设置附加模块搜索目录，在创建解释器时通过-I参数传入。",
+    "syntax": "perl_modules path;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 116,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 485,
+        "end_line": 664
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 846,
+        "end_line": 874
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_perl_module.xml",
+        "start_line": 162,
+        "end_line": 171
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "perl-early-init",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 982,
+        "end_line": 986
+      },
+      {
+        "id": "perl-set-early-init",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 1054,
+        "end_line": 1058
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅http主配置的目录列表；多次指令追加，不存在server/location逐层继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "目录会规范为完整路径，参数不按Nginx请求变量展开；默认目录受编译时NGX_PERL_MODULES影响，不把某台机器的安装路径当作通用默认。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "应在需要初始化解释器的perl/perl_set之前配置；它是模块搜索路径，不直接加载模块，加载由perl_require等机制处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "perl-early-init",
+          "perl-set-early-init"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing",
+        "perl-early-init",
+        "perl-set-early-init"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_perl_module.xml#L162-L171",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_perl_module",
+    "name": "perl_require",
+    "summary": "将模块名加入配置期Perl加载列表，在解释器初始化或相应重配置路径调用require_pv。",
+    "syntax": "perl_require module;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 116,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 485,
+        "end_line": 664
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 846,
+        "end_line": 874
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 668,
+        "end_line": 698
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_perl_module.xml",
+        "start_line": 174,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "perl-early-init",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 982,
+        "end_line": 986
+      },
+      {
+        "id": "perl-set-early-init",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 1054,
+        "end_line": 1058
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无额外require列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅http主配置；多次指令追加加载列表，不存在server/location继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块加载错误会使相关初始化失败；不是为每个HTTP请求重复执行完整模块文件，实际Perl require缓存行为不由此指令取消。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "列表在解释器初始化时消费，应在会提前初始化解释器的perl/perl_set之前声明所需加载。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "perl-early-init",
+          "perl-set-early-init"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing",
+        "perl-early-init",
+        "perl-set-early-init"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_perl_module.xml#L174-L185",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_perl_module",
+    "name": "perl",
+    "summary": "为location或limit_except安装Perl内容处理器，调用指定函数名或配置中的匿名子程序处理请求。",
+    "syntax": "perl module::function | 'sub { ... }';",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/perl/ngx_http_perl_module.c",
+      "start_line": 964,
+      "end_line": 1014
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 116,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 171,
+        "end_line": 285
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 702,
+        "end_line": 842
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 929,
+        "end_line": 960
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_perl_module.xml",
+        "start_line": 149,
+        "end_line": 159
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有Perl内容处理器。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置时初始化嵌入式解释器并对匿名子程序求值；同一配置对象重复handler报错，不是外部CGI进程。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "运行在请求处理调用链，异常在尚未发送响应头时可返回500，已发头时走错误结束；不保证异常后仍能重写已发送响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_perl_module.xml#L149-L159",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_perl_module",
+    "name": "perl_set",
+    "summary": "注册由Perl函数或匿名子程序计算的Nginx变量，在变量getter被调用时取得返回字符串。",
+    "syntax": "perl_set $variable module::function | 'sub { ... }';",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/perl/ngx_http_perl_module.c",
+      "start_line": 1018,
+      "end_line": 1086
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 116,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 312,
+        "end_line": 376
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 702,
+        "end_line": 842
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/perl/ngx_http_perl_module.c",
+        "start_line": 846,
+        "end_line": 874
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_perl_module.xml",
+        "start_line": 188,
+        "end_line": 199
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有额外Perl计算变量。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅在http主配置注册变量，不是location逐层赋值或继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "变量名必须以$开头；请求期通过变量getter运行函数，不安装内容处理器。此处没有固定请求阶段，返回值按变量系统消费。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "函数调用失败可返回错误，未取得值时标记not_found；不要把它理解为对每次文本引用都强制重新执行，变量标志并未设置NOCACHEABLE。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_perl_module.xml#L188-L199",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geoip_module",
+    "name": "geoip_country",
+    "summary": "在http配置中打开国家GeoIP数据库，根据选定客户端地址提供相应GeoIP变量。",
+    "syntax": "geoip_country file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_geoip_module.c",
+      "start_line": 677,
+      "end_line": 728
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 153,
+        "end_line": 166
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 240,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 641,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 341,
+        "end_line": 385
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geoip_module.xml",
+        "start_line": 60,
+        "end_line": 93
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载该类数据库。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只存在http主配置数据库句柄，无server/location覆盖继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "接受国家数据库类型；IPv6数据库分支受NGX_HAVE_GEOIP_V6限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "配置时以GEOIP_MEMORY_CACHE打开并检查数据库类型，文件读取失败或类型不符拒绝配置；可选utf8来自实际回调，固定XML语法未列出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "请求时没有记录则对应变量未找到；它查本地数据库，不执行实时网络定位，也不把数据库条目当作请求访问授权。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geoip_module.xml#L60-L93",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geoip_module",
+    "name": "geoip_org",
+    "summary": "在http配置中打开组织GeoIP数据库，根据选定客户端地址提供相应GeoIP变量。",
+    "syntax": "geoip_org file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_geoip_module.c",
+      "start_line": 732,
+      "end_line": 789
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 153,
+        "end_line": 166
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 240,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 641,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 389,
+        "end_line": 439
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geoip_module.xml",
+        "start_line": 186,
+        "end_line": 206
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载该类数据库。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只存在http主配置数据库句柄，无server/location覆盖继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "可接受ISP、ORG、DOMAIN、ASNUM等列出的数据库类型，不保证所有类型返回相同语义的组织名称。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "配置时以GEOIP_MEMORY_CACHE打开并检查数据库类型，文件读取失败或类型不符拒绝配置；可选utf8来自实际回调，固定XML语法未列出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "请求时没有记录则对应变量未找到；它查本地数据库，不执行实时网络定位，也不把数据库条目当作请求访问授权。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geoip_module.xml#L186-L206",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geoip_module",
+    "name": "geoip_city",
+    "summary": "在http配置中打开城市及地区GeoIP数据库，根据选定客户端地址提供相应GeoIP变量。",
+    "syntax": "geoip_city file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_geoip_module.c",
+      "start_line": 793,
+      "end_line": 846
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 153,
+        "end_line": 166
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 240,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 641,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 443,
+        "end_line": 487
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 599,
+        "end_line": 618
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geoip_module.xml",
+        "start_line": 96,
+        "end_line": 183
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载该类数据库。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只存在http主配置数据库句柄，无server/location覆盖继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "接受CITY REV0/REV1及有条件的IPv6变体；结果字段取决于数据库记录，不保证每个地址均有城市结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "配置时以GEOIP_MEMORY_CACHE打开并检查数据库类型，文件读取失败或类型不符拒绝配置；可选utf8来自实际回调，固定XML语法未列出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "请求时没有记录则对应变量未找到；它查本地数据库，不执行实时网络定位，也不把数据库条目当作请求访问授权。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geoip_module.xml#L96-L183",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geoip_module",
+    "name": "geoip_proxy",
+    "summary": "定义GeoIP地址选择时信任的代理地址/CIDR；连接来自可信代理且存在X-Forwarded-For时使用转发地址。",
+    "syntax": "geoip_proxy address | CIDR;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_geoip_module.c",
+      "start_line": 850,
+      "end_line": 878
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 153,
+        "end_line": 166
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 240,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 641,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2714,
+        "end_line": 2816
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 881,
+        "end_line": 906
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geoip_module.xml",
+        "start_line": 209,
+        "end_line": 223
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有可信代理列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只存在http主配置列表；多次指令追加，不存在server/location逐层继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "此处只改变GeoIP查询使用的局部地址，不改写连接sockaddr；也不直接替代real_ip模块。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "不信任当前地址时停止解析；递归行为取决于geoip_proxy_recursive。配置接受地址/CIDR，不进行主机名DNS解析。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geoip_module.xml#L209-L223",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geoip_module",
+    "name": "geoip_proxy_recursive",
+    "summary": "控制GeoIP是否从X-Forwarded-For末端继续沿可信代理链向前寻找客户端地址。",
+    "syntax": "geoip_proxy_recursive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 153,
+        "end_line": 166
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 240,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geoip_module.c",
+        "start_line": 641,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2714,
+        "end_line": 2816
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geoip_module.xml",
+        "start_line": 226,
+        "end_line": 242
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只存在http主配置开关，无server/location逐层继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要已有geoip_proxy可信列表及X-Forwarded-For；off在可信连接下取末端地址，on继续检查并在最后一个非可信地址处停止。不能用此开关让不可信连接任意声明来源。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "非法地址使解析停止，已解析的可信链部分可能保留；不把递归成功等同整个转发头已验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核所列注册、配置回调和局部实现原文保持；仅对所列事实成立，不扩展到外部库内部实现或整个调用链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geoip_module.xml#L226-L242",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

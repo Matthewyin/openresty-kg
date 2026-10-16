@@ -1,0 +1,11 @@
+# HTTP 核心：内存、请求头与请求正文
+
+2026-10-10，14条准备；固定来源沿前组，不计入当前88basic。集合：connection_pool_size、request_pool_size、client_header_timeout、client_header_buffer_size、large_client_header_buffers、ignore_invalid_headers、merge_slashes、underscores_in_headers、client_max_body_size、client_body_buffer_size、client_body_timeout、client_body_temp_path、client_body_in_file_only、client_body_in_single_buffer。
+
+逐义对照注册/回调、实际字段使用和server/location初始化。池大小是初始块，不是总内存或正文上限；监听连接取该地址默认server值。请求头初缓冲可扩为按需大缓冲，单个请求行/头不能靠数量跨缓冲；大缓冲须不小于connection pool。ignore_invalid_headers不等同允许畸形报文，下划线是否无效和是否丢弃是两个开关。URI连续斜杠规范化影响后续location，不改磁盘内容。正文限制同时检查Content-Length与chunked累计，0才关闭检查；正文buffer不是maxbody，超时不是总传输时长；temp_path只管客户端正文，不管proxy响应缓存；file_only的on/clean/off保留各自文件标志。
+
+单缓冲不能照文档泛化为任意正文全在一个内存块。当前所引HTTP/1入口源码显式保留未全面实现的TODO，只在非chunked且较小的剩余正文分支按标志将preread计入buffer；HTTP/2和HTTP/3入口在此前分派。草稿如实限定，不推断on会取消所有临时文件/多缓冲。temp_path默认构建常量尚未核，保留unverified，不硬填固定目录；其继承有实际merge证据。
+
+主实际34补丁隔离回放，47个最终文件摘要全同；14项86个范围先查EOF有效，再比较注册/owner/callback/实现原文保留，临时副本finally删除。新增已核owner:800–813与单缓冲协议分派:87–100原文引用，待真实build范围核对。局部事实未变不扩展到整个HTTP执行链。未编译、运行或执行来源生成器。
+
+与前43项一起隔离build145basic成功，当前后补协议分派后实际引用为87段；范围与事实ID通过。准备审核发现WC-R16：不能把结束路径的408状态描述成一定向客户端发送408响应，已仅修正该summary，不改源码、默认或其他13项。修正交差异复核后才正式发布，不能因草稿数量抬高完成口径。

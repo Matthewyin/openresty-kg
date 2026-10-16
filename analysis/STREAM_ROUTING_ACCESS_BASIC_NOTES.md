@@ -1,0 +1,7 @@
+# P15 Stream访问与连接处理9项准备
+
+2026-10-12。access2、return1、pass1、split_clients1、realip1、geoip3，共6个完整owner9项；相对正式330无交集。JSON SHA256 09f4be96b529d9646b3f0bdbae627cecdfbdf8851d600e3a653fd37a23b8b0d0。
+
+固定Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928，文档e8b581903e9d41252720053311cea687a5671674，OpenResty8c37412c31621225e7aa7e825b5b50106c9c71c4。逐项读取配置入口、owner、默认/继承及实际访问/内容/getter路径，9个活跃XML。allow/deny共享首匹配及整组继承，Unix非按路径；return是原始内容而非HTTP状态，pass是既有连接移交本实例监听而非新建上游连接；split按哈希分段、输出字面值而非动态表达式。realip信任来源且依赖已解析PROXY数据，主机名配置期解析分支来自源码，非请求期resolver。GeoIP三类库检查及可选utf8来自固定回调，本地查询不代表位置准确或外部库内部已经审核。
+
+71来源范围有效，53段Nginx所引原文全部在实际34补丁/142hunk/47最终摘要回放后保持。只核所列局部事实，不运行网络服务、GeoIP库或DNS。隔离330+9构建得到339基础候选1.27.1.1-68003103b39cdb4e，1017注册、0深度、范围true，完整owner差集、身份唯一、basic状态通过，根current保持，临时目录finally清理。待独立审核，不计正式覆盖。

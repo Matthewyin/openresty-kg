@@ -1,0 +1,11 @@
+# HTTP 核心：响应、日志与访问首组
+
+2026-10-10，16条准备，尚未接入current。固定来源沿前两组。集合：absolute_redirect、server_name_in_redirect、port_in_redirect、if_modified_since、max_ranges、chunked_transfer_encoding、etag、msie_padding、msie_refresh、log_not_found、log_subrequest、recursive_error_pages、post_action、internal、satisfy、auth_delay。
+
+逐项读真实运行路径和初始化/merge：Location自动补全只处理以/开头的地址，不保证覆盖所有重定向；默认端口仍省略；If-Modified-Since关闭不消除If-None-Match的304；max_ranges超过数量退回完整响应而非截取前几个区间；ETag由修改时间及长度生成，不是内容哈希；chunked对HEAD/子请求/204/304跳过，未知长度不开分块时关闭keepalive；MSIE填充实现也检查Chrome，不能照文档名称忽略真实条件；log_not_found不屏蔽权限等非404错误，log_subrequest进入请求日志分派而非屏蔽全部error_log；recursive_error_pages不解除跳转次数限制；internal外部404；satisfy组合访问检查而不新建认证；auth_delay使用异步事件计时器，不是worker阻塞sleep。
+
+post_action无当前有效同名XML节点，不补伪文档。源码表明完成或相关错误路径调用内部URI/命名location跳转，设置header_only/post_action；不是通用阶段钩子。其默认仍未核，继承只引用真实post_action.data合并。server_tokens、error_page、HTTP error_log另组核补丁后才补，不归本16组。
+
+实际34补丁隔离回放，47个最终文件SHA全同，16条88个引用段原文保持；比较前显式校范围未越EOF，不能靠slice静默截短。另补已核owner:800–813。所列局部功能未改变不意味着所有HTTP行为无补丁。临时副本finally删除，无来源写入或运行OpenResty。
+
+已与前27条共同隔离build131basic成功，独立逐义准备审核通过；仍未正式合并，不能计为正式基础内容。

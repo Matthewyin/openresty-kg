@@ -1,0 +1,1179 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_access_module",
+    "name": "allow",
+    "summary": "按客户端连接地址添加允许访问的Stream规则，与deny共同按匹配顺序处理。",
+    "syntax": "allow address|CIDR|unix:|all;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_access_module.c",
+      "start_line": 286,
+      "end_line": 393
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 102,
+        "end_line": 115
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 119,
+        "end_line": 283
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 397,
+        "end_line": 453
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_access_module.xml",
+        "start_line": 53,
+        "end_line": 69
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动添加规则；本模块未命中时返回NGX_DECLINED。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层完全没有allow/deny规则时，整体继承上层的IPv4/IPv6/Unix规则；只要本层有任何规则，就不再合并上层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同一地址族按声明顺序首条命中；allow不是身份认证，也不保证其他模块一定放行。IPv4映射IPv6地址在存在IPv4规则时走IPv4检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "unix:匹配该地址族全部连接，不是某个Unix路径；IPv6及Unix分支受编译条件限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_access_module.xml#L53-L69",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_access_module",
+    "name": "deny",
+    "summary": "按客户端连接地址添加拒绝访问的Stream规则，命中后返回Stream禁止访问状态。",
+    "syntax": "deny address|CIDR|unix:|all;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_access_module.c",
+      "start_line": 286,
+      "end_line": 393
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 102,
+        "end_line": 115
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 119,
+        "end_line": 283
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_access_module.c",
+        "start_line": 397,
+        "end_line": 453
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_access_module.xml",
+        "start_line": 72,
+        "end_line": 88
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动添加规则；本模块未命中时返回NGX_DECLINED。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层完全没有allow/deny规则时整体继承上层；任一类型的本层规则存在就替代上层整组。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "与allow共享有序规则，首条匹配决定本模块结果；不是每条deny都覆盖之前allow。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "unix:按地址族匹配全部Unix连接；不支持按Unix路径选择，IPv6及Unix分支受编译条件限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_access_module.xml#L72-L88",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_return_module",
+    "name": "return",
+    "summary": "求值并发送配置文本给Stream客户端，发送结束后关闭会话。",
+    "syntax": "return value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_return_module.c",
+      "start_line": 189,
+      "end_line": 218
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_return_module.c",
+        "start_line": 55,
+        "end_line": 68
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_return_module.c",
+        "start_line": 72,
+        "end_line": 171
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_return_module.c",
+        "start_line": 175,
+        "end_line": 185
+      },
+      {
+        "id": "content-dispatch",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 441,
+        "end_line": 472
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_return_module.xml",
+        "start_line": 40,
+        "end_line": 50
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时不安装本模块内容handler。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "content-dispatch",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值可含变量；空结果直接结束会话。参数是发送内容，不是HTTP状态码、URL跳转或HTTP响应格式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "content-dispatch",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "非空内容通过Stream输出过滤链发送；仍有缓冲时等待写事件并设置5秒定时器，不把该等待解释成整个业务会话的可配置总时限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "content-dispatch",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "content-dispatch",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_return_module.xml#L40-L50",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_pass_module",
+    "name": "pass",
+    "summary": "将当前已接受的连接交给同一Nginx实例另一个匹配监听入口处理，不新建到远端上游的代理连接。",
+    "syntax": "pass address;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_pass_module.c",
+      "start_line": 266,
+      "end_line": 336
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_pass_module.c",
+        "start_line": 55,
+        "end_line": 68
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_pass_module.c",
+        "start_line": 72,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_pass_module.c",
+        "start_line": 177,
+        "end_line": 241
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_pass_module.c",
+        "start_line": 245,
+        "end_line": 262
+      },
+      {
+        "id": "content-dispatch",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 441,
+        "end_line": 472
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_pass_module.xml",
+        "start_line": 61,
+        "end_line": 86
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时不安装本模块内容handler。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "content-dispatch",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受可解析为地址的目标，支持变量；不做DNS解析。目标需要匹配本实例监听入口，UDP连接或仍有未消费预读数据的连接不能传递。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "content-dispatch",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "与proxy_pass不同，此处重设连接的监听/上下文后直接调用目标监听handler；没有匹配入口时结束会话。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "content-dispatch",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "content-dispatch",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_pass_module.xml#L61-L86",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_split_clients_module",
+    "name": "split_clients",
+    "summary": "按输入字符串的MurmurHash2结果落入百分比分段，生成Stream变量供后续配置使用。",
+    "syntax": "split_clients string $variable { percent value; ... * value; }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_split_clients_module.c",
+      "start_line": 109,
+      "end_line": 196
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_split_clients_module.c",
+        "start_line": 55,
+        "end_line": 68
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_split_clients_module.c",
+        "start_line": 72,
+        "end_line": 105
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_split_clients_module.c",
+        "start_line": 200,
+        "end_line": 244
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_split_clients_module.xml",
+        "start_line": 49,
+        "end_line": 75
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动创建分流变量。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，定义变量getter而非server层继承参数。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输入可含变量；结果value按字面字符串保存，不编译为复杂值。相同输入按同一映射确定分段，不是轮询，也不保证小样本比例精确。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "百分比按两位小数解析且必须非零，累计不得超过100%；*用于剩余范围，未落入任何分段时得到空变量值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_split_clients_module.xml#L49-L75",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_realip_module",
+    "name": "set_real_ip_from",
+    "summary": "声明可信连接来源；在已收到PROXY协议信息且来源可信时，用其中的源地址和端口替换Stream连接的客户端地址。",
+    "syntax": "set_real_ip_from address|CIDR|unix:;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_realip_module.c",
+      "start_line": 177,
+      "end_line": 276
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_realip_module.c",
+        "start_line": 68,
+        "end_line": 81
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_realip_module.c",
+        "start_line": 97,
+        "end_line": 173
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_realip_module.c",
+        "start_line": 280,
+        "end_line": 349
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_realip_module.xml",
+        "start_line": 51,
+        "end_line": 67
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有可信来源列表，处理器直接跳过。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置列表时继承上层；本层多次配置追加，本层有列表即不合并上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖已经解析出的PROXY协议信息，不读取HTTP头，也不会单靠本指令启用PROXY协议。unix:信任全部Unix来源；这不是允许客户端访问的allow规则。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "源码还接受主机名并在配置期解析为地址列表；它不会在每个会话中用resolver动态刷新。固定文档语法未单列这一分支。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "post_accept",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_realip_module.xml#L51-L67",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_geoip_module",
+    "name": "geoip_country",
+    "summary": "配置期打开GeoIP国家数据库，供Stream变量按当前连接的客户端IP查询国家代码和名称。",
+    "syntax": "geoip_country file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_geoip_module.c",
+      "start_line": 626,
+      "end_line": 677
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 147,
+        "end_line": 163
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 219,
+        "end_line": 350
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 584,
+        "end_line": 623
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_geoip_module.xml",
+        "start_line": 64,
+        "end_line": 97
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载国家数据库，相关getter返回not_found。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "以GEOIP_MEMORY_CACHE打开，检查COUNTRY数据库类型；IPv6数据库需NGX_HAVE_GEOIP_V6。数据库无法打开或类型不符使配置失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "可选utf8参数由固定源码支持，固定XML仅列file；查询本地数据库，不是实时网络定位，也不保证IP与真实人员位置一致。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_geoip_module.xml#L64-L97",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_geoip_module",
+    "name": "geoip_org",
+    "summary": "配置期打开GeoIP组织类数据库，供Stream的geoip_org变量按客户端IP取得相应记录。",
+    "syntax": "geoip_org file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_geoip_module.c",
+      "start_line": 681,
+      "end_line": 738
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 159,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 219,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 351,
+        "end_line": 403
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 584,
+        "end_line": 623
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_geoip_module.xml",
+        "start_line": 190,
+        "end_line": 209
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载相应数据库，getter返回not_found。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "接受ISP/ORG/DOMAIN/ASNUM及编译条件支持的IPv6版本；返回内容取决于数据库类型，不能一律解释成机构名称。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "数据库以GEOIP_MEMORY_CACHE打开；可选utf8来自源码，未查到记录返回not_found，不进行远端GeoIP服务调用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_geoip_module.xml#L190-L209",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_geoip_module",
+    "name": "geoip_city",
+    "summary": "配置期打开GeoIP城市数据库，为Stream提供国家、地区、城市及坐标等IP记录变量。",
+    "syntax": "geoip_city file [utf8];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_geoip_module.c",
+      "start_line": 742,
+      "end_line": 795
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 163,
+        "end_line": 216
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 219,
+        "end_line": 306
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 407,
+        "end_line": 580
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geoip_module.c",
+        "start_line": 584,
+        "end_line": 623
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_geoip_module.xml",
+        "start_line": 100,
+        "end_line": 187
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未加载城市数据库，相关getter返回not_found。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅接受CITY REV0/REV1及编译条件支持的IPv6版本，数据库打开或类型验证失败使配置失败；数据来源是本地库，不保证实时或精确到个人位置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定回调支持可选utf8；无城市记录或所取字符串字段为空时返回not_found，部分旧字段可能过时，不把存在变量注册解释成每个IP都有值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行补丁回放后核所列注册、真实配置回调及局部实现原文保持；仅适用于所列事实，不代表外部库内部实现或整个调用链无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_geoip_module.xml#L100-L187",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

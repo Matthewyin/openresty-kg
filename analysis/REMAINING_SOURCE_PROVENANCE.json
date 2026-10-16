@@ -1,0 +1,1797 @@
+{
+  "schema_version": 1,
+  "openresty_version": "1.27.1.1",
+  "openresty_revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+  "sources": [
+    {
+      "component": "rds-json-nginx-module",
+      "version": "0.17",
+      "repository": "https://github.com/openresty/rds-json-nginx-module",
+      "tag": "v0.17",
+      "revision": "2d7e07f7c39f98bbb2a8b07f4bae4d892f00329d",
+      "tree_sha": "e1a6b36627fd20b4f4a2e6edccaf3f02bf6aeaff",
+      "path": "repos/rds-json-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".github/workflows/coverity.yml",
+          "sha": "595a4c1d1bff5beed67a117ad3c3d7a0d26a16f0"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "8d4b393b49e47f6dae69f0f5e26f8e50e36f4b5d"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "6818b4477fee78dcc47bca8245d5e2447f960eae"
+        },
+        {
+          "path": "README.md",
+          "sha": "5ba6455f2f25d7193926ededf75416ee1002918c"
+        },
+        {
+          "path": "config",
+          "sha": "5ebf3b22a329e1c0e486e6c16ac25bc15dcf771b"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "0bfa9b2d1bbef82576dd6e71644650398768d9bd"
+        },
+        {
+          "path": "src/ngx_http_rds.h",
+          "sha": "838f8381c2407923af41c8fe414d9a7b268b8a19"
+        },
+        {
+          "path": "src/ngx_http_rds_json_filter_module.c",
+          "sha": "8954abc9e0878fc31c18de05bc0821f424136201"
+        },
+        {
+          "path": "src/ngx_http_rds_json_filter_module.h",
+          "sha": "9ad044d98df39d6a1b7bce032f4145765c17a71d"
+        },
+        {
+          "path": "src/ngx_http_rds_json_handler.c",
+          "sha": "28f53d4d558f378510aa0e29738ac457ec8c44a3"
+        },
+        {
+          "path": "src/ngx_http_rds_json_handler.h",
+          "sha": "2a924f4a8595d85c0737fb1877cc3e5be08143a0"
+        },
+        {
+          "path": "src/ngx_http_rds_json_output.c",
+          "sha": "6f85904df6de57322454bf56877fefc3002fde83"
+        },
+        {
+          "path": "src/ngx_http_rds_json_output.h",
+          "sha": "6575f924d99549eeff2741e95d5783049dd4d18d"
+        },
+        {
+          "path": "src/ngx_http_rds_json_processor.c",
+          "sha": "9a242f398f7bea690d650ebf3f4d62a9f3a4fc48"
+        },
+        {
+          "path": "src/ngx_http_rds_json_processor.h",
+          "sha": "54e0ecb44c7590a24ab649d45eca61219fc982df"
+        },
+        {
+          "path": "src/ngx_http_rds_json_util.c",
+          "sha": "d0080e689c55e350652bc8c578fcb2b23791958e"
+        },
+        {
+          "path": "src/ngx_http_rds_json_util.h",
+          "sha": "bce303c39c653f0ac93a45f296efd39d223a5851"
+        },
+        {
+          "path": "src/ngx_http_rds_utils.h",
+          "sha": "25d44d23dbc3ae9691ca357eafa92ad405b3f392"
+        },
+        {
+          "path": "src/resty_dbd_stream.h",
+          "sha": "ebb0cb3151e6d2fa84e06a5b7da0f3d5946317eb"
+        },
+        {
+          "path": "t/000_init.t",
+          "sha": "e57b498fad7091d70f2e2f428450a7c022fba946"
+        },
+        {
+          "path": "t/buf.t",
+          "sha": "5118803d1094972a20b1180aa714fc70f3aff1d0"
+        },
+        {
+          "path": "t/compact/buf.t",
+          "sha": "f467942fcf9864b5a83ec5cf9d12959c532deb5e"
+        },
+        {
+          "path": "t/compact/openresty.t",
+          "sha": "da8d2c137783150151a191a93a95e971f53b6d59"
+        },
+        {
+          "path": "t/compact/sanity-stream.t",
+          "sha": "66cf7fdffc168c702a3d293b7b806d1e509230e2"
+        },
+        {
+          "path": "t/compact/sanity.t",
+          "sha": "91b57ef096b7a002c83e5b6106f1316d253dae90"
+        },
+        {
+          "path": "t/escape.t",
+          "sha": "44c6c5788b68dc8a8fee2dfd04c1aad4f79dde54"
+        },
+        {
+          "path": "t/form.t",
+          "sha": "7fac2b0e8f73e20f4037b632a537f77cfd665302"
+        },
+        {
+          "path": "t/openresty.t",
+          "sha": "b843a76cba0b5bc0249ef53b0addcacf57784a26"
+        },
+        {
+          "path": "t/pg.t",
+          "sha": "d7be1fdc9cf46e1f446feea05b558a2da66056bc"
+        },
+        {
+          "path": "t/property.t",
+          "sha": "05f9fb0770600982d8c98647159701c4f08c4e91"
+        },
+        {
+          "path": "t/ret.t",
+          "sha": "0d77b28cff0bfe9e2bdb332426d003ef6300a794"
+        },
+        {
+          "path": "t/sanity-stream.t",
+          "sha": "116b987514085a460a4c101a86585837370620bd"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "94af30419944eaf592e75245c39acc3d27da54f5"
+        },
+        {
+          "path": "t/unused.t",
+          "sha": "7b3fe761c4e221581b0a44ae46c1b0d98d01b253"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "630a3eba5523b8faed0ac81ecea002dda052e0a1"
+        },
+        {
+          "path": "util/releng",
+          "sha": "3fb6a380b18cbdf7a5e92288aeb804915849e1fd"
+        },
+        {
+          "path": "util/update-readme.sh",
+          "sha": "cf71f25dd15fbcecbb4ee50aaf28e09f0db75cbc"
+        },
+        {
+          "path": "util/wiki2pod.pl",
+          "sha": "cdd33a25f5f116cfeb6461c4eb5f307ff3885b16"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "8632e253c66f652f430357add460f12f78b8ccb9"
+        }
+      ]
+    },
+    {
+      "component": "rds-csv-nginx-module",
+      "version": "0.09",
+      "repository": "https://github.com/openresty/rds-csv-nginx-module",
+      "tag": "v0.09",
+      "revision": "b4095fcb8a866835ddec7ea0c414b8a4af35741a",
+      "tree_sha": "158f466b04aa99e99ad153e6ac49de777336af0f",
+      "path": "repos/rds-csv-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "b2d368aa39c7448fca525b112008aa5515e17cbd"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "b0fee6640e10be7ada7d42ea9199a59476db4bb6"
+        },
+        {
+          "path": "README.md",
+          "sha": "df366e63df60a1f40b7dba0f645040ff1569be90"
+        },
+        {
+          "path": "config",
+          "sha": "ec13e3e160c95fec94fe582bd1a00c83ea1b7edf"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "5c15a744a7d191fbbc2da0e0ff7e13a59ff921cd"
+        },
+        {
+          "path": "src/ngx_http_rds.h",
+          "sha": "2e3d878f38319b3ed4b1321e87190d635ebe1a6e"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_filter_module.c",
+          "sha": "35b68628fb7a4242b6cbbd7cee51f86adb141897"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_filter_module.h",
+          "sha": "ab43c4a039b06547e0eff351cf721c5b07959e14"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_output.c",
+          "sha": "abb7db30db95e0c6050b703bb829d9c7f74318be"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_output.h",
+          "sha": "43b955f7906dd30cce8bdab59381436524dfd6a8"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_processor.c",
+          "sha": "4a156d19062bbdb1fc39b18c74a0038e28a0ce1b"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_processor.h",
+          "sha": "011913b588a53eb259b061fc00f779d199f83d3a"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_util.c",
+          "sha": "8ca04141af3f818ed359bb4a50ad808d570d2576"
+        },
+        {
+          "path": "src/ngx_http_rds_csv_util.h",
+          "sha": "57fe89243c8132561277fa44f6bbdade0966a800"
+        },
+        {
+          "path": "src/ngx_http_rds_utils.h",
+          "sha": "4a71d4abe80c1356d3382f18691b8733bd5acbab"
+        },
+        {
+          "path": "src/resty_dbd_stream.h",
+          "sha": "ebb0cb3151e6d2fa84e06a5b7da0f3d5946317eb"
+        },
+        {
+          "path": "t/000_init.t",
+          "sha": "b7e98d74dd1f31e771a9ff80189eee7f31e422f2"
+        },
+        {
+          "path": "t/buf.t",
+          "sha": "90f84f920ec8e338f020ab12a45fe12257ef38ec"
+        },
+        {
+          "path": "t/escape.t",
+          "sha": "9fe97aa943e2267f8d5f32a4da224272e222a25e"
+        },
+        {
+          "path": "t/form.t",
+          "sha": "13ee552c3ef15caedc8bce6925ba57ce006c69c6"
+        },
+        {
+          "path": "t/pg.t",
+          "sha": "ce9aa2000682659ed8a0d655e081801bfbb95ee0"
+        },
+        {
+          "path": "t/sanity-stream.t",
+          "sha": "cf6b658b78f1da7868b1b37c71dd17b6242fb948"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "8edb65ad95175b56149801e95f94f35bb84d0971"
+        },
+        {
+          "path": "t/unused.t",
+          "sha": "86852d462178edbf0bcef19854f58bd4d4a818e6"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "e16e1d292c6e7ce38240748445f89a9cc78c6f3d"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "afa6e1a738ba3cfffeddc581a8442ceaa22c4ea4"
+        }
+      ]
+    },
+    {
+      "component": "drizzle-nginx-module",
+      "version": "0.1.12",
+      "repository": "https://github.com/openresty/drizzle-nginx-module",
+      "tag": "v0.1.12",
+      "revision": "fb6cf255d91135e18145a98a93947ead4e703b68",
+      "tree_sha": "dc89b2061782fa5452b5f204deb04fb4258a390a",
+      "path": "repos/drizzle-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".github/workflows/coverity.yml",
+          "sha": "722cb3af71b40fd3995c859bbb3cacbf4caf24d6"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "a65d396ee8b00ff1d3bd2a61a4393e49f3c0b911"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "d5ea2de15fc8235c5e2b40ff3164cbbefcbdc204"
+        },
+        {
+          "path": "Changes",
+          "sha": "5d73650fbff9ce310f4a49acb307487f4617d627"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "1f7185533dc72a8af90cfb9a4186b606bc366376"
+        },
+        {
+          "path": "config",
+          "sha": "ae901c1ea9ed5e5d6f45cb0c93e467189526de03"
+        },
+        {
+          "path": "doc/design",
+          "sha": "3d66c16dfc0334ef186eaec92b8efbba098e7d26"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "33bf276a7460b374d73f2fe535bd66650ec4a1ba"
+        },
+        {
+          "path": "src/ngx_http_drizzle_checker.c",
+          "sha": "fca9b997898ef34236889039f7b6a3d4bf0e129d"
+        },
+        {
+          "path": "src/ngx_http_drizzle_checker.h",
+          "sha": "b996df30daf0c54c263b003e033981c8fc78bb23"
+        },
+        {
+          "path": "src/ngx_http_drizzle_handler.c",
+          "sha": "e64033d3cd0250c1e99eae2eebe08f83796a2161"
+        },
+        {
+          "path": "src/ngx_http_drizzle_handler.h",
+          "sha": "72b47acf86c0c6c7f340900f8c596693d69ffbad"
+        },
+        {
+          "path": "src/ngx_http_drizzle_keepalive.c",
+          "sha": "3b3b7912e1db35a741c6f3711bb9cc9461e245bf"
+        },
+        {
+          "path": "src/ngx_http_drizzle_keepalive.h",
+          "sha": "4891c7fb685f5123eb29fe753df51da3b8b06e71"
+        },
+        {
+          "path": "src/ngx_http_drizzle_module.c",
+          "sha": "84c3946b5a94e2d832fc7aa9308633f0f89ee882"
+        },
+        {
+          "path": "src/ngx_http_drizzle_module.h",
+          "sha": "964be2356d6019f3d9461a1c427a46369f1c15e0"
+        },
+        {
+          "path": "src/ngx_http_drizzle_output.c",
+          "sha": "a78017a57d305a4ea3ef1d295417e3427eef098d"
+        },
+        {
+          "path": "src/ngx_http_drizzle_output.h",
+          "sha": "5952bdc8dd14923bf53db1c1aefb0dc1821389e2"
+        },
+        {
+          "path": "src/ngx_http_drizzle_processor.c",
+          "sha": "e9fef69a6afff9c6fdd6896348a0b9fed2518af0"
+        },
+        {
+          "path": "src/ngx_http_drizzle_processor.h",
+          "sha": "cb9ff093a98823f19c5d9cbde634c650083aa824"
+        },
+        {
+          "path": "src/ngx_http_drizzle_quoting.c",
+          "sha": "33eb625a1cac50fda2d08349c012f956e5a50c02"
+        },
+        {
+          "path": "src/ngx_http_drizzle_quoting.h",
+          "sha": "6ffe821be854de3fd134ee71ee8b598bb33516bd"
+        },
+        {
+          "path": "src/ngx_http_drizzle_upstream.c",
+          "sha": "37034755a6feddd18902b7a0a9740197ee00d2ba"
+        },
+        {
+          "path": "src/ngx_http_drizzle_upstream.h",
+          "sha": "b71b961aae6291b7a30365e8788c29bc9283a100"
+        },
+        {
+          "path": "src/ngx_http_drizzle_util.c",
+          "sha": "ec7c411a3105faef673be0802b4a9df7aa1f7a71"
+        },
+        {
+          "path": "src/ngx_http_drizzle_util.h",
+          "sha": "8d44ad4d7fa51e71d0bcb181c66ed2728bd2b112"
+        },
+        {
+          "path": "src/resty_dbd_stream.h",
+          "sha": "84d7157cbf839cd9ecb4bd105bc17c74bf194d11"
+        },
+        {
+          "path": "t/000_init.t",
+          "sha": "c4a232846f3addf9f94a18d6397b60c43b1917d6"
+        },
+        {
+          "path": "t/bugs.t",
+          "sha": "bb6ebb9d5b92486a03c4723526faec6ba04ed2ac"
+        },
+        {
+          "path": "t/charset/000_init.t",
+          "sha": "c4ddff7e3c850c75f8fd1fe5e3009517bee9633c"
+        },
+        {
+          "path": "t/charset/errors.t",
+          "sha": "478c0d58999363e2b4aeb1bdd44d8d82a2594e66"
+        },
+        {
+          "path": "t/charset/keepalive.t",
+          "sha": "c1d3fe92922ea18cbf85e2a9bb1da1afdcd2039b"
+        },
+        {
+          "path": "t/charset/methods.t",
+          "sha": "bfee44b87efc187412cb65a1eadc12c3e48e9069"
+        },
+        {
+          "path": "t/charset/sanity.t",
+          "sha": "64040b0fa747b9024b0aa6aaabd5c217c32b766a"
+        },
+        {
+          "path": "t/charset/timeout.t",
+          "sha": "d458de5c8e5367bf81abecc9f224e2e05806252d"
+        },
+        {
+          "path": "t/errors.t",
+          "sha": "e102d50490ef43704cb8f45a43ff8ea67760effc"
+        },
+        {
+          "path": "t/keepalive.t",
+          "sha": "b37753637b51cead4191185e3c4b5139127ad8f0"
+        },
+        {
+          "path": "t/methods.t",
+          "sha": "76cd593a4f9ad8741bd27cf6cde20c2624cae605"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "a1d6ba86db132c17b5dc1981c05172901a797b93"
+        },
+        {
+          "path": "t/status.t",
+          "sha": "9572f56e681b0fba30928e49286001071a1d6c7b"
+        },
+        {
+          "path": "t/timeout.t",
+          "sha": "e6aae6da9b57347496d48687bd0efa9deb3de7ab"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "aa79e7c51cef208c41e38f2d11e0b554cc33a778"
+        },
+        {
+          "path": "util/ctags",
+          "sha": "375aa103066c82eaa02515873047995fd4cbedad"
+        },
+        {
+          "path": "util/ngx-links",
+          "sha": "bf54f46afcfd9b8112347a597976cf2d25e3877b"
+        },
+        {
+          "path": "util/update-readme.sh",
+          "sha": "cf71f25dd15fbcecbb4ee50aaf28e09f0db75cbc"
+        },
+        {
+          "path": "util/wiki2pod.pl",
+          "sha": "cdd33a25f5f116cfeb6461c4eb5f307ff3885b16"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "b027938e30bd99083ee779bdd1e0c9f551344675"
+        }
+      ]
+    },
+    {
+      "component": "lua-upstream-nginx-module",
+      "version": "0.07",
+      "repository": "https://github.com/openresty/lua-upstream-nginx-module",
+      "tag": "v0.07",
+      "revision": "a84fbbb3d3b07684c232f642eccbc5334bafcbfe",
+      "tree_sha": "5d5a1de0b6d3294d383604664fd686afab534a77",
+      "path": "repos/lua-upstream-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "f361f796f77cfaf3e712b12776da17cbce0162f5"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "e731ae31c5d7c50eaf8cfee3c29aaa60c66010f5"
+        },
+        {
+          "path": "README.md",
+          "sha": "32f66c72be3f72c66be789cc835051815a4cef40"
+        },
+        {
+          "path": "config",
+          "sha": "9e2bc0870e8732848df8c025e6c94e8d6e598bec"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "dc1843077fb34fcfb520ab46aa3c4bf2a8392d72"
+        },
+        {
+          "path": "src/ngx_http_lua_upstream_module.c",
+          "sha": "7b23787411545442d1227e1ca115e82306d08218"
+        },
+        {
+          "path": "t/count.t",
+          "sha": "999385f668befcff72e9718a8d6a9ed798ef6e3b"
+        },
+        {
+          "path": "t/lib/ljson.lua",
+          "sha": "1084724935b7625f694c13ee84bf9be34e4e6a4d"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "dbace1544856c9f701ff12e46ed9fba3d1fbcdd6"
+        },
+        {
+          "path": "t/up-down.t",
+          "sha": "9daa930dec44f0a6d9877b3a96bef032d2a1a5fd"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "ef76591de0a4074e14f3c545d493b9ae2d1b57af"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5b1a07d22ba8d62a9a6cf1bd5d1d4353ae0291a4"
+        }
+      ]
+    },
+    {
+      "component": "iconv-nginx-module",
+      "version": "0.14",
+      "repository": "https://github.com/calio/iconv-nginx-module",
+      "tag": "v0.14",
+      "revision": "67d55c7edd3ab0535afa1e55ec8b2cdeb5167a82",
+      "tree_sha": "4568659e5b29795076332c0f6b9581e8cad1132d",
+      "path": "repos/iconv-nginx-module",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "8f16a99a2d0d577ecc154ba6c155f49bb5cc2756"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "11599f615384853a8f49f07131031f186afbe64c"
+        },
+        {
+          "path": "config",
+          "sha": "2eed0ee9cc924c3dc7583615082ef8ce5e1c39cb"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "d4233e7bcca03887c9406d56e11fc2bb1ea5b773"
+        },
+        {
+          "path": "src/ngx_http_iconv_module.c",
+          "sha": "689475c91a9825c41877af8d593b9e97bbd4dba3"
+        },
+        {
+          "path": "t/bugs.t",
+          "sha": "8d05e432662a3db1542a06beb16ac29b84a0adbe"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "9b66795bdecb64daf7d6d0b2ca09f9adbac2b18a"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "9f619372286d5194820b3e4e6ca6d87f82fc92f0"
+        },
+        {
+          "path": "util/releng",
+          "sha": "49b7fbc064df7e5440f3e43355b3a53489ef3cd7"
+        },
+        {
+          "path": "util/update-readme.sh",
+          "sha": "cf71f25dd15fbcecbb4ee50aaf28e09f0db75cbc"
+        },
+        {
+          "path": "util/wiki2pod.pl",
+          "sha": "cdd33a25f5f116cfeb6461c4eb5f307ff3885b16"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "3ac13806518f5500a2fa33434f3b37832ec56cc1"
+        }
+      ]
+    },
+    {
+      "component": "encrypted-session-nginx-module",
+      "version": "0.09",
+      "repository": "https://github.com/openresty/encrypted-session-nginx-module",
+      "tag": "v0.09",
+      "revision": "0f81b5728db0ece0f60c72354da69f158dc1d2a7",
+      "tree_sha": "a8f2e952b4736b0521161cd88896bdcced28464e",
+      "path": "repos/encrypted-session-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "0975ebdfee4e6865076d77aaabe6824955477a3e"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "de69827f2a88681d539b8584bdcf233de094df10"
+        },
+        {
+          "path": "README.md",
+          "sha": "890222f9f138ffe0e942018784a6014a4be82c8a"
+        },
+        {
+          "path": "config",
+          "sha": "f997d3b7702954a9ab0fe7a44225ab1b16f05b3a"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "f1566161216fa158880ded7abdf4f495646d9190"
+        },
+        {
+          "path": "src/ngx_http_encrypted_session_cipher.c",
+          "sha": "eff2552fb7ec809c815409348f361e1e77d649e0"
+        },
+        {
+          "path": "src/ngx_http_encrypted_session_cipher.h",
+          "sha": "2ac4718d148180a6e7029dab4c924ec7cca01960"
+        },
+        {
+          "path": "src/ngx_http_encrypted_session_module.c",
+          "sha": "a2206be464b5244c303acc7b94330410ca0996aa"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "18a7f48d9237d0984442e5780ff72a7b72fd8367"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "6c504c8f585b89edc6ed518ee4bcefbe9fd7d2f8"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "c516811a61a1adf4fbac4bc6e9745954e6166324"
+        }
+      ]
+    },
+    {
+      "component": "redis-nginx-module",
+      "version": "0.3.9",
+      "repository": "https://github.com/osokin/ngx_http_redis",
+      "tag": "0.3.9",
+      "revision": "411fef36e130129b670fa7f2672bcad6ab2cbdd3",
+      "tree_sha": "a49bbcdb17a6051ce75b324b8ba7f467857ba189",
+      "path": "repos/redis-nginx-module",
+      "files": [
+        {
+          "path": "AUTHOR",
+          "sha": "87bd9ac596186f2f1e53ba0256f33bf42303561a"
+        },
+        {
+          "path": "CHANGES",
+          "sha": "ebcc3fff4ae9829d873fc63a708c2776184406a2"
+        },
+        {
+          "path": "LICENSE",
+          "sha": "346220170849d57806322f89a917df03050923a4"
+        },
+        {
+          "path": "README",
+          "sha": "4967e12172ec531b446dec0630f8029591d14da3"
+        },
+        {
+          "path": "config",
+          "sha": "0fbc453b9cacf29611fe66af7142e304174ad0a1"
+        },
+        {
+          "path": "ngx_http_redis_module.c",
+          "sha": "4b90db7ad92ebfd7ae2776d18e8b1611c9aae5ac"
+        },
+        {
+          "path": "t/Test/Nginx.pm",
+          "sha": "9e9d5c9c08b80e04f93b4e44230946965bb38282"
+        },
+        {
+          "path": "t/redis.t",
+          "sha": "f64bc30a7a20a5f7bc092891e6164562af92e7e3"
+        },
+        {
+          "path": "t/redis_db_not_set.t",
+          "sha": "d9ec5baa27fb50e9530a6894b8de54baf509a967"
+        }
+      ],
+      "archive": {
+        "url": "https://people.freebsd.org/~osa/ngx_http_redis-0.3.9.tar.gz",
+        "sha256": "21f87540f0a44b23ffa5df16fb3d788bc90803b255ef14f9c26e3847a6f26f46",
+        "files": 9,
+        "tree_matches": true
+      }
+    },
+    {
+      "component": "ngx_postgres",
+      "version": "1.0",
+      "repository": "https://github.com/openresty/ngx_postgres",
+      "tag": "1.0",
+      "revision": "681980598529f67fcec5c7448452046764a68429",
+      "tree_sha": "388e2703979342d340c37c56599a50a5f2350879",
+      "path": "repos/ngx_postgres",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "5001bac3774be696e62ab867ebdca47b317c16e0"
+        },
+        {
+          "path": "CHANGES",
+          "sha": "18e6ea8634acd131950066733704bb8a1fd4c389"
+        },
+        {
+          "path": "LICENSE",
+          "sha": "98c3bcf13dd573810fb9d5ee392afecb4088c48e"
+        },
+        {
+          "path": "README.md",
+          "sha": "3b50827942a32febc9f330309f958cedd30f6643"
+        },
+        {
+          "path": "TODO.md",
+          "sha": "6548fcc1ad68c70950728ade92cb3487dc86fa34"
+        },
+        {
+          "path": "config",
+          "sha": "4b4caa40a108a87533c5e0942849b376233cf008"
+        },
+        {
+          "path": "src/ngx_postgres_ddebug.h",
+          "sha": "38253fca651d3b1d748622c82335d1cdd5732ed6"
+        },
+        {
+          "path": "src/ngx_postgres_escape.c",
+          "sha": "dd781947d9d145cbff1f63b5014ea732ef1e7a37"
+        },
+        {
+          "path": "src/ngx_postgres_escape.h",
+          "sha": "4312de6e5123ab89a2cab5a4cee61c4aed98d966"
+        },
+        {
+          "path": "src/ngx_postgres_handler.c",
+          "sha": "cf8c1bbc10aefe71a4f898727439d9c67dbe963d"
+        },
+        {
+          "path": "src/ngx_postgres_handler.h",
+          "sha": "1b6715bf391a74ec3e324087bcd6043b5ec03841"
+        },
+        {
+          "path": "src/ngx_postgres_keepalive.c",
+          "sha": "6575338c3bb5ab58bc27969e92dc9b9c8efbc4ad"
+        },
+        {
+          "path": "src/ngx_postgres_keepalive.h",
+          "sha": "31e024a0fde32b81364334a070aa86fb8eed1f14"
+        },
+        {
+          "path": "src/ngx_postgres_module.c",
+          "sha": "407a366e5934056ea14ab158040b50e67c7ac511"
+        },
+        {
+          "path": "src/ngx_postgres_module.h",
+          "sha": "03f49fdbc74af12ff0ed991a500e49a4136ca4ac"
+        },
+        {
+          "path": "src/ngx_postgres_output.c",
+          "sha": "9fa5481cb652efe34d32d9cb187a455f1d8cfb81"
+        },
+        {
+          "path": "src/ngx_postgres_output.h",
+          "sha": "a5115c2d130889780930117ec36ae4a781118714"
+        },
+        {
+          "path": "src/ngx_postgres_processor.c",
+          "sha": "d25c0541e38bd0e05bdc140acb64e0599d7064c7"
+        },
+        {
+          "path": "src/ngx_postgres_processor.h",
+          "sha": "ee818f8944a8c9162d1d53b533f24af7f3688aee"
+        },
+        {
+          "path": "src/ngx_postgres_rewrite.c",
+          "sha": "44f3e7ea5060f75b32c43c3ebab271c986bfdd31"
+        },
+        {
+          "path": "src/ngx_postgres_rewrite.h",
+          "sha": "54afa6cf931aeeb9cf4114fdbfbdb1b8ad42af9c"
+        },
+        {
+          "path": "src/ngx_postgres_upstream.c",
+          "sha": "919029b0d8f9587b574b9e56c55a8571e3c08027"
+        },
+        {
+          "path": "src/ngx_postgres_upstream.h",
+          "sha": "9ad46edbf45633a7b0d0c2587f29124cfbf49087"
+        },
+        {
+          "path": "src/ngx_postgres_util.c",
+          "sha": "ae7de38c0ced5fc7cf1fff310d9433549319482f"
+        },
+        {
+          "path": "src/ngx_postgres_util.h",
+          "sha": "02938a9c64da20ea6db25e689fa4298b6eadd1e2"
+        },
+        {
+          "path": "src/ngx_postgres_variable.c",
+          "sha": "e7f4f38129033bf4e9485ab5c59d661e74ee7008"
+        },
+        {
+          "path": "src/ngx_postgres_variable.h",
+          "sha": "abdb1996e4211782c0a2a025c962a43987927932"
+        },
+        {
+          "path": "src/resty_dbd_stream.h",
+          "sha": "ebb0cb3151e6d2fa84e06a5b7da0f3d5946317eb"
+        },
+        {
+          "path": "t/000_init.t",
+          "sha": "832244e4a98cf732a840630b4c4f215b3da99e1f"
+        },
+        {
+          "path": "t/auth.t",
+          "sha": "40468e40b98188baa8af0bbf0f156cd56ae58d0f"
+        },
+        {
+          "path": "t/bigpipe.t",
+          "sha": "4ee951d98a5caf768303ca279573912e3e2bc0e1"
+        },
+        {
+          "path": "t/errors.t",
+          "sha": "a50220373f6348832097b305c98087100e76ef58"
+        },
+        {
+          "path": "t/escape.t",
+          "sha": "8dad7f02de392de03804b89a785fbda40a33c0df"
+        },
+        {
+          "path": "t/eval.t",
+          "sha": "c87761daf5fb15a28e15d29b0d96d42cd6359294"
+        },
+        {
+          "path": "t/form.t",
+          "sha": "477123228db38d57dafa54101c2694af46ea97ce"
+        },
+        {
+          "path": "t/methods.t",
+          "sha": "93b80e872cd13c65913c9441e3b3b7aa097012ea"
+        },
+        {
+          "path": "t/output.t",
+          "sha": "b4ba503ab86da9edbe0084a2e9b8af5043f02b6d"
+        },
+        {
+          "path": "t/restful.t",
+          "sha": "74b111bddfc073c1640233164370aee3b37459f3"
+        },
+        {
+          "path": "t/restful_json.t",
+          "sha": "aae262bbf5f78d07ff33015bb5aa2cb17735bc31"
+        },
+        {
+          "path": "t/rewrites.t",
+          "sha": "3cc191e26d2a2b72acdcab3d809c262e9b341d37"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "25c3d7edaf475520b5fcab9faf5f732df3ae4c19"
+        },
+        {
+          "path": "t/variables.t",
+          "sha": "89384115bce38a4873aa2ca5cb5be713bbfd19a5"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "e0b8e89d9c1c84d28886431f0f183a1d1c6547d0"
+        }
+      ]
+    },
+    {
+      "component": "ngx_coolkit",
+      "version": "0.2",
+      "repository": "https://github.com/FRiCKLE/ngx_coolkit",
+      "tag": "0.2",
+      "revision": "462b863babe121b900465b4ec8dfba612d723e9a",
+      "tree_sha": "a6df2e03f1366ae9650c2ada7c076413316ecd1a",
+      "path": "repos/ngx_coolkit",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "c6af6c01e0a1dd84b1a5d6ba133df9ea76bc0eb2"
+        },
+        {
+          "path": "CHANGES",
+          "sha": "a76ce5055aec6ab891d0d8602bd67eb5768402a7"
+        },
+        {
+          "path": "LICENSE",
+          "sha": "e5d57c80905b8d23ee54451f74e9ca92bc7dcaa2"
+        },
+        {
+          "path": "README",
+          "sha": "4391030434f53ff9dd4ccc1871b359d52fa8922a"
+        },
+        {
+          "path": "config",
+          "sha": "6f27634246e0def78c3faf936a2d429b731023e9"
+        },
+        {
+          "path": "src/ngx_coolkit_handlers.c",
+          "sha": "bae192c7bf0cf97e0cbce475e6eb7e2b5460af9a"
+        },
+        {
+          "path": "src/ngx_coolkit_handlers.h",
+          "sha": "f58c334b283f72fba0478b1ab9303f92c47e31df"
+        },
+        {
+          "path": "src/ngx_coolkit_module.c",
+          "sha": "423eba1adf67dfc72c76bc7ab744fda17cd3c52c"
+        },
+        {
+          "path": "src/ngx_coolkit_module.h",
+          "sha": "7419f210d60d7cfcddcd1f0d2a15736156773a8c"
+        },
+        {
+          "path": "src/ngx_coolkit_variables.c",
+          "sha": "6a0d026c3f7ccf471ab93aed363003b48161cbcb"
+        },
+        {
+          "path": "src/ngx_coolkit_variables.h",
+          "sha": "d83e63950c9f7a9d7c872d46ff544b95f0b47187"
+        },
+        {
+          "path": "t/location.t",
+          "sha": "d6c5f4dd54645a790db51393c4b45ef1e0161095"
+        },
+        {
+          "path": "t/override_method.t",
+          "sha": "009df3a6401af75e48a3eb98a367769f772011c7"
+        },
+        {
+          "path": "t/remote_passwd.t",
+          "sha": "0f5a1766883fe6e9a2763a2732694a2c2ef5619f"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "d1f6eb8bdb6f3f5287f8838e6c035ea2dabb51f3"
+        }
+      ]
+    },
+    {
+      "component": "redis2-nginx-module",
+      "version": "0.15",
+      "repository": "https://github.com/openresty/redis2-nginx-module",
+      "tag": "v0.15",
+      "revision": "c989c829a2877132cb100f901e320921250e068d",
+      "tree_sha": "d6ff65b857542f7de022d16cb1261f5544726939",
+      "path": "repos/redis2-nginx-module",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "0f2da28e36ded29c0c54f74e9f7964927a26d1c1"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "3dbe2e1f5a5c5d42008da2c67dfc8c4f37fe6670"
+        },
+        {
+          "path": "Changes",
+          "sha": "a442193c9d367af83b0dd9c79cefbbc9abf7ebfb"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "dfefb818ef51142f706bcdf16cbe0d0dd1b758a2"
+        },
+        {
+          "path": "config",
+          "sha": "bd0c3a948d5faf732ecbffb9a0aec8521d3186c9"
+        },
+        {
+          "path": "misc/serv.erl",
+          "sha": "52188f2bfe22666565be509fab1a2fcc3fdc01aa"
+        },
+        {
+          "path": "src/common.rl",
+          "sha": "17083dedd6e86c74575c0df93aa949e1edfa4d35"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "70d3225488b43e515f9899dd13ced3152a7a1851"
+        },
+        {
+          "path": "src/multi_bulk_reply.rl",
+          "sha": "be6f8ebc1548993e0b97bc0b7b475a244669ff02"
+        },
+        {
+          "path": "src/ngx_http_redis2_handler.c",
+          "sha": "cecee621d7048a3936b5d0303040f0424201b24b"
+        },
+        {
+          "path": "src/ngx_http_redis2_handler.h",
+          "sha": "c238ad1e65af1e3c34a5ccfdad14da3244326700"
+        },
+        {
+          "path": "src/ngx_http_redis2_module.c",
+          "sha": "c8306d406ce81946fecc88efb9af8d98c0e15177"
+        },
+        {
+          "path": "src/ngx_http_redis2_module.h",
+          "sha": "54ea656e2cd7aeab9bbdbaa9975cf098487bf33a"
+        },
+        {
+          "path": "src/ngx_http_redis2_reply.c",
+          "sha": "0aae7c97c31dbebff56c8486f13c99bbc76125f7"
+        },
+        {
+          "path": "src/ngx_http_redis2_reply.h",
+          "sha": "ee2d664340418ba66840b53f9b07d88545ab7a47"
+        },
+        {
+          "path": "src/ngx_http_redis2_reply.rl",
+          "sha": "82f7c00fd604c23629cb01d11a3e08b2bfbc004c"
+        },
+        {
+          "path": "src/ngx_http_redis2_util.c",
+          "sha": "79864b38f35cb0e57c84be026fdc61fb9761caf1"
+        },
+        {
+          "path": "src/ngx_http_redis2_util.h",
+          "sha": "069aadb944a07bbc143ba98150f147dc73faad92"
+        },
+        {
+          "path": "t/bugs.t",
+          "sha": "56cc88eeb8c4d896a6a73e35ef481e09360e1d37"
+        },
+        {
+          "path": "t/eval.t",
+          "sha": "17a872106a2942a7919383c1579f8934948333e1"
+        },
+        {
+          "path": "t/if.t",
+          "sha": "2169b67b0a3aec3fa41e3277b91ee0434d140819"
+        },
+        {
+          "path": "t/pipeline.t",
+          "sha": "3459a99b5826d376416789c5951fdc9ec91ad948"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "11d1a26b730867ae5751abe5c3d5a4bc307313bd"
+        },
+        {
+          "path": "util/build.sh",
+          "sha": "5574ee7093d108a955b95f62168a4da52831560e"
+        },
+        {
+          "path": "util/fix-clang-warnings",
+          "sha": "150c66609de091bfd5870514b3a684a3883a03c5"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "e05de3d8cdd8b661e39d77546bb4fffdc31f99a8"
+        }
+      ]
+    },
+    {
+      "component": "resty-cli",
+      "version": "0.30",
+      "repository": "https://github.com/openresty/resty-cli",
+      "tag": "v0.30",
+      "revision": "3022948ef3d670b915bcf7027bcdd917591b96e4",
+      "tree_sha": "672fee784653eec219686287fc248c56dd4f3255",
+      "path": "repos/resty-cli",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "883db4e62ec261da0b9f91039d7b5e5e3fb83929"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "d6ee8b1cfb7d5442e9ae6e8911bec00aa666da11"
+        },
+        {
+          "path": "README.md",
+          "sha": "3df9487f51da1c192fa88c0db700a83e7a44ff6c"
+        },
+        {
+          "path": "bin/md2pod.pl",
+          "sha": "07da0ce4cf91189ffa68b486e2b6ad92036402ac"
+        },
+        {
+          "path": "bin/nginx-xml2pod",
+          "sha": "17467b5344bbafd850d206ed3f0e5eb7c74d5d3f"
+        },
+        {
+          "path": "bin/resty",
+          "sha": "52011d936811eb62d42ae2e4ed69707b20443678"
+        },
+        {
+          "path": "bin/restydoc",
+          "sha": "a7b5afc9157bbb38723a21d1df248c872b564578"
+        },
+        {
+          "path": "bin/restydoc-index",
+          "sha": "a1660b8e23049d86131696b67488185e201399c4"
+        },
+        {
+          "path": "t/lib/Test/Resty.pm",
+          "sha": "2716fc68e7e95478e625b23afe34925739636250"
+        },
+        {
+          "path": "t/resty/bugs.t",
+          "sha": "2fb543ad8f324d336a394e722b07048ee4b55d4b"
+        },
+        {
+          "path": "t/resty/console.t",
+          "sha": "f70c5defb94d4dc32c6ffe6fcf1dce54e3f49edb"
+        },
+        {
+          "path": "t/resty/options.t",
+          "sha": "7bc496e4f7d05af16e0ecb450142ba55a67c2e63"
+        },
+        {
+          "path": "t/resty/sanity.t",
+          "sha": "e6a475b008d7832eca606936054a67e029645d6d"
+        },
+        {
+          "path": "t/resty/signals.t",
+          "sha": "7b30b37b460f4f0deb5d3c97d0dcc7b53c3aafe3"
+        },
+        {
+          "path": "t/resty/user-args.t",
+          "sha": "effc6acae4b6cbb43480bf4c7d76362857d82854"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "909895258aed5a8acfcbcaa509ab149d0b483e03"
+        }
+      ]
+    },
+    {
+      "component": "opm",
+      "version": "0.0.8",
+      "repository": "https://github.com/openresty/opm",
+      "tag": "v0.0.8",
+      "revision": "315e56b907eb5edefa704df0b0fe286998e0317e",
+      "tree_sha": "7c6b99dcb2ac6e95bbc6cc6eafe108e39ce9a196",
+      "path": "repos/opm",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "dc46627b64986e35e4b4e597d1b861cb998ade87"
+        },
+        {
+          "path": "Makefile",
+          "sha": "0505f4fd9694ac605853685d45bfde4711503869"
+        },
+        {
+          "path": "README.md",
+          "sha": "c8737841831095a6345ddbb7adb52afab7c0830a"
+        },
+        {
+          "path": "bin/opm",
+          "sha": "4ffdad3596238863578041a9fd6e6c3a07fd66de"
+        },
+        {
+          "path": "init.sql",
+          "sha": "8f666233c08e51d9d918c2fc99af362b9fbf4ed4"
+        },
+        {
+          "path": "util/fmtMd.js",
+          "sha": "b72cb3ce4e8fec0516beed9d93115c977826da26"
+        },
+        {
+          "path": "util/opm-pkg-indexer.pl",
+          "sha": "ed48d43d5e02caa4a112778734c659622e0e0721"
+        },
+        {
+          "path": "web/conf/config.ini",
+          "sha": "066d431e8527ceedd25119b1f3d6b36f29b7ccec"
+        },
+        {
+          "path": "web/conf/get-limiting.conf",
+          "sha": "e7c3f8b84ce8a30ad31215f016ab409396fd0557"
+        },
+        {
+          "path": "web/conf/mime.types",
+          "sha": "89be9a4cd636241f8fb4b06942f106bd3b9fff16"
+        },
+        {
+          "path": "web/conf/nginx.conf",
+          "sha": "4a9818e3688330360166416bfe9e401cdb02ceb3"
+        },
+        {
+          "path": "web/conf/root-ca.crt",
+          "sha": "7ee575ff1bab9b492e189b26dcf540334896dda1"
+        },
+        {
+          "path": "web/css/main.css",
+          "sha": "82dd3e3ac3944cae469ea4ce00505c920d64ae14"
+        },
+        {
+          "path": "web/docs/md/docs.md",
+          "sha": "4a9ed8729cbcdfb1af0c4e56361cfc7795b8aebf"
+        },
+        {
+          "path": "web/email.ini.example",
+          "sha": "2ae4ef12b404caa796663a57bd8f46ba5a81747b"
+        },
+        {
+          "path": "web/images/cancel.png",
+          "sha": "2213f78dff04653472bd332d2b9131969afd9693"
+        },
+        {
+          "path": "web/images/delete.png",
+          "sha": "596aefc65646220cdca15813f73757d22879fec8"
+        },
+        {
+          "path": "web/images/favicon.ico",
+          "sha": "c764d4f10d1365717b8d5089a8bf12de21c6b98d"
+        },
+        {
+          "path": "web/images/github.png",
+          "sha": "2c708fb04a0289783c6a4c984f6ad5cd5c2c2d0a"
+        },
+        {
+          "path": "web/js/jquery.min.js",
+          "sha": "d467083b62cb671e0c88897b11f4cd412a4ce29d"
+        },
+        {
+          "path": "web/lua/opmserver.lua",
+          "sha": "f939336c2049b0aff35ca42b403123a26ef9e6aa"
+        },
+        {
+          "path": "web/lua/opmserver/conf.lua",
+          "sha": "4f567bb34350bcf641476e23235c1ea265866e4a"
+        },
+        {
+          "path": "web/lua/opmserver/crontab.lua",
+          "sha": "45f8e16d48cd4a9a52c78ab95b77090ce3eb4eac"
+        },
+        {
+          "path": "web/lua/opmserver/db.lua",
+          "sha": "d438bfef6776d9a6399c33d5c0ee5da012ae8fff"
+        },
+        {
+          "path": "web/lua/opmserver/email.lua",
+          "sha": "236cb1c1c3decb412181eda1d6b10590ce94a410"
+        },
+        {
+          "path": "web/lua/opmserver/github_oauth.lua",
+          "sha": "18ceda4ceb8b225cbe9e58447e35e1167602104a"
+        },
+        {
+          "path": "web/lua/opmserver/init.lua",
+          "sha": "22505c56965e661ee4bdeef251a9633436f421a1"
+        },
+        {
+          "path": "web/lua/opmserver/log.lua",
+          "sha": "19cd129cbbec18083eff0c00e7c0817d92e0e264"
+        },
+        {
+          "path": "web/lua/opmserver/paginator.lua",
+          "sha": "aacc8ecd66e395118f19f0d85c136acb8c3c6014"
+        },
+        {
+          "path": "web/lua/opmserver/templates.lua",
+          "sha": "bbe0ccf8c7b8c007714eebb5a6a6b3f75f5de786"
+        },
+        {
+          "path": "web/lua/opmserver/utils.lua",
+          "sha": "fc9e17ee2348b12038bdb94974f1008db9a8d0fd"
+        },
+        {
+          "path": "web/lua/opmserver/view.lua",
+          "sha": "08fdff1d233e67f4381841d5528f5521197ca1b4"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon.lua",
+          "sha": "aa431b49816dbdc503b46d656d3d7cc02f605a20"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon/arrays.lua",
+          "sha": "15df2e91127178ad28593f1e5f0f7738ea1372f5"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon/crypto.lua",
+          "sha": "3a29d71130368761b32ba94b05ccdf22ac60e28b"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon/init.lua",
+          "sha": "bea9f39f9934cfa46cc4fe3309c7de0d14411ce6"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon/json.lua",
+          "sha": "c7872cb160875af8b019e1db614a72bc49f06e91"
+        },
+        {
+          "path": "web/lua/vendor/pgmoon/socket.lua",
+          "sha": "52949cbe0784b1c5b56f9b572f4b5af08bd05aa3"
+        },
+        {
+          "path": "web/lua/vendor/resty/cookie.lua",
+          "sha": "31bdc5aa7409356ed7277c6cf73700d815b3aa77"
+        },
+        {
+          "path": "web/lua/vendor/resty/http.lua",
+          "sha": "94f9813ef6add12b25939944258572eaf7674b57"
+        },
+        {
+          "path": "web/lua/vendor/resty/http_headers.lua",
+          "sha": "24b53b533f98165805c046b6941936cd772f87ac"
+        },
+        {
+          "path": "web/lua/vendor/resty/ini.lua",
+          "sha": "2cb42f7360fc9d0759a157cdc5c1aa51b4a71299"
+        },
+        {
+          "path": "web/lua/vendor/resty/limit/req.lua",
+          "sha": "6be868ee98cdb0b48ec70b406b46678ae4a5578c"
+        },
+        {
+          "path": "web/lua/vendor/resty/shell.lua",
+          "sha": "24a457b7dd48aaf91946012792e7b8f8d5882a30"
+        },
+        {
+          "path": "web/lua/vendor/resty/signal.lua",
+          "sha": "ad11596c10564c5349f06e296684dd13aab3c479"
+        },
+        {
+          "path": "web/templates/404.tt2",
+          "sha": "42f24273717423e7209c9b869ac5dc105d10f3ce"
+        },
+        {
+          "path": "web/templates/analytics.tt2",
+          "sha": "ddc2d35b6e6cf203ddf719c91b401d27ca9ed654"
+        },
+        {
+          "path": "web/templates/docs.tt2",
+          "sha": "43cf5a82e5b827f1278ca14ab8b3a693f6767a77"
+        },
+        {
+          "path": "web/templates/error.tt2",
+          "sha": "cd94840f5b5d9aa3ac744f26e827239e95d01eb7"
+        },
+        {
+          "path": "web/templates/footer.tt2",
+          "sha": "7b4d6342d5d7a13dd02e728010ba686697d8c854"
+        },
+        {
+          "path": "web/templates/index.tt2",
+          "sha": "58ba6aeebdb883028e2aab558e29606924a54124"
+        },
+        {
+          "path": "web/templates/layout.tt2",
+          "sha": "98a5ed1fb95698847567a64cdfa88beb34408eeb"
+        },
+        {
+          "path": "web/templates/login.tt2",
+          "sha": "69a91373ae5c2aa269700c78348b53a995310abb"
+        },
+        {
+          "path": "web/templates/nav.tt2",
+          "sha": "d2f69c686a0514b989f039bd9296c865c8cd1933"
+        },
+        {
+          "path": "web/templates/package_info.tt2",
+          "sha": "17ee11b19236d6b9ed6d2b1892d44f91977dba84"
+        },
+        {
+          "path": "web/templates/package_list.tt2",
+          "sha": "1929af268398884b0a74a69bd60722a4ea746f5e"
+        },
+        {
+          "path": "web/templates/packages.tt2",
+          "sha": "43d74dddb95863d5e7b75d28d9a6baa76262101a"
+        },
+        {
+          "path": "web/templates/search.tt2",
+          "sha": "50cdc5c2994abb6aad16bbcaf30b3aa9698e5849"
+        },
+        {
+          "path": "web/templates/success.tt2",
+          "sha": "da0d00db6dcc917cf655d2959a82814e6257a8c0"
+        },
+        {
+          "path": "web/templates/uploader.tt2",
+          "sha": "af0a193078e4e466a6268155b3bf06a707f8fd27"
+        },
+        {
+          "path": "web/templates/uploads.tt2",
+          "sha": "e9f5a409df9ebf09cabb96b20ac11042b564b256"
+        }
+      ]
+    },
+    {
+      "component": "lua-cjson",
+      "version": "2.1.0.14",
+      "repository": "https://github.com/openresty/lua-cjson",
+      "tag": "2.1.0.14",
+      "revision": "91ca29db9a4a4fd0eedaebcd5d5f3ba2ace5ae63",
+      "tree_sha": "cb3dacd8df87900d92eb154546b7691f31f3110e",
+      "path": "repos/lua-cjson",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "f349fed799ac7664e6d85767f29cb821cde91c29"
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "sha": "5567f6370239776f382d18c99ed2cba249abf68b"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "d9b1095f54d1805db65d8848ac914500d39a5a07"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "469d5dd5a14571e00023d809aed2b9af66c464fb"
+        },
+        {
+          "path": "CMakeLists.txt",
+          "sha": "8ac6d381454bcd8e632935276685169404ebd906"
+        },
+        {
+          "path": "LICENSE",
+          "sha": "747a8bff27f0f333bb881f6aee5e4bec4b7b2921"
+        },
+        {
+          "path": "Makefile",
+          "sha": "c5966c5d8f759d2a18340dab9154379b76d30818"
+        },
+        {
+          "path": "NEWS",
+          "sha": "8927d6e58d59bea8f2cedd61f54a99c54a8825a0"
+        },
+        {
+          "path": "README.md",
+          "sha": "debe1ae8cd3de1a839560bfca47d27b5bbc2395f"
+        },
+        {
+          "path": "THANKS",
+          "sha": "4aade13617f4bfdfdd0837f2873f2099c5fb79b5"
+        },
+        {
+          "path": "build-packages.sh",
+          "sha": "2c45e660569790b51761bfae4169f65413819225"
+        },
+        {
+          "path": "devel/json_parser_outline.txt",
+          "sha": "01db78d32d44d7ef5cb9358c197b487a324e32c9"
+        },
+        {
+          "path": "dtoa.c",
+          "sha": "19a0caef9f1ebe42f70fcc74012917bdd007161d"
+        },
+        {
+          "path": "dtoa_config.h",
+          "sha": "c168e28fb6bfd359aabc97d88522fdcc12923ea1"
+        },
+        {
+          "path": "fpconv.c",
+          "sha": "64208f8dc466b1db49f603e3caa455b4f7f6e000"
+        },
+        {
+          "path": "fpconv.h",
+          "sha": "5d9d95ea1518380c54ca7a7b8cf812a4cc2062c5"
+        },
+        {
+          "path": "g_fmt.c",
+          "sha": "50d6a1d3034ed669f6bc589cb731ce29a79e3303"
+        },
+        {
+          "path": "lua-cjson-2.1.0.14-1.rockspec",
+          "sha": "4376a081f487382bacfb8c8b774f78068fcab8ca"
+        },
+        {
+          "path": "lua-cjson.spec",
+          "sha": "3d3cb16fdeabd85874dadc2583743de3aaaf8160"
+        },
+        {
+          "path": "lua/cjson/util.lua",
+          "sha": "7cf66be4e6c0ccece5fee2720d1508294d764b20"
+        },
+        {
+          "path": "lua/json2lua.lua",
+          "sha": "014416d244bdb2fa5faacf852dc86bb151ae8ad2"
+        },
+        {
+          "path": "lua/lua2json.lua",
+          "sha": "aee8869a89a5be935b8fce485d5bbd7610074b76"
+        },
+        {
+          "path": "lua_cjson.c",
+          "sha": "bbd8eff86ad5a332ef93d93ee19272ae408dd6b7"
+        },
+        {
+          "path": "manual.adoc",
+          "sha": "83303a30630c440c2abc7672263ff77e3a8bfc8e"
+        },
+        {
+          "path": "performance.adoc",
+          "sha": "a36412d69b6cae72ed1fd11cea38269ca51be84a"
+        },
+        {
+          "path": "rfc4627.txt",
+          "sha": "67b89092e71d34dcb6d2eff51d36404c646b220b"
+        },
+        {
+          "path": "runtests.sh",
+          "sha": "1c512367c2c648be1c6123bf844d1af393b268cb"
+        },
+        {
+          "path": "strbuf.c",
+          "sha": "73cd9b8951254c79d6d0030f84800e6df1abde5d"
+        },
+        {
+          "path": "strbuf.h",
+          "sha": "d77e0f4b17b930ee210428ff8f293b6530852e3a"
+        },
+        {
+          "path": "tests/README",
+          "sha": "39e8bd45acc458ffbb22f87af4d0be0ed3bbe367"
+        },
+        {
+          "path": "tests/TestLua.pm",
+          "sha": "e13bfd3f8e6f81031525d5f8b0411b026b9242c7"
+        },
+        {
+          "path": "tests/agentzh.t",
+          "sha": "88a94b82110d0bb50a812506dd825656e5660216"
+        },
+        {
+          "path": "tests/bench.lua",
+          "sha": "648020b19c99e52eb3307b3423b88fa20c553633"
+        },
+        {
+          "path": "tests/example1.json",
+          "sha": "42486cec024e7cc7c2393e93a43f65f897db559b"
+        },
+        {
+          "path": "tests/example2.json",
+          "sha": "5600991a4c7a02a9365bbc8248806fd11c3d197b"
+        },
+        {
+          "path": "tests/example3.json",
+          "sha": "d7237a5ae037c182130de4255bfa58059b9dc05a"
+        },
+        {
+          "path": "tests/example4.json",
+          "sha": "d31a395bd495ef35a76b22e149d8f8e9f7b432f9"
+        },
+        {
+          "path": "tests/example5.json",
+          "sha": "49980ca25bcc4b9e11efb75946bc15febb4ec352"
+        },
+        {
+          "path": "tests/genutf8.pl",
+          "sha": "c79f238b4bf0462956dd9776d047624c868ed072"
+        },
+        {
+          "path": "tests/numbers.json",
+          "sha": "4f981ff2e18d5fb422a96cefe90fc052ae657ab6"
+        },
+        {
+          "path": "tests/octets-escaped.dat",
+          "sha": "ee99a6bf15fd3b8883467eb06c35defd7e6a1975"
+        },
+        {
+          "path": "tests/rfc-example1.json",
+          "sha": "73532fa9d2ffec518eb4d2cbc110dab69db04678"
+        },
+        {
+          "path": "tests/rfc-example2.json",
+          "sha": "2a0cb681dae95dbf8aff2e08175256a0e7106568"
+        },
+        {
+          "path": "tests/sort_json.lua",
+          "sha": "c95ab3c4f64b7d53fe64d63319d385987b6a9ef9"
+        },
+        {
+          "path": "tests/test.lua",
+          "sha": "cf7a54a255d0c6e29e50f6a54eebe52a71d22ad9"
+        },
+        {
+          "path": "tests/types.json",
+          "sha": "c01e7d20ecc0ba9c3ec2a0aca441dfa623060484"
+        }
+      ]
+    },
+    {
+      "component": "lua-redis-parser",
+      "version": "0.13",
+      "repository": "https://github.com/openresty/lua-redis-parser",
+      "tag": "v0.13",
+      "revision": "2c5a4e960da7870ab29dd6001ba6a2828ce77760",
+      "tree_sha": "ee1a2c2618a40bf1e83ddc535ebfefa62651f450",
+      "path": "repos/lua-redis-parser",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "66607d95af5350d634bc6a78e64071b9d1d8ea3e"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "af93f60b26db73866f253fad0ab80ec3d4c0df0d"
+        },
+        {
+          "path": "Makefile",
+          "sha": "4890d3110ef0e328acb2a0d7896ddc601f8a8240"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "a1f962f6b44b29b20ea275e77bf815643f1f1ee3"
+        },
+        {
+          "path": "ddebug.h",
+          "sha": "5b61a262f289aac77fc687cff699c3b453480cc9"
+        },
+        {
+          "path": "redis-parser.c",
+          "sha": "b29098e74d4da0dc2afd6d9b4900dabc5effd07f"
+        },
+        {
+          "path": "t/RedisParser.pm",
+          "sha": "99ab0b509400e872899d717cc0e1a41fb08c35b9"
+        },
+        {
+          "path": "t/pipeline.t",
+          "sha": "b5e6386ed7fb99ddb95cd0560dae14409b48402e"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "80350ae566faca8475cde783cd9eacbe27849400"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "d5d1a07bd13f73ba082b565562d809c16c41ff6a"
+        }
+      ]
+    },
+    {
+      "component": "lua-rds-parser",
+      "version": "0.06",
+      "repository": "https://github.com/openresty/lua-rds-parser",
+      "tag": "v0.06",
+      "revision": "621e6b978983b4779435a56480ea636eae93d65d",
+      "tree_sha": "fdd664970f59fdb2a87f435671350b3ee58d8f06",
+      "path": "repos/lua-rds-parser",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "ebdac2ee2c8bb3d2b74f4c4902dfede21144e814"
+        },
+        {
+          "path": "Makefile",
+          "sha": "3b45039cf1cda2f32d3f9cf2bcdd3474c03ddaf8"
+        },
+        {
+          "path": "README",
+          "sha": "e8d40b370b15720b2d8c93605395c1decd8ec798"
+        },
+        {
+          "path": "src/ddebug.h",
+          "sha": "5b61a262f289aac77fc687cff699c3b453480cc9"
+        },
+        {
+          "path": "src/rds_parser.c",
+          "sha": "6264e0ed24be1c8b7ffe24951cbc07f22c69006b"
+        },
+        {
+          "path": "src/rds_parser.h",
+          "sha": "458d8c9d74d76225be2593ec307b53a83504e37f"
+        },
+        {
+          "path": "src/resty_dbd_stream.h",
+          "sha": "ebb0cb3151e6d2fa84e06a5b7da0f3d5946317eb"
+        },
+        {
+          "path": "t/RdsParser.pm",
+          "sha": "ecbfdc6405a68e8c28c66604c978e5d09bc89bf1"
+        },
+        {
+          "path": "t/error.t",
+          "sha": "31e76317b8848f5b9f5454cca268361cdf0dd1e9"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "95ddab606f7fdc0ec66cec70ecc36035579d6c89"
+        }
+      ]
+    },
+    {
+      "component": "lua-resty-signal",
+      "version": "0.04",
+      "repository": "https://github.com/openresty/lua-resty-signal",
+      "tag": "v0.04",
+      "revision": "737d8ccfaa59c08ad4d32a712611a856775a61c5",
+      "tree_sha": "0f434ffa9f013c038297781c42904defd4a91b87",
+      "path": "repos/lua-resty-signal",
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "bea7b6bd45a66c3c149be2ff58ee333b0261df48"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "22d9fe56eaf18225bc6472b6320f302eddce2796"
+        },
+        {
+          "path": "Makefile",
+          "sha": "eca63d4f4e84a1dc0bc66e6502cd3835d30eb684"
+        },
+        {
+          "path": "README.md",
+          "sha": "93f89a8563e943224abd8c47f36bd73438c18663"
+        },
+        {
+          "path": "lib/resty/signal.lua",
+          "sha": "a1af15abc8c43bdda292aab566d883311baff75c"
+        },
+        {
+          "path": "resty_signal.c",
+          "sha": "78960c84d40790e609c6b53e934a1bcf1db6a2bb"
+        },
+        {
+          "path": "t/TestKiller.pm",
+          "sha": "5599944a16168eff411e601fef6c3aebfc955696"
+        },
+        {
+          "path": "t/kill.t",
+          "sha": "6b0d6171fa1095aed13834af3838d4b0696d6b8f"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "07e2cee7aeefd8840b0e99bbf3e009515423798e"
+        },
+        {
+          "path": "t/signum.t",
+          "sha": "3d7b94b10462af75c69cce0ab928447087749559"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "1cac50666d85ac714bcbc0585d26e8ab2147ab87"
+        }
+      ]
+    }
+  ]
+}

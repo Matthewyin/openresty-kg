@@ -1,0 +1,707 @@
+[
+  {
+    "id": "nginx--ngx_http_limit_conn_module--limit_conn_zone",
+    "checks": [
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 212,
+        "codePattern": "if \\(key\\.len > 255\\)",
+        "stepPattern": "key|键|255",
+        "wordingPatterns": [
+          "255",
+          "跳过|continue"
+        ]
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 234,
+        "codePattern": "node = ngx_slab_alloc_locked\\(ctx->shpool, n\\);",
+        "stepPattern": "分配|slab|节点",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 264,
+        "codePattern": "if \\(\\(ngx_uint_t\\) lc->conn >= limits\\[i\\]\\.conn\\) \\{",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 286,
+        "codePattern": "lc->conn\\+\\+;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 409,
+        "codePattern": "lc->conn--;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 905,
+        "codePattern": "r->phase_handler\\+\\+;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_limit_conn_module--limit_conn",
+    "checks": [
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 294,
+        "codePattern": "cln = ngx_pool_cleanup_add\\(r->pool,",
+        "stepPattern": "cleanup|清理|注册",
+        "wordingPatterns": [
+          "失败|NULL|500|INTERNAL_SERVER_ERROR"
+        ]
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 297,
+        "codePattern": "return NGX_HTTP_INTERNAL_SERVER_ERROR;",
+        "stepPattern": "cleanup|清理|注册",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 264,
+        "codePattern": "if \\(\\(ngx_uint_t\\) lc->conn >= limits\\[i\\]\\.conn\\) \\{",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 286,
+        "codePattern": "lc->conn\\+\\+;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_limit_conn_module.c",
+        "line": 409,
+        "codePattern": "lc->conn--;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 905,
+        "codePattern": "r->phase_handler\\+\\+;",
+        "stepPattern": "红黑树|CRC32|非空且不超长",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_proxy_module--proxy_limit_rate",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_upstream.c",
+        "line": 3239,
+        "codePattern": "p->limit_rate = ngx_http_complex_value_size\\(r, u->conf->limit_rate, 0\\);",
+        "stepPattern": "复杂值|求值|limit_rate|限速",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/event/ngx_event_pipe.c",
+        "line": 214,
+        "codePattern": "p->upstream->read->delayed = 1;",
+        "stepPattern": "预算|额度|delayed|延迟|延时",
+        "wordingPatterns": [
+          "定时器|timer|延迟|延时"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_upstream.c",
+        "line": 3131,
+        "codePattern": "return;",
+        "stepPattern": "非缓冲|复杂值|event_pipe 设置",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_upstream.c",
+        "line": 3349,
+        "codePattern": "u->read_event_handler = ngx_http_upstream_process_upstream;",
+        "stepPattern": "process_upstream|read_upstream|额度",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_upstream.c",
+        "line": 1588,
+        "codePattern": "c->read->handler = ngx_http_upstream_handler;",
+        "stepPattern": "timer到期|事件分派|读handler恢复",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_upstream.c",
+        "line": 4164,
+        "codePattern": "if \\(u->peer\\.connection\\) \\{",
+        "stepPattern": "完成判断|upstream_done|候选502",
+        "wordingPatterns": [
+          "连接|peer.connection"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_log_module--log_format",
+    "checks": [
+      {
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "line": 305,
+        "codePattern": "len \\+= op\\[i\\]\\.getlen\\(r, op\\[i\\]\\.data\\);",
+        "stepPattern": "长度|getlen",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "line": 374,
+        "codePattern": "p = op\\[i\\]\\.run\\(r, p, &op\\[i\\]\\);",
+        "stepPattern": "run|操作|格式|序列化",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_log_module--access_log",
+    "checks": [
+      {
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "line": 283,
+        "codePattern": "if \\(val\\.len == 0 \\|\\| \\(val\\.len == 1 && val\\.data\\[0\\] == '0'\\)\\) \\{",
+        "stepPattern": "filter|过滤|条件",
+        "wordingPatterns": [
+          "跳过|continue"
+        ]
+      },
+      {
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "line": 398,
+        "codePattern": "ngx_http_log_write\\(r, &log\\[l\\], line, p - line\\);",
+        "stepPattern": "写入|log_write|文件",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_stream_log_module--log_format",
+    "checks": [
+      {
+        "file": "src/stream/ngx_stream_log_module.c",
+        "line": 253,
+        "codePattern": "len \\+= op\\[i\\]\\.getlen\\(s, op\\[i\\]\\.data\\);",
+        "stepPattern": "长度|getlen",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/stream/ngx_stream_log_module.c",
+        "line": 322,
+        "codePattern": "p = op\\[i\\]\\.run\\(s, p, &op\\[i\\]\\);",
+        "stepPattern": "run|操作|格式|序列化",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_stream_log_module--access_log",
+    "checks": [
+      {
+        "file": "src/stream/ngx_stream_handler.c",
+        "line": 308,
+        "codePattern": "ngx_stream_log_session\\(s\\);",
+        "stepPattern": "finalize|结束|日志阶段|log_session",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/stream/ngx_stream_log_module.c",
+        "line": 218,
+        "codePattern": "if \\(lscf->off \\|\\| lscf->logs == NULL\\) \\{",
+        "stepPattern": "off|关闭|日志列表|未配置",
+        "wordingPatterns": [
+          "NULL|列表|未配置|没有|无logs"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_errlog_module--error_log",
+    "checks": [
+      {
+        "file": "src/core/ngx_log.c",
+        "line": 163,
+        "codePattern": "if \\(log->log_level < level && !debug_connection\\) \\{",
+        "stepPattern": "级别|log_level|过滤",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/core/ngx_log.c",
+        "line": 183,
+        "codePattern": "n = ngx_write_fd\\(log->file->fd, errstr, p - errstr\\);",
+        "stepPattern": "写入|write_fd|文件",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--error_log",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 2313,
+        "codePattern": "ngx_set_connection_log\\(r->connection, clcf->error_log\\);",
+        "stepPattern": "虚拟主机|server|set_connection_log|日志选择",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_stream_core_module--error_log",
+    "checks": [
+      {
+        "file": "src/stream/ngx_stream_handler.c",
+        "line": 145,
+        "codePattern": "ngx_set_connection_log\\(c, cscf->error_log\\);",
+        "stepPattern": "会话|连接|set_connection_log|日志",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_zone",
+    "checks": [
+      {
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "line": 293,
+        "codePattern": "if \\(!ctx->enable \\|\\| !vtscf->enable \\|\\| vtscf->bypass_stats\\) \\{",
+        "stepPattern": "统计|enable|bypass|跳过",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "line": 300,
+        "codePattern": "rc = ngx_http_vhost_traffic_status_shm_add_server\\(r\\);",
+        "stepPattern": "统计|节点|shm_add_server",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_host",
+    "checks": [
+      {
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "line": 533,
+        "codePattern": "if \\(vtscf->filter && vtscf->filter_host && r->headers_in\\.server\\.len\\) \\{",
+        "stepPattern": "Host|host|键|分组",
+        "wordingPatterns": [
+          "filter",
+          "非空|非零|server.len|有值"
+        ]
+      },
+      {
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "line": 539,
+        "codePattern": "dst = cscf->server_name;",
+        "stepPattern": "Host|host|键|分组|回退",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display",
+    "checks": [
+      {
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "line": 129,
+        "codePattern": "if \\(r->method != NGX_HTTP_GET && r->method != NGX_HTTP_HEAD\\) \\{",
+        "stepPattern": "方法|GET|HEAD",
+        "wordingPatterns": [
+          "GET",
+          "HEAD"
+        ]
+      },
+      {
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "line": 130,
+        "codePattern": "return NGX_HTTP_NOT_ALLOWED;",
+        "stepPattern": "方法|GET|HEAD",
+        "wordingPatterns": [
+          "405|NOT_ALLOWED|拒绝|不允许"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_format",
+    "checks": [
+      {
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "line": 492,
+        "codePattern": "format = \\(format == NGX_HTTP_VHOST_TRAFFIC_STATUS_FORMAT_NONE\\) \\? vtscf->format : format;",
+        "stepPattern": "格式|format",
+        "wordingPatterns": [
+          "URI|uri|路径",
+          "配置|vtscf"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_core_module--pid",
+    "checks": [
+      {
+        "file": "src/core/ngx_cycle.c",
+        "line": 1048,
+        "codePattern": "if \\(!ngx_test_config\\) \\{",
+        "stepPattern": "PID|pid|写入|创建",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/core/ngx_cycle.c",
+        "line": 1051,
+        "codePattern": "if \\(ngx_write_file\\(&file, pid, len, 0\\) == NGX_ERROR\\) \\{",
+        "stepPattern": "PID|pid|写入|创建",
+        "wordingPatterns": [
+          "失败|错误|NGX_ERROR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--listen",
+    "checks": [
+      {
+        "file": "src/core/ngx_connection.c",
+        "line": 604,
+        "codePattern": "if \\(bind\\(s, ls\\[i\\]\\.sockaddr, ls\\[i\\]\\.socklen\\) == -1\\) \\{",
+        "stepPattern": "bind|绑定",
+        "wordingPatterns": [
+          "失败|错误|重试|EADDRINUSE"
+        ]
+      },
+      {
+        "file": "src/core/ngx_connection.c",
+        "line": 518,
+        "codePattern": "#if \\(NGX_HAVE_REUSEPORT\\)",
+        "stepPattern": "socket|reuseaddr|bind",
+        "wordingPatterns": [
+          "REUSEPORT|编译|能力"
+        ]
+      },
+      {
+        "file": "src/core/ngx_connection.c",
+        "line": 520,
+        "codePattern": "if \\(ls\\[i\\]\\.reuseport && !ngx_test_config\\) \\{",
+        "stepPattern": "socket|reuseaddr|bind",
+        "wordingPatterns": [
+          "reuseport",
+          "非测试|!ngx_test_config|非.*测试配置"
+        ]
+      },
+      {
+        "file": "src/event/ngx_event.c",
+        "line": 917,
+        "codePattern": "if \\(ngx_use_accept_mutex\\) \\{",
+        "stepPattern": "监听事件初始化|事件注册|监听.*激活",
+        "wordingPatterns": [
+          "accept_mutex"
+        ]
+      },
+      {
+        "file": "src/event/ngx_event.c",
+        "line": 939,
+        "codePattern": "if \\(ngx_add_event\\(rev, NGX_READ_EVENT, 0\\) == NGX_ERROR\\) \\{",
+        "stepPattern": "监听事件初始化|事件注册|监听.*激活",
+        "wordingPatterns": [
+          "失败|ERROR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--server",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 2308,
+        "codePattern": "r->srv_conf = cscf->ctx->srv_conf;",
+        "stepPattern": "虚拟主机|匹配|切换|srv_conf",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 2309,
+        "codePattern": "r->loc_conf = cscf->ctx->loc_conf;",
+        "stepPattern": "虚拟主机|匹配|切换|loc_conf",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 992,
+        "codePattern": "if \\(sscf->reject_handshake\\) \\{",
+        "stepPattern": "SNI回调|SNI.*回调|回调.*SNI",
+        "wordingPatterns": [
+          "reject_handshake",
+          "拒绝|fatal|FATAL"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 995,
+        "codePattern": "return SSL_TLSEXT_ERR_ALERT_FATAL;",
+        "stepPattern": "SNI回调|SNI.*回调|回调.*SNI",
+        "wordingPatterns": [
+          "reject_handshake"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 2283,
+        "codePattern": "if \\(hc->ssl_servername\\) \\{",
+        "stepPattern": "名称选择|名称查找|combined hash",
+        "wordingPatterns": [
+          "SNI",
+          "例外|默认server|默认.*server|无SNI|没有SNI|未进入|不进入"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--location",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 960,
+        "codePattern": "rc = ngx_http_core_find_location\\(r\\);",
+        "stepPattern": "匹配|查找|find_location",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 963,
+        "codePattern": "ngx_http_finalize_request\\(r, NGX_HTTP_INTERNAL_SERVER_ERROR\\);",
+        "stepPattern": "匹配|查找|find_location",
+        "wordingPatterns": [
+          "失败|错误|500|INTERNAL_SERVER_ERROR"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 1405,
+        "codePattern": "noregex = 0;",
+        "stepPattern": "noregex",
+        "wordingPatterns": [
+          "本层|每层|当前层"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 1417,
+        "codePattern": "noregex = clcf->noregex;",
+        "stepPattern": "noregex",
+        "wordingPatterns": [
+          "递归前|递归之前|先.*保存|保存.*递归"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 1433,
+        "codePattern": "if \\(noregex == 0 && pclcf->regex_locations\\) \\{",
+        "stepPattern": "noregex",
+        "wordingPatterns": [
+          "本层|每层|当前层"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_stream_core_module--listen",
+    "checks": [
+      {
+        "file": "src/stream/ngx_stream_handler.c",
+        "line": 44,
+        "codePattern": "port = c->listening->servers;",
+        "stepPattern": "地址|监听|listening",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/stream/ngx_stream_handler.c",
+        "line": 46,
+        "codePattern": "if \\(port->naddrs > 1\\) \\{",
+        "stepPattern": "地址|监听|naddrs",
+        "wordingPatterns": [
+          "地址|naddrs"
+        ]
+      },
+      {
+        "file": "src/core/ngx_connection.c",
+        "line": 518,
+        "codePattern": "#if \\(NGX_HAVE_REUSEPORT\\)",
+        "stepPattern": "socket|reuseaddr|bind",
+        "wordingPatterns": [
+          "REUSEPORT|编译|能力"
+        ]
+      },
+      {
+        "file": "src/core/ngx_connection.c",
+        "line": 520,
+        "codePattern": "if \\(ls\\[i\\]\\.reuseport && !ngx_test_config\\) \\{",
+        "stepPattern": "socket|reuseaddr|bind",
+        "wordingPatterns": [
+          "reuseport",
+          "非测试|!ngx_test_config|非.*测试配置"
+        ]
+      },
+      {
+        "file": "src/event/ngx_event.c",
+        "line": 917,
+        "codePattern": "if \\(ngx_use_accept_mutex\\) \\{",
+        "stepPattern": "监听事件初始化|事件注册|监听.*激活",
+        "wordingPatterns": [
+          "accept_mutex"
+        ]
+      },
+      {
+        "file": "src/event/ngx_event.c",
+        "line": 939,
+        "codePattern": "if \\(ngx_add_event\\(rev, NGX_READ_EVENT, 0\\) == NGX_ERROR\\) \\{",
+        "stepPattern": "监听事件初始化|事件注册|监听.*激活",
+        "wordingPatterns": [
+          "失败|ERROR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_stream_core_module--server",
+    "checks": [
+      {
+        "file": "src/stream/ngx_stream_handler.c",
+        "line": 129,
+        "codePattern": "s->srv_conf = ctx->srv_conf;",
+        "stepPattern": "会话|上下文|srv_conf",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/stream/ngx_stream_core_module.c",
+        "line": 468,
+        "codePattern": "cscf->handler\\(s\\);",
+        "stepPattern": "content|内容|handler|处理器",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--client_max_body_size",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_request_body.c",
+        "line": 1144,
+        "codePattern": "- r->headers_in\\.content_length_n < rb->chunked->size\\)",
+        "stepPattern": "chunk|分块",
+        "wordingPatterns": [
+          "累计|已读|content_length"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_request_body.c",
+        "line": 1154,
+        "codePattern": "return NGX_HTTP_REQUEST_ENTITY_TOO_LARGE;",
+        "stepPattern": "chunk|分块",
+        "wordingPatterns": [
+          "413|REQUEST_ENTITY_TOO_LARGE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--keepalive_timeout",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 2804,
+        "codePattern": "&& clcf->keepalive_timeout > 0\\)",
+        "stepPattern": "保留|keepalive|复用",
+        "wordingPatterns": [
+          "退出|exiting|terminate"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_request.c",
+        "line": 3306,
+        "codePattern": "ngx_add_timer\\(rev, clcf->keepalive_timeout\\);",
+        "stepPattern": "定时器|timer|空闲",
+        "wordingPatterns": []
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--sendfile",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 1320,
+        "codePattern": "if \\(\\(ngx_io\\.flags & NGX_IO_SENDFILE\\) && clcf->sendfile\\) \\{",
+        "stepPattern": "sendfile|能力|标志",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/os/unix/ngx_linux_sendfile_chain.c",
+        "line": 177,
+        "codePattern": "n = ngx_linux_sendfile\\(c, file, file_size\\);",
+        "stepPattern": "Linux|linux|发送|sendfile",
+        "wordingPatterns": []
+      },
+      {
+        "file": "src/os/unix/ngx_linux_sendfile_chain.c",
+        "line": 180,
+        "codePattern": "return NGX_CHAIN_ERROR;",
+        "stepPattern": "Linux|linux|发送|sendfile",
+        "wordingPatterns": [
+          "失败|错误|NGX_ERROR|CHAIN_ERROR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--default_type",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_core_module.c",
+        "line": 1644,
+        "codePattern": "r->headers_out\\.content_type = clcf->default_type;",
+        "stepPattern": "兜底|回退|default_type",
+        "wordingPatterns": [
+          "类型|type"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nginx--ngx_http_core_module--server_tokens",
+    "checks": [
+      {
+        "file": "src/http/ngx_http_header_filter_module.c",
+        "line": 455,
+        "codePattern": "if \\(r->headers_out\\.server == NULL\\) \\{",
+        "stepPattern": "Server|server|响应头",
+        "wordingPatterns": [
+          "不存在|未有|没有|未设置|为空|NULL|缺失"
+        ]
+      },
+      {
+        "file": "src/http/ngx_http_header_filter_module.c",
+        "line": 465,
+        "codePattern": "p = ngx_http_server_string;",
+        "stepPattern": "Server|server|响应头",
+        "wordingPatterns": []
+      }
+    ]
+  }
+]

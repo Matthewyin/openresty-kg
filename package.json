@@ -1,0 +1,19 @@
+{
+  "name": "openresty-config-knowledge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "inventory": "node scripts/inventory.mjs --config project.config.json",
+    "build": "node scripts/build.mjs --config project.config.json",
+    "preview": "node scripts/preview.mjs --config project.config.json",
+    "agent": "node experiments/pi-sdk/run.mjs website --env-file .env",
+    "test": "node --test test/*.test.mjs",
+    "mcp": "node mcp/server.mjs --config project.config.json"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "zod": "4.6.5"
+  }
+}

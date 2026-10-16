@@ -1,0 +1,1147 @@
+[
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json",
+    "summary": "启用RDS数据库结果流到JSON的响应过滤转换。",
+    "syntax": "rds_json on|off;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 831,
+      "end_line": 843
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "header-gate",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 187,
+        "end_line": 275
+      },
+      {
+        "id": "filter-install",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 378,
+        "end_line": 407
+      },
+      {
+        "id": "mime",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_util.c",
+        "start_line": 126,
+        "end_line": 141
+      },
+      {
+        "id": "field-types",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 548,
+        "end_line": 641
+      },
+      {
+        "id": "string-escape",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_util.c",
+        "start_line": 17,
+        "end_line": 122
+      },
+      {
+        "id": "rds-mime-value",
+        "component": "rds-json-nginx-module",
+        "file": "src/resty_dbd_stream.h",
+        "start_line": 7,
+        "end_line": 11
+      },
+      {
+        "id": "null-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 696,
+        "end_line": 702
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只处理状态200至299排除204/205、且Content-Type精确为application/x-resty-dbd-stream的响应；不是任意SQL/文本转JSON。SQL NULL输出null、空串输出字符串；按RDS类型选择数值/布尔/字符串，字符串高位字节直接复制，不进行UTF-8验证，浮点文本也没有完整合法性校验。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "header-gate",
+          "filter-install",
+          "mime",
+          "field-types",
+          "string-escape",
+          "rds-mime-value",
+          "null-output"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "header-gate",
+        "filter-install",
+        "mime",
+        "field-types",
+        "string-escape",
+        "rds-mime-value",
+        "null-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_root",
+    "summary": "用指定键将有列结果集数组包装在顶层JSON对象内。",
+    "syntax": "rds_json_root key;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 550,
+      "end_line": 596
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "result-start",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_processor.c",
+        "start_line": 189,
+        "end_line": 235
+      },
+      {
+        "id": "result-end",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_processor.c",
+        "start_line": 278,
+        "end_line": 310
+      },
+      {
+        "id": "root-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 311,
+        "end_line": 405
+      },
+      {
+        "id": "metadata",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 119,
+        "end_line": 302
+      },
+      {
+        "id": "ret-handler",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 10,
+        "end_line": 195
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未指定且无success/user_property时不包装；设置这些附加属性而root为空时自动使用data。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；root还受success/user_property触发的默认包装规则影响。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "键为非空字面字符串，经JSON转义，不支持变量求值。用于正常有列结果集（包含零行），不是给零列RDS元信息或rds_json_ret对象再套一层；可与normal/compact格式组合。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "result-start",
+          "result-end",
+          "root-output",
+          "metadata",
+          "ret-handler"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "result-start",
+        "result-end",
+        "root-output",
+        "metadata",
+        "ret-handler"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_success_property",
+    "summary": "为输出对象增加指定名称的成功布尔属性。",
+    "syntax": "rds_json_success_property key;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 600,
+      "end_line": 647
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "result-properties",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 311,
+        "end_line": 405
+      },
+      {
+        "id": "metadata-success",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 119,
+        "end_line": 252
+      },
+      {
+        "id": "ret-success",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 53,
+        "end_line": 65
+      },
+      {
+        "id": "ret-success-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 136,
+        "end_line": 151
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不输出该附加属性。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "键是非空字面字符串；有列结果集路径输出true，零列RDS头按std_errcode是否为0决定，rds_json_ret按给定错误码判断。它不是HTTP状态码检测或运行SQL的开关；会在未设root时触发默认data包装。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "result-properties",
+          "metadata-success",
+          "ret-success",
+          "ret-success-output"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "result-properties",
+        "metadata-success",
+        "ret-success",
+        "ret-success-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_user_property",
+    "summary": "为顶层JSON对象添加自定义字符串属性，值支持Nginx变量。",
+    "syntax": "rds_json_user_property key value;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 651,
+      "end_line": 727
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "result-properties",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 311,
+        "end_line": 405
+      },
+      {
+        "id": "metadata-properties",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 153,
+        "end_line": 251
+      },
+      {
+        "id": "ret-properties",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 67,
+        "end_line": 96
+      },
+      {
+        "id": "string-escape",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_util.c",
+        "start_line": 17,
+        "end_line": 122
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不输出自定义属性。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未建立属性列表时继承父层完整列表，否则使用本层列表；同层多次追加。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置键及原始值参数都不能为空；键为字面值，value在请求期求值后按JSON字符串转义，不作为数字、对象或原始JSON插入。不会去重或检查与root/内置键冲突；未设root时自动包装到data。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "result-properties",
+          "metadata-properties",
+          "ret-properties",
+          "string-escape"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "result-properties",
+        "metadata-properties",
+        "ret-properties",
+        "string-escape"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_errcode_key",
+    "summary": "重命名零列RDS元信息及rds_json_ret输出中的错误码属性。",
+    "syntax": "rds_json_errcode_key key;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 731,
+      "end_line": 777
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "metadata-error",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 254,
+        "end_line": 282
+      },
+      {
+        "id": "ret-error",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 111,
+        "end_line": 136
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "errcode。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "非空字面键，经JSON转义，不求值变量；只更改属性名，不改错误码数值或HTTP响应状态，也不为普通有列结果自动添加错误码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "metadata-error",
+          "ret-error"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "metadata-error",
+        "ret-error"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_errstr_key",
+    "summary": "重命名零列RDS元信息及rds_json_ret输出中的错误描述属性。",
+    "syntax": "rds_json_errstr_key key;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 781,
+      "end_line": 827
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "metadata-error",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 178,
+        "end_line": 198
+      },
+      {
+        "id": "metadata-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 254,
+        "end_line": 282
+      },
+      {
+        "id": "ret-error",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 111,
+        "end_line": 136
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "errstr。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "非空字面键，经JSON转义，不求值变量；描述为空时该属性不输出。它不修改数据库错误内容，也不为正常结果集额外生成描述。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "metadata-error",
+          "metadata-output",
+          "ret-error"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "metadata-error",
+        "metadata-output",
+        "ret-error"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_format",
+    "summary": "选择有列结果集按逐行对象或列名加行数组形式输出JSON。",
+    "syntax": "rds_json_format normal|compact;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1386
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "format-values",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 30,
+        "end_line": 35
+      },
+      {
+        "id": "format-selection",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_processor.c",
+        "start_line": 189,
+        "end_line": 235
+      },
+      {
+        "id": "column-array",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 409,
+        "end_line": 465
+      },
+      {
+        "id": "row-format",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 469,
+        "end_line": 548
+      },
+      {
+        "id": "metadata-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 119,
+        "end_line": 302
+      },
+      {
+        "id": "ret-handler",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 10,
+        "end_line": 195
+      },
+      {
+        "id": "row-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 650,
+        "end_line": 695
+      },
+      {
+        "id": "row-closing",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 627,
+        "end_line": 641
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "normal。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "normal为对象数组，每行携带列名；compact首元素为列名数组，后续每行为值数组，不是单纯去空格的压缩选项。仅normal/compact有效，pretty未注册；不改变零列元信息及rds_json_ret对象形态。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "format-values",
+          "format-selection",
+          "column-array",
+          "row-format",
+          "metadata-output",
+          "ret-handler",
+          "row-output",
+          "row-closing"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "format-values",
+        "format-selection",
+        "column-array",
+        "row-format",
+        "metadata-output",
+        "ret-handler",
+        "row-output",
+        "row-closing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_content_type",
+    "summary": "设置RDS转JSON或rds_json_ret生成响应的Content-Type。",
+    "syntax": "rds_json_content_type type;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "output-type",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 217,
+        "end_line": 235
+      },
+      {
+        "id": "ret-output",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 179,
+        "end_line": 194
+      },
+      {
+        "id": "json-mime-value",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "id": "input-mime-test",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_util.c",
+        "start_line": 124,
+        "end_line": 137
+      },
+      {
+        "id": "rds-mime-value",
+        "component": "rds-json-nginx-module",
+        "file": "src/resty_dbd_stream.h",
+        "start_line": 7,
+        "end_line": 11
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "application/json。",
+      "source_ids": [
+        "create-merge",
+        "json-mime-value"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置为字面字符串，不编译变量；只改变输出类型，不改变过滤器对原始RDS MIME的要求，也不决定编码转换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "output-type",
+          "ret-output",
+          "input-mime-test",
+          "rds-mime-value"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "output-type",
+        "ret-output",
+        "json-mime-value",
+        "input-mime-test",
+        "rds-mime-value"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_ret",
+    "summary": "安装内容处理器，直接输出含自定义错误码和可选描述的JSON对象。",
+    "syntax": "rds_json_ret error_code description;",
+    "callback_definition": {
+      "component": "rds-json-nginx-module",
+      "file": "src/ngx_http_rds_json_filter_module.c",
+      "start_line": 483,
+      "end_line": 546
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "ret-handler",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 10,
+        "end_line": 195
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "错误码参数须为非空十进制数字串，描述支持变量并经JSON转义；正常返回HTTP200，错误码是正文属性而非HTTP状态。不是rewrite阶段return，不执行数据库或要求RDS输入；root和format不包装此对象。实际注册接受两个以上参数，但回调只读取前两个业务参数，额外参数不参与输出。数字串直接拷入JSON，不做前导零归一化或完整JSON数值验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "ret-handler"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "ret-handler"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-json-nginx-module",
+    "module": "ngx_http_rds_json_filter_module",
+    "name": "rds_json_buffer_size",
+    "summary": "设置RDS转JSON时常规输出缓冲的大小。",
+    "syntax": "rds_json_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_filter_module.c",
+        "start_line": 411,
+        "end_line": 479
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 593,
+        "end_line": 596
+      },
+      {
+        "id": "output-memory",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_output.c",
+        "start_line": 927,
+        "end_line": 1097
+      },
+      {
+        "id": "ret-buffer",
+        "component": "rds-json-nginx-module",
+        "file": "src/ngx_http_rds_json_handler.c",
+        "start_line": 99,
+        "end_line": 111
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是最大结果集、字段或JSON总大小；不足的输出单元使用额外暂存内存，再分段拷入输出缓冲。0不是关闭开关，输出推进依赖正缓冲空间；不控制rds_json_ret按响应长度一次分配的缓冲。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "output-memory",
+          "ret-buffer"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS JSON，没有直接组件补丁；所引共享Nginx配置槽位经有效补丁回放保持。结论仅限列出的配置和输出事实，不表示已运行数据库或端到端RDS转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "output-memory",
+        "ret-buffer"
+      ]
+    },
+    "related": []
+  }
+]

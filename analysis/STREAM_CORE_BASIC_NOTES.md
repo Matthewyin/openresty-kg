@@ -1,0 +1,13 @@
+# P15 Stream核心12项准备
+
+2026-10-12。新增stream配置块及stream core剩余11项，完整覆盖两owner相对正式330的差集，既有server/listen/error_log不修改。JSON SHA256：4db942b502f9015cb5f66f6468c60c859a785cae510f601f821f3a779bf53f2b。
+
+逐项读取固定Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928的注册、真实回调、初始化/合并及局部使用分支，对照固定nginx.org e8b581903e9d41252720053311cea687a5671674中的12个活跃XML节点。变量/名称哈希的桶数不写成变量/服务器数硬上限，桶大小按缓存行对齐；server_name与实际TLS/预读启用分开。PROXY协议等待、preread等待、解析等待、连接超时各自独立；预读已有定时器不重设、已有缓冲不重建，满缓冲仍需数据则结束会话。
+
+resolver确实调用共享ngx_resolver_create，故纳入OpenResty8c37412c31621225e7aa7e825b5b50106c9c71c4的resolver_conf_parsing及safe_resolver_ipv6_option影响。说明非Windows local=on/off/path、没有服务器时错误、未配置时不自动读取系统DNS及无IPv6构建的选项边界；不把商业status_zone列为开源语法。引用94处，68段Nginx原文中67保持、唯一改变为resolver/implementation-1；实际临时回放34补丁/142hunk/47最终摘要通过，其他条目只核所列局部事实。未执行DNS查询或OpenResty。
+
+隔离330+12构建得到342基础候选1.27.1.1-640ab51def853f32，1017注册、0深度、范围true；身份差集、无重复及12项basic状态均通过。根current保持330，临时副本finally清理。准备阶段修正变量文件EOF至1340、resolver回调EOF至1403，没有引用尾部不存在的行。候审，尚未正式发布。
+
+## R29单句修复
+
+独立审核11项通过；resolver说明中“只有local=off且没有任何DNS服务器会报错”容易被理解成错误条件仅限local=off。已改为显式resolver最终没有DNS服务器均报错，包含local=off以及local=on/path未读到服务器；对应已引原始及补丁后条件都是n非零且connections为空。只改此句，不增加来源，不改其他11项。新SHA256 03b621cb879fb2ffcf2176061f2d1ff550d3fe541469af8c650a917af7af9ece。待差异复核，未自行发布此12项；根站点正在合入另已审174项，与本候选分开。

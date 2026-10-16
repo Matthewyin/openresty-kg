@@ -1,0 +1,1137 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_map_module",
+    "name": "map",
+    "summary": "根据输入字符串匹配规则，生成可供Stream配置使用的变量；读取变量时才求值输入与所选输出。",
+    "syntax": "map string $variable { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_map_module.c",
+      "start_line": 174,
+      "end_line": 364
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 89,
+        "end_line": 102
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 105,
+        "end_line": 154
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 380,
+        "end_line": 588
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_variables.c",
+        "start_line": 977,
+        "end_line": 1034
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 211,
+        "end_line": 249
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_map_module.xml",
+        "start_line": 44,
+        "end_line": 173
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未定义default且未命中时返回空字符串。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只在stream定义映射变量，不是server层可继承的标量设置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "普通字符串大小写不敏感；正则~及~*受PCRE构建支持。hostnames需在对应条目前声明以启用通配名称处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "先匹配哈希中的精确/通配规则，再按配置顺序尝试正则，最后使用default；结果可含变量，volatile会将目标变量标为不可缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_map_module.xml#L44-L173",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_map_module",
+    "name": "map_hash_max_size",
+    "summary": "设置Stream map哈希表构建使用的最大桶数。",
+    "syntax": "map_hash_max_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 89,
+        "end_line": 102
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 157,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 286,
+        "end_line": 359
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_map_module.xml",
+        "start_line": 191,
+        "end_line": 203
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "首次解析map时未配置则设为2048。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，所有map使用同一模块配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "整数语法，不是允许的map条目数硬上限；应在首个map之前配置，因为map解析时会填入默认值，之后设置可能报重复。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_map_module.xml#L191-L203",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_map_module",
+    "name": "map_hash_bucket_size",
+    "summary": "设置Stream map名称哈希表每桶的空间预算。",
+    "syntax": "map_hash_bucket_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 89,
+        "end_line": 102
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 157,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_map_module.c",
+        "start_line": 286,
+        "end_line": 359
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_map_module.xml",
+        "start_line": 176,
+        "end_line": 188
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "首次map使用ngx_cacheline_size，显式值按缓存行向上对齐。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，所有map使用同一模块配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "整数语法而非带k/m的size槽；应在首个map之前声明，避免map已填充默认值而被视为重复设置。桶必须能够容纳对应键，不控制正则条目数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_map_module.xml#L176-L188",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_limit_conn_module",
+    "name": "limit_conn_zone",
+    "summary": "创建按配置键保存并发连接计数的共享内存区，供Stream limit_conn引用。",
+    "syntax": "limit_conn_zone key zone=name:size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_limit_conn_module.c",
+      "start_line": 541,
+      "end_line": 638
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 164,
+        "end_line": 294
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 418,
+        "end_line": 476
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_limit_conn_module.xml",
+        "start_line": 122,
+        "end_line": 164
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动声明共享区。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置声明共享区，不按server继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "键可由文本与变量组合，空键跳过计数；大于255字节的键记录错误后跳过。zone名称不能为空，大小至少8个内存页。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "重复绑定同名zone会拒绝；复用旧共享区时检查键表达式相同。这里只声明计数区，必须由limit_conn引用才参与限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_limit_conn_module.xml#L122-L164",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_limit_conn_module",
+    "name": "limit_conn",
+    "summary": "在Stream preaccess阶段按指定共享区的键限制并发会话数，超过限额时拒绝当前会话。",
+    "syntax": "limit_conn zone number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_limit_conn_module.c",
+      "start_line": 642,
+      "end_line": 699
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 164,
+        "end_line": 294
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 370,
+        "end_line": 415
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 499,
+        "end_line": 537
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 722,
+        "end_line": 737
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_limit_conn_module.xml",
+        "start_line": 51,
+        "end_line": 84
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动配置限制列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有limit_conn时继承上层整组；本层有任意条目时使用本层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "number为1至65535，同层不能重复引用同一zone；多zone逐一检查，不是速率限制。空键和过长键跳过对应zone。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "计数由连接池清理回调递减；达到限额或共享区分配失败通常返回Stream服务不可用状态，dry_run路径只标记并放行，不发送HTTP 503报文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_limit_conn_module.xml#L51-L84",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_limit_conn_module",
+    "name": "limit_conn_log_level",
+    "summary": "设置Stream并发计数达到限额时限流日志的级别。",
+    "syntax": "limit_conn_log_level info|notice|warn|error;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1385
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 76,
+        "end_line": 83
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 164,
+        "end_line": 294
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 499,
+        "end_line": 537
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_limit_conn_module.xml",
+        "start_line": 104,
+        "end_line": 119
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置则继承上层，均未设置采用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响达到计数限额分支的limiting connections日志，包括dry_run标记；不统一改变空内存、键过长及其他失败日志的级别，也不修改拒绝行为。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_limit_conn_module.xml#L104-L119",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_limit_conn_module",
+    "name": "limit_conn_dry_run",
+    "summary": "启用Stream并发限制试运行；达到限额或分配失败时记录REJECTED_DRY_RUN状态而不按该限制拒绝会话。",
+    "syntax": "limit_conn_dry_run on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 131,
+        "end_line": 144
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 164,
+        "end_line": 294
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 370,
+        "end_line": 415
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 478,
+        "end_line": 497
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_limit_conn_module.c",
+        "start_line": 499,
+        "end_line": 537
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_limit_conn_module.xml",
+        "start_line": 87,
+        "end_line": 101
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置则继承上层，均未设置采用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "并不是关闭计数：未超限路径仍增加并发数并注册清理；超限/分配失败时清理本次先前zone计数并退出，不把超限会话继续作为完整活跃计数累加。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仍可能因键求值或清理记录分配等其他错误失败；on不保证会话在所有模块中必然被允许。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preaccess",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_limit_conn_module.xml#L87-L101",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_geo_module",
+    "name": "geo",
+    "summary": "按客户端地址或指定地址变量的CIDR/地址范围映射，生成Stream变量；用于地址分类，不执行地理数据库查询。",
+    "syntax": "geo [$address] $variable { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_geo_module.c",
+      "start_line": 355,
+      "end_line": 550
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 132,
+        "end_line": 145
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 172,
+        "end_line": 352
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 554,
+        "end_line": 618
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 623,
+        "end_line": 729
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 1001,
+        "end_line": 1095
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 1196,
+        "end_line": 1243
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_geo_module.c",
+        "start_line": 1276,
+        "end_line": 1324
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/core/ngx_radix_tree.c",
+        "start_line": 237,
+        "end_line": 263
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/core/ngx_radix_tree.c",
+        "start_line": 425,
+        "end_line": 458
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_geo_module.xml",
+        "start_line": 46,
+        "end_line": 162
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未指定输入变量时取连接地址；未匹配且未设置default时输出空字符串。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置定义映射变量，不按server继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "CIDR模式采用最具体网络；IPv6受编译条件限制。ranges模式只处理IPv4数值范围，需先声明ranges；不能把它当IPv6范围表。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "无效或缺失的输入地址按255.255.255.255对应值查找，不一定直接得到default；输出值按字面字符串保存，不展开为复杂变量表达式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "支持default/delete/include；include由Nginx配置期读取，本站只识别用户粘贴内容，不读取用户配置引用文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁实际回放后核所引配置、合并及局部使用片段原文保持；仅对所列事实成立，不扩展为整条调用链或运行环境保证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_geo_module.xml#L46-L162",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

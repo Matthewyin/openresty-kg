@@ -1,0 +1,7 @@
+# P15 Stream变量与连接限制8项准备
+
+2026-10-12。map3、limit_conn4、geo1，完整三owner8身份，相对正式330无交集。JSON SHA256：9a5ef114cadd1e8a18ba1f17d470b22c2a6bb6ec1aa2c8963499e7623175a4b6。
+
+固定Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928、nginx.org e8b581903e9d41252720053311cea687a5671674与OpenResty8c37412c31621225e7aa7e825b5b50106c9c71c4。逐项核配置真实定义与owner、map求值和复杂值输出、哈希/正则顺序、首次map填默认导致后置hash指令可能重复的边界；limit_conn共享zone、preaccess挂接、键长度跳过、计数清理、dry_run限额分支及日志枚举；geo连接/变量地址来源、CIDR最具体查找、IPv4 ranges、无效地址映射和字面结果。共享hash/radix函数已读，引用实际使用者，不以注册名称替代作用说明。
+
+71来源有效EOF，55段Nginx所引原文在实际34补丁/142hunk/47最终摘要回放后全部保持；8个活跃XML。没有执行Nginx、用户include或生成geo二进制库。隔离330+8构建得到338基础候选1.27.1.1-47eb415f6758d41a，1017注册、0深度、范围true；完整差集、无重复及basic状态通过。根current保持，临时副本finally清理。P15三份合计29项只是准备稿，各自审后方能正式计数。

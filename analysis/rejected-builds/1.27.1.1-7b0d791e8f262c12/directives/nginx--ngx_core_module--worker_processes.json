@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "nginx--ngx_core_module--worker_processes",
+  "name": "worker_processes",
+  "module": "ngx_core_module",
+  "component": "nginx",
+  "contexts": [
+    "main"
+  ],
+  "contexts_verified": true,
+  "syntax": "worker_processes number | auto;",
+  "summary": "设置 Nginx worker 进程数量。锁定的上游配置入口将 auto 转换为 ngx_ncpu，否则解析整数并保存到核心配置。",
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "同一核心配置中重复设置会被入口拒绝。",
+      "status": "unverified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    },
+    {
+      "text": "此处说明来自上游 Nginx 1.27.1；OpenResty 补丁影响尚未逐项核定，不声称已核实发行版全部运行时行为。",
+      "status": "unverified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "registration_only",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。",
+    "上游 Nginx 1.27.1 注册表；OpenResty 补丁影响尚未逐项核定。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_set_worker_processes",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/core/nginx.c",
+      "start_line": 79,
+      "end_line": 84,
+      "code": "    { ngx_string(\"worker_processes\"),\n      NGX_MAIN_CONF|NGX_DIRECT_CONF|NGX_CONF_TAKE1,\n      ngx_set_worker_processes,\n      0,\n      0,\n      NULL },",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/core/nginx.c#L79-L84",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/core/nginx.c",
+      "start_line": 1553,
+      "end_line": 1592,
+      "code": "ngx_set_worker_processes(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_str_t        *value;\n    ngx_core_conf_t  *ccf;\n\n    ccf = (ngx_core_conf_t *) conf;\n\n    if (ccf->worker_processes != NGX_CONF_UNSET) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;\n\n    if (ngx_strcmp(value[1].data, \"auto\") == 0) {\n        ccf->worker_processes = ngx_ncpu;\n        return NGX_CONF_OK;\n    }\n\n    ccf->worker_processes = ngx_atoi(value[1].data, value[1].len);\n\n    if (ccf->worker_processes == NGX_ERROR) {\n        return \"invalid value\";\n    }\n\n    return NGX_CONF_OK;\n}\n\n\nstatic char *\nngx_load_module(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n#if (NGX_HAVE_DLOPEN)\n    void                *handle;\n    char               **names, **order;\n    ngx_str_t           *value, file;\n    ngx_uint_t           i;\n    ngx_module_t        *module, **modules;\n    ngx_pool_cleanup_t  *cln;\n\n    if (cf->cycle->modules_used) {",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/core/nginx.c#L1553-L1592",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/core/nginx.c",
+      "start_line": 1553,
+      "end_line": 1580,
+      "code": "ngx_set_worker_processes(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_str_t        *value;\n    ngx_core_conf_t  *ccf;\n\n    ccf = (ngx_core_conf_t *) conf;\n\n    if (ccf->worker_processes != NGX_CONF_UNSET) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;\n\n    if (ngx_strcmp(value[1].data, \"auto\") == 0) {\n        ccf->worker_processes = ngx_ncpu;\n        return NGX_CONF_OK;\n    }\n\n    ccf->worker_processes = ngx_atoi(value[1].data, value[1].len);\n\n    if (ccf->worker_processes == NGX_ERROR) {\n        return \"invalid value\";\n    }\n\n    return NGX_CONF_OK;\n}\n\n",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/core/nginx.c#L1553-L1580",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 30,
+      "end_line": 34,
+      "code": "ver=\"$main_ver\"\n$root/util/get-tarball \"https://openresty.org/download/nginx-$ver.tar.gz\" -O nginx-$ver.tar.gz || exit 1\ntar -xzf nginx-$ver.tar.gz || exit 1\ncd nginx-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L30-L34",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [],
+  "patch_status": {
+    "status": "unverified",
+    "note": "需要对 OpenResty 的有效 Nginx 补丁逐项核对，当前仅引用上游代码。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "process"
+  ],
+  "mechanism": null,
+  "related": [
+    "worker_connections"
+  ]
+}

@@ -1,0 +1,1318 @@
+{
+  "schema_version": 1,
+  "openresty_version": "1.27.1.1",
+  "components": [
+    {
+      "component": "lua-resty-dns",
+      "version": "0.23",
+      "repository": "https://github.com/openresty/lua-resty-dns",
+      "tag": "v0.23",
+      "revision": "273db4f348d4676f554c5319a902e7b836153192",
+      "tree_sha": "5f5ebf73427343a065d1bc9e576c1bc22f93e553",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "84b6760bb4972d4c42818cec0395671b9ae3f049"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "ef5e74fcb2c8bc3b605324b3c316643dfc5b4303"
+        },
+        {
+          "path": "Makefile",
+          "sha": "59edfe6d7bf483acff7c8a0098a355152a6e0c5f"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "390385b9f4b2532c2d14e45e76fc109f10768be7"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "9a0caae528fd2bf4063a3e106c21326e903cdaff"
+        },
+        {
+          "path": "lib/resty/dns/resolver.lua",
+          "sha": "7e0ba37352b8019c4f9a1f1ad4189b57659f20ed"
+        },
+        {
+          "path": "t/TestDNS.pm",
+          "sha": "adef4655f28a6dc8c92567bf409fbf66635153d2"
+        },
+        {
+          "path": "t/lib/ljson.lua",
+          "sha": "1084724935b7625f694c13ee84bf9be34e4e6a4d"
+        },
+        {
+          "path": "t/mock.t",
+          "sha": "43c186f6601c3fd420bdfb72425e1700d51a0cc2"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "32081df0af4b48ffb873b20968e27e71a3b8234a"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ead2a60e7d1b8a182941bbaea33923438647400"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-dns - Lua DNS resolver for the ngx_lua based on the cosocket API\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Methods](#methods)\n    * [new](#new)\n    * [destroy](#destroy)\n    * [query](#query)\n    * [tcp_query](#tcp_query)\n    * [set_timeout](#set_timeout)\n    * [compress_ipv6_addr](#compress_ipv6_addr)\n    * [expand_ipv6_addr](#expand_ipv6_addr)\n    * [arpa_str](#arpa_str)\n    * [reverse_query](#reverse_query)\n* [Constants](#constants)\n    * [TYPE_A](#type_a)\n    * [TYPE_NS](#type_ns)\n    * [TYPE_CNAME](#type_cname)\n    * [TYPE_SOA](#type_soa)\n    * [TYPE_PTR](#type_ptr)\n    * [TYPE_MX](#type_mx)\n    * [TYPE_TXT](#type_txt)\n    * [TYPE_AAAA](#type_aaaa)\n    * [TYPE_SRV](#type_srv)\n    * [TYPE_SPF](#type_spf)\n    * [CLASS_IN](#class_in)\n    * [SECTION_AN](#section_an)\n    * [SECTION_NS](#section_ns)\n    * [SECTION_AR](#section_ar)\n* [Automatic Error Logging](#automatic-error-logging)\n* [Limitations](#limitations)\n* [TODO](#todo)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library provides a DNS resolver for the ngx_lua nginx module:\n\nhttps://github.com/openresty/lua-nginx-module/#readme\n\nThis Lua library takes advantage of ngx_lua's cosocket API, which ensures\n100% nonblocking behavior.\n\nNote that at least [ngx_lua 0.5.12](https://github.com/openresty/lua-nginx-module/tags) or [OpenResty 1.2.1.11](http://openresty.org/#Download) is required.\n\nAlso, the [bit library](http://bitop.luajit.org/) is also required. If you're using LuaJIT 2.0 with ngx_lua, then the `bit` library is already available by default.\n\nNote that, this library is bundled and enabled by default in the [OpenResty bundle](http://openresty.org/).\n",
+        "url": "https://github.com/openresty/lua-resty-dns/blob/273db4f348d4676f554c5319a902e7b836153192/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "59edfe6d7bf483acff7c8a0098a355152a6e0c5f",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty/dns\n\t$(INSTALL) lib/resty/dns/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/dns/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-dns/blob/273db4f348d4676f554c5319a902e7b836153192/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-limit-traffic",
+      "version": "0.09",
+      "repository": "https://github.com/openresty/lua-resty-limit-traffic",
+      "tag": "v0.09",
+      "revision": "e80969b79afcc94856b095fe6163ace21387c6b6",
+      "tree_sha": "acac439695372103cb307dfeba30d1798836c2ff",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "8b8ac0a1c972d916eabca74ada65b9ec15d3471c"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "33e5a20c024a6965bc7318fca35f11bfd063721a"
+        },
+        {
+          "path": "Makefile",
+          "sha": "1741ed97e4a8a8d2242f4e819da029df18b92dc2"
+        },
+        {
+          "path": "README.md",
+          "sha": "ac382653322961735aae6d78346a62c76be7371f"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "879033fe71ebf4865f01d7e231497aaa6e41e9a8"
+        },
+        {
+          "path": "lib/resty/limit/conn.lua",
+          "sha": "46c7a9ee0b8ecd5dbb69be0cf493cd70b097c040"
+        },
+        {
+          "path": "lib/resty/limit/conn.md",
+          "sha": "283342a3a94a541dce7a17447c0d10c1ea3d8629"
+        },
+        {
+          "path": "lib/resty/limit/count.lua",
+          "sha": "d794a1328007aba6b83e64ec3f21e8a74fa739db"
+        },
+        {
+          "path": "lib/resty/limit/count.md",
+          "sha": "a773e1b84c602cc3426bdc8cfb0ff2f0a6effec8"
+        },
+        {
+          "path": "lib/resty/limit/req.lua",
+          "sha": "a51c467b60aa6ee0b8f0890cb03c5b6f42f75aa4"
+        },
+        {
+          "path": "lib/resty/limit/req.md",
+          "sha": "c2b040f01dd971e32f3c2b6e3cc9db9761e6a057"
+        },
+        {
+          "path": "lib/resty/limit/traffic.lua",
+          "sha": "57f4cd16796f71913b97428b2945f18ba95f947a"
+        },
+        {
+          "path": "lib/resty/limit/traffic.md",
+          "sha": "c8f350880d3c60756b0307288fcedd2fce5be59d"
+        },
+        {
+          "path": "t/conn.t",
+          "sha": "041c1e89a2aefa6cb5c8bf286978f08fe685077f"
+        },
+        {
+          "path": "t/count.t",
+          "sha": "aa652c5b9dc8bc8c04f9914d59f12fed8e73562a"
+        },
+        {
+          "path": "t/req.t",
+          "sha": "e0f4428d74ea9e329c123fa21c71a50c73317a73"
+        },
+        {
+          "path": "t/traffic.t",
+          "sha": "8b7d80e360a2f1e9f70fa445ef3f822af24a9ce1"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "b7b9eadc315ec2e30c499de8a339fbdb2c6e2b07"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.md",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-limit-traffic - Lua library for limiting and controlling traffic in OpenResty/ngx_lua\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Synopsis](#synopsis)\n* [Description](#description)\n* [Installation](#installation)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is already usable though still highly experimental.\n\nThe Lua API is still in flux and may change in the near future without notice.\n\nSynopsis\n========\n\n```nginx\n# demonstrate the usage of the resty.limit.req module (alone!)\nhttp {\n    lua_shared_dict my_limit_req_store 100m;\n\n    server {\n        location / {\n            access_by_lua_block {\n                -- well, we could put the require() and new() calls in our own Lua\n                -- modules to save overhead. here we put them below just for\n                -- convenience.\n\n                local limit_req = require \"resty.limit.req\"\n\n                -- limit the requests under 200 req/sec with a burst of 100 req/sec,\n                -- that is, we delay requests under 300 req/sec and above 200\n                -- req/sec, and reject any requests exceeding 300 req/sec.\n                local lim, err = limit_req.new(\"my_limit_req_store\", 200, 100)\n                if not lim then\n                    ngx.log(ngx.ERR,\n                            \"failed to instantiate a resty.limit.req object: \", err)\n                    return ngx.exit(500)\n                end\n\n                -- the following call must be per-request.\n                -- here we use the remote (IP) address as the limiting key\n                local key = ngx.var.binary_remote_addr\n                local delay, err = lim:incoming(key, true)\n                if not delay then\n                    if err == \"rejected\" then\n                        return ngx.exit(503)\n                    end\n                    ngx.log(ngx.ERR, \"failed to limit req: \", err)\n                    return ngx.exit(500)",
+        "url": "https://github.com/openresty/lua-resty-limit-traffic/blob/e80969b79afcc94856b095fe6163ace21387c6b6/README.md#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "1741ed97e4a8a8d2242f4e819da029df18b92dc2",
+        "start_line": 1,
+        "end_line": 20,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\n#LUA_VERSION := 5.1\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/limit/\n\t$(INSTALL) lib/resty/limit/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty/limit/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-limit-traffic/blob/e80969b79afcc94856b095fe6163ace21387c6b6/Makefile#L1-L20"
+      }
+    },
+    {
+      "component": "lua-resty-lock",
+      "version": "0.09",
+      "repository": "https://github.com/openresty/lua-resty-lock",
+      "tag": "v0.09",
+      "revision": "9dc550e56b6f3b1a2f1a31bb270a91813b5b6861",
+      "tree_sha": "5bc572bd2d147bafb1bdc2a9b7b48f63981555a1",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "84b6760bb4972d4c42818cec0395671b9ae3f049"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "b53965cac844f253f2a1c68bf75615625e2a33ab"
+        },
+        {
+          "path": "Makefile",
+          "sha": "1b7e6b59ebb96416bb48ebfbcb90b246dbabb7f1"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "520b251a1f020c5bdae037f2db08fbc78c3b0d16"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "cc595f2c4252245ab628c3001904da6013d74548"
+        },
+        {
+          "path": "lib/resty/lock.lua",
+          "sha": "8dab49f7b829472a24970fde02ea74f94504ac68"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "4125799d0c815969b03d6c72a30a59c93983fb9c"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "4fa99d63ae2d5c11d8070eb71202c0fbfa23ba05"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-lock - Simple shm-based nonblocking lock API\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Synopsis](#synopsis)\n* [Description](#description)\n* [Methods](#methods)\n    * [new](#new)\n    * [lock](#lock)\n    * [unlock](#unlock)\n    * [expire](#expire)\n* [For Multiple Lua Light Threads](#for-multiple-lua-light-threads)\n* [For Cache Locks](#for-cache-locks)\n* [Limitations](#limitations)\n* [Prerequisites](#prerequisites)\n* [Installation](#installation)\n* [TODO](#todo)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is still under early development and is production ready.\n\nSynopsis\n========\n\n```lua\n# nginx.conf\n\nhttp {\n    # you do not need the following line if you are using the\n    # OpenResty bundle:\n    lua_package_path \"/path/to/lua-resty-core/lib/?.lua;/path/to/lua-resty-lock/lib/?.lua;;\";\n\n    lua_shared_dict my_locks 100k;\n\n    server {\n        ...\n\n        location = /t {\n            content_by_lua '\n                local resty_lock = require \"resty.lock\"\n                for i = 1, 2 do\n                    local lock, err = resty_lock:new(\"my_locks\")\n                    if not lock then\n                        ngx.say(\"failed to create lock: \", err)\n                    end\n\n                    local elapsed, err = lock:lock(\"my_key\")\n                    ngx.say(\"lock: \", elapsed, \", \", err)\n\n                    local ok, err = lock:unlock()",
+        "url": "https://github.com/openresty/lua-resty-lock/blob/9dc550e56b6f3b1a2f1a31bb270a91813b5b6861/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "1b7e6b59ebb96416bb48ebfbcb90b246dbabb7f1",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty/\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-lock/blob/9dc550e56b6f3b1a2f1a31bb270a91813b5b6861/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-lrucache",
+      "version": "0.15",
+      "repository": "https://github.com/openresty/lua-resty-lrucache",
+      "tag": "v0.15",
+      "revision": "3ff6300e68b73ba20e909c7d16bd839aef2e5a4b",
+      "tree_sha": "4eed7b08767f889d2405b08f347db1578eb62a72",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "84b6760bb4972d4c42818cec0395671b9ae3f049"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "b4255687d46d1489568f6b9b6b25c32c6dfbf50d"
+        },
+        {
+          "path": "Makefile",
+          "sha": "d3d9d8b08718b9a8b350ca59548a0eceddbc054e"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "917e63588d97a4be4c3387a03f96bb72f8ea4413"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "678a936dc8398ae6685d4f14631d4ffe4ba09b63"
+        },
+        {
+          "path": "lib/resty/lrucache.lua",
+          "sha": "20f27a9156bdb07e298786bbab4c86bc21ee1bb4"
+        },
+        {
+          "path": "lib/resty/lrucache/pureffi.lua",
+          "sha": "289b18395caa088cf9ce35092bbf54092173469b"
+        },
+        {
+          "path": "t/001-sanity.t",
+          "sha": "f91f78294bdce23468507a698e753d09a35141bb"
+        },
+        {
+          "path": "t/002-should-store-false.t",
+          "sha": "72cdbe0ea48a2fa6d1fc0dcb53844eb3ab2c0356"
+        },
+        {
+          "path": "t/003-init-by-lua.t",
+          "sha": "0ddb67d55a2702240169bafaba6a8b06e05e8534"
+        },
+        {
+          "path": "t/004-flush-all.t",
+          "sha": "c37ecd7c204b967347067b1f47752cd31ae57d27"
+        },
+        {
+          "path": "t/005-capacity.t",
+          "sha": "1fabfb1bf4ba8f4c2cf51005b6f574f7ee4376c8"
+        },
+        {
+          "path": "t/006-count.t",
+          "sha": "746386f49bb9d1e7d9a4fe43932e30562911223a"
+        },
+        {
+          "path": "t/007-get-keys.t",
+          "sha": "88087d50851860c236311ac7bd42fccf878753b0"
+        },
+        {
+          "path": "t/008-user-flags.t",
+          "sha": "1ef97c88f7f70fcfc084207435d1ed7612e20f07"
+        },
+        {
+          "path": "t/100-pureffi/001-sanity.t",
+          "sha": "71d00df06d88a43c6fecfc48a5f2e1603dcc7870"
+        },
+        {
+          "path": "t/100-pureffi/002-should-store-false.t",
+          "sha": "2a684532714f78dd5cb4a60ed12db1ec72fcb087"
+        },
+        {
+          "path": "t/100-pureffi/003-init-by-lua.t",
+          "sha": "945f44b80a8237f1812c41fa3fdee5eac4ed47d5"
+        },
+        {
+          "path": "t/100-pureffi/004-flush-all.t",
+          "sha": "8d82c2e61408c1ebf5fcdaf25a19e1abd78f4cf0"
+        },
+        {
+          "path": "t/100-pureffi/005-capacity.t",
+          "sha": "c6615d9057f2df8d851f2beb2d1a539747ccedd8"
+        },
+        {
+          "path": "t/100-pureffi/006-count.t",
+          "sha": "28d56d2cdc4188632615ec9a22a40a111f03a59d"
+        },
+        {
+          "path": "t/100-pureffi/007-get-keys.t",
+          "sha": "0bf3742d682dec7eda0bd3f3d06e0188ec808c46"
+        },
+        {
+          "path": "t/100-pureffi/008-user-flags.t",
+          "sha": "f4509c304adb9699f42aae8186df1fb7dd85b634"
+        },
+        {
+          "path": "t/101-mixed.t",
+          "sha": "fd831b6431161b78be103a75900bfef6e0dcf889"
+        },
+        {
+          "path": "t/TestLRUCache.pm",
+          "sha": "531b14e2d8635bb97abb85506b1878bc04bf067d"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ab8925cbfcd815156e927ac08ca7b2e42d85887"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-lrucache - Lua-land LRU cache based on the LuaJIT FFI.\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Synopsis](#synopsis)\n* [Description](#description)\n* [Methods](#methods)\n    * [new](#new)\n    * [set](#set)\n    * [get](#get)\n    * [delete](#delete)\n    * [count](#count)\n    * [capacity](#capacity)\n    * [get_keys](#get_keys)\n    * [flush_all](#flush_all)\n* [Prerequisites](#prerequisites)\n* [Installation](#installation)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nSynopsis\n========\n\n```lua\n-- file myapp.lua: example \"myapp\" module\n\nlocal _M = {}\n\n-- alternatively: local lrucache = require \"resty.lrucache.pureffi\"\nlocal lrucache = require \"resty.lrucache\"\n\n-- we need to initialize the cache on the lua module level so that\n-- it can be shared by all the requests served by each nginx worker process:\nlocal c, err = lrucache.new(200)  -- allow up to 200 items in the cache\nif not c then\n    error(\"failed to create the cache: \" .. (err or \"unknown\"))\nend\n\nfunction _M.go()\n    c:set(\"dog\", 32)\n    c:set(\"cat\", 56)\n    ngx.say(\"dog: \", c:get(\"dog\"))\n    ngx.say(\"cat: \", c:get(\"cat\"))\n\n    c:set(\"dog\", { age = 10 }, 0.1)  -- expire in 0.1 sec\n    c:delete(\"dog\")\n\n    c:flush_all()  -- flush all the cached data\nend",
+        "url": "https://github.com/openresty/lua-resty-lrucache/blob/3ff6300e68b73ba20e909c7d16bd839aef2e5a4b/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "d3d9d8b08718b9a8b350ca59548a0eceddbc054e",
+        "start_line": 1,
+        "end_line": 31,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install lint\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty/lrucache\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/\n\t$(INSTALL) lib/resty/lrucache/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/lrucache/\nifeq ($(LUA_LIB_DIR),/usr/local/lib/lua/)\n\t@echo\n\t@printf \"\\033[33mPLEASE NOTE: \\033[0m\\n\"\n\t@printf \"\\033[33mThe necessary lua_package_path directive needs to be added to nginx.conf\\033[0m\\n\"\n\t@printf \"\\033[33min the http context, because \\\"/usr/local/lib/lua/\\\" is not in LuaJIT’s default search path.\\033[0m\\n\"\n\t@printf \"\\033[33mRefer to the Installation section of README.markdown.\\033[0m\\n\"\nendif\n\ntest: all lint\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\nlint:\n\t@! grep -P -n --color -- 'require.*?resty\\.lrucache[^.]' t/*pureffi*/*.t || (echo \"ERROR: Found pureffi tests requiring 'resty.lrucache'.\" > /dev/stderr; exit 1)\n\t@! grep -R -P -n --color --exclude-dir=pureffi --exclude=*mixed.t -- 'require.*?resty\\.lrucache\\.pureffi' t/*.t || (echo \"ERROR: Found pure Lua tests requiring 'resty.lrucache.pureffi'.\" > /dev/stderr; exit 1)\n\n",
+        "url": "https://github.com/openresty/lua-resty-lrucache/blob/3ff6300e68b73ba20e909c7d16bd839aef2e5a4b/Makefile#L1-L31"
+      }
+    },
+    {
+      "component": "lua-resty-memcached",
+      "version": "0.17",
+      "repository": "https://github.com/openresty/lua-resty-memcached",
+      "tag": "v0.17",
+      "revision": "122cba2b1cd36cddd941444bcdda7ba37aaad021",
+      "tree_sha": "04c6283d1949324eeace51fdd9f2baaabba66c28",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "eebc749819f71c05ab4de2bc88eff1d5b4170ab6"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "6803a0e7a44f5a31d45b3447d5c846a50a223e26"
+        },
+        {
+          "path": "Makefile",
+          "sha": "e23641d7e97ba792e7975478ef53013787adddfd"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "5a02c1cc9ba11667b79ef622109cdd771205dc21"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "e3e9b6aa74d95c84b206edf1996b3b7f76b07f5d"
+        },
+        {
+          "path": "lib/resty/memcached.lua",
+          "sha": "d02a214f161d8ad9a509f4cfa88f6a3a5ffe6f95"
+        },
+        {
+          "path": "t/cert/ca.crt",
+          "sha": "dd5bdfbe401e3daf57d536be73ab03f838c96263"
+        },
+        {
+          "path": "t/cert/ca.key",
+          "sha": "92cfd5ec189a475bf816ec3dbf2e7a35aefb9aa5"
+        },
+        {
+          "path": "t/cert/server.crt",
+          "sha": "d9456c998ec57f254984c6fe263089227f7f7cf0"
+        },
+        {
+          "path": "t/cert/server.key",
+          "sha": "808db31db8bab080a135559d80ab127d183cdcce"
+        },
+        {
+          "path": "t/mock.t",
+          "sha": "bde19de16183fb4fffae6404917150d2123d7c5f"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "612742731c3bacf31beb50b7587fa84e99dfaf0a"
+        },
+        {
+          "path": "t/tableset.t",
+          "sha": "f9a5aa2b349b3908c7f105b71da7f90d70b2a8e9"
+        },
+        {
+          "path": "t/tls.t",
+          "sha": "1423cd9ecc1f72547d6245b7fede93f6738cd690"
+        },
+        {
+          "path": "t/touch.t",
+          "sha": "ea443ce95b1a687331872411a7ef56304a62fd6e"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "77bedae750d25063ef0b07158cf6eeb34366e59b"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ead2a60e7d1b8a182941bbaea33923438647400"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-memcached - Lua memcached client driver for the ngx_lua based on the cosocket API\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Methods](#methods)\n    * [new](#new)\n    * [connect](#connect)\n    * [sslhandshake](#sslhandshake)\n    * [set](#set)\n    * [set_timeout](#set_timeout)\n    * [set_timeouts](#set_timeouts)\n    * [set_keepalive](#set_keepalive)\n    * [get_reused_times](#get_reused_times)\n    * [close](#close)\n    * [add](#add)\n    * [replace](#replace)\n    * [append](#append)\n    * [prepend](#prepend)\n    * [get](#get)\n    * [gets](#gets)\n    * [cas](#cas)\n    * [touch](#touch)\n    * [flush_all](#flush_all)\n    * [delete](#delete)\n    * [incr](#incr)\n    * [decr](#decr)\n    * [stats](#stats)\n    * [version](#version)\n    * [quit](#quit)\n    * [verbosity](#verbosity)\n    * [init_pipeline](#init_pipeline)\n    * [commit_pipeline](#commit_pipeline)\n    * [cancel_pipeline](#cancel_pipeline)\n* [Automatic Error Logging](#automatic-error-logging)\n* [Limitations](#limitations)\n* [TODO](#todo)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library is a memcached client driver for the ngx_lua nginx module:\n\nhttp://wiki.nginx.org/HttpLuaModule\n\nThis Lua library takes advantage of ngx_lua's cosocket API, which ensures\n100% nonblocking behavior.\n\nNote that at least [ngx_lua 0.5.0rc29](https://github.com/chaoslawful/lua-nginx-module/tags) or [OpenResty 1.0.15.7](http://openresty.org/#Download) is required.\n",
+        "url": "https://github.com/openresty/lua-resty-memcached/blob/122cba2b1cd36cddd941444bcdda7ba37aaad021/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "e23641d7e97ba792e7975478ef53013787adddfd",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty-debug\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-memcached/blob/122cba2b1cd36cddd941444bcdda7ba37aaad021/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-mysql",
+      "version": "0.27",
+      "repository": "https://github.com/openresty/lua-resty-mysql",
+      "tag": "v0.27",
+      "revision": "64effe8ff8dd968b7621d8468d06994513576076",
+      "tree_sha": "dea4a017f69ff163be85185d15829e2729ccc148",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE.md",
+          "sha": "238d77473f7657e092379964fb5355ba64ccc255"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "a2473caa15d544b2ec79fe41eeb152603e17dec2"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "9647ba4883f60b0a210e2e74c51eefbfd76c68b0"
+        },
+        {
+          "path": ".travis/initializedb.sh",
+          "sha": "ee17bf90b4b01b030fe72be8b4c893803a180210"
+        },
+        {
+          "path": "Makefile",
+          "sha": "e23641d7e97ba792e7975478ef53013787adddfd"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "b26992430d65b3c5d258e9b10712327a8434f458"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "1e601dc0a093be81d3fcdc47f71e6208d40963ed"
+        },
+        {
+          "path": "lib/resty/mysql.lua",
+          "sha": "2c85b4b7d49ff4549b50e0e89de8acc2ea05f43d"
+        },
+        {
+          "path": "server.crt",
+          "sha": "d059a025c6200cc3ee91774f7eb85de91a46da36"
+        },
+        {
+          "path": "server.key",
+          "sha": "d3a7be5be7cc29447b7402467c581423d6646238"
+        },
+        {
+          "path": "t/Test.pm",
+          "sha": "e22b865c9dd20da46d358f7f73047c602cb763ad"
+        },
+        {
+          "path": "t/auth.t",
+          "sha": "326d02790b5a01d482a6079f1f9907cc9cc74581"
+        },
+        {
+          "path": "t/big.t",
+          "sha": "cb9bdc616b5e0594613f71bba257029623a0be55"
+        },
+        {
+          "path": "t/bug.t",
+          "sha": "604baaf8f7e4de87652db6c9099ed3f1763ca0d3"
+        },
+        {
+          "path": "t/charset.t",
+          "sha": "03b7fa2c5db6a041ec6647a05d315084a40cfa07"
+        },
+        {
+          "path": "t/compact_arrays.t",
+          "sha": "7de93977441fe310f425be9c4acfc1b1ef48e536"
+        },
+        {
+          "path": "t/data/test-sha1.crt",
+          "sha": "a69a01141a65ef5aef6b7de9ea8acfe448ad9dac"
+        },
+        {
+          "path": "t/data/test-sha1.key",
+          "sha": "6c1352711745b568619e7658dc109763b2080ed1"
+        },
+        {
+          "path": "t/data/test-sha1.pub",
+          "sha": "77bf7fd09350b294699ae3cbab965b59de8b402d"
+        },
+        {
+          "path": "t/data/test-sha256.crt",
+          "sha": "4195d97c11d3462941d305f1fe94e7a40901ad57"
+        },
+        {
+          "path": "t/data/test-sha256.key",
+          "sha": "4bdf0656ed1d4e3c9a160890eb8c0977fc7836c4"
+        },
+        {
+          "path": "t/data/world.sql.gz",
+          "sha": "54d9ffd535013285429aaadcdef1be8b8ceeab69"
+        },
+        {
+          "path": "t/lib/create_sql_by_columns.lua",
+          "sha": "67cf1ef8952ff63d30eef4514e561db10b7c6511"
+        },
+        {
+          "path": "t/lib/ljson.lua",
+          "sha": "1084724935b7625f694c13ee84bf9be34e4e6a4d"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "7acd3c3a5014f350a0a725cb982f292ec71fcca9"
+        },
+        {
+          "path": "t/ssl.t",
+          "sha": "a3a7a4aa764e74b040bd18a547dcb3e8f1beecf9"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "413a423b6f9d8a68b3b3e9dfdc9c533ca45114da"
+        },
+        {
+          "path": "t/world.t",
+          "sha": "2151a15fb1327afb082f6618104a6fc70ae21756"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "103309699a4d7ed41cc737fad6199bc04af98591"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-mysql - Lua MySQL client driver for ngx_lua based on the cosocket API\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Methods](#methods)\n    * [new](#new)\n    * [connect](#connect)\n    * [set_timeout](#set_timeout)\n    * [set_keepalive](#set_keepalive)\n    * [get_reused_times](#get_reused_times)\n    * [close](#close)\n    * [send_query](#send_query)\n    * [read_result](#read_result)\n    * [query](#query)\n    * [server_ver](#server_ver)\n    * [set_compact_arrays](#set_compact_arrays)\n* [SQL Literal Quoting](#sql-literal-quoting)\n* [Multi-Resultset Support](#multi-resultset-support)\n* [Debugging](#debugging)\n* [Automatic Error Logging](#automatic-error-logging)\n* [Limitations](#limitations)\n* [More Authentication Method Support](#more-authentication-method-support)\n* [Installation](#installation)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [TODO](#todo)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library is a MySQL client driver for the ngx_lua nginx module:\n\nhttps://github.com/openresty/lua-nginx-module\n\nThis Lua library takes advantage of ngx_lua's cosocket API, which ensures\n100% nonblocking behavior.\n\nNote that at least [ngx_lua 0.9.11](https://github.com/chaoslawful/lua-nginx-module/tags) or [ngx_openresty 1.7.4.1](http://openresty.org/#Download) is required.\n\nAlso, the [bit library](http://bitop.luajit.org/) is also required. If you're using LuaJIT 2 with ngx_lua, then the `bit` library is already available by default.\n\nSynopsis\n========\n\n```lua\n\n    # you do not need the following line if you are using",
+        "url": "https://github.com/openresty/lua-resty-mysql/blob/64effe8ff8dd968b7621d8468d06994513576076/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "e23641d7e97ba792e7975478ef53013787adddfd",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty-debug\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-mysql/blob/64effe8ff8dd968b7621d8468d06994513576076/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-redis",
+      "version": "0.31",
+      "repository": "https://github.com/openresty/lua-resty-redis",
+      "tag": "v0.31",
+      "revision": "193fbd42e9b7953f5157550eb5253c04c081b143",
+      "tree_sha": "bd825e861d0d18614a1cd2216724129c9dafe619",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "c1cf5535923a30d6ee1103fcdcc0172873d730ce"
+        },
+        {
+          "path": ".luacheckrc",
+          "sha": "7e9311887a4f802d343d624f9e812b42545ab8ab"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "e00a8832d7b87c98656ec1713c39bb9f045aef91"
+        },
+        {
+          "path": "Makefile",
+          "sha": "3f42cae4076f2d9665dc2d6a57caf5ca8d34bd05"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "cd4204ee6a2a8fbebacf6f2cc2ed95ecb9dbbf97"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "a19bee4274c101aa61ad83b12d2645ef5ef6b281"
+        },
+        {
+          "path": "lib/resty/redis.lua",
+          "sha": "6e58b395bf7ea2ff26174a148fd3b45eb7be8902"
+        },
+        {
+          "path": "t/Test.pm",
+          "sha": "072f6d06a77657b213badd3c094c6da77fc8aaa5"
+        },
+        {
+          "path": "t/bugs.t",
+          "sha": "cdcae2bb15bec5a511d4e9812ca3142ab172daa3"
+        },
+        {
+          "path": "t/cert/test.crt",
+          "sha": "a69a01141a65ef5aef6b7de9ea8acfe448ad9dac"
+        },
+        {
+          "path": "t/cert/test.key",
+          "sha": "6c1352711745b568619e7658dc109763b2080ed1"
+        },
+        {
+          "path": "t/count.t",
+          "sha": "91b6c40113323db932fcff0d6e968ca331573f35"
+        },
+        {
+          "path": "t/hmset.t",
+          "sha": "03b2bbd9f4235f1dde070a990a06455c638643c7"
+        },
+        {
+          "path": "t/mock.t",
+          "sha": "7ec74a966277bd4adbf84e5de40abda22a688b34"
+        },
+        {
+          "path": "t/module.t",
+          "sha": "4c3806063efad060b2c3524a30d1f8c40f98e7e5"
+        },
+        {
+          "path": "t/pipeline.t",
+          "sha": "264b0f54e93eaad2e6cc622c8342548f1556ed52"
+        },
+        {
+          "path": "t/pubsub.t",
+          "sha": "6825c44e39a4cedd58c9a0a239d3aede536ad6f2"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "7b926e8c2e24eb8b247afb5da5073bb9c0d0e9af"
+        },
+        {
+          "path": "t/ssl.t",
+          "sha": "33c03dc477c27ea10424b094481ebfe905088e63"
+        },
+        {
+          "path": "t/transaction.t",
+          "sha": "465183888847760493c90cbde95d738e2c147e3f"
+        },
+        {
+          "path": "t/user-cmds.t",
+          "sha": "800803d83ecd4951a942de826919c1b8b11967c8"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "63c34e84c9802d84e35cbf443a56f08f0c37d953"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ead2a60e7d1b8a182941bbaea33923438647400"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-redis - Lua redis client driver for the ngx_lua based on the cosocket API\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Methods](#methods)\n    * [new](#new)\n    * [connect](#connect)\n    * [set_timeout](#set_timeout)\n    * [set_timeouts](#set_timeouts)\n    * [set_keepalive](#set_keepalive)\n    * [get_reused_times](#get_reused_times)\n    * [close](#close)\n    * [init_pipeline](#init_pipeline)\n    * [commit_pipeline](#commit_pipeline)\n    * [cancel_pipeline](#cancel_pipeline)\n    * [hmset](#hmset)\n    * [array_to_hash](#array_to_hash)\n    * [read_reply](#read_reply)\n    * [add_commands](#add_commands)\n* [Redis Authentication](#redis-authentication)\n* [Redis Transactions](#redis-transactions)\n* [Load Balancing and Failover](#load-balancing-and-failover)\n* [Debugging](#debugging)\n* [Automatic Error Logging](#automatic-error-logging)\n* [Check List for Issues](#check-list-for-issues)\n* [Limitations](#limitations)\n* [Installation](#installation)\n* [TODO](#todo)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library is a Redis client driver for the ngx_lua nginx module:\n\nhttps://github.com/openresty/lua-nginx-module/#readme\n\nThis Lua library takes advantage of ngx_lua's cosocket API, which ensures\n100% nonblocking behavior.\n\nNote that at least [ngx_lua 0.5.14](https://github.com/chaoslawful/lua-nginx-module/tags) or [OpenResty 1.2.1.14](http://openresty.org/#Download) is required.\n\nSynopsis\n========\n\n```lua",
+        "url": "https://github.com/openresty/lua-resty-redis/blob/193fbd42e9b7953f5157550eb5253c04c081b143/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "3f42cae4076f2d9665dc2d6a57caf5ca8d34bd05",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty-debug\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-redis/blob/193fbd42e9b7953f5157550eb5253c04c081b143/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-shell",
+      "version": "0.03",
+      "repository": "https://github.com/openresty/lua-resty-shell",
+      "tag": "v0.03",
+      "revision": "ea23b3d6d4a4b3c475a3e0b530469343694e775c",
+      "tree_sha": "4b41581b594778fe75fe9998b649c419528198e6",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "f83f6d236305b59f5dfe9cd41a960dbfe50c38e8"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "02b6ede3b45c5eb22840f23f9adb9a693eb540fb"
+        },
+        {
+          "path": "Makefile",
+          "sha": "37c572009977d2feb4023249e872ceadfee7aedd"
+        },
+        {
+          "path": "README.md",
+          "sha": "20ce9748cd1e4b7a0d6579b828522bf8b71fb6b4"
+        },
+        {
+          "path": "lib/resty/shell.lua",
+          "sha": "24a457b7dd48aaf91946012792e7b8f8d5882a30"
+        },
+        {
+          "path": "t/TestShell.pm",
+          "sha": "5c608b130e66194c3d74ff49689695b54ccc6e91"
+        },
+        {
+          "path": "t/status.t",
+          "sha": "f4975712e8ed51a90c2e9279177f82c248cfd54f"
+        },
+        {
+          "path": "t/stderr.t",
+          "sha": "b16ce84227df30fa931cb2fdecc7fd553f87e608"
+        },
+        {
+          "path": "t/stdin.t",
+          "sha": "4ee38fdcdd6bdccc383cc45a20980519adb83db8"
+        },
+        {
+          "path": "t/stdout.t",
+          "sha": "ba70ad8a7c1f4d2e77f4f76ab645de7bda556778"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "1cac50666d85ac714bcbc0585d26e8ab2147ab87"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.md",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-shell - Lua module for nonblocking system shell command executions\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Synopsis](#synopsis)\n* [Functions](#functions)\n    * [run](#run)\n* [Dependencies](#dependencies)\n* [Author](#author)\n* [Copyright & Licenses](#copyright--licenses)\n\nSynopsis\n========\n\n```lua\nlocal shell = require \"resty.shell\"\n\nlocal stdin = \"hello\"\nlocal timeout = 1000  -- ms\nlocal max_size = 4096  -- byte\n\nlocal ok, stdout, stderr, reason, status =\n    shell.run([[perl -e 'warn \"he\\n\"; print <>']], stdin, timeout, max_size)\nif not ok then\n    -- ...\nend\n```\n\nFunctions\n=========\n\nrun\n---\n\n**syntax:** `ok, stdout, stderr, reason, status = shell.run(cmd, stdin?, timeout?, max_size?)`\n\n**context:** `all phases supporting yielding`\n\nRuns a shell command, `cmd`, with an optional stdin.\n\nThe `cmd` argument can either be a single string value (e.g. `\"echo 'hello,\nworld'\"`) or an array-like Lua table (e.g. `{\"echo\", \"hello, world\"}`). The\nformer is equivalent to `{\"/bin/sh\", \"-c\", \"echo 'hello, world'\"}`, but simpler\nand slightly faster.\n\nWhen the `stdin` argument is `nil` or `\"\"`, the stdin device will immediately\nbe closed.\n\nThe `timeout` argument specifies the timeout threshold (in ms) for\nstderr/stdout reading timeout, stdin writing timeout, and process waiting\ntimeout.\n\nThe `max_size` argument specifies the maximum size allowed for each output\ndata stream of stdout and stderr. When exceeding the limit, the `run()`\nfunction will immediately stop reading any more data from the stream and return\nan error string in the `reason` return value: `\"failed to read stdout: too much\ndata\"`.\n\nUpon terminating successfully (with a zero exit status), `ok` will be `true`,\n`reason` will be `\"exit\"`, and `status` will hold the sub-process exit status.",
+        "url": "https://github.com/openresty/lua-resty-shell/blob/ea23b3d6d4a4b3c475a3e0b530469343694e775c/README.md#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "37c572009977d2feb4023249e872ceadfee7aedd",
+        "start_line": 1,
+        "end_line": 18,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\n#LUA_VERSION := 5.1\nPREFIX ?=          /usr/local\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n",
+        "url": "https://github.com/openresty/lua-resty-shell/blob/ea23b3d6d4a4b3c475a3e0b530469343694e775c/Makefile#L1-L18"
+      }
+    },
+    {
+      "component": "lua-resty-string",
+      "version": "0.16",
+      "repository": "https://github.com/openresty/lua-resty-string",
+      "tag": "v0.16",
+      "revision": "7be2e1d907744f965af115819cca9e6580f2e760",
+      "tree_sha": "650618320c33ebd116c43c97e5639bad70fb6a6f",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "cc9fc367c1c2118481a4e6516f210eb4a1b37005"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "fe252745076c72c89e09dffbff114c12f7e538f3"
+        },
+        {
+          "path": "Makefile",
+          "sha": "456e75f1937e6d950c1ac7cfb8fd1174186037c3"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "142d68fdf2a3608e658f4469bd10da8a0badf2d8"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "e605f5dbe51030b011861c5b6504f740fa02f647"
+        },
+        {
+          "path": "lib/resty/aes.lua",
+          "sha": "377476f65b88d10d44b4dd1782befbbcfaa987c9"
+        },
+        {
+          "path": "lib/resty/md5.lua",
+          "sha": "66b3b3e9194cd6bf18a9e42790ca9672ae954fac"
+        },
+        {
+          "path": "lib/resty/random.lua",
+          "sha": "153b1f3fb25174b1d0e72c38338cf4b5f27c9b96"
+        },
+        {
+          "path": "lib/resty/sha.lua",
+          "sha": "ce4e50a5245ebcc04763c25f740c52bd8e29cbfd"
+        },
+        {
+          "path": "lib/resty/sha1.lua",
+          "sha": "fac7fda9304778efb6a203b60edb90c514006ae8"
+        },
+        {
+          "path": "lib/resty/sha224.lua",
+          "sha": "a08f88a3b788f9c55a0c836c1c6876ad48ee6e53"
+        },
+        {
+          "path": "lib/resty/sha256.lua",
+          "sha": "3cfc18b5239fa02aa0d8065881c2027d69b43271"
+        },
+        {
+          "path": "lib/resty/sha384.lua",
+          "sha": "c79e233b0588acfed8104d8d628390b249557d81"
+        },
+        {
+          "path": "lib/resty/sha512.lua",
+          "sha": "4dea89236d49bd4640d43e44d8a07e76803f4c52"
+        },
+        {
+          "path": "lib/resty/string.lua",
+          "sha": "665caf8b31be21297edc5f6f2c67815e1bc81072"
+        },
+        {
+          "path": "t/aes.t",
+          "sha": "2340be48bef7d1921fa4cf165328170ef71c4fc1"
+        },
+        {
+          "path": "t/aes_allocation.t",
+          "sha": "3db8e43130272fe2ea8b49201cae8eb68931775d"
+        },
+        {
+          "path": "t/atoi.t",
+          "sha": "73bf55a442faf8e949b9d2d77703eaf1924071ad"
+        },
+        {
+          "path": "t/md5.t",
+          "sha": "926ebbc4e608428e1916edd9b0be739129094d62"
+        },
+        {
+          "path": "t/random.t",
+          "sha": "8f601cead96ad231dd153787f32c2604bc45b001"
+        },
+        {
+          "path": "t/sha1.t",
+          "sha": "46096cdb2b646b1fe4b4ed130bc077262277b645"
+        },
+        {
+          "path": "t/sha224.t",
+          "sha": "dfb7d586d44e643505f172433dc862e0ba71f808"
+        },
+        {
+          "path": "t/sha256.t",
+          "sha": "f29e19fcbac4d42d8223b95745960d01b69020bc"
+        },
+        {
+          "path": "t/sha384.t",
+          "sha": "f8ca8fa834e05b473547d1c515a7ca503802ff5b"
+        },
+        {
+          "path": "t/sha512.t",
+          "sha": "cd9b978e1493e508b0d62126e0b387b6dd96b886"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "ed8c5bb93a411acca4bbcf67d27e101e01f850ad"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ead2a60e7d1b8a182941bbaea33923438647400"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-string - String utilities and common hash functions for ngx_lua and LuaJIT\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered experimental and still under active development.\n\nThe API is still in flux and may change without notice.\n\nDescription\n===========\n\nThis library requires an nginx build with OpenSSL,\nthe [ngx_lua module](http://wiki.nginx.org/HttpLuaModule), and [LuaJIT 2.0](http://luajit.org/luajit.html).\n\nSynopsis\n========\n\n```lua\n    # nginx.conf:\n\n    lua_package_path \"/path/to/lua-resty-string/lib/?.lua;;\";\n\n    server {\n        location = /test {\n            content_by_lua_file conf/test.lua;\n        }\n    }\n\n    -- conf/test.lua:\n\n    local resty_sha1 = require \"resty.sha1\"\n\n    local sha1 = resty_sha1:new()\n    if not sha1 then\n        ngx.say(\"failed to create the sha1 object\")\n        return\n    end\n\n    local ok = sha1:update(\"hello, \")\n    if not ok then\n        ngx.say(\"failed to add data\")\n        return\n    end\n\n    ok = sha1:update(\"world\")\n    if not ok then\n        ngx.say(\"failed to add data\")\n        return\n    end\n",
+        "url": "https://github.com/openresty/lua-resty-string/blob/7be2e1d907744f965af115819cca9e6580f2e760/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "456e75f1937e6d950c1ac7cfb8fd1174186037c3",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-string/blob/7be2e1d907744f965af115819cca9e6580f2e760/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-upload",
+      "version": "0.11",
+      "repository": "https://github.com/openresty/lua-resty-upload",
+      "tag": "v0.11",
+      "revision": "03704aee42f7135e7782688d8a9af63a16015edc",
+      "tree_sha": "f09493e13f4b19ea4bcd96b2cef68a6dd45c9ffb",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "8023628972a991e0d3278d96631a94d45eb8ab1e"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "7fcd5f7b6d2e7cc0fade2e9addb34934a2929b5d"
+        },
+        {
+          "path": "Makefile",
+          "sha": "e23641d7e97ba792e7975478ef53013787adddfd"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "0fb69b4575d6a9a8bacf020193db26c4cf278fc1"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "5669361c3ecac25aef88f458a35d75c31a84f781"
+        },
+        {
+          "path": "lib/resty/upload.lua",
+          "sha": "d4368828b70769aa7cccf8dd51b4c914ca6b3a01"
+        },
+        {
+          "path": "t/lib/ljson.lua",
+          "sha": "1084724935b7625f694c13ee84bf9be34e4e6a4d"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "9fac009b028f7b523958860de7920ac2432cf255"
+        },
+        {
+          "path": "t/version.t",
+          "sha": "10adbbb9d82c78471f6a7ce8b4d92f32c73fa4ca"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "5ead2a60e7d1b8a182941bbaea33923438647400"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-upload - Streaming reader and parser for HTTP file uploading based on ngx_lua cosocket\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library is a streaming file uploading API for the ngx_lua nginx module:\n\nhttp://wiki.nginx.org/HttpLuaModule\n\nThe multipart/form-data MIME type is supported.\n\nThe API of this library just returns tokens one by one. The user just needs to call the `read` method repeatedly until a nil token type is returned. For each token returned from the `read` method, just check the first return value for the current token type. The token type can be `header`, `body`, and `part end`. Each `multipart/form-data` form field parsed consists of several `header` tokens holding each field header, several `body` tokens holding each body data chunk, and a `part end` flag indicating the field end.\n\nThis is how streaming reading works. Even for giga bytes of file data input, the memory used in the lua land can be small and constant, as long as the user does not accumulate the input data chunks herself.\n\nThis Lua library takes advantage of ngx_lua's cosocket API, which ensures\n100% nonblocking behavior.\n\nNote that at least [ngx_lua 0.7.9](https://github.com/chaoslawful/lua-nginx-module/tags) or [OpenResty 1.2.4.14](http://openresty.org/#Download) is required.\n\nSynopsis\n========\n\n```lua\n    lua_package_path \"/path/to/lua-resty-upload/lib/?.lua;;\";\n\n    server {\n        location /test {\n            content_by_lua '\n                local upload = require \"resty.upload\"\n                local cjson = require \"cjson\"\n\n                local chunk_size = 5 -- should be set to 4096 or 8192\n                                     -- for real-world settings\n\n                local form, err = upload:new(chunk_size)\n                if not form then\n                    ngx.log(ngx.ERR, \"failed to new upload: \", err)\n                    ngx.exit(500)\n                end\n\n                form:set_timeout(1000) -- 1 sec\n\n                while true do\n                    local typ, res, err = form:read()\n                    if not typ then",
+        "url": "https://github.com/openresty/lua-resty-upload/blob/03704aee42f7135e7782688d8a9af63a16015edc/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "e23641d7e97ba792e7975478ef53013787adddfd",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty-debug\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\t$(INSTALL) lib/resty/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-upload/blob/03704aee42f7135e7782688d8a9af63a16015edc/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-resty-upstream-healthcheck",
+      "version": "0.08",
+      "repository": "https://github.com/openresty/lua-resty-upstream-healthcheck",
+      "tag": "v0.08",
+      "revision": "6ade2a860a0bc23c471c7c70751682263451eef5",
+      "tree_sha": "41745239b5f7de22ff861c558495debb0caf0c2a",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "84b6760bb4972d4c42818cec0395671b9ae3f049"
+        },
+        {
+          "path": ".lua-format",
+          "sha": "2d4338b2c226c838394151822d500c66823361ed"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "b1121425061e14fe316f05eaa9d9547b6b9a03b6"
+        },
+        {
+          "path": "Makefile",
+          "sha": "964a61a6bf5d13d3b856a1b325e0f8b4d80b7ea3"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "13f38d7b1339d9728c860f62df35b91bdfc2a7e3"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "9b1b90df78b8b5f0c6cce87d08998d3f57acd62c"
+        },
+        {
+          "path": "lib/resty/upstream/healthcheck.lua",
+          "sha": "55a209d71d9135c5dbae8d5b00068050245203b4"
+        },
+        {
+          "path": "t/cert/localhost.crt",
+          "sha": "3bba60162b6f2b3892f58667d2ce84f7ad3263a8"
+        },
+        {
+          "path": "t/cert/localhost.csr",
+          "sha": "112e32a23bf7222df608b940691decf0eeb0d0c0"
+        },
+        {
+          "path": "t/cert/localhost.key",
+          "sha": "0a435ce4eff9f358aeb33f85e09e8f23cb98a5a9"
+        },
+        {
+          "path": "t/https.t",
+          "sha": "3db0078e54edd5104767a2d6054cb6e84fb9c8f2"
+        },
+        {
+          "path": "t/lib/ljson.lua",
+          "sha": "5520bfc37d31e55c176ca49cb76b49552ca6d52c"
+        },
+        {
+          "path": "t/prometheus_down.t",
+          "sha": "6bc1153cd9729db545066b27c7a576248fe56455"
+        },
+        {
+          "path": "t/prometheus_empty.t",
+          "sha": "a60bc0c21d0d116fdfd3e27775713c80790ec4dd"
+        },
+        {
+          "path": "t/prometheus_mixed.t",
+          "sha": "86e304ad061a6b5ddacc264134e0a64e5c44d72e"
+        },
+        {
+          "path": "t/prometheus_up.t",
+          "sha": "4a5cfae20d77ad09147f6dea14133d311de5598c"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "d4a25d861c826eae173e33cbf74ab214ea24b763"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "f52a314eb36f16c6fd7752147593aa1745916cf3"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-upstream-healthcheck - Health-checker for Nginx upstream servers\n\nTable of Contents\n=================\n\n- [Name](#name)\n- [Table of Contents](#table-of-contents)\n- [Status](#status)\n- [Synopsis](#synopsis)\n- [Description](#description)\n- [Methods](#methods)\n  - [spawn_checker](#spawn_checker)\n  - [status_page](#status_page)\n- [Multiple Upstreams](#multiple-upstreams)\n- [Installation](#installation)\n- [TODO](#todo)\n- [Community](#community)\n  - [Contributing](#contributing)\n  - [English Mailing List](#english-mailing-list)\n  - [Chinese Mailing List](#chinese-mailing-list)\n- [Bugs and Patches](#bugs-and-patches)\n- [Author](#author)\n- [Copyright and License](#copyright-and-license)\n- [See Also](#see-also)\n\nStatus\n======\n\nThis library is still under early development but is already production ready.\n\nSynopsis\n========\n\n```nginx\nhttp {\n    lua_package_path \"/path/to/lua-resty-upstream-healthcheck/lib/?.lua;;\";\n\n    # sample upstream block:\n    upstream foo.com {\n        server 127.0.0.1:12354;\n        server 127.0.0.1:12355;\n        server 127.0.0.1:12356 backup;\n    }\n\n    # the size depends on the number of servers in upstream {}:\n    lua_shared_dict healthcheck 1m;\n\n    lua_socket_log_errors off;\n\n    init_worker_by_lua_block {\n        local hc = require \"resty.upstream.healthcheck\"\n\n        local ok, err = hc.spawn_checker{\n            shm = \"healthcheck\",  -- defined by \"lua_shared_dict\"\n            upstream = \"foo.com\", -- defined by \"upstream\"\n            type = \"http\", -- support \"http\" and \"https\"\n\n            http_req = \"GET /status HTTP/1.0\\r\\nHost: foo.com\\r\\n\\r\\n\",\n                    -- raw HTTP request for checking\n\n            port = nil,  -- the check port, it can be different than the original backend server port, default means the same as the original backend server\n            interval = 2000,  -- run the check cycle every 2 sec",
+        "url": "https://github.com/openresty/lua-resty-upstream-healthcheck/blob/6ade2a860a0bc23c471c7c70751682263451eef5/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "964a61a6bf5d13d3b856a1b325e0f8b4d80b7ea3",
+        "start_line": 1,
+        "end_line": 21,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty/upstream/\n\t$(INSTALL) lib/resty/upstream/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/upstream/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\nlint:\n\t@find lib -name \"*.lua\" -type f | sort | xargs -I{} sh -c 'lua-format -i {}'\n",
+        "url": "https://github.com/openresty/lua-resty-upstream-healthcheck/blob/6ade2a860a0bc23c471c7c70751682263451eef5/Makefile#L1-L21"
+      }
+    },
+    {
+      "component": "lua-resty-websocket",
+      "version": "0.12",
+      "repository": "https://github.com/openresty/lua-resty-websocket",
+      "tag": "v0.12",
+      "revision": "0c5ddc7d1a237336d3646c525b2e58b06b2952c4",
+      "tree_sha": "2b0f0c76658506f1e8083fd073c08bb799da9b11",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha": "6fe6f35cece4a77f8574092f4ece93c441c38404"
+        },
+        {
+          "path": ".gitignore",
+          "sha": "19dfbba4e1cc7cefd274c43214434a13b4ddf963"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "36b6048d1ab2361a072cd6b12c4a6e6017fc92d0"
+        },
+        {
+          "path": "Makefile",
+          "sha": "8a4a9ea03847670bd06175752630d4addc298f9c"
+        },
+        {
+          "path": "README.markdown",
+          "sha": "af3a1dcb43af736b2240be078c9cff6f0354dca0"
+        },
+        {
+          "path": "dist.ini",
+          "sha": "ee6c4925bf7a6937ef3460b51d9b48244c13b9d6"
+        },
+        {
+          "path": "lib/resty/websocket/client.lua",
+          "sha": "abe7388211ed5a38a8823bcccc7bb981d9b2dcd7"
+        },
+        {
+          "path": "lib/resty/websocket/protocol.lua",
+          "sha": "a3a2bf2604cc92b89638dd6e82932ad56d398f3f"
+        },
+        {
+          "path": "lib/resty/websocket/server.lua",
+          "sha": "160a53159f8ff731200d1dee2feb59f4e7f8abbc"
+        },
+        {
+          "path": "t/cert/mtls_ca.crt",
+          "sha": "3a25693e6db67d3f3ac50f85be7302d953d44ff4"
+        },
+        {
+          "path": "t/cert/mtls_ca.key",
+          "sha": "7b121666b11a2535f0b0a5d02cf1d730616c150b"
+        },
+        {
+          "path": "t/cert/mtls_client.crt",
+          "sha": "e478ca88de80e5da891a86d5a7a9177ffe8f37a9"
+        },
+        {
+          "path": "t/cert/mtls_client.key",
+          "sha": "f8d78cc930ef7d35535fab96219955a062a3c89a"
+        },
+        {
+          "path": "t/cert/mtls_server.crt",
+          "sha": "bf12279018c3f5e2b821cdd374ca06fd1b442dc7"
+        },
+        {
+          "path": "t/cert/mtls_server.key",
+          "sha": "74920b3a375ed8ad8363e6bdbbf0342aae85ec18"
+        },
+        {
+          "path": "t/cert/test.crt",
+          "sha": "a69a01141a65ef5aef6b7de9ea8acfe448ad9dac"
+        },
+        {
+          "path": "t/cert/test.key",
+          "sha": "6c1352711745b568619e7658dc109763b2080ed1"
+        },
+        {
+          "path": "t/count.t",
+          "sha": "f0be407a4d46d271a537990461e3432a52830b0e"
+        },
+        {
+          "path": "t/cs.t",
+          "sha": "e1b718198802f5dcc90f54175aaa1cba7283974d"
+        },
+        {
+          "path": "t/limits.t",
+          "sha": "3a621b964633b2d8fdc18cf319b968dd6e83e8e5"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "46216c6bf53f7e6fe04b204f27dbd008b3c2e56d"
+        },
+        {
+          "path": "valgrind.suppress",
+          "sha": "c42f148e6095e57e30c0a526325120cd11c0e2a1"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.markdown",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-resty-websocket - Lua WebSocket implementation for the ngx_lua module\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Status](#status)\n* [Description](#description)\n* [Synopsis](#synopsis)\n* [Modules](#modules)\n    * [resty.websocket.server](#restywebsocketserver)\n        * [Methods](#methods)\n            * [new](#new)\n            * [set_timeout](#set_timeout)\n            * [send_text](#send_text)\n            * [send_binary](#send_binary)\n            * [send_ping](#send_ping)\n            * [send_pong](#send_pong)\n            * [send_close](#send_close)\n            * [send_frame](#send_frame)\n            * [recv_frame](#recv_frame)\n    * [resty.websocket.client](#restywebsocketclient)\n        * [Methods](#methods)\n            * [client:new](#clientnew)\n            * [client:connect](#clientconnect)\n            * [client:close](#clientclose)\n            * [client:set_keepalive](#clientset_keepalive)\n            * [client:set_timeout](#clientset_timeout)\n            * [client:send_text](#clientsend_text)\n            * [client:send_binary](#clientsend_binary)\n            * [client:send_ping](#clientsend_ping)\n            * [client:send_pong](#clientsend_pong)\n            * [client:send_close](#clientsend_close)\n            * [client:send_frame](#clientsend_frame)\n            * [client:recv_frame](#clientrecv_frame)\n    * [resty.websocket.protocol](#restywebsocketprotocol)\n        * [Methods](#methods)\n            * [protocol.recv_frame](#protocolrecv_frame)\n            * [protocol.build_frame](#protocolbuild_frame)\n            * [protocol.send_frame](#protocolsend_frame)\n* [Automatic Error Logging](#automatic-error-logging)\n* [Limitations](#limitations)\n* [Installation](#installation)\n* [TODO](#todo)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n* [See Also](#see-also)\n\nStatus\n======\n\nThis library is considered production ready.\n\nDescription\n===========\n\nThis Lua library implements a WebSocket server and client libraries based on the [ngx_lua module](http://wiki.nginx.org/HttpLuaModule).\n",
+        "url": "https://github.com/openresty/lua-resty-websocket/blob/0c5ddc7d1a237336d3646c525b2e58b06b2952c4/README.markdown#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "8a4a9ea03847670bd06175752630d4addc298f9c",
+        "start_line": 1,
+        "end_line": 19,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)/resty/websocket\n\t$(INSTALL) lib/resty/websocket/*.lua $(DESTDIR)/$(LUA_LIB_DIR)/resty/websocket/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t\n\n",
+        "url": "https://github.com/openresty/lua-resty-websocket/blob/0c5ddc7d1a237336d3646c525b2e58b06b2952c4/Makefile#L1-L19"
+      }
+    },
+    {
+      "component": "lua-tablepool",
+      "version": "0.03",
+      "repository": "https://github.com/openresty/lua-tablepool",
+      "tag": "v0.03",
+      "revision": "94d3a5f43df6526fbaeb0f06873862f964766683",
+      "tree_sha": "79e784b0792e46d887d8d5eb62304e2233a1c0dd",
+      "truncated": false,
+      "files": [
+        {
+          "path": ".gitignore",
+          "sha": "468c33adad61318e10104d6d154e4b8fe2bb99fb"
+        },
+        {
+          "path": ".travis.yml",
+          "sha": "85ebf14049233ec0bf97b1eaeab813a7dadf046f"
+        },
+        {
+          "path": "Makefile",
+          "sha": "ea52cde7213b42844a3aab999ab267634d6881e4"
+        },
+        {
+          "path": "README.md",
+          "sha": "72584691a0699e09e4c1ab73bb668635cbd2072f"
+        },
+        {
+          "path": "lib/tablepool.lua",
+          "sha": "0b6d2cbf48829a919749bd739c4bc5c31d5fc4d3"
+        },
+        {
+          "path": "t/max-size.t",
+          "sha": "7bfbaae04b91e877da57b069a75c7c7f2447df31"
+        },
+        {
+          "path": "t/sanity.t",
+          "sha": "f6cbb70b50d49e67d75cc5d39e341f7bf6048e54"
+        }
+      ],
+      "native_or_generator_files": [],
+      "readme": {
+        "file": "README.md",
+        "start_line": 1,
+        "end_line": 65,
+        "code": "Name\n====\n\nlua-tablepool - Lua table recycling pools for LuaJIT\n\nTable of Contents\n=================\n\n* [Name](#name)\n* [Synopsis](#synopsis)\n* [Description](#description)\n* [Methods](#methods)\n    * [fetch](#fetch)\n    * [release](#release)\n* [Prerequisites](#prerequisites)\n* [Community](#community)\n    * [English Mailing List](#english-mailing-list)\n    * [Chinese Mailing List](#chinese-mailing-list)\n* [Bugs and Patches](#bugs-and-patches)\n* [Author](#author)\n* [Copyright and License](#copyright-and-license)\n\nSynopsis\n========\n\n```nginx\nlocal tablepool = require \"tablepool\"\n\nlocal pool_name = \"some_tag\"\n\nlocal my_tb = tablepool.fetch(pool_name, 0, 10)\n\n-- using my_tb for some purposes...\n\ntablepool.release(pool_name, my_tb)\n```\n\nDescription\n===========\n\nThis Lua library implements a pool mechanism to recycle small Lua tables. This can\navoid frequent allocations and de-allocation of many small Lua tables for temporary use.\nRecycling tables can also reduce the overhead of garbage collection in general.\n\nThe Lua table pools are shared across all the requests handled by the current NGINX\nworker process unless `lua_code_cache` is turned off in your `nginx.conf`.\n\nMethods\n=======\n\nTo load the `tablepool` module,\n\n```\nlocal tablepool = require \"tablepool\"\n```\n\n[Back to TOC](#table-of-contents)\n\nfetch\n-----\n`syntax: tb = tablepool.fetch(pool_name, narr, nrec)`\n\nFetches a (free) Lua table from the table pool of the specified name `pool_name`.\nIf the pool\ndoes not exist or the pool is empty, simply create a Lua table whose array part has",
+        "url": "https://github.com/openresty/lua-tablepool/blob/94d3a5f43df6526fbaeb0f06873862f964766683/README.md#L1-L65"
+      },
+      "classification": "lua_reference_library",
+      "installation": {
+        "file": "Makefile",
+        "blob_sha": "ea52cde7213b42844a3aab999ab267634d6881e4",
+        "start_line": 1,
+        "end_line": 20,
+        "code": "OPENRESTY_PREFIX=/usr/local/openresty\n\n#LUA_VERSION := 5.1\nPREFIX ?=          /usr/local\nLUA_INCLUDE_DIR ?= $(PREFIX)/include\nLUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)\nINSTALL ?= install\n\ntest ?= t\n\n.PHONY: all test install\n\nall: ;\n\ninstall: all\n\t$(INSTALL) lib/*.lua $(DESTDIR)$(LUA_LIB_DIR)/\n\ntest: all\n\tPATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r $(test)\n",
+        "url": "https://github.com/openresty/lua-tablepool/blob/94d3a5f43df6526fbaeb0f06873862f964766683/Makefile#L1-L20"
+      }
+    }
+  ]
+}

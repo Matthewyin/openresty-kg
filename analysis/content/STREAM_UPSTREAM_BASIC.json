@@ -1,0 +1,805 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_module",
+    "name": "upstream",
+    "summary": "定义Stream代理可引用的命名上游组，容纳后端地址与负载均衡配置。",
+    "syntax": "upstream name { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream.c",
+      "start_line": 302,
+      "end_line": 398
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 61,
+        "end_line": 74
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 564,
+        "end_line": 668
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 693,
+        "end_line": 715
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 35,
+        "end_line": 205
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 82,
+        "end_line": 120
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "显式组必须至少包含一个server；未指定其他选址器时，初始化为加权轮询。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是后端组，不是监听客户端的server块。重复命名组被拒绝；组内server及算法分别配置，声明组本身不会建立代理连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L82-L120",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_module",
+    "name": "server",
+    "summary": "在Stream上游组内添加后端地址，并设置权重、连接上限、失败暂避和主备标记。",
+    "syntax": "server address [weight=number] [max_conns=number] [max_fails=number] [fail_timeout=time] [backup] [down];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream.c",
+      "start_line": 402,
+      "end_line": 560
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 61,
+        "end_line": 74
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 302,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 35,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 439,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_zone_module.c",
+        "start_line": 184,
+        "end_line": 257
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 123,
+        "end_line": 315
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "weight=1，max_conns=0，max_fails=1，fail_timeout=10s；默认不是backup或down。max_conns=0不限制活动连接数。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "IP或域名地址必须带端口，另支持unix:路径；解析出的多个地址分别成为peer。weight须为正整数，max_conns/max_fails可为0。当前回调只接受所列参数，文档商业resolve/service/slow_start不属于本发行实现。参数还受选址器flags约束。max_fails=0关闭失败阈值排除；单peer分支不检查失败阈值，但仍检查down和max_conns。未配置zone时peer状态按worker独立，配置zone后共享；这些是被动状态而非主动健康检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L123-L315",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_hash_module",
+    "name": "hash",
+    "summary": "按文本与变量组成的键为Stream连接选择上游，支持普通哈希和consistent一致性哈希。",
+    "syntax": "hash key [consistent];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream_hash_module.c",
+      "start_line": 638,
+      "end_line": 685
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_hash_module.c",
+        "start_line": 91,
+        "end_line": 104
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 302,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 693,
+        "end_line": 715
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_hash_module.c",
+        "start_line": 108,
+        "end_line": 407
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_hash_module.c",
+        "start_line": 432,
+        "end_line": 618
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 439,
+        "end_line": 673
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 398,
+        "end_line": 432
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置选址算法时使用加权轮询；配置hash但不写consistent时使用普通哈希。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "键按Stream复杂值求值；consistent按每单位权重160个点构建哈希环。空键、单peer或内部尝试超过20次时回退轮询，down、失败暂避和max_conns仍影响选址，不保证同键永久命中固定机器。hash设置的参数能力不包含backup；重复声明负载均衡方法会告警并覆盖初始化函数，不是算法叠加。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L398-L432",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_least_conn_module",
+    "name": "least_conn",
+    "summary": "为Stream上游组启用考虑权重的最少活动连接选址，连接数与权重比例相同时再作加权选择。",
+    "syntax": "least_conn;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream_least_conn_module.c",
+      "start_line": 288,
+      "end_line": 310
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_least_conn_module.c",
+        "start_line": 46,
+        "end_line": 59
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 302,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 693,
+        "end_line": 715
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_least_conn_module.c",
+        "start_line": 63,
+        "end_line": 284
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 439,
+        "end_line": 673
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 435,
+        "end_line": 448
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置其他选址方法时为加权轮询；least_conn无参数，不会默认自动启用。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "比较的是peer活动连接数与权重的比例，不是CPU负载或响应耗时；忽略已尝试、down、失败暂避及达到max_conns的peer。单peer回退轮询，主组无可用peer时可尝试backup组。再次定义选址方法只告警并覆盖初始化函数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L435-L448",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_random_module",
+    "name": "random",
+    "summary": "按权重随机选择Stream上游；two模式选取两个不同候选，再比较活动连接数与权重的比例。",
+    "syntax": "random [two [least_conn]];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream_random_module.c",
+      "start_line": 453,
+      "end_line": 502
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_random_module.c",
+        "start_line": 77,
+        "end_line": 90
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 302,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 693,
+        "end_line": 715
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_random_module.c",
+        "start_line": 94,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 439,
+        "end_line": 673
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 497,
+        "end_line": 539
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置选址方法时为加权轮询；random不带参数时选一个候选，random two默认采用least_conn比较。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "此版本只接受two及可选least_conn，不接受文档商业least_time。单peer或内部尝试超过20次时回退轮询；down、失败暂避、max_conns和已尝试标记仍限制候选。当前选址器flags不包含backup。多个选址方法不会自动组合，后声明会告警并覆盖初始化函数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L497-L539",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_upstream_zone_module",
+    "name": "zone",
+    "summary": "把Stream上游组的peer配置及连接、失败等运行状态放入命名共享内存，供worker共同使用。",
+    "syntax": "zone name [size];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_upstream_zone_module.c",
+      "start_line": 65,
+      "end_line": 114
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_zone_module.c",
+        "start_line": 48,
+        "end_line": 61
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream.c",
+        "start_line": 302,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_zone_module.c",
+        "start_line": 118,
+        "end_line": 322
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.c",
+        "start_line": 439,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 420,
+        "end_line": 480
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 1292,
+        "end_line": 1362
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_upstream_module.xml",
+        "start_line": 318,
+        "end_line": 347
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动创建共享zone；显式size至少为8个ngx_pagesize。省略size时本次声明传0，可由同轮配置中同名zone的其他声明提供容量，最终容量仍为0会报错。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "独立upstream组内的配置，不走Stream server层级的继承合并；每个组创建自己的srv_conf。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同名zone可供多个Stream组共用；不同用途或冲突容量被拒绝。共享的是peer状态，不是业务响应缓存。模块设置noreuse=1，不能把跨worker共享解释成reload保证保留旧状态；本项也不会自动提供商业动态成员API或server resolve能力。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "结论仅限所引配置、选址与共享状态事实；发行补丁回放后逐段核对，不据此声称整个Stream或共享文件均未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "status": "verified",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_upstream_module.xml#L318-L347",
+        "title": "固定版本官方指令说明"
+      }
+    ],
+    "related": []
+  }
+]

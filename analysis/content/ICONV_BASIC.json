@@ -1,0 +1,474 @@
+[
+  {
+    "component": "iconv-nginx-module",
+    "module": "ngx_http_iconv_module",
+    "name": "set_iconv",
+    "summary": "在rewrite脚本中将输入值从指定字符编码转换为目标编码，写入目标变量。",
+    "syntax": "set_iconv $destination source from=source_encoding to=target_encoding;",
+    "callback_definition": {
+      "component": "iconv-nginx-module",
+      "file": "src/ngx_http_iconv_module.c",
+      "start_line": 593,
+      "end_line": 628
+    },
+    "evidence": [
+      {
+        "id": "merge",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 698,
+        "end_line": 743
+      },
+      {
+        "id": "conversion",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 385,
+        "end_line": 526
+      },
+      {
+        "id": "module-build",
+        "component": "iconv-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 116
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 670,
+        "end_line": 673
+      },
+      {
+        "id": "default-module-choice",
+        "component": "openresty",
+        "file": "util/configure",
+        "start_line": 70,
+        "end_line": 95
+      },
+      {
+        "id": "value-conversion",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 632,
+        "end_line": 694
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      },
+      {
+        "id": "official-doc",
+        "component": "iconv-nginx-module",
+        "file": "README.markdown",
+        "start_line": 27,
+        "end_line": 47
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖NDK及构建可用的iconv库，发行默认模块列表将iconv标为disabled，实际部署需确认。from=/to=前缀按固定次序提供，前缀后的编码名与source均经NDK表达式求值；空source直接返回空值，非空才调用iconv_open。它只转换变量，不自动安装响应转换过滤器。转换中的EILSEQ分支逐次跳过一个输入字节并写?，不是严格无损转换；不完整尾部触发EINVAL时停止本次转换，本指令不提供跨调用尾部续接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "conversion",
+          "module-build",
+          "distribution-processing",
+          "component-distribution",
+          "default-module-choice",
+          "value-conversion",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本只解包该组件，未应用直接补丁；所引Nginx槽位与rewrite局部实现经发行补丁回放保持。范围仅限已述配置和转换事实，不替代外部iconv库或实际部署验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "value-conversion",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases",
+        "official-doc"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "iconv-nginx-module",
+    "module": "ngx_http_iconv_module",
+    "name": "iconv_buffer_size",
+    "summary": "设置iconv转换每次分配的输出缓冲大小，供变量转换与响应正文转换使用。",
+    "syntax": "iconv_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "merge",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 698,
+        "end_line": 743
+      },
+      {
+        "id": "conversion",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 385,
+        "end_line": 526
+      },
+      {
+        "id": "module-build",
+        "component": "iconv-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 116
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 670,
+        "end_line": 673
+      },
+      {
+        "id": "default-module-choice",
+        "component": "openresty",
+        "file": "util/configure",
+        "start_line": 70,
+        "end_line": 95
+      },
+      {
+        "id": "header-use",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 142,
+        "end_line": 184
+      },
+      {
+        "id": "variable-use",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 632,
+        "end_line": 694
+      },
+      {
+        "id": "official-doc",
+        "component": "iconv-nginx-module",
+        "file": "README.markdown",
+        "start_line": 49,
+        "end_line": 56
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "父层未设置时默认一个ngx_pagesize；合并阶段拒绝本层或父层已设为0、1字节的值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "header-use",
+        "variable-use",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层buf_size；本层显式配置覆盖父层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "header-use",
+        "variable-use",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅location注册；依赖iconv模块。大小至少2字节，但这不是单个字符或任意编码转换必然能放入的保证。E2BIG时转换函数继续分配输出缓冲，它不是输入长度、总输出长度或总内存限额。配置此项本身不启用响应转换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "conversion",
+          "module-build",
+          "distribution-processing",
+          "component-distribution",
+          "default-module-choice",
+          "header-use",
+          "variable-use",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本只解包该组件，未应用直接补丁；所引Nginx槽位与rewrite局部实现经发行补丁回放保持。范围仅限已述配置和转换事实，不替代外部iconv库或实际部署验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "header-use",
+        "variable-use",
+        "official-doc"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "iconv-nginx-module",
+    "module": "ngx_http_iconv_module",
+    "name": "iconv_filter",
+    "summary": "为location启用响应正文字符编码转换，按配置的源编码和目标编码处理内存缓冲。",
+    "syntax": "iconv_filter from=source_encoding to=target_encoding;",
+    "callback_definition": {
+      "component": "iconv-nginx-module",
+      "file": "src/ngx_http_iconv_module.c",
+      "start_line": 541,
+      "end_line": 589
+    },
+    "evidence": [
+      {
+        "id": "merge",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 698,
+        "end_line": 743
+      },
+      {
+        "id": "conversion",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 385,
+        "end_line": 526
+      },
+      {
+        "id": "module-build",
+        "component": "iconv-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 116
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 670,
+        "end_line": 673
+      },
+      {
+        "id": "default-module-choice",
+        "component": "openresty",
+        "file": "util/configure",
+        "start_line": 70,
+        "end_line": 95
+      },
+      {
+        "id": "filters",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 120,
+        "end_line": 242
+      },
+      {
+        "id": "chain-and-tail",
+        "component": "iconv-nginx-module",
+        "file": "src/ngx_http_iconv_module.c",
+        "start_line": 246,
+        "end_line": 381
+      },
+      {
+        "id": "official-doc",
+        "component": "iconv-nginx-module",
+        "file": "README.markdown",
+        "start_line": 58,
+        "end_line": 85
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且父层未启用时enabled=0；内部from/to合并缺省为utf-8/gbk，不表示未写指令也会转换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "filters",
+        "chain-and-tail",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置的enabled/from/to分别继承父层；声明iconv_filter会启用并设置本层from/to，当前语法没有off参数。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "filters",
+        "chain-and-tail",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖NDK及iconv库，发行默认不启用此模块。from=/to=后内容在配置期保存为字面编码名，不按变量求值。头过滤器清除Content-Length、要求正文在内存，HTTP/1.0关闭keepalive，HTTP<1.0不安装本请求转换ctx；它没有自动改写Content-Type charset或按MIME类型筛选。EILSEQ分支可用?替换非法输入字节，不是严格无损转换；代码尝试保存不完整尾部供后续缓冲处理，不据此保证任意有状态编码或截断正文完整转换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "conversion",
+          "module-build",
+          "distribution-processing",
+          "component-distribution",
+          "default-module-choice",
+          "filters",
+          "chain-and-tail",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本只解包该组件，未应用直接补丁；所引Nginx槽位与rewrite局部实现经发行补丁回放保持。范围仅限已述配置和转换事实，不替代外部iconv库或实际部署验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "conversion",
+        "module-build",
+        "distribution-processing",
+        "component-distribution",
+        "default-module-choice",
+        "filters",
+        "chain-and-tail",
+        "official-doc"
+      ]
+    },
+    "related": []
+  }
+]

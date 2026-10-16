@@ -1,0 +1,33 @@
+# ---- 依赖与构建产物（可由 npm install / npm run build 重建）----
+node_modules/
+# 发布目录含 50+ 个历史知识发布（约 1.3GB），由 scripts/build.mjs 从固定来源重建
+dist/
+out/
+
+# ---- 上游源码克隆：按 project.config.json 的 repository/revision 重新获取 ----
+openresty/
+repos/
+
+# ---- 敏感数据：模型密钥、真实部署参数、会话与运行状态 ----
+.env
+.env.*
+!example.env
+# 真实 nginx 配置、deploy.env、原站前端备份
+deployment/pi/.local/
+# Pi Agent 会话、作业与缓存状态
+.state/
+**/.state/
+*.local.json
+
+# ---- 仅与本机环境相关的过程记录（含局域网地址、本机路径、其他站点信息）----
+# 本机部署/切换/动态地址验收记录
+analysis/PI_*
+# 测试运行原始日志（含本机绝对路径）
+analysis/*.log
+# UI 改版前的备份与截图
+analysis/ui-backup/
+
+# ---- 本地工具与系统文件 ----
+.DS_Store
+.v2c/
+.video_agent/

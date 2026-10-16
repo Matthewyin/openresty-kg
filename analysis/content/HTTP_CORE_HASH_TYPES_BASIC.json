@@ -1,0 +1,891 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "variables_hash_max_size",
+    "summary": "设置 HTTP 变量查找哈希表构建时尝试的最大桶数，不是变量数量限制。",
+    "syntax": "variables_hash_max_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 2804,
+        "end_line": 2836
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3409,
+        "end_line": 3436
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 3036,
+        "end_line": 3050
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1024；这是桶数上限，不能据此推断可配置的变量数量。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "只允许在 http 主配置层设置，不存在 server/location 层继承。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "variables_hash_bucket_size",
+    "summary": "设置 HTTP 变量哈希表每个桶的容量，并按处理器缓存行大小对齐。",
+    "syntax": "variables_hash_bucket_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 2804,
+        "end_line": 2836
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3409,
+        "end_line": 3436
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 3022,
+        "end_line": 3033
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "初始值64字节，实际按 ngx_cacheline_size 向上对齐。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "只允许在 http 主配置层设置，不存在 server/location 层继承。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "server_names_hash_max_size",
+    "summary": "设置虚拟主机名称哈希表构建时尝试的最大桶数，供精确名称和通配名称查找使用。",
+    "syntax": "server_names_hash_max_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http.c",
+        "start_line": 1599,
+        "end_line": 1660
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3409,
+        "end_line": 3436
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2652,
+        "end_line": 2663
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "512；不是虚拟主机个数或并发连接数。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "只允许在 http 主配置层设置，不存在 server/location 层继承。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "server_names_hash_bucket_size",
+    "summary": "设置虚拟主机名称哈希表的桶容量，并按处理器缓存行大小对齐。",
+    "syntax": "server_names_hash_bucket_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http.c",
+        "start_line": 1599,
+        "end_line": 1660
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3409,
+        "end_line": 3436
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2637,
+        "end_line": 2649
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "ngx_cacheline_size；取决于构建及平台，不能固定为64。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "只允许在 http 主配置层设置，不存在 server/location 层继承。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "types_hash_max_size",
+    "summary": "设置文件扩展名到 MIME 类型映射哈希表构建时尝试的最大桶数。",
+    "syntax": "types_hash_max_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3698,
+        "end_line": 3705
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3707,
+        "end_line": 3770
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2981,
+        "end_line": 2994
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1024。",
+      "source_ids": [
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-0"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "types_hash_bucket_size",
+    "summary": "设置扩展名 MIME 类型映射哈希表的桶容量，并按处理器缓存行大小对齐。",
+    "syntax": "types_hash_bucket_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1206
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3698,
+        "end_line": 3705
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3707,
+        "end_line": 3770
+      },
+      {
+        "id": "hash-builder",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2961,
+        "end_line": 2978
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "初始值64字节，实际按 ngx_cacheline_size 向上对齐。",
+      "source_ids": [
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-0"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "槽位解析器只接受非负十进制整数；哈希构建还会检查桶大小和键长度，增大 max_size 不等于允许无限数量的键。",
+        "source_ids": [
+          "configuration-definition",
+          "hash-builder"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "hash-builder",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "types",
+    "summary": "在块中定义文件扩展名到响应 MIME 类型的映射；扩展名大小写不敏感，可为一个类型列出多个扩展名。",
+    "syntax": "types { mime-type extension ...; ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_core_module.c",
+      "start_line": 3274,
+      "end_line": 3313
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3300,
+        "end_line": 3366
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3707,
+        "end_line": 3770
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1594,
+        "end_line": 1652
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2917,
+        "end_line": 2958
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层没有定义 types 时继承父层映射；当前层显式定义 types（包括空块）时不把父层扩展名逐项合并进来。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层重复扩展名会告警并以后一个类型替换；已由响应模块设置的 Content-Type 不会被此映射强制覆盖。",
+        "source_ids": [
+          "implementation-0",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "default_type",
+    "summary": "响应尚未设置 Content-Type 且扩展名没有匹配 types 映射时，提供默认 MIME 类型；不是强制覆盖上游或模块已经设置的类型。",
+    "syntax": "default_type mime-type;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1105
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1594,
+        "end_line": 1652
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3783,
+        "end_line": 3784
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 495,
+        "end_line": 508
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "text/plain。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "root",
+    "summary": "设置文件路径根目录，构造路径时在根目录后追加当前请求 URI；不会删除匹配 location 的前缀。",
+    "syntax": "root path;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_core_module.c",
+      "start_line": 4486,
+      "end_line": 4525
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1883,
+        "end_line": 1947
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 4481,
+        "end_line": 4594
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3678,
+        "end_line": 3692
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2270,
+        "end_line": 2302
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "缺少可继承值时使用 html，并相对运行前缀解析为完整路径。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层 root/alias 共用路径槽位，重复或相互并用会报错；路径不允许使用 $document_root 和 $realpath_root。alias 不能用于命名 location，URI 被改写而 location 已失效时也会拒绝用 alias 映射。",
+        "source_ids": [
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "alias",
+    "summary": "为当前 location 指定替代文件路径：前缀 location 用该路径替换匹配的 URI 前缀，正则 location 通常通过捕获变量构造路径；不是 root 的同义名称。",
+    "syntax": "alias path;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_core_module.c",
+      "start_line": 4486,
+      "end_line": 4525
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1883,
+        "end_line": 1947
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 4481,
+        "end_line": 4594
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 197,
+        "end_line": 249
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层 root/alias 共用路径槽位，重复或相互并用会报错；路径不允许使用 $document_root 和 $realpath_root。alias 不能用于命名 location，URI 被改写而 location 已失效时也会拒绝用 alias 映射。",
+        "source_ids": [
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  }
+]

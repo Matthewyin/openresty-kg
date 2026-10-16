@@ -1,0 +1,9 @@
+{
+  "files": {
+    "project.config.json": "acfb7a27caea10ff7fc843090a237e37ea59687fed4feb26a8a25f558ba2c045",
+    "analysis/components.json": "04fd4073f58049913c6f4352876aa0315abcb7f5f7aa621aa1ba28dd22be261d",
+    "analysis/NGINX_PATCH_AUDIT.json": "4248d0c4634e87f8714e32d194b4da566ff489877e7bf86ea6bf0d5e378d53ce",
+    "analysis/REDIS_PATCH_AUDIT.json": "115dc2476e355655def3ab6dd68388b89e8136df912824a501659cbdcf675150"
+  },
+  "baseline_publication_sha256": "46fc901c902f8aca3744867e602d584926b0ffa3cb9c559543cc14f10b2f0fdb"
+}

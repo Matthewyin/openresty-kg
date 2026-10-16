@@ -1,0 +1,155 @@
+{
+  "targets": [
+    {
+      "id": "nginx--ngx_http_limit_conn_module--limit_conn_zone",
+      "count": 8,
+      "hash": "186932af00c462a202a168979d85501855b886a5041f6fada7f6264121a69798",
+      "stableHash": "4267c4a18717b6177c4e5d0ce9b2e7f1cb2547cc11087e7864ed7ba702b20589"
+    },
+    {
+      "id": "nginx--ngx_http_limit_conn_module--limit_conn",
+      "count": 8,
+      "hash": "56cd7b436f65afaa550ca9087ae9d8533deb3eee90b01389edc782de2c616e8e",
+      "stableHash": "150b7716f523f73d760beb1264197ed07eb4b76e65d36870967885fb230c6751"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_limit_rate",
+      "count": 11,
+      "hash": "a486c4d735258e0e492c53d428bd514c45d2300a7ad7c2867a77496793872d36",
+      "stableHash": "3df2a294ffdf520ac80ae4439e92001aabbf3d34540d30386cb994e8d6419dcb"
+    },
+    {
+      "id": "nginx--ngx_http_log_module--log_format",
+      "count": 8,
+      "hash": "066d8ef9077bb6ada487433fed28ae9d55f6419ba4bb5ac4218c18763d768a93",
+      "stableHash": "fa5e35e29e509fc17c3412d45c8634076e113093b8aeaa1e10e5ced55fc79852"
+    },
+    {
+      "id": "nginx--ngx_http_log_module--access_log",
+      "count": 11,
+      "hash": "d0f38d5769fcb5e30b4b6f02f9f46507b9b17b286ab7ab5e0970d2633b01c2f3",
+      "stableHash": "95b269e6fdee8cb4547983c11310cb243cca10be1bd5ca13b689040a52c20816"
+    },
+    {
+      "id": "nginx--ngx_stream_log_module--log_format",
+      "count": 6,
+      "hash": "842c40c4c6c0ff2915d465085a76cb7ad8b862fbdf483e88e4e7d54c00e3272f",
+      "stableHash": "3f185e7595de023afbe9335e917d0bb37bcb82c01d64fb2325d650fa660392ae"
+    },
+    {
+      "id": "nginx--ngx_stream_log_module--access_log",
+      "count": 7,
+      "hash": "f27fb0a0c9ddc884238747ff8cc38ea73ab4b3c06eff4e7b446b0bb3ce0c573e",
+      "stableHash": "9e5bbf92b4e8795175f05b2cc76621648355965795aa1119a0cf4700c0f85590"
+    },
+    {
+      "id": "nginx--ngx_errlog_module--error_log",
+      "count": 18,
+      "hash": "97b61f8d33141f1fd7d11b138d6a29c029a1bfae5c5f31dcfb6fdc9905d85fea",
+      "stableHash": "325ded335f4deca2323dda86cebdb363380c9f4acc535fe0a7bcfb091655b52b"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--error_log",
+      "count": 14,
+      "hash": "b37d969ecca9e5803c67ac558ddc22a52afa2e71ec2c489761b4c6f1f68bbe92",
+      "stableHash": "9e6ced63a95d8b92a31681270b605b67996a038c9e6ef7b361e76c85f6dcf171"
+    },
+    {
+      "id": "nginx--ngx_stream_core_module--error_log",
+      "count": 6,
+      "hash": "ea7f65ba6f49fc8772b912c61373710907deaeaa034d6bffdb161eca0dfb6c56",
+      "stableHash": "e04980f0ede322ad2535978ebc98b4be0c3fa5fde44c3f143d97fb798e824613"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_zone",
+      "count": 4,
+      "hash": "ef89a6f88e89ea6f7e8e4c85c6d2a8841aa223184f5dd0107b4076d49444fdec",
+      "stableHash": "a322571ac21f08394ee773b6c2aa5a04f92ec4916687910e85439e0c90457954"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_host",
+      "count": 2,
+      "hash": "be361fcde38ff880da3dd0086b385fd90fd985f72ad40a2b8c725944a0fa8b76",
+      "stableHash": "3405f95af2ed5cf6b058751f5d5a91d97366f16a54a499af86abd34c200127c3"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display",
+      "count": 8,
+      "hash": "ab4a5b36d747875822ded4addcdd41eccafc5228304f98b4a169db5858859977",
+      "stableHash": "8f8f089d3bae4ad6d051b060ce425196d9b47df16c9ca8750205f0219ffbc0fa"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_format",
+      "count": 4,
+      "hash": "cc9283a5065543315901301a2bb5be8950ec8eb6b791e1003625544bd7a2dd36",
+      "stableHash": "9bfdde39528612b77779620a1d5f8af2fd492568959f93d288dffa98bec2abe8"
+    },
+    {
+      "id": "nginx--ngx_core_module--pid",
+      "count": 15,
+      "hash": "b80387e8e9b30dd653d60aa2082cb9887bceef85c6d873b561c9d8fbfdc0ce62",
+      "stableHash": "6f47bba9872d7c99e4057cf9e49cbb2b6a3623e7d609b00f89fd388d82a6d27f"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--listen",
+      "count": 9,
+      "hash": "a11e55182eebb8093f3ae7d005a87cf13d9c63252de06e41e4f8cb5681310fb8",
+      "stableHash": "b2bc69b146afc9db77024d76391c74bad9f6432d87e7cf3d8eb10cf65148349e"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--server",
+      "count": 9,
+      "hash": "50ed252e1b2f4781e846cb563d93b5793e486404a99b24da6c696bcee33fd2db",
+      "stableHash": "0b5f9353d37af0afe06a0ee6eadd110c0d816f62e4d286d13a59bb78d78bf595"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--location",
+      "count": 10,
+      "hash": "e3caba8fdfda94651a24b5cc1222f26aa92daf9bd04b76d21f6e9b190c872162",
+      "stableHash": "cc2bb8e33f2a59e6cd8ef27dcfa36e2ec7aad02619dca67950eaf0ba974d77ee"
+    },
+    {
+      "id": "nginx--ngx_stream_core_module--listen",
+      "count": 5,
+      "hash": "23d9e82e1f2d71dd339b1e089a0e4342686a15a689c4cfdd0c19ddaa5be39bb9",
+      "stableHash": "3fbda72319b70e9f073b49a4069c7608543b716102f71809591b79c675979cc5"
+    },
+    {
+      "id": "nginx--ngx_stream_core_module--server",
+      "count": 3,
+      "hash": "0c6c2bc4bcf071b2541f02c0a9684eacc168ea010b9872b01020542749f91e29",
+      "stableHash": "09656557ecd953cb624be6dd4ff990d8c2c32c6aeb3a3f8ffd4ddb90ac56eea3"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--client_max_body_size",
+      "count": 6,
+      "hash": "e66fd8c397d46ef798140831e9095242de8f954c39615a9524d0d364444b57fc",
+      "stableHash": "37df2e984cf2461ee804fede5fbe341f73665d22340760efc365a6c8340fe1ac"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--keepalive_timeout",
+      "count": 7,
+      "hash": "8aea88aef2b0fb09543ee1388d4b71ef29b0010a0bfe1fc8758045e8b1d541cb",
+      "stableHash": "13d3af6d7a5188cf1e637c4a053ce31b30f6fd8d03d3e51c3efb8e986913dfcd"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--sendfile",
+      "count": 5,
+      "hash": "90eeb39b8c9c7f1100a77768135fa5b049c5d9d5561b9e34f4434b6fbab9130c",
+      "stableHash": "4ec5ef2fcf6e810224c55ac1f09f64f706203b8c69ffece17f531c57077a69e9"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--default_type",
+      "count": 5,
+      "hash": "54df1afe2ee686932bada588b9ba2b58730cab17a1ef5644f606c6e56f165dea",
+      "stableHash": "a5ac36d7b2cbf336a922bec517ed896b6124161edfd97ef4ea63207c08783d0e"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--server_tokens",
+      "count": 13,
+      "hash": "768eaf5239cf526b6192ca449430bed5f40b637037aa37e502232102791f54c8",
+      "stableHash": "e1f9ae16fb2c3f44ede684de1c8693e80ce8206cc4a6f1fbc7e406d595f67a77"
+    }
+  ],
+  "nonTargetHash": "928b9c89873daa84f1a9dcb284839463ec5eeb6c940d1ad5f6e5e83f7032f7b5"
+}

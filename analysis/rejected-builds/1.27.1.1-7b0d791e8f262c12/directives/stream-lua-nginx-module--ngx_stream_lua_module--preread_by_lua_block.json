@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_block",
+  "name": "preread_by_lua_block",
+  "module": "ngx_stream_lua_module",
+  "component": "stream-lua-nginx-module",
+  "contexts": [
+    "stream",
+    "stream.server"
+  ],
+  "contexts_verified": true,
+  "syntax": "preread_by_lua_block { lua-script }",
+  "summary": "在 stream 的 preread 阶段执行 Lua，对连接或 UDP 数据报进行预读阶段处理。",
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "默认在 preread 阶段尾部执行，preread_by_lua_no_postpone 可改变推迟行为。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    },
+    {
+      "text": "通过请求 socket 调用 receive 会消费缓冲数据，后续处理函数将看不到已消费部分。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    },
+    {
+      "text": "本站不分析 Lua 正文语义。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_stream_lua_preread_by_lua_block",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "stream-lua-nginx-module",
+      "version": "0.0.15",
+      "revision": "69f0cd762112a6e0cddb07f2b5192e9a65034a93",
+      "file": "src/ngx_stream_lua_module.c",
+      "start_line": 236,
+      "end_line": 241,
+      "code": "    { ngx_string(\"preread_by_lua_block\"),\n      NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,\n      ngx_stream_lua_preread_by_lua_block,\n      NGX_STREAM_SRV_CONF_OFFSET,\n      0,\n      (void *) ngx_stream_lua_preread_handler_inline },",
+      "url": "https://github.com/openresty/stream-lua-nginx-module/blob/69f0cd762112a6e0cddb07f2b5192e9a65034a93/src/ngx_stream_lua_module.c#L236-L241",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "stream-lua-nginx-module",
+      "version": "0.0.15",
+      "revision": "69f0cd762112a6e0cddb07f2b5192e9a65034a93",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 244,
+      "end_line": 283,
+      "code": "ngx_stream_lua_preread_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,\n    void *conf)\n{\n    char        *rv;\n    ngx_conf_t   save;\n\n    save = *cf;\n    cf->handler = ngx_stream_lua_preread_by_lua;\n    cf->handler_conf = conf;\n\n    rv = ngx_stream_lua_conf_lua_block_parse(cf, cmd);\n\n    *cf = save;\n\n    return rv;\n}\n\n\nchar *\nngx_stream_lua_preread_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    size_t                                 chunkname_len;\n    u_char                                *p, *chunkname;\n    ngx_str_t                             *value;\n    ngx_stream_lua_main_conf_t            *lmcf;\n    ngx_stream_lua_srv_conf_t             *lscf = conf;\n\n    ngx_stream_compile_complex_value_t     ccv;\n\n    dd(\"enter\");\n\n    /*  must specify a content handler */\n    if (cmd->post == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    if (lscf->preread_handler) {\n        return \"is duplicate\";\n    }\n",
+      "url": "https://github.com/openresty/stream-lua-nginx-module/blob/69f0cd762112a6e0cddb07f2b5192e9a65034a93/src/ngx_stream_lua_directive.c#L244-L283",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "stream-lua-nginx-module",
+      "version": "0.0.15",
+      "revision": "69f0cd762112a6e0cddb07f2b5192e9a65034a93",
+      "file": "README.md",
+      "start_line": 187,
+      "end_line": 213,
+      "code": "preread_by_lua_block\n--------------------\n\n**syntax:** *preread_by_lua_block { lua-script }*\n\n**context:** *stream, server*\n\n**phase:** *preread*\n\nActs as a `preread` phase handler and executes Lua code string specified in `lua-script` for every connection\n(or packet in datagram mode).\nThe Lua code may make [API calls](#nginx-api-for-lua) and is executed as a new spawned coroutine in an independent global environment (i.e. a sandbox).\n\nIt is possible to acquire the raw request socket using [ngx.req.socket](https://github.com/openresty/lua-nginx-module#ngxreqsocket)\nand receive data from or send data to the client. However, keep in mind that calling the `receive()` method\nof the request socket will consume the data from the buffer and such consumed data will not be seen by handlers\nfurther down the chain.\n\nThe `preread_by_lua_block` code will always run at the end of the `preread` processing phase unless\n[preread\\_by\\_lua\\_no\\_postpone](#preread_by_lua_no_postpone) is turned on.\n\nThis directive was first introduced in the `v0.0.3` release.\n\n[Back to TOC](#directives)\n\npreread_by_lua_file\n-------------------",
+      "url": "https://github.com/openresty/stream-lua-nginx-module/blob/69f0cd762112a6e0cddb07f2b5192e9a65034a93/README.md#L187-L213",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 635,
+      "end_line": 639,
+      "code": "ver=0.0.15\n$root/util/get-tarball \"https://github.com/openresty/stream-lua-nginx-module/tarball/v$ver\" -O stream-lua-nginx-module-$ver.tar.gz || exit 1\ntar -xzf stream-lua-nginx-module-$ver.tar.gz || exit 1\nmv openresty-stream-lua-nginx-module-* ngx_stream_lua-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L635-L639",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "stream-lua-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/stream-lua-nginx-module/blob/69f0cd762112a6e0cddb07f2b5192e9a65034a93/README.md#L187-L213",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "preread"
+  ],
+  "mechanism": null,
+  "related": [
+    "preread_by_lua_no_postpone"
+  ]
+}

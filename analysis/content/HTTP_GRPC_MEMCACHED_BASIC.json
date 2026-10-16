@@ -1,0 +1,5096 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_pass",
+    "summary": "通过HTTP/2将请求交给grpc或TLS保护的grpcs后端，并安装content处理入口。",
+    "syntax": "grpc_pass address;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_grpc_module.c",
+      "start_line": 4749,
+      "end_line": 4847
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 538,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 611,
+        "end_line": 705
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 491,
+        "end_line": 500
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 898,
+        "end_line": 986
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1186,
+        "end_line": 1187
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1357,
+        "end_line": 1438
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "auto/modules",
+        "start_line": 773,
+        "end_line": 781
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 693,
+        "end_line": 785
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-9",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 330,
+        "end_line": 373
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定，不按文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不假定逐项合并或替换。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持静态地址、Unix socket、组及变量目标；后者运行期求值并通过共享组/resolver解析。构建选择要求HTTP_GRPC及HTTP_V2；grpcs另需SSL。请求产生连接前言、HEADERS及DATA，:path来自请求URI，不做proxy_pass式目标URI前缀替换；不进行JSON/Protobuf协议转换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "implementation-9",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_bind",
+    "summary": "指定gRPC出站套接字的本地地址及可选透明绑定。",
+    "syntax": "grpc_bind address [transparent ] | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6433,
+      "end_line": 6529
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6533,
+        "end_line": 6582
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 95,
+        "end_line": 158
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 48,
+        "end_line": 86
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4426,
+        "end_line": 4427
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无显式绑定。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持地址变量和端口，off清除父层绑定；透明模式还受平台、权限及回程路由约束。实际绑定发生在建立连接，不是改变HTTP/2的:authority。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_socket_keepalive",
+    "summary": "为gRPC新出站TCP套接字启用SO_KEEPALIVE。",
+    "syntax": "grpc_socket_keepalive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 76,
+        "end_line": 86
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 454,
+        "end_line": 470
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4429,
+        "end_line": 4430
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是HTTP/2 PING开关、流控窗口或上游空闲池配置；off保留系统套接字默认，探测间隔不由此指令设置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_connect_timeout",
+    "summary": "限制gRPC连接建立及grpcs异步握手等待的事件超时。",
+    "syntax": "grpc_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1678
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1745,
+        "end_line": 1760
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 105,
+        "end_line": 117
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4435,
+        "end_line": 4436
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "建立连接等待时安装写定时器；握手NGX_AGAIN且未已有定时器时同样采用connect_timeout。不是RPC总时限，文档通常75秒不构成解析器硬上限；发行版使用请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_send_timeout",
+    "summary": "限制向gRPC后端发送请求时两次写操作之间的等待。",
+    "syntax": "grpc_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1311,
+        "end_line": 1332
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1424,
+        "end_line": 1438
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 409,
+        "end_line": 424
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4438,
+        "end_line": 4439
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是整个流式RPC请求预算；实际DATA发送还受连接及流窗口限制。共享发送路径加减定时器，发行补丁将超时值放入请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_intercept_errors",
+    "summary": "允许后端HTTP错误状态由本地error_page处理。",
+    "syntax": "grpc_intercept_errors on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1826,
+        "end_line": 1884
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2508,
+        "end_line": 2517
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2667,
+        "end_line": 2759
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 178,
+        "end_line": 192
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4466,
+        "end_line": 4467
+      },
+      {
+        "id": "no-error-pages",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-no_error_pages.patch",
+        "start_line": 1,
+        "end_line": 91
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这里的>=300来自HTTP/2 :status，不是gRPC trailer中的grpc-status。共享upstream先尝试重试，再判断开关和匹配error_page；no_error_pages发行补丁影响这条错误页链，不保证所有RPC失败都被拦截。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default",
+          "no-error-pages"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default",
+        "no-error-pages"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_buffer_size",
+    "summary": "设置读取gRPC后端响应及解析HTTP/2头帧的共享输入缓冲大小。",
+    "syntax": "grpc_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4393,
+        "end_line": 4406
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1619,
+        "end_line": 1669
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 89,
+        "end_line": 102
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4447,
+        "end_line": 4449
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本模块固定buffering=0，解析后同步向下游传递，不是完整RPC消息缓存大小。未开始解析头时可清空已消费的控制帧缓冲；头仍未完成且缓冲满时走INVALID_HEADER。不把该值当HTTP/2流控窗口。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_read_timeout",
+    "summary": "限制gRPC响应读取相邻操作间的等待。",
+    "syntax": "grpc_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2436,
+        "end_line": 2466
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1954,
+        "end_line": 1991
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 391,
+        "end_line": 406
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4441,
+        "end_line": 4442
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是长流式RPC整次调用的截止时间；共享首部等待和非缓冲响应路径使用不同定时器位置。U2436–2466中#if 0部分未执行，不能用作活跃重置证据；发行补丁修改运行字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_next_upstream",
+    "summary": "规定gRPC请求失败时可尝试其他后端的条件。",
+    "syntax": "grpc_next_upstream error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | non_idempotent | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 219,
+        "end_line": 233
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 599,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1639,
+        "end_line": 1691
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1714,
+        "end_line": 1725
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 195,
+        "end_line": 295
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4455,
+        "end_line": 4464
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error timeout；off覆盖其他配置位。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "选项包含HTTP502/504，与CGI模块表不同；HTTP状态来自:status，不按grpc-status重试。请求一开始就设置非缓冲正文，已发送的非缓冲正文不能重放；non_idempotent不会解除这一限制。HTTP/2解析错误映射INVALID_HEADER，向客户端已发送响应后不能挽回中途失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_next_upstream_tries",
+    "summary": "收紧gRPC请求的上游尝试次数。",
+    "syntax": "grpc_next_upstream_tries number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1254,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 314,
+        "end_line": 327
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4432,
+        "end_line": 4433
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "非0只将可用peer.tries限制到配置上限；可用节点和流式正文可重放条件仍独立判断。0不是无限重试，也不会按每条gRPC消息重新计数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_next_upstream_timeout",
+    "summary": "限制gRPC请求允许继续切换后端的累计时间窗口。",
+    "syntax": "grpc_next_upstream_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 298,
+        "end_line": 311
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4444,
+        "end_line": 4445
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "失败决策时对peer.start_time计算经过时间；不是到点主动结束正在正常读写的RPC定时器。0取消该额外门槛，其他错误/次数/正文限制仍有效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_set_header",
+    "summary": "重新定义或添加发往gRPC后端的HTTP/2请求头。",
+    "syntax": "grpc_set_header field value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 503,
+        "end_line": 513
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4547,
+        "end_line": 4572
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4617,
+        "end_line": 4712
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 979,
+        "end_line": 1048
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1050,
+        "end_line": 1078
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4286,
+        "end_line": 4315
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 427,
+        "end_line": 451
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定，不按文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅本层没有grpc_set_header时继承父层整组配置；不是逐头与父层叠加。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "名称按字面保存，值可含变量；空值不发送并抑制原同名头。显式Host使host_set开启、停止自动:authority，由显式头编码路径处理，不等于改TLS名称。默认头集处理Content-Length、TE及逐跳头；TE仅在客户端TE包含trailers时产生。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_pass_header",
+    "summary": "允许原被gRPC响应隐藏哈希过滤的指定头向客户端输出。",
+    "syntax": "grpc_pass_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 516,
+        "end_line": 525
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4514,
+        "end_line": 4523
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1886,
+        "end_line": 1905
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6667,
+        "end_line": 6735
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 376,
+        "end_line": 388
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定，不按文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不假定逐项合并或替换。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "从隐藏集合移除名称，不创建字段，也不关闭上游特殊头处理。默认隐藏Date、Server及五个指定X-Accel头；不能把pass_header当作请求grpc_set_header。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_hide_header",
+    "summary": "将额外gRPC响应头加入下游输出隐藏集合。",
+    "syntax": "grpc_hide_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 516,
+        "end_line": 525
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4514,
+        "end_line": 4523
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1886,
+        "end_line": 1905
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6667,
+        "end_line": 6735
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 120,
+        "end_line": 139
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定，不按文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不假定逐项合并或替换。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "默认列表精确为Date、Server、X-Accel-Expires/Redirect/Limit-Rate/Buffering/Charset，不是任意X-Accel通配。隐藏只控制复制，禁用内部处理应核对ignore_headers。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ignore_headers",
+    "summary": "禁止指定gRPC响应头触发共享upstream的特殊处理。",
+    "syntax": "grpc_ignore_headers field ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 460,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 1886,
+        "end_line": 1905
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4342,
+        "end_line": 4364
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4393,
+        "end_line": 4406
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2825,
+        "end_line": 2832
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5092,
+        "end_line": 5163
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 142,
+        "end_line": 175
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4451,
+        "end_line": 4453
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "仅NGX_CONF_BITMASK_SET，无忽略处理位。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定文档仅列X-Accel-Redirect和X-Accel-Charset；实际注册使用共享九种mask，另含Expires、Cache-Control、Set-Cookie、Vary及其他X-Accel项。X-Accel-Limit-Rate有实际下行限速路径；不能因此宣称本模块提供CGI式缓存或可切换响应缓冲。它不直接删下游头。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_session_reuse",
+    "summary": "允许grpcs连接恢复已有TLS会话。",
+    "syntax": "grpc_ssl_session_reuse on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 5017,
+        "end_line": 5022
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1668,
+        "end_line": 1681
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1725,
+        "end_line": 1743
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1836,
+        "end_line": 1854
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 674,
+        "end_line": 689
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4475,
+        "end_line": 4476
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。专用SSL设置调用客户端session cache，共享连接初始化调用peer.set_session并注册保存回调。不是HTTP/2连接池或并发流复用，也不保证服务器接受会话恢复。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_protocols",
+    "summary": "设置grpcs客户端TLS上下文允许的协议位图。",
+    "syntax": "grpc_ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 238,
+        "end_line": 246
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4935,
+        "end_line": 4948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 5024,
+        "end_line": 5035
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 296,
+        "end_line": 399
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 630,
+        "end_line": 654
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4478,
+        "end_line": 4481
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "TLSv1 TLSv1.1 TLSv1.2 TLSv1.3。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。模块选项表列SSLv2/SSLv3及TLSv1到TLSv1.3；实际能力仍由SSL库决定。专用set_ssl调用ngx_ssl_create，并在ALPN能力宏存在时另设置h2；协议位不意味着HTTP/1.1降级或自动启用grpcs。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_ciphers",
+    "summary": "配置grpcs使用的SSL密码串。",
+    "syntax": "grpc_ssl_ciphers ciphers;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4944,
+        "end_line": 4963
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 519,
+        "end_line": 536
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4483,
+        "end_line": 4484
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "DEFAULT。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。grpc_set_ssl真实调用ngx_ssl_ciphers，再调用SSL_CTX_set_cipher_list；不是TLS1.3的set_ciphersuites接口，不能声称覆盖全部TLS1.3套件。格式和可用算法由SSL库解释，错误返回配置失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_name",
+    "summary": "覆盖grpcs的证书校验名和可选SNI名称。",
+    "syntax": "grpc_ssl_name name;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 242,
+      "end_line": 275
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 693,
+        "end_line": 701
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 800,
+        "end_line": 803
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1705,
+        "end_line": 1711
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1857,
+        "end_line": 1948
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1792,
+        "end_line": 1810
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 591,
+        "end_line": 610
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4486,
+        "end_line": 4487
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "字段默认NULL，运行期沿用目标或组host。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。支持变量复杂值；默认共享upstream采用目标host或组host，去掉端口后使用，不等于已选peer IP反查名。仅启用ssl_server_name或ssl_verify时调用名称处理；不会自行打开两者。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_server_name",
+    "summary": "决定grpcs握手是否发送TLS SNI。",
+    "syntax": "grpc_ssl_server_name on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1705,
+        "end_line": 1711
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1857,
+        "end_line": 1948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 979,
+        "end_line": 986
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 657,
+        "end_line": 671
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4488,
+        "end_line": 4489
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。实际名称由ssl_name/目标提供；名称为空、以[开头，或ngx_inet_addr解析结果不等于INADDR_NONE时跳过SNI，并受SSL_CTRL_SET_TLSEXT_HOSTNAME支持约束。HTTP/2的Host/:authority不会因此自动与SNI同步。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_verify",
+    "summary": "启用grpcs后端证书链结果及主机名验证。",
+    "syntax": "grpc_ssl_verify on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4997,
+        "end_line": 5015
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1705,
+        "end_line": 1711
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1786,
+        "end_line": 1833
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 708,
+        "end_line": 719
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4490,
+        "end_line": 4491
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。set_ssl要求非空可信CA文件并加载信任/CRL；共享握手完成检查SSL_get_verify_result与ngx_ssl_check_host，失败按上游错误处理。不是配置本机客户端证书，也不自动启用SNI。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_verify_depth",
+    "summary": "设置grpcs后端证书链的验证深度。",
+    "syntax": "grpc_ssl_verify_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4997,
+        "end_line": 5010
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 722,
+        "end_line": 733
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4492,
+        "end_line": 4493
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。在grpc_ssl_verify分支传给ngx_ssl_trusted_certificate，再调用SSL_CTX_set_verify_depth；只设深度不启动验证，不控制HTTP/2流数或客户端证书数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_trusted_certificate",
+    "summary": "指定验证grpcs后端所用PEM可信CA文件。",
+    "syntax": "grpc_ssl_trusted_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4997,
+        "end_line": 5010
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 692,
+        "end_line": 705
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4494,
+        "end_line": 4495
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空字符串，未配置CA文件。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。普通字符串路径，由SSL信任加载函数解析并交SSL_CTX_load_verify_locations；实际调用位于ssl_verify分支。不是发往后端的客户端证书链；启用验证但文件未配置时set_ssl拒绝。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_crl",
+    "summary": "指定grpcs证书验证使用的PEM吊销列表文件。",
+    "syntax": "grpc_ssl_crl file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4997,
+        "end_line": 5015
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 988,
+        "end_line": 1029
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 575,
+        "end_line": 588
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4496,
+        "end_line": 4496
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空字符串。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。仅在ssl_verify分支调用CRL加载；设置CRL_CHECK与CRL_CHECK_ALL，空路径不加载。它不是在线OCSP检查，单独给文件不启用验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_certificate",
+    "summary": "设置向grpcs后端认证用的客户端证书。",
+    "syntax": "grpc_ssl_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 278,
+      "end_line": 313
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4965,
+        "end_line": 4995
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1713,
+        "end_line": 1723
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1951,
+        "end_line": 1987
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 457,
+        "end_line": 476
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 578,
+        "end_line": 644
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 473,
+        "end_line": 489
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4498,
+        "end_line": 4499
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无客户端证书配置。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。值通过带NUL终止的复杂值回调编译，可含变量。非空证书必须配私钥；静态路径在set_ssl加载，动态证书/私钥在握手前求值加载。与后端可信CA文件分开，不能代替ssl_verify。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_certificate_key",
+    "summary": "指定grpcs客户端证书对应私钥。",
+    "syntax": "grpc_ssl_certificate_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 278,
+      "end_line": 313
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4965,
+        "end_line": 4995
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1951,
+        "end_line": 1987
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 739,
+        "end_line": 852
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 624,
+        "end_line": 644
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 492,
+        "end_line": 516
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4500,
+        "end_line": 4501
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无客户端私钥配置。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。支持变量文件名；静态随证书配置期加载，动态在请求握手前加载。engine:name:id需库支持engine，私钥只用于客户端身份，不是校验服务器的信任根。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_password_file",
+    "summary": "读取grpcs客户端私钥解密使用的候选口令文件。",
+    "syntax": "grpc_ssl_password_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_grpc_module.c",
+      "start_line": 4852,
+      "end_line": 4872
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4976,
+        "end_line": 4994
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1199,
+        "end_line": 1325
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1329,
+        "end_line": 1388
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 819,
+        "end_line": 852
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 613,
+        "end_line": 627
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4502,
+        "end_line": 4503
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无显式口令数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。配置期逐行读取，加载私钥时依次尝试；动态证书路径将口令保留供请求期使用，不会每次握手重新读取文件。该指令回调直接加载文件，不能从通用字符串槽位猜行为。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_grpc_module",
+    "name": "grpc_ssl_conf_command",
+    "summary": "向grpcs的SSL上下文追加OpenSSL配置命令。",
+    "syntax": "grpc_ssl_conf_command name value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 460,
+        "end_line": 488
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 559,
+        "end_line": 601
+      },
+      {
+        "id": "ssl-setup-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4469,
+        "end_line": 4512
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 248,
+        "end_line": 249
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4875,
+        "end_line": 4883
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 5024,
+        "end_line": 5044
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1596,
+        "end_line": 1664
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_grpc_module.xml",
+        "start_line": 539,
+        "end_line": 572
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_grpc_module.c",
+        "start_line": 4505,
+        "end_line": 4506
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无额外命令。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅本层无命令时继承父层整个数组；不是逐条叠加。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_SSL构建支持，适用于grpcs的TLS路径。keyval回调通过grpc_ssl_conf_command_post调用平台检查；缺SSL_CONF_FLAG_FILE就拒绝。set_ssl在配置ALPN h2后执行这些命令，命令可能改变此前设置；名称/值为字面字符串，不自动求值变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "ssl-setup-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "ssl-setup-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_pass",
+    "summary": "把GET或HEAD交给内置memcached文本协议读取处理器。",
+    "syntax": "memcached_pass address;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_memcached_module.c",
+      "start_line": 696,
+      "end_line": 736
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 175,
+        "end_line": 234
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 237,
+        "end_line": 299
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 350,
+        "end_line": 367
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 410,
+        "end_line": 450
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6322,
+        "end_line": 6340
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 240,
+        "end_line": 266
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定，不按文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不假定逐项合并或替换。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅GET/HEAD继续处理并丢弃请求体，其他方法直接返回405。配置目标是静态地址/Unix socket/组，不编译变量地址；键来自非空$memcached_key，按memcached规则转义后发送get命令。VALUE匹配键及长度成功映射200，END映射404；不支持set/add等写操作，不是第三方memc模块。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_bind",
+    "summary": "指定内置memcached出站连接的本地地址。",
+    "syntax": "memcached_bind address [transparent ] | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6433,
+      "end_line": 6529
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6533,
+        "end_line": 6582
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 95,
+        "end_line": 158
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 51,
+        "end_line": 90
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 646,
+        "end_line": 647
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无显式绑定。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "绑定支持变量及可选端口，与不支持变量目标的memcached_pass不同；off取消继承绑定。transparent还需要系统支持、权限及正确路由，不改变缓存键。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_socket_keepalive",
+    "summary": "为memcached新出站TCP套接字启用SO_KEEPALIVE。",
+    "syntax": "memcached_socket_keepalive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 76,
+        "end_line": 86
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 504,
+        "end_line": 511
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 305,
+        "end_line": 321
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 649,
+        "end_line": 650
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只是TCP探测选项，不等于文本协议END尾部确认后的连接可复用标志，不创建上游空闲池，也不设置探测周期。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_connect_timeout",
+    "summary": "设置建立memcached上游连接时的等待超时。",
+    "syntax": "memcached_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1669
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 197,
+        "end_line": 214
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 109,
+        "end_line": 121
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 655,
+        "end_line": 656
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接NGX_AGAIN时设置事件定时器，不是get操作总耗时；文档的通常75秒不是配置回调硬上限。内置模块无TLS连接分支，发行版运行超时采用请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_send_timeout",
+    "summary": "限制发送memcached文本get命令时相邻写操作之间的等待。",
+    "syntax": "memcached_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 237,
+        "end_line": 299
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 629,
+        "end_line": 630
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 287,
+        "end_line": 302
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 658,
+        "end_line": 659
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "请求由转义后的键和CRLF组成，原客户端正文不向memcached发送；超时不是整个响应完成时限。共享发送定时器在发行版改用请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_buffer_size",
+    "summary": "设置内置memcached读取VALUE响应行及数据所用的输入缓冲大小。",
+    "syntax": "memcached_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 309,
+        "end_line": 340
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 453,
+        "end_line": 569
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 618,
+        "end_line": 626
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 93,
+        "end_line": 106
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 667,
+        "end_line": 669
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块固定非缓冲传输；该值不是缓存对象最大长度。VALUE行未读完且缓冲满会报INVALID_HEADER；数据过滤器剥除CRLF END CRLF尾部，尾部损坏的处理不应当作首行invalid_response重试。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_read_timeout",
+    "summary": "设置memcached响应相邻读取之间的超时。",
+    "syntax": "memcached_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2436,
+        "end_line": 2466
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 453,
+        "end_line": 471
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 269,
+        "end_line": 284
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 661,
+        "end_line": 662
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "首行等待和非缓冲正文读取分别通过共享事件路径计时，不是缓存对象整体传输预算；U2436–2466的#if 0代码未执行。发行补丁改变请求级超时字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "所引共享路径受固定发行补丁影响，按对应补丁解释请求级超时或错误页处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_next_upstream",
+    "summary": "指定memcached失败或未命中时能否转到下一台服务器读取。",
+    "syntax": "memcached_next_upstream error | timeout | invalid_response | not_found | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 44,
+        "end_line": 51
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 431,
+        "end_line": 450
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2508,
+        "end_line": 2517
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4380,
+        "end_line": 4426
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4330,
+        "end_line": 4358
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 142,
+        "end_line": 203
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 671,
+        "end_line": 680
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error timeout。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "该表用invalid_response而非invalid_header，not_found对应END产生的HTTP404；只有error/timeout/invalid_response/not_found/off。未命中不是失败计数；已向客户端发送正文后不能靠重试修复中途错误，off覆盖其他配置位。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_next_upstream_tries",
+    "summary": "限制一次memcached读取允许的上游尝试次数。",
+    "syntax": "memcached_next_upstream_tries number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1254,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 223,
+        "end_line": 237
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 652,
+        "end_line": 653
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享代码只收紧peer.tries，可用服务器与next_upstream条件仍控制重试；0取消此额外上限，不是无限轮询或多键批量次数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_next_upstream_timeout",
+    "summary": "限定memcached读取可继续尝试其他上游的累计时间窗口。",
+    "syntax": "memcached_next_upstream_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 206,
+        "end_line": 220
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 664,
+        "end_line": 665
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "比较从peer.start_time起经过的时间，发生重试决策时检查；0关闭此门槛，不是正在传输对象的独立总超时。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_memcached_module",
+    "name": "memcached_gzip_flag",
+    "summary": "用配置掩码检查memcached VALUE flags并标记gzip响应。",
+    "syntax": "memcached_gzip_flag flag;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 137,
+        "end_line": 165
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 201,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 369,
+        "end_line": 408
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_memcached_module.xml",
+        "start_line": 124,
+        "end_line": 139
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_memcached_module.c",
+        "start_line": 690,
+        "end_line": 690
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，关闭flags检查。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层字段未配置时继承父层，父层也未配置时采用所引merge默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅非零配置才解析flags，按位与非零就加Content-Encoding: gzip；不是精确相等比较，不压缩或解压正文，不根据Accept-Encoding重新编码。非法flags在启用检查时走INVALID_HEADER，0跳过检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行补丁并检查所引局部原文；保持结论仅限本条明示事实，不代表整个协议请求链完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  }
+]

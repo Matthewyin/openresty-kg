@@ -1,0 +1,3711 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_bind",
+    "summary": "设置连接上游时使用的本地源地址，可使用变量或取消继承的绑定。",
+    "syntax": "proxy_bind address [transparent]|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_proxy_module.c",
+      "start_line": 2414,
+      "end_line": 2507
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 428,
+        "end_line": 435
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 644,
+        "end_line": 694
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 95,
+        "end_line": 157
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 58,
+        "end_line": 96
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不显式绑定源地址，由系统选择。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off清除继承的本地绑定；静态无效地址配置失败，变量求值为空时不绑定，变量地址格式无效时记录错误后继续。transparent需要平台支持及适当系统路由，并非仅设置此项即可透传源地址。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L58-L96",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_socket_keepalive",
+    "summary": "为到上游的新socket请求启用SO_KEEPALIVE选项。",
+    "syntax": "proxy_socket_keepalive on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 428,
+        "end_line": 435
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 76,
+        "end_line": 86
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 364,
+        "end_line": 379
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off，不由此模块主动开启SO_KEEPALIVE。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是HTTP连接池或连接复用；这里只设socket布尔选项，不提供探测间隔参数。设置失败在共享连接函数中告警并忽略，不保证每个上游socket已开启。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L364-L379",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_buffer_size",
+    "summary": "设置Stream代理从客户端及上游读取数据所用的两个方向缓冲区大小。",
+    "syntax": "proxy_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 450,
+        "end_line": 458
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 854,
+        "end_line": 864
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 99,
+        "end_line": 113
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "16k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是一次性响应大小或整个会话内存上限；两个方向分别分配缓冲区，已存在的上游缓冲不重复分配。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L99-L113",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_downstream_buffer",
+    "deprecated": true,
+    "summary": "已废弃的proxy_buffer_size别名，仍写入同一buffer_size字段并输出替代提示。",
+    "syntax": "proxy_downstream_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 128,
+        "end_line": 134
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 1446,
+        "end_line": 1456
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 450,
+        "end_line": 458
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 854,
+        "end_line": 864
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "buffer-registration",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 175,
+        "end_line": 197
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "同proxy_buffer_size，16k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是独立的下行大小设置；与另一个旧别名或proxy_buffer_size同层重复配置同一字段会被size槽拒绝。告警不等于忽略值，仍影响两个方向的缓冲。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "buffer-registration"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "buffer-registration"
+      ]
+    },
+    "documentation": [],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_upstream_buffer",
+    "deprecated": true,
+    "summary": "已废弃的proxy_buffer_size别名，仍写入同一buffer_size字段并输出替代提示。",
+    "syntax": "proxy_upstream_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 128,
+        "end_line": 134
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 1446,
+        "end_line": 1456
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 450,
+        "end_line": 458
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 854,
+        "end_line": 864
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "buffer-registration",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 175,
+        "end_line": 197
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "同proxy_buffer_size，16k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是独立的上行大小设置；与另一个旧别名或proxy_buffer_size同层重复配置同一字段会被size槽拒绝。告警不等于忽略值，仍影响两个方向的缓冲。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "buffer-registration"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "buffer-registration"
+      ]
+    },
+    "documentation": [],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_upload_rate",
+    "summary": "限制Stream代理从客户端读取数据的速率，按连接计算每秒字节额度。",
+    "syntax": "proxy_upload_rate rate;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_script.c",
+      "start_line": 319,
+      "end_line": 345
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_script.c",
+        "start_line": 109,
+        "end_line": 138
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_script.c",
+        "start_line": 244,
+        "end_line": 277
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 924,
+        "end_line": 925
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1626,
+        "end_line": 1745
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 653,
+        "end_line": 683
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不限制该方向读取速率。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "变量速率在上游初始化时求值；无值、求值失败或结果无法解析为size时按0处理。通过读取预算和延迟事件控制，不是跨连接共享限速；UDP不会像TCP一样为额度不足截小读取长度。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L653-L683",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_download_rate",
+    "summary": "限制Stream代理从上游读取数据的速率，按连接计算每秒字节额度。",
+    "syntax": "proxy_download_rate rate;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_script.c",
+      "start_line": 319,
+      "end_line": 345
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_script.c",
+        "start_line": 109,
+        "end_line": 138
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_script.c",
+        "start_line": 244,
+        "end_line": 277
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 924,
+        "end_line": 925
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1626,
+        "end_line": 1745
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 129,
+        "end_line": 159
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不限制该方向读取速率。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "变量速率在上游初始化时求值；无值、求值失败或非法size结果回退0。控制读取而非保证网卡瞬时发送速率，多连接分别计量，UDP与TCP的读取截断处理不同。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L129-L159",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_requests",
+    "summary": "设置UDP客户端数据报达到多少个后解除客户端与现有代理会话的绑定，使后续数据报可建立新会话。",
+    "syntax": "proxy_requests number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1806,
+        "end_line": 1854
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 284,
+        "end_line": 302
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不按客户端报文数解除绑定。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅UDP路径使用；解除绑定不等于立即无条件销毁会话，仍检查预期响应数及输出缓冲。不是TCP请求数或每秒请求速率。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L284-L302",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_responses",
+    "summary": "给UDP代理会话设置每个客户端数据报预期收到的上游响应数据报数，作为会话完成条件之一。",
+    "syntax": "proxy_responses number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1450,
+        "end_line": 1483
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1806,
+        "end_line": 1854
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 305,
+        "end_line": 327
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "内部使用NGX_MAX_INT32_VALUE作为不限预期响应数的标记。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "期望阈值按responses乘以本会话requests计算，不按单个数据报强制丢弃多余响应；0表示不等待响应，但会话尚在时收到的响应仍可处理。达到阈值还须结合requests及缓冲状态判断结束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L305-L327",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_next_upstream",
+    "summary": "控制Stream代理建立上游连接失败进入重试处理时，是否允许选择下一上游。",
+    "syntax": "proxy_next_upstream on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 728,
+        "end_line": 756
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1896,
+        "end_line": 1935
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 179,
+        "end_line": 196
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "balancer-status-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-balancer_status_code.patch",
+        "start_line": 1,
+        "end_line": 72
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "还受剩余peer次数及重试窗口限制；已有待发送缓冲数据时可能直接结束，不是任意传输失败都能透明重放。发行补丁允许上游选择返回特殊状态后直接结束，不能把on理解成所有错误均重试。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "balancer-status-patch"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "有效balancer_status_code补丁使上游选择返回特殊状态时直接结束会话；该分支位于常规连接错误处理前，因此对本项重试边界有影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing",
+        "balancer-status-patch"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L179-L196",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_next_upstream_tries",
+    "summary": "给Stream上游候选尝试次数设置额外上限，初始化peer后只在其次数更大时收紧。",
+    "syntax": "proxy_next_upstream_tries number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 575,
+        "end_line": 593
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1381,
+        "end_line": 1394
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1896,
+        "end_line": 1935
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 214,
+        "end_line": 226
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "tries-getter-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-stream_proxy_get_next_upstream_tries.patch",
+        "start_line": 1,
+        "end_line": 31
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不施加此额外次数限制。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0不是无限重试承诺，仍受peer可用次数、next_upstream开关及时间窗口约束。有效发行补丁额外导出读取本配置值的函数，本字段本身并不直接指定哪个上游。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "tries-getter-patch"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "有效发行补丁新增可由其他模块调用的本字段读取函数；原初始化次数收紧逻辑保持，不将其扩展为所有balancer运行期次数永不变化。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing",
+        "tries-getter-patch"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L214-L226",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_next_upstream_timeout",
+    "summary": "限制Stream代理允许继续尝试下一上游的时间窗口。",
+    "syntax": "proxy_next_upstream_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 583,
+        "end_line": 593
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1381,
+        "end_line": 1394
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1896,
+        "end_line": 1935
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 199,
+        "end_line": 211
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不施加此时间窗口限制。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "在进入下一上游处理时比较当前时间与peer.start_time，不是到点立即中断当前传输的独立timer；还须满足peer次数及next_upstream开关。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L199-L211",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_protocol",
+    "summary": "向被代理的上游连接发送PROXY协议头，传递客户端连接地址信息。",
+    "syntax": "proxy_protocol on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 711,
+        "end_line": 715
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 803,
+        "end_line": 820
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 888,
+        "end_line": 922
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 943,
+        "end_line": 1010
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 268,
+        "end_line": 281
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "timeout-fields-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-stream_proxy_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 178
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是发往上游的PROXY头，不是接收客户端PROXY头的listen选项。TLS上游先发送PROXY头再握手；该路径要求一次发送完整头，等待发送使用发行补丁后的会话timeout字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "timeout-fields-patch"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "有效发行补丁将TLS前发送PROXY头等待所用timeout从模块配置读取改为会话ctx字段；头构造与完整发送判断保持，不能把所有等待行为标无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing",
+        "timeout-fields-patch"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L268-L281",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_half_close",
+    "summary": "允许Stream代理TCP连接两个方向分别半关闭，在正常EOF结束路径中等待两个读方向均结束。",
+    "syntax": "proxy_half_close on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1772,
+        "end_line": 1789
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1857,
+        "end_line": 1874
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 162,
+        "end_line": 176
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅TCP；一侧EOF且待发缓冲清空时关闭对端写方向，保留另一方向传输。不保证忽略超时、错误等其他会话结束条件，也不适用于UDP。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L162-L176",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl",
+    "summary": "启用Stream到上游的SSL/TLS连接。",
+    "syntax": "proxy_ssl on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 803,
+        "end_line": 820
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2259,
+        "end_line": 2350
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 382,
+        "end_line": 392
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_STREAM_SSL构建支持，运行时只对SOCK_STREAM上游执行；不是客户端监听端TLS开关。打开TLS不自动打开证书验证，验证由proxy_ssl_verify控制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L382-L392",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_session_reuse",
+    "summary": "控制Stream上游TLS会话是否调用peer的会话恢复及保存机制。",
+    "syntax": "proxy_ssl_session_reuse on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1087,
+        "end_line": 1098
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1172,
+        "end_line": 1181
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2259,
+        "end_line": 2350
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1668,
+        "end_line": 1703
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 580,
+        "end_line": 594
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅TLS连接使用，是否真正复用由SSL库和peer会话实现决定；不是复用已有TCP连接，也不保证每次握手都恢复会话。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L580-L594",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_protocols",
+    "summary": "设置Stream上游TLS上下文允许的协议版本掩码。",
+    "syntax": "proxy_ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1432
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 112,
+        "end_line": 120
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2259,
+        "end_line": 2270
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 296,
+        "end_line": 401
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 538,
+        "end_line": 561
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "固定版本默认TLSv1、TLSv1.1、TLSv1.2、TLSv1.3。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "名称能被配置解析不代表SSL库实际支持该协议；实际协商仍受库能力及选项影响。此列表是本锁定版本事实，不套用其他版本的默认值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L538-L561",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_ciphers",
+    "summary": "将配置的密码列表传给Stream上游SSL上下文的SSL_CTX_set_cipher_list。",
+    "syntax": "proxy_ssl_ciphers ciphers;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2259,
+        "end_line": 2283
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 431,
+        "end_line": 447
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "DEFAULT。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用SSL库密码列表语法；此处不是SSL_CTX_set_ciphersuites接口，不把它表述为同时控制所有TLS1.3套件。列表无法由SSL库设置时配置初始化失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L431-L447",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_name",
+    "summary": "覆盖用于Stream上游证书名称核验及可选SNI发送的名称。",
+    "syntax": "proxy_ssl_name name;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_script.c",
+      "start_line": 244,
+      "end_line": 277
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 473,
+        "end_line": 481
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 570,
+        "end_line": 576
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1070,
+        "end_line": 1076
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1185,
+        "end_line": 1272
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 500,
+        "end_line": 519
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未设置时采用proxy_pass对应的上游host字段。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持变量；名称可去除端口部分，但配置名称本身不启用SNI或证书验证。SNI仍由proxy_ssl_server_name控制；名称为空、以[开头，或ngx_inet_addr解析结果不等于INADDR_NONE时跳过SNI。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L500-L519",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_server_name",
+    "summary": "控制Stream上游TLS握手是否发送SNI服务器名称。",
+    "syntax": "proxy_ssl_server_name on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1070,
+        "end_line": 1076
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1185,
+        "end_line": 1272
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 564,
+        "end_line": 577
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "设置on仍受SSL库扩展支持及名称资格限制；名称为空、以[开头，或ngx_inet_addr解析结果不等于INADDR_NONE时跳过SNI。SNI发送与证书验证开关独立。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L564-L577",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_verify",
+    "summary": "启用Stream上游TLS握手完成后的证书验证结果及名称检查。",
+    "syntax": "proxy_ssl_verify on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1118,
+        "end_line": 1165
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2259,
+        "end_line": 2350
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4869,
+        "end_line": 4896
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 612,
+        "end_line": 622
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "启用时必须配置非空可信CA文件；链验证或名称不匹配进入上游失败重试处理。开关不等于开启SNI，也不验证非TLS上游。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L612-L622",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_verify_depth",
+    "summary": "设置Stream上游证书链验证允许的深度参数。",
+    "syntax": "proxy_ssl_verify_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2316,
+        "end_line": 2334
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 625,
+        "end_line": 635
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只有启用proxy_ssl_verify的SSL上下文初始化才将本值传给信任配置；本项不独立启用验证，具体链验证遵循SSL库语义。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L625-L635",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_trusted_certificate",
+    "summary": "指定Stream上游TLS证书验证使用的可信CA证书文件。",
+    "syntax": "proxy_ssl_trusted_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2316,
+        "end_line": 2334
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 951,
+        "end_line": 984
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 597,
+        "end_line": 609
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空路径；不自动配置可信CA文件。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "在proxy_ssl_verify启用时加载，路径会规范化；文件加载失败使初始化失败。配置CA文件本身不打开验证，也不是客户端认证证书。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L597-L609",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_crl",
+    "summary": "指定Stream上游证书验证使用的PEM格式证书吊销列表文件。",
+    "syntax": "proxy_ssl_crl file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2316,
+        "end_line": 2338
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 988,
+        "end_line": 1033
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 485,
+        "end_line": 497
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空路径，不加载额外CRL。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅在proxy_ssl_verify启用的初始化分支加载并设置CRL检查标志；不自动打开验证，也不会按网络地址自动更新CRL。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L485-L497",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_certificate",
+    "summary": "配置Stream连接上游时用于客户端认证的证书。",
+    "syntax": "proxy_ssl_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_script.c",
+      "start_line": 281,
+      "end_line": 315
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1076,
+        "end_line": 1087
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1276,
+        "end_line": 1316
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2285,
+        "end_line": 2314
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 457,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 578,
+        "end_line": 650
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 395,
+        "end_line": 410
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置客户端证书。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "静态证书/私钥在SSL上下文初始化加载，含变量时在连接期求值加载；非空证书配置需要相应私钥，变量证书求值为空时跳过加载。不是验证上游身份的CA文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L395-L410",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_certificate_key",
+    "summary": "配置Stream上游TLS客户端认证证书对应的私钥。",
+    "syntax": "proxy_ssl_certificate_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_script.c",
+      "start_line": 281,
+      "end_line": 315
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1076,
+        "end_line": 1087
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1276,
+        "end_line": 1316
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2285,
+        "end_line": 2314
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 457,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 578,
+        "end_line": 650
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 413,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置客户端私钥。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持变量并与证书配合；仅设置私钥不等于启用TLS或客户端证书。静态/连接期加载分支随证书和私钥是否含变量决定。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L413-L428",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_password_file",
+    "summary": "在配置期读取Stream上游客户端私钥的候选口令列表。",
+    "syntax": "proxy_ssl_password_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_proxy_module.c",
+      "start_line": 1014,
+      "end_line": 1034
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2285,
+        "end_line": 2314
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1199,
+        "end_line": 1330
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1329,
+        "end_line": 1360
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 522,
+        "end_line": 535
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无额外口令文件。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "口令按行读取；读取失败或单行过长会失败。变量证书路径需要保留口令到配置池，不是每次握手重新读取此文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L522-L535",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_proxy_module",
+    "name": "proxy_ssl_conf_command",
+    "summary": "将一组OpenSSL配置命令应用到Stream上游TLS上下文。",
+    "syntax": "proxy_ssl_conf_command name value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 376,
+        "end_line": 389
+      },
+      {
+        "id": "merge",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2113,
+        "end_line": 2204
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 122,
+        "end_line": 124
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 1038,
+        "end_line": 1045
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 2338,
+        "end_line": 2350
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1596,
+        "end_line": 1664
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_proxy_module.xml",
+        "start_line": 450,
+        "end_line": 482
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无额外OpenSSL命令。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应字段未配置时继承上层；显式值替代上层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层可追加多条；本层存在列表时不与父层列表逐键合并。需要SSL_CONF_FLAG_FILE接口支持，命令值类型及执行结果由SSL库检查，配置错误可使初始化失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "merge",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定34项有效发行补丁并核对47个最终摘要，所引注册、回调及局部事实片段保持；仅对所列事实成立，不扩展为整个代理、SSL库或所有下游调用均无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "merge",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_proxy_module.xml#L450-L482",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

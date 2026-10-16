@@ -1,0 +1,1457 @@
+[
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_server",
+    "summary": "向Drizzle upstream注册数据库服务器，配置连接协议、数据库、认证参数与新连接字符集。",
+    "syntax": "drizzle_server address [dbname=name] [user=name] [password=value] [protocol=drizzle|mysql] [charset=name];",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_upstream.c",
+      "start_line": 84,
+      "end_line": 299
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 14,
+        "end_line": 16
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 301,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 668,
+        "end_line": 696
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 180,
+        "end_line": 228
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 84,
+        "end_line": 160
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 189,
+        "end_line": 234
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认端口3306，默认协议drizzle；未提供dbname/user/password时保持空字段。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "地址在配置期解析；dbname/user/password长度受对应DRIZZLE_MAX_*宏限制。charset禁止单引号，并通过新连接上的set names查询生效。protocol解析存在宽松分支：部分长度合法但值未知的token保留初始drizzle，不应声称所有非法值均拒绝。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_keepalive",
+    "summary": "配置每worker数据库连接缓存容量、选取模式和容量溢出策略。",
+    "syntax": "drizzle_keepalive max=num [mode=single|multi] [overflow=ignore|reject];",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_keepalive.c",
+      "start_line": 25,
+      "end_line": 129
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 36,
+        "end_line": 78
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_keepalive.c",
+        "start_line": 160,
+        "end_line": 243
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 576,
+        "end_line": 637
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 191,
+        "end_line": 207
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 36,
+        "end_line": 78
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 235,
+        "end_line": 257
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时max_cached=0；未指定mode时single=0即multi，overflow=ignore。README标示single与固定代码不符，以代码为准。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "single直接取空闲池首项；multi先选peer再仅按socket地址匹配，明确不比较数据库名或用户。max不是ignore策略下活动连接硬上限；reject根据active_conns阈值拒绝并走503路径。部分等长未知mode/overflow值保留原字段，不能把语法枚举写成严格校验。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_query",
+    "summary": "配置静态或含变量的SQL，并可按HTTP方法选择不同查询。",
+    "syntax": "drizzle_query [method ...] sql;",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_module.c",
+      "start_line": 333,
+      "end_line": 450
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 183,
+        "end_line": 200
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 471,
+        "end_line": 525
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 74,
+        "end_line": 85
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 180,
+        "end_line": 228
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 204,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 258,
+        "end_line": 282
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时default_query与queries均为空；仅本层两者都为空时整组继承父查询。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "SQL配置值和求值结果不得为空；同层默认query重复或方法集合交叠会拒绝。请求先选匹配方法，再用默认SQL；仅存在方法查询而当前方法未匹配时返回405，完全无查询配置返回500。变量拼接不是SQL转义或参数绑定。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_dbname",
+    "summary": "设置请求时求值的数据库名称，供新数据库连接覆盖服务器级dbname。",
+    "syntax": "drizzle_dbname value;",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_module.c",
+      "start_line": 292,
+      "end_line": 330
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 448,
+        "end_line": 469
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 668,
+        "end_line": 678
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_keepalive.c",
+        "start_line": 160,
+        "end_line": 243
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 204,
+        "end_line": 289
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "本层未设置时继承父dbname指针；无父设置则为空。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层重复配置拒绝。求值非空时必须短于DRIZZLE_MAX_DB_SIZE；空值不清空服务器dbname。连接缓存复用不重新应用dbname，multi匹配也忽略数据库名/用户，不能保证每请求变量变化都切换既有连接数据库。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_pass",
+    "summary": "将location内容处理绑定到Drizzle数据库请求处理器，并选择目标upstream。",
+    "syntax": "drizzle_pass upstream;",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_module.c",
+      "start_line": 453,
+      "end_line": 523
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 44,
+        "end_line": 146
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 157,
+        "end_line": 189
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 1012,
+        "end_line": 1054
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 37,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 110,
+        "end_line": 125
+      },
+      {
+        "id": "implementation-5",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 224,
+        "end_line": 245
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 283,
+        "end_line": 311
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "未逐项核定可独立表述的默认行为；不据通用字段推断。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "静态目标交给ngx_http_upstream_add；含变量目标在请求时求值并按已登记upstream名称及端口查找，不是任意运行时DNS连接。必须使用Drizzle后端。模块使用自己的dbd初始化和读写事件处理器，输出RDS二进制数据，不是HTTP代理或JSON编码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_connect_timeout",
+    "summary": "设置数据库连接异步等待使用的写事件超时。",
+    "syntax": "drizzle_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 157,
+        "end_line": 189
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 214,
+        "end_line": 280
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 37,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 66,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_util.c",
+        "start_line": 729,
+        "end_line": 743
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 312,
+        "end_line": 325
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在连接返回NGX_AGAIN时挂连接timer；libdrizzle自身poll timeout设为0，不能将它等同整个SQL请求的总时限。固定README的语法示例误写drizzle_connect_time，真实指令以注册表为准。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_send_query_timeout",
+    "summary": "设置发送SQL阶段首次异步等待的写事件超时。",
+    "syntax": "drizzle_send_query_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 157,
+        "end_line": 189
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 214,
+        "end_line": 280
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 37,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 66,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 180,
+        "end_line": 228
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 326,
+        "end_line": 339
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在处理器进入该等待状态时挂timer，不会在相同状态的每次I/O重新刷新，也不是整个SQL请求总时限。引用中#if 0的事件注册语句不参与执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_recv_cols_timeout",
+    "summary": "设置读取结果列元数据阶段首次异步等待的读事件超时。",
+    "syntax": "drizzle_recv_cols_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 157,
+        "end_line": 189
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 214,
+        "end_line": 280
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 37,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 66,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 305,
+        "end_line": 339
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 340,
+        "end_line": 353
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在处理器进入该等待状态时挂timer，不会在相同状态的每次I/O重新刷新，也不是整个SQL请求总时限。引用中#if 0的事件注册语句不参与执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_recv_rows_timeout",
+    "summary": "设置读取结果行阶段首次异步等待的读事件超时。",
+    "syntax": "drizzle_recv_rows_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 157,
+        "end_line": 189
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 214,
+        "end_line": 280
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 37,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-3",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_upstream.c",
+        "start_line": 66,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-4",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 394,
+        "end_line": 424
+      },
+      {
+        "id": "implementation-5",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_processor.c",
+        "start_line": 494,
+        "end_line": 512
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 354,
+        "end_line": 367
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在处理器进入该等待状态时挂timer，不会在相同状态的每次I/O重新刷新，也不是整个SQL请求总时限。引用中#if 0的事件注册语句不参与执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_module_header",
+    "summary": "控制数据库响应是否附加X-Resty-DBD-Module模块版本头。",
+    "syntax": "drizzle_module_header on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 21,
+        "end_line": 31
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 224,
+        "end_line": 245
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 380,
+        "end_line": 397
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认on；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅控制该模块在生成数据库响应头时的版本标识，不控制数据库协议或所有Nginx响应头；关闭不改变RDS正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_buffer_size",
+    "summary": "设置构造RDS输出所用缓冲区的基础大小。",
+    "syntax": "drizzle_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 596,
+        "end_line": 612
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_output.c",
+        "start_line": 662,
+        "end_line": 692
+      },
+      {
+        "id": "merge-default",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 250,
+        "end_line": 289
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 368,
+        "end_line": 379
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认ngx_pagesize，取决于运行平台页大小；本层未配置则继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是整个结果集大小上限，也不是字段长度上限；为保持RDS原子完整，暂存片段超过基础尺寸时按更大长度另分配缓冲区。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "drizzle-nginx-module",
+    "module": "ngx_http_drizzle_module",
+    "name": "drizzle_status",
+    "summary": "安装内容处理器，输出当前进程Drizzle upstream连接与缓存统计。",
+    "syntax": "drizzle_status;",
+    "callback_definition": {
+      "component": "drizzle-nginx-module",
+      "file": "src/ngx_http_drizzle_module.c",
+      "start_line": 560,
+      "end_line": 569
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_module.c",
+        "start_line": 151,
+        "end_line": 180
+      },
+      {
+        "id": "implementation-0",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 396,
+        "end_line": 520
+      },
+      {
+        "id": "implementation-1",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 530,
+        "end_line": 636
+      },
+      {
+        "id": "implementation-2",
+        "component": "drizzle-nginx-module",
+        "file": "src/ngx_http_drizzle_handler.c",
+        "start_line": 648,
+        "end_line": 669
+      },
+      {
+        "id": "official-doc",
+        "component": "drizzle-nginx-module",
+        "file": "README.markdown",
+        "start_line": 398,
+        "end_line": 425
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 614,
+        "end_line": 617
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "未逐项核定可独立表述的默认行为；不据通用字段推断。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "未完整核定跨上下文继承规则；正文仅陈述已列出merge证据覆盖的行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "遍历HTTP main配置中的Drizzle upstream，并非仅当前虚拟主机；统计是处理当前请求的进程本地视图，不是跨worker聚合，也不发起数据库健康探测。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未对本组件直接应用patch；所引用Nginx共享setter片段经实际发行补丁回放保持。结论限本条已核定事实，不代表全部数据库或Nginx运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  }
+]

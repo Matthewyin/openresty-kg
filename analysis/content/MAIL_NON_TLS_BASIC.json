@@ -1,0 +1,4124 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_mail_module",
+    "name": "mail",
+    "summary": "建立邮件配置上下文，创建各mail模块配置并逐server执行合并和监听整理。",
+    "syntax": "mail { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail.c",
+      "start_line": 66,
+      "end_line": 221
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 43,
+        "end_line": 63
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 79,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 206,
+        "end_line": 220
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 319,
+        "end_line": 348
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 237,
+        "end_line": 247
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未单独核定，不按空文档default猜值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承语义未单独核定，不猜父子合并行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅主配置层，无参数且不可重复；不是HTTP虚拟主机，内部按NGX_MAIL_MODULE及MAIL_MAIN_CONF解析。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_auth_http_module",
+    "name": "auth_http",
+    "summary": "通过HTTP认证服务取得认证结果和邮件后端IP/端口，再启动协议代理。",
+    "syntax": "auth_http URL;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_auth_http_module.c",
+      "start_line": 1584,
+      "end_line": 1630
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 121,
+        "end_line": 145
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 186,
+        "end_line": 232
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1299,
+        "end_line": 1350
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 497,
+        "end_line": 519
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 574,
+        "end_line": 638
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 685,
+        "end_line": 837
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 903,
+        "end_line": 922
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_auth_http_module.xml",
+        "start_line": 17,
+        "end_line": 28
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1534,
+        "end_line": 1546
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无可用默认认证地址；父子都未配置则merge报错。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "子层未设置peer时连同host_header/uri继承父层；父子均缺失报错。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置期解析http://或裸地址/Unix URL，默认端口80、空URI为/；没有HTTPS握手或变量求值链。运行期发送HTTP/1.0 GET，以Auth-*头交换信息而非响应正文，成功路由要求Auth-Server为可解析IP及Auth-Port为1–65535；并非读取HTTP状态码就认证通过。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_auth_http_module",
+    "name": "auth_http_timeout",
+    "summary": "设置与HTTP认证服务器通信的读写定时器。",
+    "syntax": "auth_http_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 121,
+        "end_line": 145
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 219,
+        "end_line": 232
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 252,
+        "end_line": 296
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 315,
+        "end_line": 345
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 720,
+        "end_line": 752
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_auth_http_module.xml",
+        "start_line": 67,
+        "end_line": 77
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1548,
+        "end_line": 1548
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接启动同时设置读写计时；发送完成删除写计时，读等待不因每次收到数据重置。本项不是认证响应Auth-Wait指定的延迟。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_auth_http_module",
+    "name": "auth_http_header",
+    "summary": "向认证HTTP请求末尾追加配置的字面头字段。",
+    "syntax": "auth_http_header header value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_auth_http_module.c",
+      "start_line": 1633,
+      "end_line": 1659
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 121,
+        "end_line": 145
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1552,
+        "end_line": 1578
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1458,
+        "end_line": 1463
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1503,
+        "end_line": 1520
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_auth_http_module.xml",
+        "start_line": 31,
+        "end_line": 47
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1552,
+        "end_line": 1578
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时不追加自定义头。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层headers为NULL才继承父层整组及序列化header，不逐字段合并。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置回调直接保存字符串并在merge序列化，不做变量脚本求值；追加而非按名称替换模块生成头。同层多条累积，子层有任意一条即不继承父层整组。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_auth_http_module",
+    "name": "auth_http_pass_client_cert",
+    "summary": "允许将客户端证书以URL编码PEM放入认证请求Auth-SSL-Cert头。",
+    "syntax": "auth_http_pass_client_cert on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 121,
+        "end_line": 145
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1139,
+        "end_line": 1143
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1177,
+        "end_line": 1226
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1393,
+        "end_line": 1456
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1475,
+        "end_line": 1500
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_auth_http_module.xml",
+        "start_line": 50,
+        "end_line": 64
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1550,
+        "end_line": 1550
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "指令属于auth_http非SSL owner，但真实消费仅在NGX_MAIL_SSL且连接有SSL、sslcf->verify非零时；开关本身不启用证书验证。证书内容为空不发送头，也不使认证HTTP连接自动加密。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "server",
+    "summary": "在mail块创建独立邮件服务器配置，供监听地址选择协议会话。",
+    "syntax": "server { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 223,
+      "end_line": 300
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 240,
+        "end_line": 299
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 202,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 130,
+        "end_line": 146
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 406,
+        "end_line": 415
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未单独核定，不按空文档default猜值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承语义未单独核定，不猜父子合并行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅mail层；每个server必须显式有listen，且在merge时必须已确定协议；不按HTTP Host选择server。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "listen",
+    "summary": "定义邮件接入监听地址和端口，并关联该server的会话配置。",
+    "syntax": "listen address:port [ssl] [proxy_protocol] [backlog=number] [rcvbuf=size] [sndbuf=size] [bind] [ipv6only=on|off] [so_keepalive=on|off|keepidle:keepintvl:keepcnt];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 303,
+      "end_line": 621
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 315,
+        "end_line": 371
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 425,
+        "end_line": 469
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 471,
+        "end_line": 569
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 571,
+        "end_line": 621
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 291,
+        "end_line": 348
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 169,
+        "end_line": 193
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 249,
+        "end_line": 268
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 77,
+        "end_line": 234
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未单独核定，不按空文档default猜值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承语义未单独核定，不猜父子合并行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "可使用端口、地址、主机名或unix:路径；不同server不可重复地址端口。IPv6与keepalive调参受平台宏限制，ssl参数需NGX_MAIL_SSL；接入proxy_protocol要求先读PROXY头，与向后端发送的同名指令分开。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "protocol",
+    "summary": "选择当前mail server使用的imap、pop3或smtp协议回调组。",
+    "syntax": "protocol imap|pop3|smtp;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 624,
+      "end_line": 654
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 352,
+        "end_line": 371
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 202,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 47,
+        "end_line": 61
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 47,
+        "end_line": 61
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 40,
+        "end_line": 54
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 454,
+        "end_line": 476
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 264,
+        "end_line": 309
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未单独核定，不按空文档default猜值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承语义未单独核定，不猜父子合并行为。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只匹配已编入的协议模块；未配置时listen尝试按143/993、110/995、25/465/587推断，不能推断则merge报错。端口推断协议不等于自动启用TLS。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "timeout",
+    "summary": "设置进入透明代理前邮件交互使用的超时，包括客户端命令等待和后端登录阶段。",
+    "syntax": "timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 37,
+        "end_line": 53
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 62,
+        "end_line": 73
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 290,
+        "end_line": 313
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 813,
+        "end_line": 824
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 138,
+        "end_line": 162
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 816,
+        "end_line": 823
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 453,
+        "end_line": 463
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 190,
+        "end_line": 190
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "客户端读/写与后端初始登录有各自定时器；不替代auth_http_timeout、resolver_timeout或进入转发后的proxy_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "server_name",
+    "summary": "设置SMTP欢迎/EHLO及认证盐等场景使用的邮件服务器名称。",
+    "syntax": "server_name name;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 167,
+        "end_line": 196
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 585,
+        "end_line": 616
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 480,
+        "end_line": 497
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 39,
+        "end_line": 64
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 418,
+        "end_line": 450
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 196,
+        "end_line": 200
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置或最终为空时使用cycle.hostname。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层字符串；最终长度为0则使用机器hostname。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是基于域名选择mail server的路由键；SMTP上游HELO/EHLO使用此名，POP3仅需要认证盐时将其嵌入欢迎，不保证所有POP3欢迎都显示该名称。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "error_log",
+    "summary": "为邮件连接配置错误日志目标及级别，并接入监听和会话日志。",
+    "syntax": "error_log file [level];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 657,
+      "end_line": 663
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/core/ngx_log.c",
+        "start_line": 478,
+        "end_line": 538
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/core/ngx_log.c",
+        "start_line": 552,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 329,
+        "end_line": 333
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 144,
+        "end_line": 164
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/ngx_core_module.xml",
+        "start_line": 211,
+        "end_line": 271
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 209,
+        "end_line": 215
+      },
+      {
+        "id": "log-output",
+        "component": "nginx",
+        "file": "src/core/ngx_log.c",
+        "start_line": 95,
+        "end_line": 196
+      },
+      {
+        "id": "patch-intercept_error_log",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-intercept_error_log.patch",
+        "start_line": 1,
+        "end_line": 60
+      },
+      {
+        "id": "patch-larger_max_error_str",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-larger_max_error_str.patch",
+        "start_line": 1,
+        "end_line": 13
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "本层及父层均无日志时沿用cycle.new_log；不能独立写死为某个路径。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配时继承mail层，否则沿用cycle.new_log；本层有配置则不追加父层列表。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "可在同层配置多个目标；支持stderr、syslog:及普通文件，memory:需要debug构建；借用core文档，但owner仍为ngx_mail_core_module。 发行补丁在共享输出链增加可选日志拦截回调，并将未另定义的NGX_MAX_ERROR_STR由2048改为4096；不是mail新增指令。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default",
+          "log-output",
+          "patch-intercept_error_log",
+          "patch-larger_max_error_str"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "共享日志输出受intercept_error_log及larger_max_error_str影响；mail配置解析/合并本身保持，实际发行patch回放核定。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default",
+        "log-output",
+        "patch-intercept_error_log",
+        "patch-larger_max_error_str"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "resolver",
+    "summary": "配置SMTP客户端地址反查及主机名正向核对所用DNS服务器。",
+    "syntax": "resolver address ... [valid=time] [ipv4=on|off] [ipv6=on|off] [local=on|off|path]; 或 resolver off;（local为非Windows发行补丁扩展）",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 666,
+      "end_line": 690
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/core/ngx_resolver.c",
+        "start_line": 132,
+        "end_line": 309
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 56,
+        "end_line": 98
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 102,
+        "end_line": 148
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 152,
+        "end_line": 245
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1340,
+        "end_line": 1350
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 650,
+        "end_line": 663
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 312,
+        "end_line": 387
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 217,
+        "end_line": 217
+      },
+      {
+        "id": "patch-resolver_conf_parsing",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-resolver_conf_parsing.patch",
+        "start_line": 1,
+        "end_line": 263
+      },
+      {
+        "id": "patch-safe_resolver_ipv6_option",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-safe_resolver_ipv6_option.patch",
+        "start_line": 1,
+        "end_line": 60
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off，即resolver为NULL。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "用于SMTP的Client-Host/XCLIENT NAME，不是auth_http返回后端主机名解析器。反查后正查必须含客户端地址，否则NAME不可用；商业status_zone不作为此固定源码能力。发行补丁在非Windows加入local=on|off|path，并使无IPv6构建可接受ipv6=off，ipv6=on仍拒绝。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default",
+          "patch-resolver_conf_parsing",
+          "patch-safe_resolver_ipv6_option"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行resolver_conf_parsing及safe_resolver_ipv6_option扩展共享解析器；正文区分上游与发行行为，实际回放确认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default",
+        "patch-resolver_conf_parsing",
+        "patch-safe_resolver_ipv6_option"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "resolver_timeout",
+    "summary": "限制SMTP客户端反向及正向DNS查询的等待时间。",
+    "syntax": "resolver_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 62,
+        "end_line": 98
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 163,
+        "end_line": 181
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 390,
+        "end_line": 403
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 191,
+        "end_line": 192
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "30s",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "分别赋给两次查询的ctx.timeout，不是整个邮件会话总时限；resolver关闭时不发起这些查询。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_core_module",
+    "name": "max_errors",
+    "summary": "达到邮件协议解析错误次数阈值后设置退出标记并关闭连接。",
+    "syntax": "max_errors number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 99,
+        "end_line": 123
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 856,
+        "end_line": 888
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 792,
+        "end_line": 799
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_core_module.xml",
+        "start_line": 250,
+        "end_line": 261
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 194,
+        "end_line": 194
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "5",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际计数点是parse_command返回NGX_MAIL_PARSE_INVALID_COMMAND，不等于认证密码错误次数或所有状态处理错误；过长且占满缓冲的未完成命令会直接退出，不等待此阈值。0也不是无限制，首次被计数错误即达到阈值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_imap_module",
+    "name": "imap_client_buffer",
+    "summary": "设置客户端IMAP命令读取缓冲大小。",
+    "syntax": "imap_client_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 77,
+        "end_line": 97
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 836,
+        "end_line": 874
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_imap_module.xml",
+        "start_line": 99,
+        "end_line": 111
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 151,
+        "end_line": 153
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个内存页ngx_pagesize，不固定写死4k。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "在init_protocol首次分配；未完成命令占满缓冲会退出，并非邮件大小或上游响应缓冲限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_imap_module",
+    "name": "imap_capabilities",
+    "summary": "设置认证前CAPABILITY回复的IMAP扩展列表。",
+    "syntax": "imap_capabilities extension ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 693,
+      "end_line": 716
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 20,
+        "end_line": 25
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 161,
+        "end_line": 255
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 426,
+        "end_line": 455
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_imap_module.xml",
+        "start_line": 66,
+        "end_line": 96
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 161,
+        "end_line": 175
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "IMAP4 IMAP4rev1 UIDPLUS，另外自动组合认证/TLS标记。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层列表为空时继承父层整组；父子均空才填默认列表。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同层重复配置追加；仅公告能力，不实现后端命令。AUTH方法及STARTTLS/LOGINDISABLED由auth配置和TLS状态额外组合；不把自定义能力文字当启用功能。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_imap_module",
+    "name": "imap_auth",
+    "summary": "配置IMAP公告的认证方法，并控制CRAM-MD5及不带初始响应的EXTERNAL处理许可。",
+    "syntax": "imap_auth plain|login|cram-md5|external ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 28,
+        "end_line": 44
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 184,
+        "end_line": 219
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 303,
+        "end_line": 423
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 231,
+        "end_line": 239
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 903,
+        "end_line": 922
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_imap_module.xml",
+        "start_line": 17,
+        "end_line": 63
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_module.c",
+        "start_line": 155,
+        "end_line": 158
+      },
+      {
+        "id": "auth-parser",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_parse.c",
+        "start_line": 903,
+        "end_line": 975
+      },
+      {
+        "id": "auth-external",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 722,
+        "end_line": 753
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "plain",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层方法掩码未设置时继承父层，否则本层替代父层；同层多个配置由bitmask回调累加。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "LOGIN命令及AUTHENTICATE PLAIN/LOGIN仍可接受，即使未公告；不是关闭明文认证的开关。CRAM-MD5及不带初始响应的EXTERNAL分支检查方法掩码；EXTERNAL携带初始响应时由共享解析器直接解码，不经过该掩码检查，但不代表认证成功，后续仍经auth_http。STARTTLS-only可独立阻止TLS前认证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default",
+          "auth-parser",
+          "auth-external"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default",
+        "auth-parser",
+        "auth-external"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_pop3_module",
+    "name": "pop3_capabilities",
+    "summary": "设置认证前POP3 CAPA回复的扩展列表。",
+    "syntax": "pop3_capabilities extension ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 693,
+      "end_line": 716
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 84,
+        "end_line": 108
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 20,
+        "end_line": 25
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 151,
+        "end_line": 250
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 299,
+        "end_line": 323
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 369,
+        "end_line": 398
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_pop3_module.xml",
+        "start_line": 67,
+        "end_line": 98
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 151,
+        "end_line": 165
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "TOP USER UIDL，另外组合SASL/STLS。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层列表为空时继承父层整组；父子均空才填默认值。同层配置追加。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只是公告，不实现TOP/UIDL等后端命令；模块自动附SASL与STLS。STARTTLS-only的公告去掉USER并不等价于修改普通capability；实际选择依当前TLS状态。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_pop3_module",
+    "name": "pop3_auth",
+    "summary": "配置POP3认证公告及APOP、CRAM-MD5、不带初始响应的EXTERNAL处理许可。",
+    "syntax": "pop3_auth plain|apop|cram-md5|external ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 84,
+        "end_line": 108
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 28,
+        "end_line": 44
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 142,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 309,
+        "end_line": 366
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 423,
+        "end_line": 544
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 267,
+        "end_line": 276
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 903,
+        "end_line": 922
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 764,
+        "end_line": 773
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_pop3_module.xml",
+        "start_line": 17,
+        "end_line": 64
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_module.c",
+        "start_line": 142,
+        "end_line": 149
+      },
+      {
+        "id": "auth-parser",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_parse.c",
+        "start_line": 903,
+        "end_line": 975
+      },
+      {
+        "id": "auth-external",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 722,
+        "end_line": 753
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "plain（内部同时加入LOGIN位）。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未指定方法时继承父层掩码；本层指定则替代，再按plain派生LOGIN。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "plain在merge同时加入LOGIN公告位；USER/PASS及AUTH PLAIN/LOGIN始终可走，不因省略plain被禁用，TLS-only另行限制。APOP/CRAM-MD5需认证服务处理挑战响应，后端非SMTP代理还需可用密码。 EXTERNAL无初始响应时检查方法掩码；携带初始响应时共享解析器直接解码，不经过该掩码检查，但仍需auth_http处理，不代表认证成功。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc",
+          "merge-default",
+          "auth-parser",
+          "auth-external"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing",
+        "merge-default",
+        "auth-parser",
+        "auth-external"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy",
+    "summary": "保存mail代理模块的enable配置位；固定实现中该位没有运行期消费。",
+    "syntax": "proxy on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 15,
+        "end_line": 23
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1337,
+        "end_line": 1375
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 813,
+        "end_line": 837
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 128,
+        "end_line": 206
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1365,
+        "end_line": 1365
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "字段默认off，但不是运行期停止代理的保证。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "该身份确有注册和merge，但XML节点在注释内，不能称活跃文档。auth_http成功路径直接调用ngx_mail_proxy_init，后者未检查enable；不能承诺off禁用邮件代理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy_buffer",
+    "summary": "设置读取后端欢迎/登录响应及后端向客户端转发的缓冲大小。",
+    "syntax": "proxy_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 170,
+        "end_line": 177
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 954,
+        "end_line": 993
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1150,
+        "end_line": 1181
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 32,
+        "end_line": 44
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1370,
+        "end_line": 1371
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个内存页ngx_pagesize。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际分配s->proxy->buffer；客户端向后端复用s->buffer，由协议模块控制，不声称双向都分配此大小。未完整且占满的上游响应行会报错。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy_timeout",
+    "summary": "设置已登录、进入双向转发后的邮件代理超时。",
+    "syntax": "proxy_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 155,
+        "end_line": 162
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 313,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 476,
+        "end_line": 497
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 816,
+        "end_line": 834
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1130,
+        "end_line": 1147
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1279,
+        "end_line": 1282
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 115,
+        "end_line": 127
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1372,
+        "end_line": 1372
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "24h",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "登录前后端等待使用core timeout；转发开始在客户端read事件安装计时，proxy_handler处理客户端侧事件时更新该计时，超时关闭会话，不是从连接建立起固定总寿命。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy_pass_error_message",
+    "summary": "决定是否将邮件后端登录阶段的异常回复传给客户端。",
+    "syntax": "proxy_pass_error_message on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 969,
+        "end_line": 993
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1093,
+        "end_line": 1112
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1286,
+        "end_line": 1304
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 47,
+        "end_line": 75
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1366,
+        "end_line": 1366
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响响应状态检查失败时是否保存原始回复；关闭时返回模块内部错误。它不是auth_http的Auth-Status透传开关，连接错误或过长未完整行也不能保证有可透传回复。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "xclient",
+    "summary": "控制SMTP连接后端时发送XCLIENT客户端地址、名称及条件性登录名。",
+    "syntax": "xclient on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 580,
+        "end_line": 713
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 62,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 110,
+        "end_line": 148
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 195,
+        "end_line": 244
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 130,
+        "end_line": 192
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1367,
+        "end_line": 1367
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅SMTP路径；启用后先EHLO服务器名，再XCLIENT，客户端有HELO时再发送其原始HELO/EHLO。proxy_smtp_auth开启则XCLIENT省略LOGIN。NAME来自反查加正向核对，失败/禁用使用占位名。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy_smtp_auth",
+    "summary": "控制SMTP后端登录是否发送AUTH PLAIN。",
+    "syntax": "proxy_smtp_auth on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 605,
+        "end_line": 616
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 653,
+        "end_line": 711
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 715,
+        "end_line": 758
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 94,
+        "end_line": 112
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1368,
+        "end_line": 1368
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "后端认证使用NUL+用户名+NUL+密码的Base64，不沿用客户端挑战算法；需要可用密码。客户端auth_method=NONE优先进入MAIL FROM流程；同时启用XCLIENT会省略其LOGIN参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_proxy_module",
+    "name": "proxy_protocol",
+    "summary": "连接邮件后端时先发送一条PROXY协议头。",
+    "syntax": "proxy_protocol on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 98,
+        "end_line": 122
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 179,
+        "end_line": 205
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 864,
+        "end_line": 951
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_proxy_protocol.c",
+        "start_line": 279,
+        "end_line": 322
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_proxy_module.xml",
+        "start_line": 78,
+        "end_line": 91
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_proxy_module.c",
+        "start_line": 1369,
+        "end_line": 1369
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "与listen proxy_protocol接收入站头独立；固定调用ngx_proxy_protocol_write产生v1文本头，IPv4/IPv6分别TCP4/TCP6，其他地址族UNKNOWN。NGX_AGAIN可重试；部分发送按错误关闭，不保证所有后端都识别此头。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_realip_module",
+    "name": "set_real_ip_from",
+    "summary": "定义可接受其PROXY协议来源地址替换信息的可信连接来源。",
+    "syntax": "set_real_ip_from address|CIDR|unix:;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_realip_module.c",
+      "start_line": 135,
+      "end_line": 235
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_realip_module.c",
+        "start_line": 40,
+        "end_line": 64
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 249,
+        "end_line": 268
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_realip_module.c",
+        "start_line": 67,
+        "end_line": 132
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_realip_module.c",
+        "start_line": 152,
+        "end_line": 235
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_realip_module.c",
+        "start_line": 238,
+        "end_line": 255
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_realip_module.xml",
+        "start_line": 45,
+        "end_line": 61
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_realip_module.c",
+        "start_line": 258,
+        "end_line": 269
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认from为NULL，不替换地址。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置任何from时继承父层整组；本层存在规则则不追加父层。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅在先读到PROXY头且原始连接地址命中可信CIDR时替换客户端地址和端口，不读取HTTP X-Forwarded-For。固定回调还接受配置期解析的主机名；unix:信任Unix域，IPv6受宏限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_smtp_module",
+    "name": "smtp_client_buffer",
+    "summary": "设置读取客户端SMTP命令的会话缓冲大小。",
+    "syntax": "smtp_client_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 395,
+        "end_line": 427
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 836,
+        "end_line": 874
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_smtp_module.xml",
+        "start_line": 104,
+        "end_line": 116
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 153,
+        "end_line": 155
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个内存页ngx_pagesize。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "缓冲由SMTP create_buffer分配，命令过长会退出；不是邮件DATA大小上限，也不设置上游proxy_buffer。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_smtp_module",
+    "name": "smtp_greeting_delay",
+    "summary": "延迟发送SMTP欢迎以识别欢迎前就发送命令的客户端。",
+    "syntax": "smtp_greeting_delay time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 280,
+        "end_line": 373
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 44,
+        "end_line": 46
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_smtp_module.xml",
+        "start_line": 119,
+        "end_line": 131
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 157,
+        "end_line": 158
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，即不延迟。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层；父子均未设置时使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "延迟期到期才发送欢迎并改用core timeout；若客户端提前发送命令，则返回503 Improper use of SMTP command pipelining并退出，不是每条SMTP命令的延迟。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_smtp_module",
+    "name": "smtp_capabilities",
+    "summary": "配置SMTP EHLO回复的扩展公告列表。",
+    "syntax": "smtp_capabilities extension ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_core_module.c",
+      "start_line": 693,
+      "end_line": 716
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 199,
+        "end_line": 270
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 272,
+        "end_line": 312
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 622,
+        "end_line": 652
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 118,
+        "end_line": 138
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_smtp_module.xml",
+        "start_line": 72,
+        "end_line": 101
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 199,
+        "end_line": 201
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无自定义扩展；仍有服务器名及按认证配置自动生成的AUTH行。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层列表为空时继承父层整组；同层追加，本层有值不与父层逐项合并。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "HELO只返回server_name；EHLO自动组合认证方法及按TLS状态选择STARTTLS版本。公告不实现扩展，也不保证后端支持；应按后端能力配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_smtp_module",
+    "name": "smtp_auth",
+    "summary": "配置SMTP认证公告、扩展认证方式及是否允许未认证邮件路由。",
+    "syntax": "smtp_auth plain|login|cram-md5|external|none ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 91,
+        "end_line": 115
+      },
+      {
+        "id": "mail-conf-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail.c",
+        "start_line": 165,
+        "end_line": 201
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 20,
+        "end_line": 37
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 656,
+        "end_line": 785
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 789,
+        "end_line": 825
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 555,
+        "end_line": 564
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 903,
+        "end_line": 922
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1372,
+        "end_line": 1391
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_smtp_module.xml",
+        "start_line": 17,
+        "end_line": 69
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_module.c",
+        "start_line": 160,
+        "end_line": 164
+      },
+      {
+        "id": "auth-parser",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_parse.c",
+        "start_line": 903,
+        "end_line": 975
+      },
+      {
+        "id": "auth-external",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 722,
+        "end_line": 753
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "plain login",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层方法未设置时继承父层，否则替代；同层bitmask累加。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "PLAIN/LOGIN即使未公告仍可接受；CRAM-MD5及无初始响应的EXTERNAL分支按掩码检查；EXTERNAL携带初始响应则由共享解析器直接解码，不经过该掩码检查，但仍需auth_http处理，不代表认证成功。STARTTLS-only仍独立限制TLS前认证。none允许MAIL/RCPT流程，但RCPT完成后仍调用auth_http，以Auth-Method:none取得后端；不等于跳过HTTP路由认证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "mail-conf-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default",
+          "auth-parser",
+          "auth-external"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放并按所引片段原文比较；保持结论只覆盖本项明示配置及使用事实，不代表邮件完整生命周期不受任何共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "mail-conf-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default",
+        "auth-parser",
+        "auth-external"
+      ]
+    },
+    "related": []
+  }
+]

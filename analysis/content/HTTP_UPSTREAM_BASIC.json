@@ -1,0 +1,1768 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_hash_module",
+    "name": "hash",
+    "summary": "按可含变量的 key 值选择 HTTP upstream 后端；普通模式进行加权哈希，consistent 模式构建 ketama 一致性哈希点以减少成员变化时的键重映射。",
+    "syntax": "hash key [consistent];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+      "start_line": 639,
+      "end_line": 686
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 94,
+        "end_line": 107
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 441,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 111,
+        "end_line": 159
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 179,
+        "end_line": 282
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 302,
+        "end_line": 407
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 432,
+        "end_line": 489
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_hash_module.c",
+        "start_line": 510,
+        "end_line": 618
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "default-algorithm",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6774,
+        "end_line": 6796
+      },
+      {
+        "id": "keepalive-wrapper",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 565,
+        "end_line": 574
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置 hash 且没有其他算法时使用加权轮询；配置 hash key 但省略 consistent 时使用普通哈希。",
+      "source_ids": [
+        "configuration-definition",
+        "default-algorithm"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "consistent 不是 IP 哈希，也不是加密或永不改变的会话绑定；普通哈希增加/删除成员可重映射大量键，一致性哈希也不能保证零重映射。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "空 key、单 peer 或连续未选中可用 peer 超过内部尝试阈值时回退轮询；down、失败暂避、max_conns 仍影响选择。该算法不声明 backup 支持；非默认算法应放在 keepalive 之前。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_ip_hash_module",
+    "name": "ip_hash",
+    "summary": "按请求连接的客户端地址进行加权哈希选址：IPv4 使用前三个字节，支持 IPv6 的构建使用完整16字节地址。",
+    "syntax": "ip_hash;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_ip_hash_module.c",
+      "start_line": 257,
+      "end_line": 278
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_ip_hash_module.c",
+        "start_line": 64,
+        "end_line": 77
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 474,
+        "end_line": 520
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_ip_hash_module.c",
+        "start_line": 84,
+        "end_line": 145
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_ip_hash_module.c",
+        "start_line": 164,
+        "end_line": 252
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "default-algorithm",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6774,
+        "end_line": 6796
+      },
+      {
+        "id": "keepalive-wrapper",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 565,
+        "end_line": 574
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置 ip_hash 且没有其他选址算法时，使用加权轮询。",
+      "source_ids": [
+        "default-algorithm"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用的是 r->connection->sockaddr，不直接读取任意 X-Forwarded-For 字符串；同一IPv4前三字节的客户端可映射到一起，不能把它当用户身份识别。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "节点 down、失败阈值、max_conns、单 peer 或内部尝试回退会影响映射，不能承诺永远命中同一后端；不声明 backup 支持。IPv6 分支受 NGX_HAVE_INET6 限制，非默认算法应在 keepalive 之前配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_keepalive_module",
+    "name": "keepalive",
+    "summary": "为 HTTP upstream 启用每个 worker 自己的空闲连接缓存；先由原选址器确定后端，再查找该端点可复用的连接，缓存满时淘汰最久未使用项。",
+    "syntax": "keepalive connections;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+      "start_line": 538,
+      "end_line": 576
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 130,
+        "end_line": 143
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 523,
+        "end_line": 637
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 232
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 236,
+        "end_line": 301
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 305,
+        "end_line": 410
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2312,
+        "end_line": 2345
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_proxy_module.c",
+        "start_line": 822,
+        "end_line": 832
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "keepalive-create",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 511,
+        "end_line": 534
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      },
+      {
+        "id": "upstream-pipelining",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_pipelining.patch",
+        "start_line": 1,
+        "end_line": 23
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置 keepalive 时不安装此连接缓存包装器；connections 是必填正整数，没有隐含池大小。",
+      "source_ids": [
+        "configuration-definition",
+        "keepalive-create"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "connections 是每个 worker 的空闲缓存上限，不是 worker 能打开的上游总连接数，也不是多个 worker 共用的池容量；zone 不把这些 socket 缓存变成共享连接池。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-create",
+          "upstream-config-context",
+          "upstream-pipelining"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "非默认选址算法必须在 keepalive 之前声明，包装器会保存当时的 init_upstream。连接还须无错误/超时、协议允许保持、请求正文已发完，并未超过次数或寿命条件，才会入池。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-create",
+          "upstream-config-context",
+          "upstream-pipelining"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "HTTP 代理还需配合上游持久连接协议/头部设置，例如 HTTP/1.1 并清除默认 Connection: close；只设置本指令不保证协议层可复用。OpenResty pipelining 补丁让写事件持续到 request_body_sent，而不是仅 header_sent。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-create",
+          "upstream-config-context",
+          "upstream-pipelining"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定发行补丁序列核对所引用局部实现；受影响的行为见对应补丁原文和限制说明，源码行号仍为冻结上游坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "upstream-pipelining"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_keepalive_module",
+    "name": "keepalive_time",
+    "summary": "限制上游连接可继续复用的总时长；归还连接时比较当前时间与连接起始时间，超过限制便不再放回空闲池。",
+    "syntax": "keepalive_time time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 130,
+        "end_line": 143
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 668,
+        "end_line": 681
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 323,
+        "end_line": 348
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 190,
+        "end_line": 204
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 407,
+        "end_line": 410
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4537,
+        "end_line": 4575
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "keepalive-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "启用 upstream keepalive 初始化时，未设置值为1h。",
+      "source_ids": [
+        "keepalive-default"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是空闲超时或单个请求耗时上限；源码在释放 peer 时使用严格大于比较，不是在阈值时刻设置独立定时器中断正在处理的请求。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "单独设置寿命不会启用连接池，需要 keepalive 安装包装器；请求次数、错误和协议 keepalive 条件也可使连接更早不再复用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_keepalive_module",
+    "name": "keepalive_timeout",
+    "summary": "限制已归入上游 keepalive 池的连接空闲等待时间；入池时设置读事件定时器，取出复用时取消，空闲超时后关闭。",
+    "syntax": "keepalive_timeout timeout;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 130,
+        "end_line": 143
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 684,
+        "end_line": 695
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 280,
+        "end_line": 300
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 377,
+        "end_line": 404
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 422,
+        "end_line": 461
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "keepalive-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "启用 upstream keepalive 初始化时，未设置值为60s。",
+      "source_ids": [
+        "keepalive-default"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是到上游的空闲池超时，不是 HTTP core 同名的客户端长连接超时，也不是 proxy_read_timeout；断开/可读异常等情况也会提前移除空闲连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "单独设置不启用池，需配合 keepalive；不能用它约束正在发送请求或读取响应的总时长。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_keepalive_module",
+    "name": "keepalive_requests",
+    "summary": "限制一条上游 keepalive 连接可处理的请求次数；连接用于一次上游请求时计数，归还时达到上限便不再缓存复用。",
+    "syntax": "keepalive_requests number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 130,
+        "end_line": 143
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 640,
+        "end_line": 665
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1579,
+        "end_line": 1591
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 323,
+        "end_line": 348
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 407,
+        "end_line": 410
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4537,
+        "end_line": 4575
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "keepalive-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 147,
+        "end_line": 170
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "启用 upstream keepalive 初始化时，未设置值为1000。",
+      "source_ids": [
+        "keepalive-default"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是单条上游连接的次数限制，不是每个 worker 或后端服务器的累计请求限额，也不是池大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "单独设置不启用池；达到上限后在请求释放连接的路径上退出复用，不是提前中断第N个请求。失败、关闭标志及连接寿命等条件仍可先发生。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "keepalive-default",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_least_conn_module",
+    "name": "least_conn",
+    "summary": "在可用 HTTP upstream 后端中，按活动连接数相对权重的比例选择负载较小者；并列时再用加权轮询规则决定。",
+    "syntax": "least_conn;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_least_conn_module.c",
+      "start_line": 292,
+      "end_line": 314
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_least_conn_module.c",
+        "start_line": 49,
+        "end_line": 62
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 760,
+        "end_line": 775
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_least_conn_module.c",
+        "start_line": 66,
+        "end_line": 96
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_least_conn_module.c",
+        "start_line": 114,
+        "end_line": 255
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_least_conn_module.c",
+        "start_line": 257,
+        "end_line": 287
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "default-algorithm",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6774,
+        "end_line": 6796
+      },
+      {
+        "id": "keepalive-wrapper",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 565,
+        "end_line": 574
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置 least_conn 且没有其他选址算法时，使用加权轮询。",
+      "source_ids": [
+        "default-algorithm"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "比较的是 peer 的活动连接计数及权重，不是 CPU、响应耗时或连接池空闲连接数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仍排除 down、失败暂避和达到 max_conns 的节点；主组无可用项时可转备用组，单 peer 回退共用轮询路径。非默认算法应放在 keepalive 前。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_random_module",
+    "name": "random",
+    "summary": "按权重随机选择可用 HTTP upstream 后端；two 模式先抽取两个不同候选，再按活动连接数与权重的比例选择较轻者。",
+    "syntax": "random;\nrandom two [least_conn];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_random_module.c",
+      "start_line": 453,
+      "end_line": 502
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 80,
+        "end_line": 93
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 860,
+        "end_line": 896
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 97,
+        "end_line": 200
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 221,
+        "end_line": 294
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 315,
+        "end_line": 403
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 407,
+        "end_line": 429
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_random_module.c",
+        "start_line": 433,
+        "end_line": 449
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "default-algorithm",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6774,
+        "end_line": 6796
+      },
+      {
+        "id": "keepalive-wrapper",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 565,
+        "end_line": 574
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "单独 random 使用一个加权随机候选；random two 不写方法时即使用 least_conn 比较。完全未配置选址算法时仍是加权轮询。",
+      "source_ids": [
+        "configuration-definition",
+        "implementation-0",
+        "implementation-2",
+        "implementation-4",
+        "default-algorithm"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定开源回调只接受 two 和可选 least_conn，不接受商业 least_time=header/last_byte。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "候选受 down、失败暂避、max_conns 及本次已试集合约束；单 peer 或内部尝试次数过多时回退轮询，不是按权重保证每个短序列严格均分。该算法不声明 backup 支持，应在 keepalive 前配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "default-algorithm",
+          "keepalive-wrapper",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_zone_module",
+    "name": "zone",
+    "summary": "将 HTTP upstream 组的 peer 配置及连接数、失败、权重等运行状态放入命名共享内存，使多个 worker 共享这些状态；多个组可使用同一 zone。",
+    "syntax": "zone name [size];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_upstream_zone_module.c",
+      "start_line": 68,
+      "end_line": 117
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_zone_module.c",
+        "start_line": 51,
+        "end_line": 64
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 360,
+        "end_line": 390
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_zone_module.c",
+        "start_line": 121,
+        "end_line": 183
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_zone_module.c",
+        "start_line": 187,
+        "end_line": 260
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.h",
+        "start_line": 19,
+        "end_line": 41
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.h",
+        "start_line": 61,
+        "end_line": 125
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 1292,
+        "end_line": 1362
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 429,
+        "end_line": 434
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.c",
+        "start_line": 464,
+        "end_line": 469
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 13,
+        "end_line": 25
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不默认创建该共享区；未写 size 只留下0待同名声明补足，不是获得默认容量。显式 size 至少为8个 ngx_pagesize。",
+      "source_ids": [
+        "configuration-definition",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享 peer 元数据不等于共享 worker 的空闲 keepalive socket；也不是响应缓存区，不保存代理响应正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "省略 size 需要本轮配置中同名、同用途的声明提供一致大小；否则共享内存初始化会拒绝零容量。相同名称但不同用途或冲突容量被拒绝。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定开源 zone 不是商业动态成员管理 API，也不自动启用 server resolve。该实现设 noreuse=1，不能把 worker 间共享扩大为重载时保证复用旧 zone 状态。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_module",
+    "name": "upstream",
+    "summary": "定义供 HTTP 上游模块引用的命名服务器组，为组内配置创建独立上下文，并在初始化时安装选址算法；未指定算法时采用加权轮询。",
+    "syntax": "upstream name { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6049,
+      "end_line": 6161
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 361,
+        "end_line": 374
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 87,
+        "end_line": 125
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6774,
+        "end_line": 6796
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 31,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 522,
+        "end_line": 596
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 799,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1555,
+        "end_line": 1579
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      },
+      {
+        "id": "balancer-status-code",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-balancer_status_code.patch",
+        "start_line": 1,
+        "end_line": 14
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不自动创建命名组；已声明组未配置其他选址算法时，初始化入口使用加权轮询。",
+      "source_ids": [
+        "implementation-0",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它不是 HTTP 虚拟服务器块，也不打开监听端口；空组被配置回调拒绝。组名供 proxy_pass 等上游使用者引用，协议由使用者决定。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "upstream-config-context",
+          "balancer-status-code"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "共享连接调度受 OpenResty balancer_status_code 补丁影响：选址/连接回调返回大于等于 NGX_HTTP_SPECIAL_RESPONSE 的状态时直接结束请求。不要照文档示例推断所有失败都会遍历全部节点，协议模块自己的重试条件仍适用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "upstream-config-context",
+          "balancer-status-code"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定发行补丁序列核对所引用局部实现；受影响的行为见对应补丁原文和限制说明，源码行号仍为冻结上游坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "balancer-status-code"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_upstream_module",
+    "name": "server",
+    "summary": "在 HTTP upstream 组中登记后端地址及权重、活动连接上限、失败暂避、备用和停用参数；域名解析出的多个地址会转成多个 peer。",
+    "syntax": "server address [weight=number] [max_conns=number] [max_fails=number] [fail_timeout=time] [backup] [down];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6165,
+      "end_line": 6318
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 361,
+        "end_line": 374
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_upstream_module.xml",
+        "start_line": 128,
+        "end_line": 357
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 86,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 449,
+        "end_line": 517
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 539,
+        "end_line": 595
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.c",
+        "start_line": 600,
+        "end_line": 670
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4342,
+        "end_line": 4358
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream_round_robin.h",
+        "start_line": 19,
+        "end_line": 41
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_zone_module.c",
+        "start_line": 194,
+        "end_line": 225
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "upstream-config-context",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6085,
+        "end_line": 6131
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略端口时80；weight=1、max_conns=0、max_fails=1、fail_timeout=10s；backup/down 不默认开启。max_conns=0 表示不加该活动连接上限。",
+      "source_ids": [
+        "configuration-definition"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项属于命名 upstream 组配置，不按 HTTP server/location 的层级继承；每个 upstream 块建立独立的组配置上下文。",
+      "source_ids": [
+        "registration",
+        "upstream-config-context"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是 HTTP upstream 的 server，不是 stream 或 HTTP 虚拟服务器块。固定回调不接受商业 resolve、service、route、slow_start、drain 参数；可接受参数还受当前选址算法 flags 约束，backup 不应与 hash、ip_hash、random 组合。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "max_conns 统计活动 peer 连接，不是含空闲 keepalive 的总连接硬上限；无 zone 时状态为 worker 本地，配置 zone 可共享 peer 状态，空闲连接池仍不共享。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "upstream-config-context"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "max_fails/fail_timeout 是被动失败处理，不是主动健康检查；max_fails=0 关闭该阈值排除。单 peer 分支不检查失败阈值，但仍检查 down 和 max_conns。失败状态由使用协议的上游处理决定，不以任意非200响应一概计失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "official-doc",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "upstream-config-context"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定发行补丁序列核对所引用注册、owner、回调及运行片段；局部片段保留，不据此声称整个模块或 upstream 公共路径未受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "distribution-processing",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6"
+      ]
+    },
+    "related": []
+  }
+]

@@ -1,0 +1,696 @@
+[
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv",
+    "summary": "启用RDS数据库结果流到CSV的HTTP响应过滤转换。",
+    "syntax": "rds_csv on|off;",
+    "callback_definition": {
+      "component": "rds-csv-nginx-module",
+      "file": "src/ngx_http_rds_csv_filter_module.c",
+      "start_line": 491,
+      "end_line": 501
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "filter-gate",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 135,
+        "end_line": 185
+      },
+      {
+        "id": "body-dispatch",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 262,
+        "end_line": 346
+      },
+      {
+        "id": "filter-install",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 351,
+        "end_line": 376
+      },
+      {
+        "id": "mime",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_util.c",
+        "start_line": 74,
+        "end_line": 88
+      },
+      {
+        "id": "rds-format",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_utils.h",
+        "start_line": 14,
+        "end_line": 85
+      },
+      {
+        "id": "null-values",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 301,
+        "end_line": 384
+      },
+      {
+        "id": "rds-mime-value",
+        "component": "rds-csv-nginx-module",
+        "file": "src/resty_dbd_stream.h",
+        "start_line": 7,
+        "end_line": 11
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅处理状态在200至299且不为204/205、Content-Type精确为application/x-resty-dbd-stream的响应；不是通用JSON/SQL到CSV转换器，也不连接数据库。输入须满足RDS版本及字节序，错误或不完整数据不保证可转换。SQL NULL与空字符串都输出空字段，CSV结果中不能据此区分两者。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "filter-gate",
+          "body-dispatch",
+          "filter-install",
+          "mime",
+          "rds-format",
+          "null-values",
+          "rds-mime-value"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "filter-gate",
+        "body-dispatch",
+        "filter-install",
+        "mime",
+        "rds-format",
+        "null-values",
+        "rds-mime-value"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv_row_terminator",
+    "summary": "指定CSV每行结束时写入的换行序列。",
+    "syntax": "rds_csv_row_terminator \"\\n\"|\"\\r\\n\";",
+    "callback_definition": {
+      "component": "rds-csv-nginx-module",
+      "file": "src/ngx_http_rds_csv_filter_module.c",
+      "start_line": 432,
+      "end_line": 458
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "field-names",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 215,
+        "end_line": 295
+      },
+      {
+        "id": "row-end",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 440,
+        "end_line": 461
+      },
+      {
+        "id": "metadata-rows",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 118,
+        "end_line": 210
+      },
+      {
+        "id": "row-term-value",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 22,
+        "end_line": 22
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "CRLF（\\r\\n）。",
+      "source_ids": [
+        "create-merge",
+        "row-term-value"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受实际LF或CRLF两个序列，不接受空串、单独CR或任意多字节分隔文本；参数是配置字面值，不进行变量求值。用于字段名行、数据行以及无列结果的元信息输出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "field-names",
+          "row-end",
+          "metadata-rows"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "field-names",
+        "row-end",
+        "metadata-rows",
+        "row-term-value"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv_field_separator",
+    "summary": "指定CSV列之间的分隔字节，并参与字符串字段的引用判定。",
+    "syntax": "rds_csv_field_separator \",\"|\";\"|\"\\t\";",
+    "callback_definition": {
+      "component": "rds-csv-nginx-module",
+      "file": "src/ngx_http_rds_csv_filter_module.c",
+      "start_line": 462,
+      "end_line": 487
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "escaping",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_util.c",
+        "start_line": 17,
+        "end_line": 70
+      },
+      {
+        "id": "field-output",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 301,
+        "end_line": 461
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "逗号（,）。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受一个字节的逗号、分号或制表符，不支持任意字符或多字节分隔符。字符串包含分隔符、CR/LF或双引号时加双引号，内部双引号重复；这不额外实现电子表格公式转义。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "escaping",
+          "field-output"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "escaping",
+        "field-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv_field_name_header",
+    "summary": "控制有列结果集是否先输出CSV字段名行。",
+    "syntax": "rds_csv_field_name_header on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "columns",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_processor.c",
+        "start_line": 175,
+        "end_line": 205
+      },
+      {
+        "id": "field-names",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 215,
+        "end_line": 295
+      },
+      {
+        "id": "no-column-output",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 118,
+        "end_line": 210
+      },
+      {
+        "id": "content-type",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 177,
+        "end_line": 230
+      },
+      {
+        "id": "csv-mime-value",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "id": "no-column-dispatch",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_processor.c",
+        "start_line": 60,
+        "end_line": 99
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "正常有列结果路径在on时调用字段名输出；默认text/csv类型同时带header=presence或header=absence。零列RDS元信息路径存在固定实现差异：off时长度预算省略标题，但output_header仍无条件生成标题，导致预算与输出不一致，不能承诺该路径正常省略标题。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "columns",
+          "field-names",
+          "no-column-output",
+          "content-type",
+          "csv-mime-value",
+          "no-column-dispatch"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "columns",
+        "field-names",
+        "no-column-output",
+        "content-type",
+        "csv-mime-value",
+        "no-column-dispatch"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv_content_type",
+    "summary": "设置RDS转CSV后的HTTP Content-Type。",
+    "syntax": "rds_csv_content_type type;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "content-type",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 168,
+        "end_line": 230
+      },
+      {
+        "id": "csv-mime-value",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "id": "input-filter-gate",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 159,
+        "end_line": 166
+      },
+      {
+        "id": "input-mime-test",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_util.c",
+        "start_line": 74,
+        "end_line": 85
+      },
+      {
+        "id": "rds-mime-value",
+        "component": "rds-csv-nginx-module",
+        "file": "src/resty_dbd_stream.h",
+        "start_line": 7,
+        "end_line": 11
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "text/csv。",
+      "source_ids": [
+        "create-merge",
+        "csv-mime-value"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "精确配置text/csv时，模块按field_name_header附加header=presence或header=absence（固定源码的实际拼写）；其他字面值原样使用，不求值变量。只改变输出类型，不改变要求输入为RDS的过滤条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "content-type",
+          "csv-mime-value",
+          "input-filter-gate",
+          "input-mime-test",
+          "rds-mime-value"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "content-type",
+        "csv-mime-value",
+        "input-filter-gate",
+        "input-mime-test",
+        "rds-mime-value"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "rds-csv-nginx-module",
+    "module": "ngx_http_rds_csv_filter_module",
+    "name": "rds_csv_buffer_size",
+    "summary": "设置CSV转换常规输出缓冲区的大小。",
+    "syntax": "rds_csv_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_filter_module.c",
+        "start_line": 379,
+        "end_line": 428
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 600,
+        "end_line": 603
+      },
+      {
+        "id": "output-memory",
+        "component": "rds-csv-nginx-module",
+        "file": "src/ngx_http_rds_csv_output.c",
+        "start_line": 582,
+        "end_line": 746
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是单字段、整行或完整结果大小上限；一次待输出内容超过剩余空间时会另分配暂存内存，再分段拷入输出缓冲。没有额外正数post校验，0不表示关闭过滤，输出推进依赖可用缓冲空间。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "output-memory"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包RDS CSV，未施加直接补丁；所引共享Nginx配置槽位按有效补丁回放保持。仅覆盖本项配置与输出事实，不表示已执行数据库/RDS端到端测试。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "output-memory"
+      ]
+    },
+    "related": []
+  }
+]

@@ -1,0 +1,954 @@
+[
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_pass",
+    "summary": "通过Redis AUTH/SELECT/GET读取指定键，将值作为HTTP响应正文输出。",
+    "syntax": "redis_pass address|upstream|expression;",
+    "callback_definition": {
+      "component": "redis-nginx-module",
+      "file": "ngx_http_redis_module.c",
+      "start_line": 898,
+      "end_line": 940
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "handler",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 175,
+        "end_line": 264
+      },
+      {
+        "id": "request",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 268,
+        "end_line": 414
+      },
+      {
+        "id": "reply-status",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 494,
+        "end_line": 555
+      },
+      {
+        "id": "reply-value",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 597,
+        "end_line": 623
+      },
+      {
+        "id": "variable-pass",
+        "component": "openresty",
+        "file": "patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch",
+        "start_line": 1,
+        "end_line": 189
+      },
+      {
+        "id": "port-compat",
+        "component": "openresty",
+        "file": "patches/ngx_http_redis-0.3.9-default_port_fix.patch",
+        "start_line": 1,
+        "end_line": 17
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受GET/HEAD，其他HTTP方法返回405并不执行任意Redis命令；使用非空$redis_key，可选$redis_auth，未指定$redis_db时选择0。发行补丁加入变量目标，但只按名称及port0匹配预配置upstream，不作任意动态地址/DNS解析；空目标或找不到组返回500。Redis空值映射404，-ERR响应映射502，正常值映射200。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "handler",
+          "request",
+          "reply-status",
+          "reply-value",
+          "variable-pass",
+          "port-compat"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "变量后端由variables_in_redis_pass补丁引入，default_port_fix保护旧Nginx字段分支；所示配置callback原文属于补丁前固定上游，实际差异见补丁证据。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "handler",
+        "request",
+        "reply-status",
+        "reply-value",
+        "variable-pass",
+        "port-compat"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_bind",
+    "summary": "注册为Redis出站源地址设置，但此固定模块与Nginx 1.27.1共享回调组合会拒绝配置。",
+    "syntax": "redis_bind address|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6433,
+      "end_line": 6529
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "unset-pointer",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.h",
+        "start_line": 55,
+        "end_line": 60
+      },
+      {
+        "id": "loc-structure",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 21,
+        "end_line": 28
+      },
+      {
+        "id": "local-null",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6533,
+        "end_line": 6552
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时upstream.local为NULL，不指定出站源地址。",
+      "source_ids": [
+        "create-merge",
+        "local-null"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "源码静态核对：create用ngx_pcalloc清零，未将upstream.local设为NGX_CONF_UNSET_PTR；共享回调先要求该哨兵，否则返回is duplicate，因此首次配置包括off也被拒绝。实际注册为TAKE1，不接受额外transparent参数。此结论未运行OpenResty验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "unset-pointer",
+          "loc-structure",
+          "local-null"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "按redis三项有效发行补丁及Nginx共享补丁实际回放核定，仅覆盖明示配置及消费事实。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "unset-pointer",
+        "loc-structure",
+        "local-null"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_connect_timeout",
+    "summary": "设置建立Redis读取连接的等待超时。",
+    "syntax": "redis_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "connect-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1669
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接返回NGX_AGAIN时设置事件定时器，不是AUTH/SELECT/GET全过程总时限。发行版使用从配置初始化的请求级connect_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "connect-wait",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "模块三项有效发行补丁不改变此配置；共享上游超时由upstream_timeout_fields改成请求级字段。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "connect-wait",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_send_timeout",
+    "summary": "设置发送Redis认证、选库及读取请求时的写等待超时。",
+    "syntax": "redis_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "send-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "request-send",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 349,
+        "end_line": 414
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "是共享上游写等待，不是整个读键请求总超时；发行补丁把计时字段改为从配置初始化的请求级send_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "send-wait",
+          "request-send",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "模块三项有效发行补丁不改变此配置；共享上游超时由upstream_timeout_fields改成请求级字段。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "send-wait",
+        "request-send",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_buffer_size",
+    "summary": "设置读取Redis认证/选库应答及值长度头部的输入缓冲大小。",
+    "syntax": "redis_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "reply-header",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 425,
+        "end_line": 482
+      },
+      {
+        "id": "value-filter",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 629,
+        "end_line": 754
+      },
+      {
+        "id": "buffer-allocation",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "header-limit",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块使用非缓冲传输，键值正文继续流式读取并剥除结尾CRLF，该值不是缓存对象最大长度。响应头尚未完成而缓冲已满时走INVALID_HEADER；正文尾部损坏不能等同于首部阶段invalid_response重试。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "reply-header",
+          "value-filter",
+          "buffer-allocation",
+          "header-limit"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "按redis三项有效发行补丁及Nginx共享补丁实际回放核定，仅覆盖明示配置及消费事实。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "reply-header",
+        "value-filter",
+        "buffer-allocation",
+        "header-limit"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_read_timeout",
+    "summary": "设置等待Redis应答及后续键值正文读取的超时。",
+    "syntax": "redis_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "header-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "body-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "应答等待和非缓冲正文读取分别经过共享计时路径，不是整个键值传输预算；发行版使用从配置初始化的请求级read_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "header-wait",
+          "body-wait",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "模块三项有效发行补丁不改变此配置；共享上游超时由upstream_timeout_fields改成请求级字段。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "header-wait",
+        "body-wait",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_next_upstream",
+    "summary": "指定Redis读取发生失败或键不存在时允许切换下一台上游服务器的条件。",
+    "syntax": "redis_next_upstream error|timeout|invalid_response|not_found|off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "retry-mask",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 54,
+        "end_line": 61
+      },
+      {
+        "id": "reply-status",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 494,
+        "end_line": 555
+      },
+      {
+        "id": "invalid-header",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 613,
+        "end_line": 625
+      },
+      {
+        "id": "header-retry",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2517
+      },
+      {
+        "id": "status-retry",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2528,
+        "end_line": 2562
+      },
+      {
+        "id": "retry-guard",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4406,
+        "end_line": 4426
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error timeout。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层掩码，同层累加；合并时off覆盖其他位。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "not_found对应Redis空值映射的HTTP404；-ERR映射502并返回NGX_OK，不等同invalid_response对应的INVALID_HEADER。重试仍受可用peer次数和请求状态控制，不能用它恢复已经向客户端输出正文后的中途错误。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "retry-mask",
+          "reply-status",
+          "invalid-header",
+          "header-retry",
+          "status-retry",
+          "retry-guard"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "按redis三项有效发行补丁及Nginx共享补丁实际回放核定，仅覆盖明示配置及消费事实。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "retry-mask",
+        "reply-status",
+        "invalid-header",
+        "header-retry",
+        "status-retry",
+        "retry-guard"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "redis-nginx-module",
+    "module": "ngx_http_redis_module",
+    "name": "redis_gzip_flag",
+    "summary": "在返回Redis键值时以非零开关添加Content-Encoding: gzip响应头。",
+    "syntax": "redis_gzip_flag number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "create-merge",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 776,
+        "end_line": 894
+      },
+      {
+        "id": "upstream-binding",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 233,
+        "end_line": 240
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 692,
+        "end_line": 715
+      },
+      {
+        "id": "gzip-header",
+        "component": "redis-nginx-module",
+        "file": "ngx_http_redis_module.c",
+        "start_line": 557,
+        "end_line": 587
+      },
+      {
+        "id": "encoding-compat",
+        "component": "openresty",
+        "file": "patches/ngx_http_redis-0.3.9-remove_content_encoding.patch",
+        "start_line": 1,
+        "end_line": 14
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，关闭gzip响应标记。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "此项是数值的非零判断，不是memcached VALUE flags位掩码；不探测或压缩Redis数据，不保证数据确为gzip，也不自动完成gunzip。OpenResty在此Nginx版本移除已废弃的upstream.headers_in.content_encoding赋值，但仍保留向headers列表插入Content-Encoding的逻辑。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "registration-container",
+          "create-merge",
+          "upstream-binding",
+          "gzip-header",
+          "encoding-compat"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "remove_content_encoding有效补丁删除旧结构体字段赋值，保留headers列表插入；原始片段需结合补丁理解。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "registration-container",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "gzip-header",
+        "encoding-compat"
+      ]
+    },
+    "related": []
+  }
+]

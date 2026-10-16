@@ -1,0 +1,50 @@
+[
+  {
+    "id": "lua-nginx-module--ngx.log", "kind": "lua_api", "name": "ngx.log", "component": "lua-nginx-module",
+    "summary": "HTTP Lua 的错误日志接口：ngx.log(level, ...) 将参数拼接后按指定级别写入 Nginx 错误日志。配置指令 error_log 控制日志目的地和级别，本接口不是 access_log 的会话或访问日志格式。",
+    "limitations": ["本条引用 HTTP Lua 模块实现；不能据此自动判断用户 Lua 代码或其他子系统的执行语义。", "日志长度还受 Nginx 核心限制；OpenResty 的 larger_max_error_str 补丁在未预先定义 NGX_MAX_ERROR_STR 时，将该宏的默认值从上游 2048 改为 4096。此缓冲区还包含日志前缀，不能解释成消息正文可完整容纳 4096 字节，也不能直接照搬文档中的上游 2048 描述。", "未运行 OpenResty，也不判断实际日志权限、过滤级别或日志拦截配置。"],
+    "evidence": [{ "file": "README.markdown", "start_line": 5961, "end_line": 5973 }, { "file": "src/ngx_http_lua_log.c", "start_line": 35, "end_line": 61 }, { "component": "nginx", "file": "src/core/ngx_log.c", "start_line": 110, "end_line": 158 }, { "component": "openresty", "file": "patches/nginx-1.27.1-larger_max_error_str.patch", "start_line": 1, "end_line": 12 }, { "component": "openresty", "file": "util/mirror-tarballs", "start_line": 353, "end_line": 356 }]
+  },
+  {
+    "id": "lua-nginx-module--ngx.var", "kind": "lua_api", "name": "ngx.var", "component": "lua-nginx-module",
+    "summary": "HTTP Lua 通过 ngx.var.VAR_NAME 读取 Nginx 变量，并可向已定义且可修改的变量赋值。变量访问接口与配置指令 set 分属运行时访问和配置声明，不会凭赋值自动创建一个 Nginx 变量。",
+    "limitations": ["不是所有 Nginx 变量都可写；接口拒绝不可修改或没有定义的赋值目标。", "参考条目仅说明这个接口，不执行变量求值，不判断输入配置或 Lua 正文的正确性。", "本条是 HTTP Lua 的接口；不把 HTTP 变量和 stream 同名变量的语义混为一项。"],
+    "evidence": [{ "file": "README.markdown", "start_line": 3878, "end_line": 3916 }, { "file": "src/ngx_http_lua_variable.c", "start_line": 104, "end_line": 148 }, { "file": "src/ngx_http_lua_variable.c", "start_line": 229, "end_line": 238 }]
+  },
+  {
+    "id": "lua-nginx-module--ngx.shared.DICT.get", "kind": "lua_api", "name": "ngx.shared.DICT.get", "component": "lua-nginx-module",
+    "summary": "通过 ngx.shared.DICT:get(key) 读取已声明共享字典中的值；不存在或已过期的键返回 nil，出错时可返回 nil 和错误说明。DICT 是由 lua_shared_dict 声明的字典名称占位，不是一个固定字典。",
+    "limitations": ["调用时须传字典对象本身，通常使用 Lua 的冒号方法语法；get 与 get_stale 的过期数据处理不同。", "此条只核对读取及返回值说明，不承诺跨多次调用的事务、业务缓存正确性或未提供 Lua 代码的行为。", "本条文档来自 HTTP Lua；FFI 实现单独注明 lua-resty-core 版本，未运行目标环境。"],
+    "evidence": [{ "file": "README.markdown", "start_line": 7041, "end_line": 7074 }, { "component": "lua-resty-core", "file": "lib/resty/core/shdict.lua", "start_line": 589, "end_line": 660 }]
+  },
+  {
+    "id": "lua-nginx-module--ngx.shared.DICT.set", "kind": "lua_api", "name": "ngx.shared.DICT.set", "component": "lua-nginx-module",
+    "summary": "通过 ngx.shared.DICT:set(key, value, exptime?, flags?) 写入共享字典。返回 success、err、forcible；exptime 单位是秒，0 表示不过期。空间不足时可能淘汰尚有效的数据，forcible 用于报告这类情况。",
+    "limitations": ["可存布尔、数字、字符串；传 nil 用于删除该键，不会保存一个 nil 值，不支持直接存储 Lua table。", "单次写入的原子性不等于多次调用构成事务；不要将 get 后 set 当作不可分割的一次操作。", "须事先配置对应共享字典；未检查用户实际内存容量或 Lua 业务代码。"],
+    "evidence": [{ "file": "README.markdown", "start_line": 7099, "end_line": 7146 }, { "component": "lua-resty-core", "file": "lib/resty/core/shdict.lua", "start_line": 478, "end_line": 562 }, { "file": "src/ngx_http_lua_shdict.c", "start_line": 1409, "end_line": 1413 }, { "file": "src/ngx_http_lua_shdict.c", "start_line": 1472, "end_line": 1492 }]
+  },
+  {
+    "id": "nginx--stream-remote_addr", "kind": "variable", "name": "$remote_addr", "component": "nginx",
+    "summary": "stream 的客户端地址变量。所列 getter 返回连接保存的 addr_text；可用于 stream 日志或其他支持变量的配置表达式。",
+    "limitations": ["本条明确指 stream 变量，不把 HTTP 或其他模块的同名变量实现视为同一条。", "连接所记录的地址不必然等于业务认定的终端用户地址；前置代理等环境信息未由本站分析。", "本站不读取连接或求值；这只是固定源码参考，不检查实际网络环境。"],
+    "evidence": [{ "file": "src/stream/ngx_stream_variables.c", "start_line": 61, "end_line": 65 }, { "file": "src/stream/ngx_stream_variables.c", "start_line": 537, "end_line": 548 }]
+  },
+  {
+    "id": "nginx--stream-upstream_addr", "kind": "variable", "name": "$upstream_addr", "component": "nginx",
+    "summary": "stream 的上游地址变量。所列 getter 从会话上游状态中拼接 peer 地址；出现多个状态记录时用逗号和空格分隔，不应一概解释成一个固定后端地址。",
+    "limitations": ["尚无上游状态时返回未找到标记；不能因为代理配置有 proxy_pass 就断定任意时刻已经有上游地址值。", "此条不推断重试策略或每个地址出现的业务原因，不与 HTTP 同名变量实现混用。", "本站不求值、不连接上游，未验证实际会话状态。"],
+    "evidence": [{ "file": "src/stream/ngx_stream_upstream.c", "start_line": 76, "end_line": 82 }, { "file": "src/stream/ngx_stream_upstream.c", "start_line": 126, "end_line": 179 }]
+  },
+  {
+    "id": "nginx--stream-session_time", "kind": "variable", "name": "$session_time", "component": "nginx",
+    "summary": "stream 会话持续时间变量。getter 计算当前时间与会话开始时间之差，输出带三位小数的秒数；它是观测值，不是超时配置。",
+    "limitations": ["不等同 proxy_timeout 的读写活动间隔，也不是配置的连接时长上限。", "源码将负时间差截为 0；本条不推断机器时钟调整或日志采集的实际影响。", "本站不读取当前会话，只展示固定版本说明和来源。"],
+    "evidence": [{ "file": "src/stream/ngx_stream_variables.c", "start_line": 105, "end_line": 109 }, { "file": "src/stream/ngx_stream_variables.c", "start_line": 775, "end_line": 800 }]
+  },
+  {
+    "id": "nginx--stream-status", "kind": "variable", "name": "$status", "component": "nginx",
+    "summary": "stream 会话状态变量。getter 将 s->status 格式化为三位数字文本，表示 stream 会话处理状态，而不是从上游应用响应中提取一个 HTTP 状态码。",
+    "limitations": ["即使转发的字节流承载 HTTP，也不能将 stream 的 $status 直接解释成其中某个 HTTP 响应状态。", "本条只核对变量 getter 及 stream 状态常量，不追踪所有设置状态的运行时路径，不判断业务请求是否成功。"],
+    "evidence": [{ "file": "src/stream/ngx_stream_variables.c", "start_line": 105, "end_line": 109 }, { "file": "src/stream/ngx_stream_variables.c", "start_line": 804, "end_line": 818 }, { "file": "src/stream/ngx_stream.h", "start_line": 26, "end_line": 34 }]
+  }
+]

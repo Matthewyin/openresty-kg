@@ -1,0 +1,2318 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_autoindex_module",
+    "name": "autoindex",
+    "summary": "对以斜杠结束的目录请求生成文件列表；在content阶段启用后读取URI对应目录，并按autoindex_format输出。",
+    "syntax": "autoindex on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 136,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 153,
+        "end_line": 242
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 282,
+        "end_line": 325
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 389,
+        "end_line": 429
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 1022,
+        "end_line": 1072
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_autoindex_module.xml",
+        "start_line": 45,
+        "end_line": 56
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅处理GET/HEAD且URI以斜杠结尾；其他方法或未开启时返回DECLINED，不等于对整个请求直接返回错误。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "目录读取受文件系统访问结果影响，点号开头的条目跳过；它不会替代已有内容处理器或保证index文件存在时仍显示列表。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_autoindex_module.xml#L45-L56",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_autoindex_module",
+    "name": "autoindex_format",
+    "summary": "选择目录列表的HTML、XML、JSON或JSONP输出格式，供已启用的autoindex处理器使用。",
+    "syntax": "autoindex_format html | xml | json | jsonp;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1385
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 136,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 78,
+        "end_line": 85
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 153,
+        "end_line": 242
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 282,
+        "end_line": 325
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 389,
+        "end_line": 429
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 1022,
+        "end_line": 1072
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 703,
+        "end_line": 850
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 854,
+        "end_line": 948
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_autoindex_module.xml",
+        "start_line": 75,
+        "end_line": 103
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "html。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "JSONP使用请求参数callback；参数缺失或为空时退回JSON。非空callback限128字节且仅允许字母、数字、下划线和点号，非法值进入400分支。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "单独设置格式不会开启autoindex；HTML专用时间与大小选项不改变JSON/XML的字段表示。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_autoindex_module.xml#L75-L103",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_autoindex_module",
+    "name": "autoindex_localtime",
+    "summary": "控制HTML目录列表中修改时间采用本地时区偏移还是UTC，不改变文件本身的修改时间。",
+    "syntax": "autoindex_localtime on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 136,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 622,
+        "end_line": 641
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 747,
+        "end_line": 806
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 900,
+        "end_line": 936
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 1022,
+        "end_line": 1053
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_autoindex_module.xml",
+        "start_line": 106,
+        "end_line": 119
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off，即UTC。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响HTML展示，JSON使用HTTP时间表示、XML输出UTC时间；不设置进程时区，不影响请求日志时间格式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_autoindex_module.xml#L106-L119",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_autoindex_module",
+    "name": "autoindex_exact_size",
+    "summary": "控制HTML目录列表显示精确文件字节数，或按K/M/G缩放并取整后的大小。",
+    "syntax": "autoindex_exact_size on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 136,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 638,
+        "end_line": 698
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 747,
+        "end_line": 806
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 900,
+        "end_line": 936
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_autoindex_module.c",
+        "start_line": 1022,
+        "end_line": 1053
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_autoindex_module.xml",
+        "start_line": 59,
+        "end_line": 72
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响HTML中的展示；目录仍显示横线，JSON/XML的文件大小仍是原始字节数，不改变文件或下载长度。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_autoindex_module.xml#L59-L72",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_dav_module",
+    "name": "dav_methods",
+    "summary": "选择交给本模块处理的PUT、DELETE、MKCOL、COPY和MOVE方法，将请求映射为本地文件操作。",
+    "syntax": "dav_methods off;\ndav_methods method ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 126,
+        "end_line": 139
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 65,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 143,
+        "end_line": 302
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 305,
+        "end_line": 322
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 492,
+        "end_line": 534
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 1113,
+        "end_line": 1173
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 13,
+        "end_line": 13
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_dav_module.xml",
+        "start_line": 108,
+        "end_line": 144
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有方法掩码时继承父层，否则使用本层掩码；最终默认off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只有本模块列出的方法被处理；不提供完整WebDAV协议，也不启用PROPFIND或LOCK。off单独使用表示没有这些方法位，不是全站方法访问控制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "PUT先写临时文件再移入目标；PUT到目录或携带Content-Range、DELETE/MKCOL携带正文分别有拒绝分支，不能解释为支持任意部分写入。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_dav_module.xml#L108-L144",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_dav_module",
+    "name": "create_full_put_path",
+    "summary": "允许PUT将临时文件移入目标时创建缺失的中间目录；off时不会由该PUT路径自动补齐目录。",
+    "syntax": "create_full_put_path on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 126,
+        "end_line": 139
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 206,
+        "end_line": 302
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 1113,
+        "end_line": 1173
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_file.c",
+        "start_line": 660,
+        "end_line": 716
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_dav_module.xml",
+        "start_line": 67,
+        "end_line": 80
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只控制PUT移入目标时的create_path标志，不自动创建任意请求路径，也不为MKCOL逐级创建父目录；文件系统权限仍会影响结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_dav_module.xml#L67-L80",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_dav_module",
+    "name": "min_delete_depth",
+    "summary": "限制DELETE允许操作的最小请求URI层级，避免删除过浅的目标；未达到要求时进入409分支。",
+    "syntax": "min_delete_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 126,
+        "end_line": 139
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 305,
+        "end_line": 405
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 1113,
+        "end_line": 1173
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_dav_module.xml",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，即不进行最小URI深度检查。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依据请求URI中的斜杠及后续字符计数，不依据实际文件系统的root绝对深度；只影响DELETE，不限制PUT、COPY或MOVE。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_dav_module.xml#L147-L174",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_dav_module",
+    "name": "dav_access",
+    "summary": "配置DAV创建路径使用的用户、组和其他用户读写权限；PUT文件移入及MKCOL建目录等路径将该配置传给文件操作。",
+    "syntax": "dav_access users:permissions ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 460,
+      "end_line": 523
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 126,
+        "end_line": 139
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 259,
+        "end_line": 289
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 492,
+        "end_line": 534
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_dav_module.c",
+        "start_line": 1113,
+        "end_line": 1173
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_file.c",
+        "start_line": 660,
+        "end_line": 716
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/os/unix/ngx_files.h",
+        "start_line": 239,
+        "end_line": 239
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_dav_module.xml",
+        "start_line": 83,
+        "end_line": 105
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "user:rw（0600）；省略user但设置group/all时仍补上用户读写权限。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "最多三个参数，user/group/all只接受r或rw，不接受数字八进制或单独w。它是文件系统权限设置，不是HTTP用户认证或请求访问控制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "目录权限在Unix实现中会根据读位补相应遍历位；不能把此参数当作现有整棵目录的递归chmod，已有文件及各操作是否改权限仍取决于对应文件操作。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_dav_module.xml#L83-L105",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_empty_gif_module",
+    "name": "empty_gif",
+    "summary": "在当前location安装内容处理器，返回内置的1×1透明GIF，无需读取磁盘图片文件。",
+    "syntax": "empty_gif;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_empty_gif_module.c",
+      "start_line": 132,
+      "end_line": 140
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_empty_gif_module.c",
+        "start_line": 93,
+        "end_line": 106
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_empty_gif_module.c",
+        "start_line": 29,
+        "end_line": 74
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_empty_gif_module.c",
+        "start_line": 113,
+        "end_line": 128
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_empty_gif_module.xml",
+        "start_line": 40,
+        "end_line": 49
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本项的独立默认行为尚未完整核实。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "内容处理器及配置上下文间的完整继承关系尚未单独核实。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受GET或HEAD，其他方法返回405；它不是空正文响应，也不根据URI生成任意尺寸图片。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_empty_gif_module.xml#L40-L49",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_flv_module",
+    "name": "flv",
+    "summary": "在当前location启用FLV文件处理，支持用start请求参数从指定字节偏移输出，并在非零偏移前附加FLV头。",
+    "syntax": "flv;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_flv_module.c",
+      "start_line": 253,
+      "end_line": 261
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_flv_module.c",
+        "start_line": 45,
+        "end_line": 58
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_flv_module.c",
+        "start_line": 62,
+        "end_line": 249
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_flv_module.xml",
+        "start_line": 53,
+        "end_line": 62
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本项的独立默认行为尚未完整核实。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "内容处理器及配置上下文间的完整继承关系尚未单独核实。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "start是字节偏移，不是播放秒数；无法解析或大于等于文件长度时退回从0开始。只处理GET/HEAD，不为媒体转码或自动定位关键帧。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_flv_module.xml#L53-L62",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_index_module",
+    "name": "index",
+    "summary": "为斜杠结尾的请求按配置顺序选择目录索引，文件名可包含变量；找到候选后内部跳转到对应URI继续处理。",
+    "syntax": "index file ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_index_module.c",
+      "start_line": 464,
+      "end_line": 540
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_index_module.c",
+        "start_line": 70,
+        "end_line": 83
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_index_module.c",
+        "start_line": 26,
+        "end_line": 26
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_index_module.c",
+        "start_line": 97,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_index_module.c",
+        "start_line": 388,
+        "end_line": 459
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_index_module.xml",
+        "start_line": 45,
+        "end_line": 80
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "index.html。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有索引列表时继承父层列表；本层显式列表取代父层列表，不自动追加默认index.html。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "处理GET/HEAD/POST；普通候选按当前root/alias检查，候选以/开头时直接作内部跳转目标，不能把它解释成读取任意操作系统绝对文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "跳转可重新选择location，所以最终处理配置可能变化；列表无可用项时继续其他内容处理器，不等于自动打开autoindex。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_index_module.xml#L45-L80",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_random_index_module",
+    "name": "random_index",
+    "summary": "对斜杠结尾的目录请求从可用普通文件中随机选择一个文件，内部跳转到该文件URI。",
+    "syntax": "random_index on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_random_index_module.c",
+        "start_line": 57,
+        "end_line": 70
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_random_index_module.c",
+        "start_line": 74,
+        "end_line": 257
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_random_index_module.c",
+        "start_line": 274,
+        "end_line": 317
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_random_index_module.xml",
+        "start_line": 50,
+        "end_line": 59
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只对GET/HEAD/POST执行；点号开头的名称跳过，非普通文件不纳入选择，没有候选时继续后续处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "没有扩展名白名单，不保证不同请求轮流选择或结果可复现；选择后仍是内部跳转，不直接返回目录列表。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_random_index_module.xml#L50-L59",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_try_files_module",
+    "name": "try_files",
+    "summary": "在precontent阶段按顺序检查候选文件或目录；命中后在当前配置上下文继续处理，全部未命中时使用最后的URI、命名location或状态码作为兜底。",
+    "syntax": "try_files file ... uri;\ntry_files file ... =code;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_try_files_module.c",
+      "start_line": 291,
+      "end_line": 365
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_try_files_module.c",
+        "start_line": 62,
+        "end_line": 75
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_try_files_module.c",
+        "start_line": 47,
+        "end_line": 59
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_try_files_module.c",
+        "start_line": 79,
+        "end_line": 287
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_try_files_module.c",
+        "start_line": 369,
+        "end_line": 404
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2776,
+        "end_line": 2914
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时try_files列表为空，处理器直接继续。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "内容处理器及配置上下文间的完整继承关系尚未单独核实。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "普通候选按root/alias构造路径，候选末尾/表示检查目录；最后一项是兜底目标，不再按普通候选检查存在性。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "命中文件只更新后续处理所用URI并继续，不自行发送文件；只有兜底跳转走重新分派路径。支持变量，但本网站不会对用户机器执行这些文件检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "precontent",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_core_module.xml#L2776-L2914",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mp4_module",
+    "name": "mp4",
+    "summary": "在当前location安装MP4文件处理器，支持按start/end时间参数裁取媒体片段并处理相关元数据，或返回原文件。",
+    "syntax": "mp4;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_mp4_module.c",
+      "start_line": 3915,
+      "end_line": 3923
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 412,
+        "end_line": 425
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 477,
+        "end_line": 728
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 731,
+        "end_line": 786
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 788,
+        "end_line": 815
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mp4_module.xml",
+        "start_line": 142,
+        "end_line": 151
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本项的独立默认行为尚未完整核实。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "内容处理器及配置上下文间的完整继承关系尚未单独核实。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只处理GET/HEAD；start/end以秒表示并解析到毫秒精度，不是字节偏移。未形成有效处理起点时按普通文件输出；媒体解析失败可进入500分支。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "处理器不会为媒体转码，也不保证任意MP4结构都能处理；缓冲与元数据结构检查仍可能拒绝文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mp4_module.xml#L142-L151",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mp4_module",
+    "name": "mp4_buffer_size",
+    "summary": "设置处理MP4文件时的初始读取缓冲大小，供媒体元数据解析使用。",
+    "syntax": "mp4_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 412,
+        "end_line": 425
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 3927,
+        "end_line": 3956
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 788,
+        "end_line": 810
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 1059,
+        "end_line": 1104
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 1167,
+        "end_line": 1251
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mp4_module.xml",
+        "start_line": 154,
+        "end_line": 166
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "512K。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是文件总大小限制或整个worker内存预算；处理moov时可能另行扩展缓冲，文件尾部读取也会缩小本次读取量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "参数只设置缓冲字段，不会自行启用mp4内容处理器。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mp4_module.xml#L154-L166",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mp4_module",
+    "name": "mp4_max_buffer_size",
+    "summary": "限制MP4解析在moov元数据超过当前读取缓冲、需要扩容时可接受的moov数据大小，过大则解析报错。",
+    "syntax": "mp4_max_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 412,
+        "end_line": 425
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 3927,
+        "end_line": 3956
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 1167,
+        "end_line": 1251
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 620,
+        "end_line": 666
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mp4_module.xml",
+        "start_line": 169,
+        "end_line": 188
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "10M。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "检查发生在moov数据大于当前buffer_size的扩容分支，不是对所有缓冲分配的总量硬限制；实际新缓冲还可能加上后续读取的额外预留。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "既不限制整个媒体文件大小，也不自动限制并发请求的总内存；解析错误经mp4处理器进入500路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mp4_module.xml#L169-L188",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_mp4_module",
+    "name": "mp4_start_key_frame",
+    "summary": "在按时间截取MP4片段时尝试把起始样本向前扩展到关键帧，并用edit list表示应隐藏的前缀时间。",
+    "syntax": "mp4_start_key_frame on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 412,
+        "end_line": 425
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 3927,
+        "end_line": 3956
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 2386,
+        "end_line": 2501
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 2505,
+        "end_line": 2543
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_mp4_module.c",
+        "start_line": 2124,
+        "end_line": 2174
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_mp4_module.xml",
+        "start_line": 247,
+        "end_line": 264
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；没有可继承值时取所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "依赖轨道的同步样本表；缺少该表时seek函数返回0，不应承诺所有输入都能找到关键帧。不会重新编码生成关键帧。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "输出通过edit list表达前缀裁剪，具体播放表现仍取决于播放器对媒体结构的支持。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与使用片段；结论仅限所列事实，不推断整个文件输出及响应链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_mp4_module.xml#L247-L264",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

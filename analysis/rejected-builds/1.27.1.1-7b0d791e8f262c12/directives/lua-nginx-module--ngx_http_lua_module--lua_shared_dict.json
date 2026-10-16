@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "lua-nginx-module--ngx_http_lua_module--lua_shared_dict",
+  "name": "lua_shared_dict",
+  "module": "ngx_http_lua_module",
+  "component": "lua-nginx-module",
+  "contexts": [
+    "http"
+  ],
+  "contexts_verified": true,
+  "syntax": "lua_shared_dict name size;",
+  "summary": "在 http 中声明一个命名共享内存区，供 ngx.shared.name 字典使用；同一 Nginx 实例的 worker 共享该区域。",
+  "defaults": {
+    "status": "verified",
+    "text": "不自动声明共享字典",
+    "source_ids": [
+      "evidence-0",
+      "evidence-1"
+    ]
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "配置入口要求非空名称，大小至少为 8192 字节，并拒绝在同一模块中重复声明已定义的区域。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_http_lua_shared_dict",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_module.c",
+      "start_line": 128,
+      "end_line": 133,
+      "code": "    { ngx_string(\"lua_shared_dict\"),\n      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE2,\n      ngx_http_lua_shared_dict,\n      0,\n      0,\n      NULL },",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_module.c#L128-L133",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 80,
+      "end_line": 119,
+      "code": "ngx_http_lua_shared_dict(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_http_lua_main_conf_t   *lmcf = conf;\n\n    ngx_str_t                  *value, name;\n    ngx_shm_zone_t             *zone;\n    ngx_shm_zone_t            **zp;\n    ngx_http_lua_shdict_ctx_t  *ctx;\n    ssize_t                     size;\n\n    if (lmcf->shdict_zones == NULL) {\n        lmcf->shdict_zones = ngx_palloc(cf->pool, sizeof(ngx_array_t));\n        if (lmcf->shdict_zones == NULL) {\n            return NGX_CONF_ERROR;\n        }\n\n        if (ngx_array_init(lmcf->shdict_zones, cf->pool, 2,\n                           sizeof(ngx_shm_zone_t *))\n            != NGX_OK)\n        {\n            return NGX_CONF_ERROR;\n        }\n    }\n\n    value = cf->args->elts;\n\n    ctx = NULL;\n\n    if (value[1].len == 0) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"invalid lua shared dict name \\\"%V\\\"\", &value[1]);\n        return NGX_CONF_ERROR;\n    }\n\n    name = value[1];\n\n    size = ngx_parse_size(&value[2]);\n\n    if (size <= 8191) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L80-L119",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "README.markdown",
+      "start_line": 3141,
+      "end_line": 3170,
+      "code": "lua_shared_dict\n---------------\n\n**syntax:** *lua_shared_dict &lt;name&gt; &lt;size&gt;*\n\n**default:** *no*\n\n**context:** *http*\n\n**phase:** *depends on usage*\n\nDeclares a shared memory zone, `<name>`, to serve as storage for the shm based Lua dictionary `ngx.shared.<name>`.\n\nShared memory zones are always shared by all the Nginx worker processes in the current Nginx server instance.\n\nThe `<size>` argument accepts size units such as `k` and `m`:\n\n```nginx\n\n http {\n     lua_shared_dict dogs 10m;\n     ...\n }\n```\n\nThe hard-coded minimum size is 8KB while the practical minimum size depends\non actual user data set (some people start with 12KB).\n\nSee [ngx.shared.DICT](#ngxshareddict) for details.\n",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L3141-L3170",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-1",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 105,
+      "end_line": 163,
+      "code": "\n    ctx = NULL;\n\n    if (value[1].len == 0) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"invalid lua shared dict name \\\"%V\\\"\", &value[1]);\n        return NGX_CONF_ERROR;\n    }\n\n    name = value[1];\n\n    size = ngx_parse_size(&value[2]);\n\n    if (size <= 8191) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"invalid lua shared dict size \\\"%V\\\"\", &value[2]);\n        return NGX_CONF_ERROR;\n    }\n\n    ctx = ngx_pcalloc(cf->pool, sizeof(ngx_http_lua_shdict_ctx_t));\n    if (ctx == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    ctx->name = name;\n    ctx->main_conf = lmcf;\n    ctx->log = &cf->cycle->new_log;\n\n    zone = ngx_http_lua_shared_memory_add(cf, &name, (size_t) size,\n                                          &ngx_http_lua_module);\n    if (zone == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    if (zone->data) {\n        ctx = zone->data;\n\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"lua_shared_dict \\\"%V\\\" is already defined as \"\n                           \"\\\"%V\\\"\", &name, &ctx->name);\n        return NGX_CONF_ERROR;\n    }\n\n    zone->init = ngx_http_lua_shdict_init_zone;\n    zone->data = ctx;\n\n    zp = ngx_array_push(lmcf->shdict_zones);\n    if (zp == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    *zp = zone;\n\n    lmcf->requires_shm = 1;\n\n    return NGX_CONF_OK;\n}\n\n",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L105-L163",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 621,
+      "end_line": 625,
+      "code": "ver=0.10.27\n$root/util/get-tarball \"https://github.com/openresty/lua-nginx-module/archive/v$ver.tar.gz\" -O lua-nginx-module-$ver.tar.gz || exit 1\ntar -xzf lua-nginx-module-$ver.tar.gz || exit 1\nmv lua-nginx-module-$ver ngx_lua-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L621-L625",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "lua-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L3141-L3170",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [],
+  "mechanism": "配置入口创建字典上下文，通过 ngx_http_lua_shared_memory_add 注册共享区域，将 ngx_http_lua_shdict_init_zone 保存为初始化函数，并设置 requires_shm。运行时字典 API 的完整链路仍待扩展。",
+  "related": []
+}

@@ -1,0 +1,1218 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "connection_pool_size",
+    "summary": "设置HTTP监听连接使用的内存池初始块大小，监听套接字采用该地址默认server的配置；不是每连接允许占用的总内存上限。",
+    "syntax": "connection_pool_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1237
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http.c",
+        "start_line": 1821,
+        "end_line": 1829
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 5334,
+        "end_line": 5350
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3485,
+        "end_line": 3488
+      },
+      {
+        "id": "extra-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3497,
+        "end_line": 3502
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 475,
+        "end_line": 492
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "64 * sizeof(void *)字节；指针宽度不同会得到不同值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "须不小于NGX_MIN_POOL_SIZE且是NGX_POOL_ALIGNMENT的整数倍；large_client_header_buffers单个缓冲大小不能小于此值。",
+        "source_ids": [
+          "implementation-1",
+          "extra-0"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "extra-0",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "request_pool_size",
+    "summary": "设置每个HTTP请求创建内存池时的初始块大小；不是请求正文、全部内存用量或并发请求数量的上限。",
+    "syntax": "request_pool_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1237
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 569,
+        "end_line": 584
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 5334,
+        "end_line": 5350
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3485,
+        "end_line": 3488
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2139,
+        "end_line": 2151
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "4096字节。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "须不小于NGX_MIN_POOL_SIZE且是NGX_POOL_ALIGNMENT的整数倍。",
+        "source_ids": [
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_header_timeout",
+    "summary": "设置读取客户端HTTP请求头的等待时限；所引HTTP/1路径超时按请求超时处理并关闭连接，不保证发送408响应报文；不是向上游建连或读取请求正文的超时。",
+    "syntax": "client_header_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1299
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1092,
+        "end_line": 1104
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1575,
+        "end_line": 1592
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3489,
+        "end_line": 3490
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 436,
+        "end_line": 450
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_header_buffer_size",
+    "summary": "设置读取客户端请求头的初始缓冲大小；请求行或单个请求头放不下时可申请large_client_header_buffers，不是总请求头大小硬上限。",
+    "syntax": "client_header_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1237
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 392,
+        "end_line": 422
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1637,
+        "end_line": 1684
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3491,
+        "end_line": 3492
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 408,
+        "end_line": 433
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1024字节。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "large_client_header_buffers",
+    "summary": "设置按需申请的大请求头缓冲数量和每个缓冲大小；请求行或单个请求头不能通过增加数量跨越单缓冲大小限制。",
+    "syntax": "large_client_header_buffers number size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1322,
+      "end_line": 1361
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1637,
+        "end_line": 1684
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3493,
+        "end_line": 3502
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 1015,
+        "end_line": 1044
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "4个缓冲，每个8192字节。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "数量和大小须大于0；每个缓冲大小还须不小于connection_pool_size。",
+        "source_ids": [
+          "configuration-definition",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "ignore_invalid_headers",
+    "summary": "控制解析器标记为名称无效的客户端请求头是否丢弃；off不等于接受任何畸形HTTP报文，下划线是否标为无效另由underscores_in_headers控制。",
+    "syntax": "ignore_invalid_headers on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1445,
+        "end_line": 1468
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3504,
+        "end_line": 3505
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 816,
+        "end_line": 837
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "merge_slashes",
+    "summary": "控制HTTP请求URI规范化时是否将连续斜杠压缩为单个斜杠，影响之后的location匹配；不是改写磁盘路径内容。",
+    "syntax": "merge_slashes on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1266,
+        "end_line": 1279
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_parse.c",
+        "start_line": 1365,
+        "end_line": 1378
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3507,
+        "end_line": 3507
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 1805,
+        "end_line": 1845
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "underscores_in_headers",
+    "summary": "控制客户端请求头名称中的下划线是否允许；off将相应头标为无效，再由ignore_invalid_headers决定是否丢弃，不控制上游响应头。",
+    "syntax": "underscores_in_headers on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_parse.c",
+        "start_line": 867,
+        "end_line": 901
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 1445,
+        "end_line": 1468
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3509,
+        "end_line": 3510
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 2997,
+        "end_line": 3019
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_max_body_size",
+    "summary": "限制客户端HTTP请求正文大小，非零时已知Content-Length或分块正文累计大小超限会返回413；0关闭这项大小检查。",
+    "syntax": "client_max_body_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1229,
+      "end_line": 1268
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 981,
+        "end_line": 998
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 1136,
+        "end_line": 1155
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3786,
+        "end_line": 3787
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 453,
+        "end_line": 472
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1m。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_body_buffer_size",
+    "summary": "设置读取客户端请求正文的缓冲大小；正文超过缓冲能力时可写入临时文件，不是请求正文允许大小限制或保证完全留在内存。",
+    "syntax": "client_body_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1237
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 173,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 553,
+        "end_line": 582
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3788,
+        "end_line": 3790
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 287,
+        "end_line": 305
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "2 * ngx_pagesize字节；取决于平台内存页大小。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_body_timeout",
+    "summary": "设置读取客户端请求正文等待后续数据的超时；不是整份正文传输总时长，读事件超时后按请求超时处理。",
+    "syntax": "client_body_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1299
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 258,
+        "end_line": 266
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 433,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3791,
+        "end_line": 3792
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 388,
+        "end_line": 405
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_body_temp_path",
+    "summary": "指定客户端请求正文临时文件目录及最多三级子目录层级；只管客户端正文临时文件，不是proxy响应缓存或日志目录。",
+    "syntax": "client_body_temp_path path [level1 [level2 [level3]]];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 361,
+      "end_line": 400
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 553,
+        "end_line": 582
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/core/ngx_file.c",
+        "start_line": 361,
+        "end_line": 418
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/core/ngx_file.c",
+        "start_line": 422,
+        "end_line": 455
+      },
+      {
+        "id": "implementation-3",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3876,
+        "end_line": 3882
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 360,
+        "end_line": 385
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-3"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_body_in_file_only",
+    "summary": "指定将已读取的客户端请求正文保存在临时文件：on保留文件，clean配置清理，off不强制全正文落盘但仍可能因缓冲需求使用临时文件。",
+    "syntax": "client_body_in_file_only off | on | clean;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1391
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 99,
+        "end_line": 104
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1327,
+        "end_line": 1336
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 1353,
+        "end_line": 1366
+      },
+      {
+        "id": "implementation-3",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 553,
+        "end_line": 594
+      },
+      {
+        "id": "implementation-4",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3805,
+        "end_line": 3807
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 308,
+        "end_line": 339
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-4"
+      ]
+    },
+    "limitations": [],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_core_module",
+    "name": "client_body_in_single_buffer",
+    "summary": "请求正文单缓冲设置；当前HTTP/1读取实现仅在非分块且剩余正文较小时按该标志把预读数据计入一个缓冲，不保证所有协议或任意大小正文都只占一个缓冲。",
+    "syntax": "client_body_in_single_buffer on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1065
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 800,
+        "end_line": 813
+      },
+      {
+        "id": "implementation-0",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1338,
+        "end_line": 1338
+      },
+      {
+        "id": "implementation-1",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 173,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-2",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3808,
+        "end_line": 3809
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_core_module.xml",
+        "start_line": 342,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "protocol-dispatch",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 87,
+        "end_line": 100
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应值；没有父层可用值时采用初始化默认值。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "源码在该读取路径明确保留尚未全面实现单缓冲的TODO；大正文、分块正文或其他协议入口不能由on推断为无临时文件或无多缓冲。",
+        "source_ids": [
+          "implementation-1",
+          "protocol-dispatch"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放本发行版34项 Nginx 补丁并核对47个最终文件摘要后，所引用的注册、模块归属、配置回调及实现段均保持原文；此结论只覆盖这里列出的事实，不表示整个 HTTP 请求链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "module-owner",
+        "configuration-definition",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "protocol-dispatch"
+      ]
+    },
+    "related": []
+  }
+]

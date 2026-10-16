@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_headers",
+  "name": "more_set_headers",
+  "module": "ngx_http_headers_more_filter_module",
+  "component": "headers-more-nginx-module",
+  "contexts": [
+    "http",
+    "http.server",
+    "http.location",
+    "http.if.location"
+  ],
+  "contexts_verified": true,
+  "syntax": "more_set_headers [-t types] [-s statuses] [-a] header ...;",
+  "summary": "在响应头过滤阶段替换或添加输出响应头，可按响应状态码和响应 Content-Type 限定应用条件。",
+  "defaults": {
+    "status": "verified",
+    "text": "不配置时不执行此项",
+    "source_ids": [
+      "evidence-0",
+      "evidence-1"
+    ]
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "同时指定 -s 与 -t 时需要同时满足两个条件；未指定相应选项时不要求该项匹配。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1"
+      ]
+    },
+    {
+      "text": "允许 location 内的 if，不允许 server 内的 if；-a 对内建响应头的行为有限制，需参照模块文档。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_http_headers_more_set_headers",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "headers-more-nginx-module",
+      "version": "0.37",
+      "revision": "06dc0be56e5ec9f7fd814e881b066b5540a85bec",
+      "file": "src/ngx_http_headers_more_filter_module.c",
+      "start_line": 41,
+      "end_line": 47,
+      "code": "    { ngx_string(\"more_set_headers\"),\n      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF\n                        |NGX_CONF_1MORE,\n      ngx_http_headers_more_set_headers,\n      NGX_HTTP_LOC_CONF_OFFSET,\n      0,\n      NULL},",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/src/ngx_http_headers_more_filter_module.c#L41-L47",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "headers-more-nginx-module",
+      "version": "0.37",
+      "revision": "06dc0be56e5ec9f7fd814e881b066b5540a85bec",
+      "file": "src/ngx_http_headers_more_headers_out.c",
+      "start_line": 545,
+      "end_line": 584,
+      "code": "ngx_http_headers_more_set_headers(ngx_conf_t *cf,\n    ngx_command_t *cmd, void *conf)\n{\n    return ngx_http_headers_more_parse_directive(cf, cmd, conf,\n                                         ngx_http_headers_more_opcode_set);\n}\n\n\nchar *\nngx_http_headers_more_clear_headers(ngx_conf_t *cf,\n    ngx_command_t *cmd, void *conf)\n{\n    return ngx_http_headers_more_parse_directive(cf, cmd, conf,\n                                        ngx_http_headers_more_opcode_clear);\n}\n\n\nstatic ngx_flag_t\nngx_http_headers_more_check_type(ngx_http_request_t *r, ngx_array_t *types)\n{\n    ngx_uint_t          i;\n    ngx_str_t          *t;\n\n    dd(\"headers_out->content_type: %.*s (len %d)\",\n       (int) r->headers_out.content_type.len,\n       r->headers_out.content_type.data,\n       (int) r->headers_out.content_type.len);\n\n    t = types->elts;\n\n    for (i = 0; i < types->nelts; i++) {\n        dd(\"...comparing with type [%.*s]\", (int) t[i].len, t[i].data);\n\n        if (r->headers_out.content_type_len == t[i].len\n            && ngx_strncmp(r->headers_out.content_type.data,\n                           t[i].data, t[i].len) == 0)\n        {\n            return 1;\n        }\n    }",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/src/ngx_http_headers_more_headers_out.c#L545-L584",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "headers-more-nginx-module",
+      "version": "0.37",
+      "revision": "06dc0be56e5ec9f7fd814e881b066b5540a85bec",
+      "file": "README.markdown",
+      "start_line": 135,
+      "end_line": 149,
+      "code": "more_set_headers\n----------------\n**syntax:** *more_set_headers [-t &lt;content-type list&gt;]... [-s &lt;status-code list&gt;]... [-a] &lt;new-header&gt;...*\n\n**default:** *no*\n\n**context:** *http, server, location, location if*\n\n**phase:** *output-header-filter*\n\nReplaces (if any) or adds (if not any) the specified output headers when the response status code matches the codes specified by the `-s` option *AND* the response content type matches the types specified by the `-t` option.\n\nIf the \"-a\" option is specified, the specified output headers can be appended directly without clearing the old fields. The behavior of builtin headers such as \"Content-Type\", \"Content-Length\", \"Server\", etc. cannot be changed.\n\nIf either `-s` or `-t` is not specified or has an empty list value, then no match is required. Therefore, the following directive set the `Server` output header to the custom value for *any* status code and *any* content type:",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/README.markdown#L135-L149",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-1",
+      "component": "headers-more-nginx-module",
+      "version": "0.37",
+      "revision": "06dc0be56e5ec9f7fd814e881b066b5540a85bec",
+      "file": "README.markdown",
+      "start_line": 201,
+      "end_line": 216,
+      "code": "Note that although `more_set_headers` is allowed in *location* if blocks, it is *not* allowed in the *server* if blocks, as in\n\n```nginx\n\n   ?  # This is NOT allowed!\n   ?  server {\n   ?      if ($args ~ 'download') {\n   ?          more_set_headers 'Foo: Bar';\n   ?      }\n   ?      ...\n   ?  }\n```\n\nBehind the scene, use of this directive and its friend [more_clear_headers](#more_clear_headers) will (lazily) register an ouput header filter that modifies `r->headers_out` the way you specify.\n\n[Back to TOC](#table-of-contents)",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/README.markdown#L201-L216",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 607,
+      "end_line": 611,
+      "code": "ver=0.37\n$root/util/get-tarball \"https://github.com/openresty/headers-more-nginx-module/tarball/v$ver\" -O headers-more-nginx-module-$ver.tar.gz || exit 1\ntar -xzf headers-more-nginx-module-$ver.tar.gz || exit 1\nmv openresty-headers-more-nginx-module-* headers-more-nginx-module-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L607-L611",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "headers-more-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/README.markdown#L135-L149",
+      "status": "verified"
+    },
+    {
+      "title": "headers-more-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/headers-more-nginx-module/blob/06dc0be56e5ec9f7fd814e881b066b5540a85bec/README.markdown#L201-L216",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "output-header-filter"
+  ],
+  "mechanism": null,
+  "related": [
+    "more_clear_headers"
+  ]
+}

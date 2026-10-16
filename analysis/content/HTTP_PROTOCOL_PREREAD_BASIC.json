@@ -1,0 +1,3085 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2",
+    "summary": "启用当前HTTP服务器的HTTP/2处理：明文连接检查HTTP/2前言，TLS连接通过ALPN协商后进入HTTP/2处理。",
+    "syntax": "http2 on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 313,
+        "end_line": 355
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 485,
+        "end_line": 509
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 830,
+        "end_line": 850
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_ssl_module.c",
+        "start_line": 473,
+        "end_line": 489
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 87,
+        "end_line": 100
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是强制所有连接只能使用HTTP/2；TLS仍须具备相应TLS及ALPN环境。旧listen http2地址标志也参与OR判断，因此仅把此开关设off不一定关闭该监听地址上的HTTP/2。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L87-L100",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_recv_buffer_size",
+    "summary": "设置HTTP/2在工作进程主配置中共享的输入读取缓冲大小，保存状态残片后继续从连接读取。",
+    "syntax": "http2_recv_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 62,
+        "end_line": 63
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 286,
+        "end_line": 309
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 387,
+        "end_line": 396
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 215,
+        "end_line": 231
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 390,
+        "end_line": 426
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.h",
+        "start_line": 16,
+        "end_line": 21
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 341,
+        "end_line": 352
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "256k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅http主配置，初始化未设置值时取256k，不存在server逐层继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "必须大于16字节状态缓冲；实际单次读取可用空间还要扣除状态缓冲。不是每请求正文上限，也不代表整个工作进程内存预算。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L341-L352",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_pool_size",
+    "summary": "设置HTTP/2连接内部内存池的初始块大小，用于创建连接级处理内存池。",
+    "syntax": "http2_pool_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 313,
+        "end_line": 355
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 64,
+        "end_line": 65
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 400,
+        "end_line": 421
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 246,
+        "end_line": 259
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_palloc.c",
+        "start_line": 19,
+        "end_line": 44
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/core/ngx_palloc.c",
+        "start_line": 177,
+        "end_line": 211
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "4096字节。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值不得低于NGX_MIN_POOL_SIZE且须按NGX_POOL_ALIGNMENT对齐，具体下限取决于构建；内存池可追加块，因此不是连接总内存硬上限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本模块实现",
+        "url": "https://github.com/nginx/nginx/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/http/v2/ngx_http_v2_module.c#L400-L421",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_max_concurrent_streams",
+    "summary": "设置每个HTTP/2连接允许的并发流数量，向客户端发送对应SETTINGS并在接收新流时检查。",
+    "syntax": "http2_max_concurrent_streams number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 313,
+        "end_line": 355
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 1276,
+        "end_line": 1300
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 2747,
+        "end_line": 2760
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 180,
+        "end_line": 191
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "128。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "限制按单连接计，不是worker_connections或累计请求数；达到并发门槛时拒绝新流，还存在一次读取中新流过多的额外限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L180-L191",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_body_preread_size",
+    "summary": "设置每个HTTP/2请求在正文处理开始前的预读缓冲，并用该值设置初始流接收窗口。",
+    "syntax": "http2_body_preread_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 313,
+        "end_line": 355
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 66,
+        "end_line": 67
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 425,
+        "end_line": 438
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 1119,
+        "end_line": 1144
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 2747,
+        "end_line": 2760
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.h",
+        "start_line": 45,
+        "end_line": 50
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 103,
+        "end_line": 116
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "64k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不得超过NGX_HTTP_V2_MAX_WINDOW；不是整个请求体的大小上限，缓冲按请求在需要时分配。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L103-L116",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_streams_index_size",
+    "summary": "设置HTTP/2连接内流节点索引的桶数量，配置时将其转换为查找掩码。",
+    "syntax": "http2_streams_index_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 313,
+        "end_line": 355
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 68,
+        "end_line": 69
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 442,
+        "end_line": 457
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 126,
+        "end_line": 127
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 268,
+        "end_line": 277
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.c",
+        "start_line": 3110,
+        "end_line": 3145
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "32个桶（内部掩码31）。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "必须是非零的2次幂；索引碰撞通过链表查找，不是并发流上限，不应把它当作http2_max_concurrent_streams的替代。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本模块实现",
+        "url": "https://github.com/nginx/nginx/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/http/v2/ngx_http_v2_module.c#L442-L457",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_chunk_size",
+    "summary": "设置HTTP/2发送响应正文时的分片尺寸上界，与对端帧大小及流量窗口共同限制实际分片。",
+    "syntax": "http2_chunk_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 70,
+        "end_line": 71
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 359,
+        "end_line": 383
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 461,
+        "end_line": 477
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_filter_module.c",
+        "start_line": 932,
+        "end_line": 986
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2.h",
+        "start_line": 16,
+        "end_line": 21
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 119,
+        "end_line": 135
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "8k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0被拒绝，大于协议最大帧大小的配置会被截到该上限；实际发送还会取对端帧限制和可用窗口，不能据它保证每次恰好发送这么多字节。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L119-L135",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_max_concurrent_pushes",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的服务端推送配置功能。",
+    "syntax": "http2_max_concurrent_pushes number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 159,
+        "end_line": 177
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数被忽略，不会创建推送请求或启用Link preload推送。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L159-L177",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_max_requests",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的限制或超时配置功能。",
+    "syntax": "http2_max_requests number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 244,
+        "end_line": 274
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "警告指向keepalive_requests，但不会自动把当前参数转写到该替代指令；必须单独配置替代项。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L244-L274",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_max_field_size",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的限制或超时配置功能。",
+    "syntax": "http2_max_field_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 194,
+        "end_line": 218
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "警告指向large_client_header_buffers，但不会自动把当前参数转写到该替代指令；必须单独配置替代项。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L194-L218",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_max_header_size",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的限制或超时配置功能。",
+    "syntax": "http2_max_header_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 221,
+        "end_line": 241
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "警告指向large_client_header_buffers，但不会自动把当前参数转写到该替代指令；必须单独配置替代项。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L221-L241",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_recv_timeout",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的限制或超时配置功能。",
+    "syntax": "http2_recv_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 355,
+        "end_line": 374
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "警告指向client_header_timeout，但不会自动把当前参数转写到该替代指令；必须单独配置替代项。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L355-L374",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_idle_timeout",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的限制或超时配置功能。",
+    "syntax": "http2_idle_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 138,
+        "end_line": 156
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "警告指向keepalive_timeout，但不会自动把当前参数转写到该替代指令；必须单独配置替代项。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L138-L156",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_push_preload",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的服务端推送配置功能。",
+    "syntax": "http2_push_preload on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 315,
+        "end_line": 338
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数被忽略，不会创建推送请求或启用Link preload推送。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L315-L338",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v2_module",
+    "name": "http2_push",
+    "deprecated": true,
+    "summary": "此锁定版本中已废弃：保留配置注册仅输出警告并忽略参数，不再执行旧版本的服务端推送配置功能。",
+    "syntax": "http2_push uri | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v2/ngx_http_v2_module.c",
+      "start_line": 481,
+      "end_line": 498
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 200,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v2/ngx_http_v2_module.c",
+        "start_line": 41,
+        "end_line": 59
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v2_module.xml",
+        "start_line": 277,
+        "end_line": 312
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有生效的默认值；固定文档中的旧默认只属于历史功能。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "回调不存储配置字段，所写参数不会成为运行时继承值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数被忽略，不会创建推送请求或启用Link preload推送。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只能说明指令名称仍被接受并告警，不能将成功解析等同于功能生效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v2_module.xml#L277-L312",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "http3",
+    "summary": "启用HTTP/3协议协商，并在请求选定服务器后核对所协商协议是否允许。",
+    "syntax": "http3 on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_ssl_module.c",
+        "start_line": 444,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_request.c",
+        "start_line": 100,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_request.c",
+        "start_line": 1013,
+        "end_line": 1027
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 89,
+        "end_line": 101
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这些开关用于QUIC监听上的协议选择，本身不创建QUIC监听；不能只据默认on断言任意TLS/TCP站点已支持HTTP/3。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "协商完成后请求切换到禁用相应协议的服务器会被拒绝；HQ不是HTTP/2或普通TCP上的旧HTTP模式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L89-L101",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "http3_hq",
+    "summary": "启用QUIC互操作测试使用的HTTP/0.9（HQ）协议协商，独立于正常HTTP/3开关。",
+    "syntax": "http3_hq on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_ssl_module.c",
+        "start_line": 444,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_request.c",
+        "start_line": 100,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_request.c",
+        "start_line": 1013,
+        "end_line": 1027
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 104,
+        "end_line": 117
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这些开关用于QUIC监听上的协议选择，本身不创建QUIC监听；不能只据默认on断言任意TLS/TCP站点已支持HTTP/3。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "协商完成后请求切换到禁用相应协议的服务器会被拒绝；HQ不是HTTP/2或普通TCP上的旧HTTP模式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L104-L117",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "http3_max_concurrent_streams",
+    "summary": "设置每个连接允许的HTTP/3并发请求流数量，映射到QUIC双向流传输参数。",
+    "syntax": "http3_max_concurrent_streams number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_transport.c",
+        "start_line": 1998,
+        "end_line": 2021
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 120,
+        "end_line": 131
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "128。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "单向控制流有独立配置字段，不与双向请求流数量混为一项；该值不是全服务器连接数或整个连接生命周期的请求总数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L120-L131",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "http3_stream_buffer_size",
+    "summary": "设置QUIC流收发缓冲预算，影响初始接收流量窗口及等待确认期间的发送缓冲额度。",
+    "syntax": "http3_stream_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_transport.c",
+        "start_line": 1998,
+        "end_line": 2021
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_streams.c",
+        "start_line": 946,
+        "end_line": 990
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 134,
+        "end_line": 145
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "64k。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "传输层用该值初始化各流接收额度，并按流数计算初始连接总额度；发送路径按已确认/已发送量约束继续写入，不是响应长度上限或所有连接内存总和。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L134-L145",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "quic_retry",
+    "summary": "启用QUIC地址验证相关Retry行为：无令牌或需要重试的初始包发送Retry，握手完成后按此开关发送新令牌。",
+    "syntax": "quic_retry on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic.c",
+        "start_line": 889,
+        "end_line": 932
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_ssl.c",
+        "start_line": 457,
+        "end_line": 474
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 221,
+        "end_line": 237
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off并不意味着收到的令牌都不验证：非空令牌仍进入验证分支；Retry是传输地址验证，不是HTTP重试、上游重试或账号认证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L221-L237",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "quic_gso",
+    "summary": "允许QUIC输出在条件满足时使用UDP分段卸载批量发送路径，减少发送调用开销。",
+    "syntax": "quic_gso on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_output.c",
+        "start_line": 76,
+        "end_line": 93
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_output.c",
+        "start_line": 252,
+        "end_line": 307
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 184,
+        "end_line": 202
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "发送路径受NGX_HAVE_UDP_SEGMENT及NGX_HAVE_MSGHDR_MSG_CONTROL编译条件限制；还要求地址路径已验证、无待发初始/握手帧并有足够待发数据，on不保证每次都批量发送。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L184-L202",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "quic_host_key",
+    "summary": "从配置文件读取QUIC主密钥材料，用于派生地址验证令牌和无状态重置令牌所需的密钥。",
+    "syntax": "quic_host_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/v3/ngx_http_v3_module.c",
+      "start_line": 296,
+      "end_line": 393
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 123,
+        "end_line": 123
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_output.c",
+        "start_line": 824,
+        "end_line": 838
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_output.c",
+        "start_line": 979,
+        "end_line": 997
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 205,
+        "end_line": 218
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有继承或显式密钥时，配置合并阶段随机生成。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承父层密钥；仍为空则生成随机值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "文件必须非空且完整读取成功，否则配置失败；内容不是TLS证书私钥，也不按请求变量展开路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "默认随机密钥会随重新配置生成；需跨重载维持令牌密钥时显式使用同一文件，不把旧令牌继续有效当作默认保证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L205-L218",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_v3_module",
+    "name": "quic_active_connection_id_limit",
+    "summary": "设置服务器声明的QUIC active_connection_id_limit，限制为该连接保留的客户端连接ID数量。",
+    "syntax": "quic_active_connection_id_limit number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 100,
+        "end_line": 113
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/v3/ngx_http_v3_module.c",
+        "start_line": 180,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_transport.c",
+        "start_line": 1998,
+        "end_line": 2021
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/quic/ngx_event_quic_connid.c",
+        "start_line": 157,
+        "end_line": 203
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_v3_module.xml",
+        "start_line": 148,
+        "end_line": 161
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "2。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "检查在处理NEW_CONNECTION_ID、增加和退休ID之后进行；超过声明值产生CONNECTION_ID_LIMIT_ERROR，不是服务器允许建立的QUIC连接数量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后所列注册、回调与局部行为证据保持；仅限定这些事实，不代表整个HTTP/2或QUIC实现无补丁。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_v3_module.xml#L148-L161",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_preread_module",
+    "name": "ssl_preread",
+    "summary": "在stream preread阶段解析TCP连接的ClientHello，提取版本、SNI和ALPN声明，供后续配置使用而不终止TLS。",
+    "syntax": "ssl_preread on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_preread_module.c",
+        "start_line": 76,
+        "end_line": 89
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_preread_module.c",
+        "start_line": 108,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_preread_module.c",
+        "start_line": 210,
+        "end_line": 499
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_preread_module.c",
+        "start_line": 503,
+        "end_line": 648
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_preread_module.c",
+        "start_line": 672,
+        "end_line": 715
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_preread_module.xml",
+        "start_line": 101,
+        "end_line": 112
+      },
+      {
+        "id": "preread-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-stream_ssl_preread_no_skip.patch",
+        "start_line": 1,
+        "end_line": 11
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "preread-patch"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应字段；无可继承值时使用所列默认。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "preread-patch"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅处理SOCK_STREAM；数据不足返回AGAIN，非握手或不支持的记录返回DECLINED，不能据开关保证任意连接都有SNI/ALPN值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "preread-patch"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "提取的是客户端声明，不是TLS握手协商完成或证书验证结果；源码还可依据SNI切换stream服务器配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "preread-patch"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "发行no_skip补丁改了后部返回表达式，但1.27.1源码在此前已有rc==NGX_OK的servername返回分支；不能把该补丁解释为所有成功预读都会继续执行其他preread处理器。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "preread-patch"
+        ]
+      }
+    ],
+    "phase": "preread",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "发行补丁实际改写所引handler的后部return表达式；回放后的成功分支仍在此前返回servername结果，本条已说明边界，不按补丁名推断全流程效果。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "preread-patch",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_ssl_preread_module.xml#L101-L112",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

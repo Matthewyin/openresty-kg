@@ -1,0 +1,2926 @@
+{
+  "release": "1.27.1.1-85a5b1f135fbcdcf",
+  "method": "Codex浏览器2/tab3真实目录点击；逐项DOM核对中文事实、状态、全部源码正文及revision链接；与本发布精确一致",
+  "checked_count": 340,
+  "target_fields": 537,
+  "source_count": 5495,
+  "records": [
+    {
+      "id": "nginx--ngx_core_module--daemon",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--master_process",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--timer_resolution",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--lock_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--debug_points",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--user",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_priority",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_rlimit_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_shutdown_timeout",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--working_directory",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--env",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_core_module--load_module",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 8,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_regex_module--pcre_jit",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_thread_pool_module--thread_pool",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_devpoll_module--devpoll_changes",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_devpoll_module--devpoll_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_epoll_module--epoll_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_epoll_module--worker_aio_requests",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_eventport_module--eventport_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_iocp_module--iocp_threads",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_iocp_module--post_acceptex",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_iocp_module--acceptex_read",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_kqueue_module--kqueue_changes",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_kqueue_module--kqueue_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_event_core_module--use",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_event_core_module--debug_connection",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_openssl_module--ssl_engine",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 8,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_quic_bpf_module--quic_bpf",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_empty_gif_module--empty_gif",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_split_path_info",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_flv_module--flv",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_set_header",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_gzip_filter_module--gzip_window",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_gzip_filter_module--gzip_hash",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_image_filter_module--image_filter_sharpen",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_memcached_module--memcached_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 23,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_mp4_module--mp4",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_redirect",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_set_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_method",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_busy_buffers_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_key",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_methods",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_max_temp_file_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_temp_file_write_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_ignore_headers",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--rewrite",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--return",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--break",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--if",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_stub_status_module--stub_status",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_try_files_module--try_files",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_perl_module--perl_modules",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_perl_module--perl",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--server_name",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--types",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--root",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--alias",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--limit_except",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--client_body_temp_path",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--subrequest_output_buffer_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--aio",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--aio_write",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--read_ahead",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--directio",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--directio_alignment",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--error_page",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--post_action",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--gzip_disable",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_http_core_module--disable_symlinks",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_mail_module--mail",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--server",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--listen",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--protocol",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 21,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_google_perftools_module--google_perftools_profiles",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_stream_core_module--server_name",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_stream_pass_module--pass",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "nginx--ngx_stream_return_module--return",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_load_resty_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 8,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_thread_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_max_running_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_max_pending_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_shared_dict",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 8,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_capture_error_log",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_sa_restart",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_regex_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_regex_match_limit",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_package_cpath",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_package_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_code_cache",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_need_request_body",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_transform_underscores_in_response_headers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_log_errors",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--exit_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--exit_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--server_rewrite_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--server_rewrite_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_keepalive_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_send_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_send_lowat",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_read_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 9,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_http10_buffering",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_check_client_abort",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_use_default_type",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_protocols",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_ciphers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_client_hello_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_client_hello_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_certificate_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_certificate_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_store_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_store_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_fetch_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_fetch_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_verify_depth",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_certificate_key",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_trusted_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_crl",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_conf_command",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_malloc_trim",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_worker_thread_vm_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_load_resty_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_running_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_pending_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_shared_dict",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_sa_restart",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_capture_error_log",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_match_limit",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_cpath",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_code_cache",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_log_errors",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 10,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 22,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_keepalive_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_lowat",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_read_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_check_client_abort",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_protocols",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_ciphers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 21,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 22,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_verify_depth",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate_key",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_trusted_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_crl",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_conf_command",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_malloc_trim",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 12,
+      "passed": true
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_add_variable",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_request_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_sleep",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_flush",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_blocking_sleep",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_reset_timer",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_before_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_after_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_location_async",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_location",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest_async",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_duplicate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_read_request_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_foreach_split",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_end",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_abort_parent",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_exec",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_headers",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 11,
+      "passed": true
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_headers",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_input_headers",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_input_headers",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "memc-nginx-module--ngx_http_memc_module--memc_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 14,
+      "passed": true
+    },
+    {
+      "id": "ngx_devel_kit--ndk_http_module--upstream_list",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 28,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64url",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64url",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_hex",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_hex",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha1",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha256",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_md5",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_sha1",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 28,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_unescape_uri",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_escape_uri",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_sql_str",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_pgsql_str",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_json_str",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_if_empty",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hashed_upstream",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 28,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base32",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base32",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_local_today",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_gmt_time",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_local_time",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_random",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_alphanum",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_lcalpha",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_rotate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 26,
+      "passed": true
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_split",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_map",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_map_op",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_join",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 28,
+      "passed": true
+    },
+    {
+      "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input_multi",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 28,
+      "passed": true
+    },
+    {
+      "id": "rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_ret",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_server",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 22,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 22,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_query",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_dbname",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 13,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 23,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_send_query_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_cols_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_rows_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_module_header",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_status",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "iconv-nginx-module--ngx_http_iconv_module--set_iconv",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 29,
+      "passed": true
+    },
+    {
+      "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_encrypt_session",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 31,
+      "passed": true
+    },
+    {
+      "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_decrypt_session",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 31,
+      "passed": true
+    },
+    {
+      "id": "redis-nginx-module--ngx_http_redis_module--redis_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 25,
+      "passed": true
+    },
+    {
+      "id": "redis-nginx-module--ngx_http_redis_module--redis_bind",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_server",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 23,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_pass",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 27,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_query",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_rewrite",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 21,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_output",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 20,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_set",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_escape",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 18,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 31,
+      "passed": true
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_result_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 19,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_query",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 16,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_raw_query",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_raw_queries",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_literal_raw_query",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 15,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "source_count": 23,
+      "passed": true
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_bind",
+      "fields": [
+        "inheritance"
+      ],
+      "source_count": 17,
+      "passed": true
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_set_key",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 8,
+      "passed": true
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_set_by_filter",
+      "fields": [
+        "defaults"
+      ],
+      "source_count": 11,
+      "passed": true
+    }
+  ]
+}

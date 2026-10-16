@@ -1,0 +1,2858 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "starttls",
+    "summary": "控制邮件会话通过POP3 STLS或IMAP/SMTP STARTTLS从明文升级TLS，only模式限制升级前认证。",
+    "syntax": "starttls on | off | only;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_ssl_module.c",
+      "start_line": 529,
+      "end_line": 548
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 37,
+        "end_line": 42
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_core_module.c",
+        "start_line": 450,
+        "end_line": 468
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 500,
+        "end_line": 518
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 303,
+        "end_line": 312
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 350,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_imap_handler.c",
+        "start_line": 426,
+        "end_line": 477
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 309,
+        "end_line": 318
+      },
+      {
+        "id": "implementation-9",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 369,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-10",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 423,
+        "end_line": 433
+      },
+      {
+        "id": "implementation-11",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_pop3_handler.c",
+        "start_line": 473,
+        "end_line": 482
+      },
+      {
+        "id": "implementation-12",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 625,
+        "end_line": 667
+      },
+      {
+        "id": "implementation-13",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 739,
+        "end_line": 785
+      },
+      {
+        "id": "implementation-14",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_smtp_handler.c",
+        "start_line": 839,
+        "end_line": 869
+      },
+      {
+        "id": "implementation-15",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 337,
+        "end_line": 338
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 650,
+        "end_line": 682
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认off；不提供STARTTLS/STLS升级。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "implementation-10",
+        "implementation-11",
+        "implementation-12",
+        "implementation-13",
+        "implementation-14",
+        "implementation-15"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off拒绝升级命令，on允许升级，only在未加密时拒绝IMAP LOGIN/AUTHENTICATE、POP3 USER/APOP/AUTH与SMTP AUTH；能力应答随模式变化。三协议均要求c->ssl为空才升级，重置输入缓冲并挂ngx_mail_starttls_handler；SMTP另清除HELO/MAIL/RCPT状态。固定SMTP auth none的MAIL路径没有starttls_only检查，不能把only外推为禁止一切明文会话。与listen ... ssl的连接即握手不同；握手等待使用mail core timeout，不是stream ssl_handshake_timeout。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "implementation-9",
+          "implementation-10",
+          "implementation-11",
+          "implementation-12",
+          "implementation-13",
+          "implementation-14",
+          "implementation-15",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件支持证书、session及ClientHello回调让出，不声称邮件原生指令安装了动态证书或全部第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "implementation-10",
+        "implementation-11",
+        "implementation-12",
+        "implementation-13",
+        "implementation-14",
+        "implementation-15",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_certificate",
+    "summary": "给邮件TLS服务器加载PEM证书链，可重复配置不同类型证书。",
+    "syntax": "ssl_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 393,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 434,
+        "end_line": 553
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 648,
+        "end_line": 735
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 323,
+        "end_line": 349
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 354,
+        "end_line": 354
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 106,
+        "end_line": 155
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认无证书；启用TLS时缺失会报配置错误。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有该指令时整组继承mail层数组；本层出现后使用本层数组，不逐项追加父数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置期检查证书与私钥均存在且key数量不少于证书，按数组顺序配对并静态装入SSL_CTX；未实现变量路径编译或按握手动态证书回调。PEM顺序为主证书后接中间证书，也支持data:内嵌证书；旧SSL库的独立多证书链支持受限。不是邮件上游客户端证书；启用隐式TLS或STARTTLS后必须提供证书。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件支持证书、session及ClientHello回调让出，不声称邮件原生指令安装了动态证书或全部第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_certificate_key",
+    "summary": "为邮件服务器证书配置按序对应的PEM私钥。",
+    "syntax": "ssl_certificate_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 393,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 434,
+        "end_line": 453
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 553,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 738,
+        "end_line": 852
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 355,
+        "end_line": 356
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 158,
+        "end_line": 187
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认无私钥；TLS启用时缺失或数量不足均报错。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有该指令时整组继承mail层数组；本层出现后使用本层数组，不逐项追加父数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置期静态装载，可用文件、data:或engine:name:id（需engine支持）；没有本域变量私钥路径编译。key数量不足时merge报错，共享实现读取私钥并调用SSL_CTX_use_PrivateKey。口令仅用于解密私钥，不替代文件或engine存在性检查；多余key不因此多出证书。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件支持证书、session及ClientHello回调让出，不声称邮件原生指令安装了动态证书或全部第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_password_file",
+    "summary": "读取解密邮件服务器私钥所需的逐行口令列表。",
+    "syntax": "ssl_password_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_ssl_module.c",
+      "start_line": 551,
+      "end_line": 571
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 444,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1199,
+        "end_line": 1325
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 819,
+        "end_line": 852
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 358,
+        "end_line": 358
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 362,
+        "end_line": 399
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认passwords为NULL，没有显式口令列表。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未指定时继承父层口令数组；指定后整体使用本层文件所读列表。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域专用callback在配置期读取口令文件，同层重复配置拒绝；共享PEM私钥加载按列表依次尝试。不是每次握手重读，不是邮件登录口令；私钥装载仍由mail merge静态执行。只核源码，不读取实际口令文件。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_dhparam",
+    "summary": "为邮件TLS上下文装载DHE密码套件所需的DH参数。",
+    "syntax": "ssl_dhparam file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 480,
+        "end_line": 482
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1407,
+        "end_line": 1481
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 360,
+        "end_line": 360
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 295,
+        "end_line": 314
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径，不设置DH参数；没有内建DH参数回退。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge直接调用ngx_ssl_dhparam；空路径不装载参数，文件为PEM，失败会使配置失败。新旧OpenSSL使用不同参数装载API；不为ECDHE选择曲线，也不是启用所有DHE套件的独立开关。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_ecdh_curve",
+    "summary": "设置邮件TLS服务器支持的ECDHE曲线或曲线列表。",
+    "syntax": "ssl_ecdh_curve curve;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 13,
+        "end_line": 14
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 484,
+        "end_line": 486
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1484,
+        "end_line": 1563
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 362,
+        "end_line": 363
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 317,
+        "end_line": 359
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认auto，具体曲线由SSL库分支决定。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际由mail merge调用共享曲线设置；支持列表API时auto沿用库默认，旧分支auto选择prime256v1。列表及ECDSA证书所用曲线需与库能力匹配，禁用ECDH的编译分支不应用曲线；不等同于DH参数文件。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_protocols",
+    "summary": "限定邮件TLS上下文允许的SSL/TLS协议版本。",
+    "syntax": "ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 46,
+        "end_line": 54
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 420,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 130,
+        "end_line": 137
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 349
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 296,
+        "end_line": 399
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 346,
+        "end_line": 349
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 416,
+        "end_line": 444
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "固定源码默认TLSv1 TLSv1.1 TLSv1.2 TLSv1.3。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "位掩码经mail merge传给ngx_ssl_create，库宏分支控制可用协议；接受配置名称不证明运行库支持该协议。适用于该mail server的隐式TLS与STARTTLS；本域不安装HTTP/Stream式SNI虚拟server切换回调。固定默认不能用较新版本文档默认替换。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_ciphers",
+    "summary": "给邮件TLS上下文配置OpenSSL格式的密码套件字符串。",
+    "syntax": "ssl_ciphers ciphers;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 13,
+        "end_line": 13
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 437,
+        "end_line": 442
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 521,
+        "end_line": 523
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 371,
+        "end_line": 371
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 190,
+        "end_line": 218
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认HIGH:!aNULL:!MD5。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge把字符串及prefer_server_ciphers交给ngx_ssl_ciphers，真实API为SSL_CTX_set_cipher_list；不是TLS1.3专用ciphersuites设置。无可用套件等库错误会配置失败，后续ssl_conf_command可再修改库设置。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_prefer_server_ciphers",
+    "summary": "在邮件TLS协商中请求优先使用服务器的密码套件顺序。",
+    "syntax": "ssl_prefer_server_ciphers on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 437,
+        "end_line": 442
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 521,
+        "end_line": 523
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 343,
+        "end_line": 344
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 402,
+        "end_line": 413
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认off。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge把开关传给共享ciphers函数，on设置SSL_OP_CIPHER_SERVER_PREFERENCE；off不设置该选项。不是另建密码套件集合，实际协商还受协议与库支持、ssl_ciphers和后续SSL_CONF命令影响。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_session_cache",
+    "summary": "配置邮件TLS会话参数的进程内或共享缓存及容量。",
+    "syntax": "ssl_session_cache off | none | [builtin[:size]] [shared:name:size];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/mail/ngx_mail_ssl_module.c",
+      "start_line": 574,
+      "end_line": 683
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 236,
+        "end_line": 236
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 488,
+        "end_line": 501
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 3713,
+        "end_line": 3784
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4395,
+        "end_line": 4461
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 488,
+        "end_line": 493
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 447,
+        "end_line": 509
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "TLS启用时默认none；共享区无父值时为空。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "TLS启用的merge中builtin_session_cache本层有值时保持本层值；本层未设时继承父值，父子均未设才用none；shm_zone为空时独立继承父指针。本层off/none不自动清空父共享区指针。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域callback解析最多两个参数；off设SSL_SESS_CACHE_OFF，none保留可复用表示但不存储会话，builtin使用SSL库进程内缓存，shared绑定邮件SSL模块tag及缓存init，至少8个内存页。仅shared时关闭内建缓存，MAIL作为session上下文参与缓存身份；共享缓存可参与票据key轮换，但缓存与票据开关不同。builtin未给size沿用库默认容量，不由此源码硬写库内部数值。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件支持证书、session及ClientHello回调让出，不声称邮件原生指令安装了动态证书或全部第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_session_tickets",
+    "summary": "控制邮件TLS上下文是否使用会话票据恢复。",
+    "syntax": "ssl_session_tickets on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 503,
+        "end_line": 519
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 503,
+        "end_line": 504
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 550,
+        "end_line": 562
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "TLS启用时默认on。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "TLS启用的merge中，本层有值时保持本层开关；本层未设时继承父开关，父子均未设才使用默认on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "TLS启用时merge默认on；off仅在SSL_OP_NO_TICKET可用时设置禁用选项，不能脱离库版本承诺全部协议的恢复行为。后续票据key配置另行处理，不等同于ssl_session_cache off或票据文件配置。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_session_ticket_key",
+    "summary": "为邮件TLS票据配置可轮换的加密与解密密钥文件。",
+    "syntax": "ssl_session_ticket_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 512,
+        "end_line": 519
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4395,
+        "end_line": 4553
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4570,
+        "end_line": 4644
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4695,
+        "end_line": 4821
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4833,
+        "end_line": 4846
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 512,
+        "end_line": 513
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 512,
+        "end_line": 547
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "TLS启用时默认没有显式key文件列表；默认随机key由库或共享缓存路径管理。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "TLS启用的merge中本层无该指令则整组继承父层key数组，本层有配置则不追加父数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge调用共享票据key加载；文件必须48或80字节，分别使用AES128或AES256。按配置顺序首key加密，解密按key名称匹配，旧key可触发续签。没有显式文件且有共享缓存时共享生成/轮换；没有共享缓存则沿用库处理。缺票据callback支持时显式配置警告忽略，不能承诺文件已生效。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_session_timeout",
+    "summary": "设置邮件客户端复用TLS会话参数的有效时间。",
+    "syntax": "ssl_session_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1290,
+      "end_line": 1318
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 495,
+        "end_line": 501
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 3713,
+        "end_line": 3728
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4725,
+        "end_line": 4729
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 334,
+        "end_line": 345
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 340,
+        "end_line": 341
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 565,
+        "end_line": 576
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认300秒，即5m。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge传给ngx_ssl_session_cache并调用SSL_CTX_set_timeout；共享票据轮换也读取上下文timeout。不是邮件读写超时或握手等待时限：握手等待使用mail core timeout。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_verify_client",
+    "summary": "控制邮件TLS客户端证书请求、校验及握手后邮件处理。",
+    "syntax": "ssl_verify_client on | off | optional | optional_no_ca;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1351,
+      "end_line": 1385
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 57,
+        "end_line": 63
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 451,
+        "end_line": 478
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 947
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 352,
+        "end_line": 449
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.h",
+        "start_line": 254,
+        "end_line": 259
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1177,
+        "end_line": 1226
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_auth_http_module.c",
+        "start_line": 1393,
+        "end_line": 1456
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 351,
+        "end_line": 351
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 599,
+        "end_line": 633
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认off，不请求客户端证书验证。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on要求证书，optional只在有证书时验证，optional_no_ca仅豁免共享宏列出的五类CA错误而非一切错误。verify非零时装CA/CRL，除optional_no_ca外要求client_certificate非空。握手成功后ngx_mail_verify_cert检查验证结果，失败发送本协议cert_error或no_cert并结束；不是HTTP状态码。后续认证请求在TLS且verify非零时填Auth-SSL-Verify等证书信息，原证书另受auth_http_pass_client_cert控制，不能保证失败连接到达认证服务。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_verify_depth",
+    "summary": "设置邮件TLS客户端证书链验证深度。",
+    "syntax": "ssl_verify_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 451,
+        "end_line": 478
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 914
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 961
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 352,
+        "end_line": 352
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 636,
+        "end_line": 647
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认1。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "在verify非零分支同时传给client_certificate和trusted_certificate共享函数，后者使用SSL_CTX_set_verify_depth；只设深度不会开启客户端证书验证，不控制服务器证书链长度或邮件转发跳数。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_client_certificate",
+    "summary": "配置邮件TLS验证客户端证书的PEM CA文件及向客户端发送的CA名称列表。",
+    "syntax": "ssl_client_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 451,
+        "end_line": 478
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 947
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 365,
+        "end_line": 366
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 221,
+        "end_line": 239
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径；不会自动提供CA。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在verify非零时调用共享client_certificate加载信任文件并SSL_CTX_set_client_CA_list；on/optional要求非空，optional_no_ca允许空。公告的是CA名称列表，不是向客户端发送整份信任文件；trusted_certificate可补充不公告的CA，但不会取消本域on/optional对client_certificate的非空要求。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_trusted_certificate",
+    "summary": "为邮件TLS客户端验证补充不公告给客户端的PEM信任CA文件。",
+    "syntax": "ssl_trusted_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 451,
+        "end_line": 478
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 984
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 367,
+        "end_line": 368
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 579,
+        "end_line": 596
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径，不装载额外信任文件。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "mail merge仅在verify非零时调用ngx_ssl_trusted_certificate，加载信任位置并设置深度但不设置客户端CA名称列表。只配置该文件不会开启验证，也不能替代on/optional要求的非空client_certificate；与HTTP本域加载条件不同。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_crl",
+    "summary": "为邮件TLS客户端证书验证加载PEM撤销列表。",
+    "syntax": "ssl_crl file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 451,
+        "end_line": 478
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 987,
+        "end_line": 1029
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 387,
+        "end_line": 449
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 369,
+        "end_line": 369
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 279,
+        "end_line": 292
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径，不加载CRL。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承mail层对应值；无父值时使用上述固定默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域只在verify非零时调用共享CRL加载；非空文件加入证书存储并启用CRL_CHECK及CRL_CHECK_ALL，装载失败导致配置错误。不是自动在线获取OCSP或CRL，文件为空直接跳过；验证结果最终由邮件握手后检查消费。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_mail_ssl_module",
+    "name": "ssl_conf_command",
+    "summary": "在邮件TLS常规设置后按顺序执行OpenSSL配置命令。",
+    "syntax": "ssl_conf_command name value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 209,
+        "end_line": 233
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_handler.c",
+        "start_line": 272,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 376,
+        "end_line": 420
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 66,
+        "end_line": 67
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 686,
+        "end_line": 694
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 515,
+        "end_line": 525
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1595,
+        "end_line": 1664
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/mail/ngx_mail_ssl_module.c",
+        "start_line": 373,
+        "end_line": 373
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/mail/ngx_mail_ssl_module.xml",
+        "start_line": 242,
+        "end_line": 276
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认无额外SSL_CONF命令。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有该指令时整组继承mail层数组；本层出现后使用本层数组，不逐项追加父数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册post真实绑定ngx_mail_ssl_conf_command_check；缺SSL_CONF_FLAG_FILE时报不支持。mail merge最后调用ngx_ssl_conf_commands，逐条SSL_CONF_cmd并finish，文件类型参数补全路径；可覆盖前面的常规SSL设置，不能把命令存在当成本平台支持。 本域仅在listen ... ssl或starttls非off时创建TLS上下文；未启用TLS时merge提前返回，不宣称这些库设置已执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  }
+]

@@ -1,0 +1,243 @@
+{
+  "openresty_revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+  "nginx_revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+  "openresty_version": "1.27.1.1",
+  "nginx_version": "1.27.1",
+  "patches": [
+    "win32_max_err_str", "stream_balancer_export", "stream_proxy_get_next_upstream_tries",
+    "stream_proxy_timeout_fields", "stream_ssl_preread_no_skip", "resolver_conf_parsing",
+    "daemon_destroy_pool", "init_cycle_pool_release", "balancer_status_code",
+    "builtin_error_page_footer", "delayed_posted_events", "privileged_agent_process",
+    "privileged_agent_process_connections", "privileged_agent_process_thread_pool",
+    "single_process_graceful_exit", "intercept_error_log", "upstream_pipelining",
+    "server_header", "no_error_pages", "no_Werror", "log_escape_non_ascii",
+    "proxy_host_port_vars", "cache_manager_exit", "larger_max_error_str", "pcre_conf_opt",
+    "always_enable_cc_feature_tests", "ssl_cert_cb_yield", "ssl_sess_cb_yield",
+    "ssl_client_hello_cb_yield", "upstream_timeout_fields", "safe_resolver_ipv6_option",
+    "socket_cloexec", "reuseport_close_unused_fds", "proc_exit_handler"
+  ],
+  "substitutions": {
+    "server_header": [{ "from": "NGINX_VERSION \".unknown\"", "to": "NGINX_VERSION \".1\"" }]
+  },
+  "targets": [
+    { "file": "src/stream/ngx_stream_core_module.c", "unchanged": true },
+    { "file": "src/stream/ngx_stream_set_module.c", "unchanged": true },
+    { "file": "src/stream/ngx_stream_log_module.c", "unchanged": true },
+    { "file": "src/stream/ngx_stream_proxy_module.c", "unchanged": false },
+    { "file": "src/core/ngx_log.c", "unchanged": false }
+  ],
+  "hunk_adjustments": {
+    "stream_balancer_export": [
+      {"file":"src/stream/ngx_stream_upstream_round_robin.c","hunk":2,"line":700,"fuzz":0,"offset":14},
+      {"file":"src/stream/ngx_stream_upstream_round_robin.c","hunk":3,"line":749,"fuzz":0,"offset":-3},
+      {"file":"src/stream/ngx_stream_upstream_round_robin.h","hunk":1,"line":143,"fuzz":0,"offset":1}
+    ],
+    "stream_proxy_get_next_upstream_tries": [
+      {"file":"src/stream/ngx_stream.h","hunk":1,"line":380,"fuzz":0,"offset":77},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":1,"line":2505,"fuzz":0,"offset":349}
+    ],
+    "stream_proxy_timeout_fields": [
+      {"file":"src/stream/ngx_stream.h","hunk":1,"line":311,"fuzz":0,"offset":57},
+      {"file":"src/stream/ngx_stream.h","hunk":2,"line":323,"fuzz":0,"offset":7},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":1,"line":402,"fuzz":0,"offset":2},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":2,"line":411,"fuzz":0,"offset":2},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":3,"line":713,"fuzz":0,"offset":2},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":4,"line":721,"fuzz":0,"offset":2},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":5,"line":784,"fuzz":0,"offset":-5},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":6,"line":947,"fuzz":0,"offset":-10},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":7,"line":1002,"fuzz":0,"offset":9},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":8,"line":1058,"fuzz":0,"offset":-10},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":9,"line":1128,"fuzz":0,"offset":11},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":10,"line":1416,"fuzz":0,"offset":-10},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":11,"line":1449,"fuzz":0,"offset":11},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":12,"line":1449,"fuzz":0,"offset":-10},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":13,"line":1632,"fuzz":0,"offset":11},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":14,"line":1805,"fuzz":0,"offset":-26}
+    ],
+    "stream_ssl_preread_no_skip": [
+      {"file":"src/stream/ngx_stream_ssl_preread_module.c","hunk":1,"line":194,"fuzz":2,"offset":35}
+    ],
+    "resolver_conf_parsing": [
+      {"file":"src/core/ngx_resolver.c","hunk":2,"line":143,"fuzz":0,"offset":-2},
+      {"file":"src/core/ngx_resolver.c","hunk":3,"line":463,"fuzz":0,"offset":18}
+    ],
+    "init_cycle_pool_release": [
+      {"file":"src/core/nginx.c","hunk":1,"line":188,"fuzz":0,"offset":2},
+      {"file":"src/core/nginx.c","hunk":2,"line":255,"fuzz":0,"offset":1},
+      {"file":"src/core/ngx_core.h","hunk":1,"line":117,"fuzz":0,"offset":9},
+      {"file":"src/core/ngx_cycle.c","hunk":1,"line":768,"fuzz":0,"offset":20},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":694,"fuzz":0,"offset":2}
+    ],
+    "balancer_status_code": [
+      {"file":"src/http/ngx_http_upstream.c","hunk":1,"line":1563,"fuzz":0,"offset":48},
+      {"file":"src/http/ngx_http_upstream.h","hunk":1,"line":439,"fuzz":0,"offset":12},
+      {"file":"src/stream/ngx_stream_proxy_module.c","hunk":1,"line":755,"fuzz":0,"offset":64},
+      {"file":"src/stream/ngx_stream_upstream.h","hunk":1,"line":157,"fuzz":0,"offset":6}
+    ],
+    "builtin_error_page_footer": [
+      {"file":"src/http/ngx_http_special_response.c","hunk":1,"line":33,"fuzz":0,"offset":7}
+    ],
+    "delayed_posted_events": [
+      {"file":"src/event/ngx_event.c","hunk":1,"line":197,"fuzz":0,"offset":1},
+      {"file":"src/event/ngx_event.c","hunk":2,"line":219,"fuzz":0,"offset":1},
+      {"file":"src/event/ngx_event.c","hunk":3,"line":270,"fuzz":1,"offset":3},
+      {"file":"src/event/ngx_event.c","hunk":4,"line":707,"fuzz":2,"offset":68},
+      {"file":"src/event/ngx_event_posted.c","hunk":1,"line":13,"fuzz":2,"offset":1},
+      {"file":"src/event/ngx_event_posted.h","hunk":1,"line":45,"fuzz":2,"offset":2}
+    ],
+    "privileged_agent_process": [
+      {"file":"src/core/nginx.c","hunk":1,"line":1116,"fuzz":2,"offset":135},
+      {"file":"src/core/nginx.c","hunk":2,"line":1011,"fuzz":2,"offset":1},
+      {"file":"src/core/ngx_cycle.h","hunk":2,"line":92,"fuzz":1,"offset":8},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":3,"line":55,"fuzz":0,"offset":1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":4,"line":134,"fuzz":0,"offset":-1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":5,"line":222,"fuzz":0,"offset":1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":6,"line":240,"fuzz":0,"offset":-1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":7,"line":257,"fuzz":0,"offset":1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":8,"line":430,"fuzz":1,"offset":-1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":9,"line":868,"fuzz":0,"offset":8},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":10,"line":1201,"fuzz":1,"offset":-15}
+    ],
+    "privileged_agent_process_connections": [
+      {"file":"src/core/nginx.c","hunk":1,"line":1117,"fuzz":0,"offset":55},
+      {"file":"src/core/nginx.c","hunk":2,"line":1148,"fuzz":0,"offset":55},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":1177,"fuzz":0,"offset":-2},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":2,"line":1189,"fuzz":0,"offset":-2},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":413,"fuzz":0,"offset":-29}
+    ],
+    "single_process_graceful_exit": [
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":304,"fuzz":0,"offset":-1},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":2,"line":334,"fuzz":0,"offset":-1}
+    ],
+    "intercept_error_log": [
+      {"file":"src/core/ngx_cycle.h","hunk":1,"line":25,"fuzz":1,"offset":3},
+      {"file":"src/core/ngx_cycle.h","hunk":2,"line":88,"fuzz":1,"offset":8}
+    ],
+    "upstream_pipelining": [
+      {"file":"src/http/ngx_http_upstream.c","hunk":1,"line":2338,"fuzz":0,"offset":99}
+    ],
+    "server_header": [
+      {"file":"src/http/v2/ngx_http_v2_filter_module.c","hunk":1,"line":115,"fuzz":0,"offset":-28}
+    ],
+    "no_error_pages": [
+      {"file":"src/http/ngx_http_core_module.c","hunk":6,"line":4849,"fuzz":0,"offset":26},
+      {"file":"src/http/ngx_http_core_module.c","hunk":7,"line":4958,"fuzz":0,"offset":26}
+    ],
+    "no_Werror": [
+      {"file":"auto/cc/clang","hunk":1,"line":89,"fuzz":1,"offset":0},
+      {"file":"auto/cc/gcc","hunk":1,"line":166,"fuzz":0,"offset":-2},
+      {"file":"auto/cc/icc","hunk":1,"line":111,"fuzz":0,"offset":-4}
+    ],
+    "log_escape_non_ascii": [
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":2,"line":138,"fuzz":0,"offset":5},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":3,"line":184,"fuzz":0,"offset":4},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":4,"line":957,"fuzz":0,"offset":12},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":5,"line":958,"fuzz":0,"offset":4},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":6,"line":979,"fuzz":0,"offset":12},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":7,"line":985,"fuzz":0,"offset":4},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":8,"line":1024,"fuzz":0,"offset":12},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":9,"line":1179,"fuzz":0,"offset":37},
+      {"file":"src/http/modules/ngx_http_log_module.c","hunk":10,"line":1170,"fuzz":0,"offset":12}
+    ],
+    "proxy_host_port_vars": [
+      {"file":"src/http/modules/ngx_http_proxy_module.c","hunk":1,"line":872,"fuzz":0,"offset":79}
+    ],
+    "cache_manager_exit": [
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":1197,"fuzz":0,"offset":63}
+    ],
+    "larger_max_error_str": [
+      {"file":"src/core/ngx_log.h","hunk":1,"line":73,"fuzz":0,"offset":9}
+    ],
+    "pcre_conf_opt": [
+      {"file":"auto/options","hunk":1,"line":368,"fuzz":2,"offset":82},
+      {"file":"auto/options","hunk":2,"line":508,"fuzz":2,"offset":66}
+    ],
+    "ssl_cert_cb_yield": [
+      {"file":"src/event/ngx_event_openssl.c","hunk":1,"line":1914,"fuzz":0,"offset":469},
+      {"file":"src/event/ngx_event_openssl.c","hunk":2,"line":1609,"fuzz":0,"offset":34}
+    ],
+    "ssl_sess_cb_yield": [
+      {"file":"src/event/ngx_event_openssl.c","hunk":1,"line":1915,"fuzz":0,"offset":469},
+      {"file":"src/event/ngx_event_openssl.c","hunk":2,"line":1629,"fuzz":0,"offset":49}
+    ],
+    "ssl_client_hello_cb_yield": [
+      {"file":"src/event/ngx_event_openssl.c","hunk":1,"line":1918,"fuzz":0,"offset":206},
+      {"file":"src/event/ngx_event_openssl.c","hunk":2,"line":1912,"fuzz":0,"offset":20}
+    ],
+    "upstream_timeout_fields": [
+      {"file":"src/http/ngx_http_upstream.c","hunk":1,"line":508,"fuzz":0,"offset":-1},
+      {"file":"src/http/ngx_http_upstream.c","hunk":2,"line":1675,"fuzz":0,"offset":42},
+      {"file":"src/http/ngx_http_upstream.c","hunk":3,"line":1719,"fuzz":0,"offset":8},
+      {"file":"src/http/ngx_http_upstream.c","hunk":4,"line":2116,"fuzz":0,"offset":87},
+      {"file":"src/http/ngx_http_upstream.c","hunk":5,"line":2103,"fuzz":0,"offset":12},
+      {"file":"src/http/ngx_http_upstream.c","hunk":6,"line":3333,"fuzz":0,"offset":113},
+      {"file":"src/http/ngx_http_upstream.c","hunk":7,"line":3478,"fuzz":0,"offset":13},
+      {"file":"src/http/ngx_http_upstream.c","hunk":8,"line":3597,"fuzz":0,"offset":120},
+      {"file":"src/http/ngx_http_upstream.c","hunk":9,"line":3699,"fuzz":0,"offset":28},
+      {"file":"src/http/ngx_http_upstream.h","hunk":1,"line":337,"fuzz":0,"offset":4}
+    ],
+    "socket_cloexec": [
+      {"file":"auto/unix","hunk":1,"line":1050,"fuzz":0,"offset":60},
+      {"file":"src/core/ngx_resolver.c","hunk":1,"line":4790,"fuzz":0,"offset":324},
+      {"file":"src/core/ngx_resolver.c","hunk":2,"line":4824,"fuzz":0,"offset":324},
+      {"file":"src/event/ngx_event_accept.c","hunk":1,"line":60,"fuzz":0,"offset":-2},
+      {"file":"src/event/ngx_event_accept.c","hunk":2,"line":202,"fuzz":0,"offset":-2},
+      {"file":"src/event/ngx_event_connect.c","hunk":2,"line":99,"fuzz":0,"offset":12},
+      {"file":"src/os/unix/ngx_process_cycle.c","hunk":1,"line":1097,"fuzz":0,"offset":68},
+      {"file":"src/os/unix/ngx_socket.h","hunk":1,"line":47,"fuzz":0,"offset":9}
+    ],
+    "reuseport_close_unused_fds": [
+      {"file":"src/core/ngx_connection.c","hunk":1,"line":1115,"fuzz":2,"offset":-3},
+      {"file":"src/event/ngx_event.c","hunk":1,"line":846,"fuzz":0,"offset":71}
+    ]
+  },
+  "patched_sha256": {
+    "auto/cc/clang": "5c8a5a306d88b76d66ad41d09171efd343f49c08424b514168e0dafb0fde1d2a",
+    "auto/cc/conf": "f7793d5b5e60f0ebf54ab9f6f743f20d5285a261c24700a487bf0210fc48cf70",
+    "auto/cc/gcc": "e566adf889beaa860847c98f94bfc3f4f63a3121cf9e8fc01a1a6a015d30d15e",
+    "auto/cc/icc": "1c17f8c3bdee2c70d12faa8646e27d233c3a700cfa30e1712d030544e7b6db7a",
+    "auto/options": "da552cb73ec81611b328582a0031828068d3ea437f4a28dd0a0a0b9167d771f3",
+    "auto/unix": "683fa2cf9537bbd6891f6b96a28348b7bfc6273a386d4d273dc99669e52c960d",
+    "src/core/nginx.c": "161e5eac7cf64862211b17a7db9bb352663000d0eb82a42fc5b8fe0ce2c413e8",
+    "src/core/nginx.h": "1474996a915212025b4533cb2b6dcae62fbb068a805f1c3381bdb4fed5bd2a8e",
+    "src/core/ngx_connection.c": "09720e7526a8b6ae4095e732e048dcd3403e66ff3ec246579b6b127d8d584a2d",
+    "src/core/ngx_core.h": "4a8c28c335b9af9e18948d6f526a8226ada4a61f72e56ef8b98b5dfd4015421e",
+    "src/core/ngx_cycle.c": "b2e602a6704008112135ee5a71abfb8c0baedd33a16e7f9e7ba0be1ce0f58f1b",
+    "src/core/ngx_cycle.h": "2b29c26f77e25ae44c634c4062419a7d9a5f9ab9e33fd5c59eb461dcda15e8cf",
+    "src/core/ngx_log.c": "aca73ac0886bfb58e054e29b7eaf86d5656382ebc3412bd101ec522f7cd3b7b2",
+    "src/core/ngx_log.h": "fc7f55244faae48f699fd07bbf012637a59437eb536093511643eedd5946f976",
+    "src/core/ngx_resolver.c": "0c4e2c25bb5f7a497d926137fbafef67607efc59b648a02aa6c85365e4413d88",
+    "src/core/ngx_thread_pool.c": "882fc4a43574180e00b5e7c1f8b648b1a9b612268a55a3d253fd79e9fc7f5c13",
+    "src/event/ngx_event.c": "8644da223a9e51c5369f2b96768ecb3a30d65b9e55ea0d64164a6d14197028db",
+    "src/event/ngx_event.h": "879cbe3e964018ce29ca076572127a8eb80242e6472970a41df0199ac7c20362",
+    "src/event/ngx_event_accept.c": "2c280f8cdbf0557a9d58c826091ee99ff0ee585589a0f8e4145ccae7887d5d75",
+    "src/event/ngx_event_connect.c": "cdfd8200266af8834aa70a8df057eb377863b0d4979858e1c91445f295a9cd0c",
+    "src/event/ngx_event_openssl.c": "0026b3d2b249ea4385245d9b632628d38af1f18b76902ec8ba213cab9de7f9b6",
+    "src/event/ngx_event_posted.c": "6cb1722e7ae0ab70997c35f93aea7157e3da87dfb9dc6b935fb0c4f63df323c8",
+    "src/event/ngx_event_posted.h": "6b6a9ff4aaa1d10fba47cb1b9e9cde4091bd4d934b8b32d9122776879a307215",
+    "src/http/modules/ngx_http_log_module.c": "5970e9bcc7bea3fc26ca03cf91499a8e2ebaee66f9c3b57d8504e5d56bd8aca8",
+    "src/http/modules/ngx_http_proxy_module.c": "8f0b631a157a11a4cc89a58538c880f6130470a84b8f879a3f527c405eea2c8b",
+    "src/http/ngx_http_core_module.c": "44b8a7f58c099540f4b681e1c5ae4cbdd581eb7309bc1779b6dfdc6013354f4f",
+    "src/http/ngx_http_header_filter_module.c": "1497fc1ff83cb7979a17bc7064e7cc68e1344dd99ccfa576033c56c607cc9b91",
+    "src/http/ngx_http_special_response.c": "46323ab02fac8eafd335fbc6c8c239f7a83dab582147bc356f5e1d8d2f9ce546",
+    "src/http/ngx_http_upstream.c": "2c0eef99474d3275c5265c44381833f2a66bc1fd70d8966e1c560ab6516e5660",
+    "src/http/ngx_http_upstream.h": "3fc2d27aa60bf9fd0ede9bc7254a8982f7112e524fd2fedadee067b329bf19d4",
+    "src/http/v2/ngx_http_v2_filter_module.c": "8fda06f26ce238e0b02a06619af14bbe4116d9c3819ced62a61652bae2835018",
+    "src/os/unix/ngx_daemon.c": "52f95354e0dfea425a57a47d308e523433976485f296092f6f28bc5e6d6feb93",
+    "src/os/unix/ngx_process.c": "f2e714c8ff9045edcd76139a7574fe5327a1970752828ea2b09ee2f10beec7a4",
+    "src/os/unix/ngx_process.h": "1159b9bb577564135464ea9bd7f636ac7367637e229e6bbc49421f968445e4c3",
+    "src/os/unix/ngx_process_cycle.c": "c6fe06200daf19b0c83d5f479c1e3a85721d6c8cec13b7178381891938e07b09",
+    "src/os/unix/ngx_process_cycle.h": "e6ac2958f3636552f85d7a1342087b0fd36a963cb3d99f3c8d38aaa3e33381c7",
+    "src/os/unix/ngx_socket.h": "af2500a9b6c113cdcbafd7b70f7d91335bcc8a929678d896dace277d85494d05",
+    "src/os/win32/ngx_event_log.c": "58cf9ed8317c826c81a7681422b75d9b1e9d644774fed73f98293b8de92b9ae3",
+    "src/stream/ngx_stream.h": "5a13cfb504f563bb0c179a8e9070635b0d3a4fdd0a9a81207055059d2b7c9039",
+    "src/stream/ngx_stream_core_module.c": "b1765879c54ea8665cda509d05970e51f6c9265fc57967de7118b595a13c22fa",
+    "src/stream/ngx_stream_log_module.c": "97d34a5023200ae5f5c4fb0ee7597f5901f1ff373137d52fabfff42ed0cc9cf4",
+    "src/stream/ngx_stream_proxy_module.c": "fd8da469ef7116256be621434cb79e76859ebd6248f7d78b827b59653badca67",
+    "src/stream/ngx_stream_set_module.c": "591d9238defe57342b0da120d440310470a3f3bfe0c8e74f9a9a77fa0effe4b4",
+    "src/stream/ngx_stream_ssl_preread_module.c": "775b0a628cad80648c45397924fe9d795b1ce43ecc225af52ec317d1afb9686a",
+    "src/stream/ngx_stream_upstream.h": "33968f2d5c71763dad4b2e7ef2dc31c4b7e785b55fffe9f27874a11344183ae8",
+    "src/stream/ngx_stream_upstream_round_robin.c": "1cdc226a6940c48a024c8aade1a47a6a6a4cde3e624abab5bd8ccea5cc4ff125",
+    "src/stream/ngx_stream_upstream_round_robin.h": "44024b3f701d87fc8ac10ebdf10beee00ee9be4233849f7f82d0de3fcb5a70a0"
+  }
+}

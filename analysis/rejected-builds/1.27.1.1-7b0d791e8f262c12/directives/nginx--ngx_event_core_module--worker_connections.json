@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "nginx--ngx_event_core_module--worker_connections",
+  "name": "worker_connections",
+  "module": "ngx_event_core_module",
+  "component": "nginx",
+  "contexts": [
+    "events"
+  ],
+  "contexts_verified": true,
+  "syntax": "worker_connections number;",
+  "summary": "设置 events 中的连接数配置。上游入口解析整数，将结果保存到事件配置及 cycle 的 connection_n，供连接资源初始化使用。",
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "重复设置或无法解析为整数的参数会被上游入口拒绝。",
+      "status": "unverified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    },
+    {
+      "text": "不把这个数字直接解释为可服务的客户端数量；此页尚未核实完整运行时限制及 OpenResty 补丁影响。",
+      "status": "unverified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "registration_only",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。",
+    "上游 Nginx 1.27.1 注册表；OpenResty 补丁影响尚未逐项核定。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_event_connections",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/event/ngx_event.c",
+      "start_line": 123,
+      "end_line": 128,
+      "code": "    { ngx_string(\"worker_connections\"),\n      NGX_EVENT_CONF|NGX_CONF_TAKE1,\n      ngx_event_connections,\n      0,\n      0,\n      NULL },",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/event/ngx_event.c#L123-L128",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/event/ngx_event.c",
+      "start_line": 1065,
+      "end_line": 1104,
+      "code": "ngx_event_connections(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_event_conf_t  *ecf = conf;\n\n    ngx_str_t  *value;\n\n    if (ecf->connections != NGX_CONF_UNSET_UINT) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;\n    ecf->connections = ngx_atoi(value[1].data, value[1].len);\n    if (ecf->connections == (ngx_uint_t) NGX_ERROR) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"invalid number \\\"%V\\\"\", &value[1]);\n\n        return NGX_CONF_ERROR;\n    }\n\n    cf->cycle->connection_n = ecf->connections;\n\n    return NGX_CONF_OK;\n}\n\n\nstatic char *\nngx_event_use(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_event_conf_t  *ecf = conf;\n\n    ngx_int_t             m;\n    ngx_str_t            *value;\n    ngx_event_conf_t     *old_ecf;\n    ngx_event_module_t   *module;\n\n    if (ecf->use != NGX_CONF_UNSET_UINT) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/event/ngx_event.c#L1065-L1104",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/event/ngx_event.c",
+      "start_line": 1065,
+      "end_line": 1091,
+      "code": "ngx_event_connections(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_event_conf_t  *ecf = conf;\n\n    ngx_str_t  *value;\n\n    if (ecf->connections != NGX_CONF_UNSET_UINT) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;\n    ecf->connections = ngx_atoi(value[1].data, value[1].len);\n    if (ecf->connections == (ngx_uint_t) NGX_ERROR) {\n        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,\n                           \"invalid number \\\"%V\\\"\", &value[1]);\n\n        return NGX_CONF_ERROR;\n    }\n\n    cf->cycle->connection_n = ecf->connections;\n\n    return NGX_CONF_OK;\n}\n\n\nstatic char *\nngx_event_use(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/event/ngx_event.c#L1065-L1091",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 30,
+      "end_line": 34,
+      "code": "ver=\"$main_ver\"\n$root/util/get-tarball \"https://openresty.org/download/nginx-$ver.tar.gz\" -O nginx-$ver.tar.gz || exit 1\ntar -xzf nginx-$ver.tar.gz || exit 1\ncd nginx-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L30-L34",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [],
+  "patch_status": {
+    "status": "unverified",
+    "note": "需要对 OpenResty 的有效 Nginx 补丁逐项核对，当前仅引用上游代码。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "event"
+  ],
+  "mechanism": null,
+  "related": [
+    "worker_processes"
+  ]
+}

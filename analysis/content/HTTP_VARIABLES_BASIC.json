@@ -1,0 +1,1282 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_map_module",
+    "name": "map",
+    "summary": "建立输入表达式到新变量的映射；变量被读取时计算输入，按字符串、主机名掩码或正则规则选择结果，结果也可以包含变量。",
+    "syntax": "map string $variable { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_map_module.c",
+      "start_line": 176,
+      "end_line": 365
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 91,
+        "end_line": 104
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 108,
+        "end_line": 172
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 381,
+        "end_line": 589
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 2471,
+        "end_line": 2529
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 211,
+        "end_line": 245
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_map_module.xml",
+        "start_line": 54,
+        "end_line": 187
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未设置 default 且没有匹配时，结果为空字符串；默认不启用 hostnames 或 volatile。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不进行 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "字符串键不区分大小写；开启 hostnames 后支持主机名掩码。优先选择精确字符串，其次最长前缀掩码、最长后缀掩码、配置顺序中首个匹配正则，最后 default。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "正则须有 NGX_PCRE 支持；~ 区分大小写、~* 不区分。hostnames 应放在值列表之前；volatile 将变量标记为不可缓存，不是后台定时刷新。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "这里只定义变量及映射，不自动改写请求或选择上游；include 是 Nginx 的配置加载行为，网站不会因此读取你的本地文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_map_module.xml#L54-L187",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_map_module",
+    "name": "map_hash_max_size",
+    "summary": "设置 map 哈希表构建时尝试的最大桶数，用于容纳字符串及主机名映射键；不是允许的映射条目数或请求数量限制。",
+    "syntax": "map_hash_max_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 91,
+        "end_line": 104
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 159,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 295,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 252,
+        "end_line": 370
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_map_module.xml",
+        "start_line": 205,
+        "end_line": 217
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "首次构建 map 时，尚未设置则取 2048。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不进行 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用整数解析，不接受 k/m 容量后缀。应在第一个 map 块之前设置；map 初始化会填入默认字段，之后再设置会触发重复配置检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "构建同时受 bucket_size 和键长度约束；增大最大桶数不表示可容纳任意长度的键。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_map_module.xml#L205-L217",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_map_module",
+    "name": "map_hash_bucket_size",
+    "summary": "设置 map 哈希桶的目标字节大小；构建时按处理器缓存行大小对齐，用于容纳键及相关存储开销。",
+    "syntax": "map_hash_bucket_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 91,
+        "end_line": 104
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 159,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_map_module.c",
+        "start_line": 295,
+        "end_line": 360
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 252,
+        "end_line": 370
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_map_module.xml",
+        "start_line": 190,
+        "end_line": 202
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "首次 map 初始化时，未设置取 ngx_cacheline_size；显式值也会按 ngx_cacheline_size 向上对齐，不能假定所有机器都是64字节。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不进行 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用整数解析，不接受 k/m 容量后缀；应在第一个 map 块之前设置，之后可能因默认字段已填充而报重复配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "单个键过大可能导致构建失败；如果只是找不到满足目标桶大小的最优布局，源码也可能警告后忽略该目标，所以它不是最终内存占用硬上限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_map_module.xml#L190-L202",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_geo_module",
+    "name": "geo",
+    "summary": "根据客户端地址或指定地址变量，用配置中的 CIDR 网段或 IPv4 地址范围查出一个变量值；CIDR 模式采用最具体的匹配网段。",
+    "syntax": "geo [$address] $variable { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_geo_module.c",
+      "start_line": 385,
+      "end_line": 583
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geo_module.c",
+        "start_line": 141,
+        "end_line": 154
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geo_module.c",
+        "start_line": 174,
+        "end_line": 381
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geo_module.c",
+        "start_line": 587,
+        "end_line": 669
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_geo_module.c",
+        "start_line": 1246,
+        "end_line": 1293
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_radix_tree.c",
+        "start_line": 237,
+        "end_line": 263
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_radix_tree.c",
+        "start_line": 425,
+        "end_line": 458
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2712,
+        "end_line": 2818
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_geo_module.xml",
+        "start_line": 47,
+        "end_line": 192
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "不指定地址变量时读取连接地址；没有匹配且未设 default 时返回空值。默认使用 CIDR，递归代理地址查找未启用。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不进行 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值是配置时保存的文字，不作为运行时复杂表达式求值；不是自动查询地理位置数据库。非法地址变量按 255.255.255.255 参与查找。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "IPv6 CIDR 取决于 NGX_HAVE_INET6；ranges 使用 IPv4 范围，应放在规则前，不能将其解释成通用 IPv6 范围库。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "proxy 和 proxy_recursive 决定本次分类采用的转发地址；它们不直接替换请求连接的客户端地址，不等同于 real_ip_header。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_geo_module.xml#L47-L192",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_split_clients_module",
+    "name": "split_clients",
+    "summary": "对输入表达式的结果计算 MurmurHash2，再按配置百分比划分哈希区间，将所选文字赋给目标变量，适用于稳定分组。",
+    "syntax": "split_clients string $variable { percentage value; ... * value; }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_split_clients_module.c",
+      "start_line": 111,
+      "end_line": 198
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_split_clients_module.c",
+        "start_line": 58,
+        "end_line": 71
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_split_clients_module.c",
+        "start_line": 75,
+        "end_line": 107
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_split_clients_module.c",
+        "start_line": 202,
+        "end_line": 246
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_split_clients_module.xml",
+        "start_line": 47,
+        "end_line": 73
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未命中任何区间且没有兜底 * 时，目标变量保持空值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅 http 主层定义，不进行 server/location 层级合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "百分比最多两位小数，0% 无效，总比例不能超过100%；* 匹配余下哈希值。输出值按文字保存，不像 map 的结果那样编译为复杂值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "相同输入与相同规则产生相同分组，不是每次请求重新抽签，也不保证有限实际流量恰好达到配置比例。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_split_clients_module.xml#L47-L73",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_secure_link_module",
+    "name": "secure_link",
+    "summary": "指定链接校验值及可选过期时间的来源表达式；读取 $secure_link 时，将 base64url 校验值与 secure_link_md5 表达式的 MD5 比较，并返回有效或过期状态。",
+    "syntax": "secure_link expression;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 243,
+      "end_line": 275
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 79,
+        "end_line": 92
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 101,
+        "end_line": 195
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 270,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_secure_link_module.xml",
+        "start_line": 55,
+        "end_line": 98
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "现代校验模式中 secure_link 与 secure_link_md5 都必须存在；缺少任一项则 $secure_link 无值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设的 modern 表达式分别继承父层；只有两个表达式都为空时才继承父层 secret。本层显式 secret 会检查与本层 modern 配置冲突，并直接返回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输入格式为 base64url 校验值或 校验值,过期时间；解码结果必须16字节。有过期时间时必须为正数，且严格小于当前秒数才算过期；不指定则没有此有效期限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "校验不符或格式无效时 $secure_link 为空；校验相符且过期为0，其他相符情况为1。该变量本身不会自动返回403/410或阻止访问。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "$secure_link_expires 可在完成校验前取得已解析时间，不能因它非空就判断链接校验通过。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_secure_link_module.xml#L55-L98",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_secure_link_module",
+    "name": "secure_link_md5",
+    "summary": "指定用于计算链接校验 MD5 的表达式；求值后对其完整字节串计算摘要，与 secure_link 提供的解码校验值比较。",
+    "syntax": "secure_link_md5 expression;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 243,
+      "end_line": 275
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 79,
+        "end_line": 92
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 101,
+        "end_line": 195
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 270,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_secure_link_module.xml",
+        "start_line": 101,
+        "end_line": 159
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有可用表达式时，现代 secure_link 校验变量无值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设的 modern 表达式分别继承父层；只有两个表达式都为空时才继承父层 secret。本层显式 secret 会检查与本层 modern 配置冲突，并直接返回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要保护的 URI、过期时间、客户端信息及秘密由该表达式明确组成；模块不会自动把它们追加到 MD5 输入。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "它不是生成响应中的签名字段，也不会单独启用访问拒绝；应由使用 $secure_link 的其他配置决定后续处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_secure_link_module.xml#L101-L159",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_secure_link_module",
+    "name": "secure_link_secret",
+    "summary": "启用旧式链接校验：从原始 URI 的 /prefix/hash/link 结构取出32位十六进制摘要，核对 link 与固定 secret 拼接后的 MD5；成功时 $secure_link 返回 link。",
+    "syntax": "secure_link_secret word;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 79,
+        "end_line": 92
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 101,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 199,
+        "end_line": 266
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_secure_link_module.c",
+        "start_line": 293,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_secure_link_module.xml",
+        "start_line": 162,
+        "end_line": 219
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且没有继承的 secret 时不启用旧式路径校验。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设的 modern 表达式分别继承父层；只有两个表达式都为空时才继承父层 secret。本层显式 secret 会检查与本层 modern 配置冲突，并直接返回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "secret 按固定字符串保存，不进行变量展开；校验使用原始 unparsed_uri，link 不得为空，返回的是提取的 link 而非现代模式的1。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "旧式路径没有现代模式的过期时间检查，也不会自行拒绝请求或重定向；本层不能与 secure_link 或 secure_link_md5 混用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定源码注册允许 http、server、location；同版本文档只列 location，本站适用位置按真实注册列出。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条引用的注册、配置入口及实现片段；结论仅限所列行为，不推断整个请求处理链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_secure_link_module.xml#L162-L219",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "ngx_coolkit",
+    "module": "ngx_coolkit_module",
+    "name": "override_method",
+    "summary": "在 server rewrite 与 location rewrite 阶段求值 source，将符合原始方法筛选条件的请求方法改为模块支持的目标方法；off 可在本层关闭覆盖。",
+    "syntax": "override_method off;\noverride_method [methods ...] source;",
+    "callback_definition": {
+      "component": "ngx_coolkit",
+      "file": "src/ngx_coolkit_module.c",
+      "start_line": 197,
+      "end_line": 270
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "component": "ngx_coolkit",
+        "file": "src/ngx_coolkit_module.c",
+        "start_line": 90,
+        "end_line": 110
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_coolkit",
+        "file": "src/ngx_coolkit_module.c",
+        "start_line": 130,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_coolkit",
+        "file": "src/ngx_coolkit_handlers.c",
+        "start_line": 32,
+        "end_line": 117
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_coolkit",
+        "file": "README",
+        "start_line": 6,
+        "end_line": 13
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 724,
+        "end_line": 730
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "本层与父层均未设置时，override_source 为 NULL，不覆盖请求方法。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置则继承父层的方法掩码与表达式；显式 off 阻止继承。location 中 off 还会把此前由本模块保存并覆盖的方法恢复为原始方法。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不列 methods 时使用全方法掩码；列出时始终对保存的原始请求方法做筛选，不对已经覆盖的方法重复筛选。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "目标字符串按方法表不区分大小写匹配；空值或未识别方法不会产生新的覆盖，不能据此保证撤销先前阶段已经做的覆盖。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "修改的是请求的 method 与 method_name 字段，不等同于 proxy_method 只选择发往上游的方法；支持的方法以固定模块表为准，不接受任意自定义方法。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本按0.2版本取入 ngx_coolkit，未对该组件执行补丁；本条按固定组件源码核对配置入口及双 rewrite 阶段处理。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "ngx_coolkit 固定版本说明",
+        "url": "https://github.com/FRiCKLE/ngx_coolkit/blob/462b863babe121b900465b4ec8dfba612d723e9a/README#L6-L13",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]
+

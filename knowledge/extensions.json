@@ -1,0 +1,3212 @@
+[
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status",
+    "syntax": "vhost_traffic_status on | off;",
+    "summary": "控制 LOG 阶段统计 handler 的局部 enable。主 ctx 初始关闭，配置 zone 才启用；启用 zone 后局部 enable 合并默认 on。不是所有 VTS 处理器的统一总开关。",
+    "defaults": {
+      "status": "verified",
+      "text": "主 ctx 未配置 zone 为 0；配置 zone 后，局部 enable 未设置合并为 1（on）。",
+      "source_ids": [
+        "merge-values",
+        "main-defaults",
+        "zone-enable",
+        "stats-handler",
+        "limit-handler",
+        "readme-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "main-defaults",
+        "zone-enable",
+        "stats-handler",
+        "limit-handler",
+        "readme-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "统计 handler 同时检查主 ctx、局部 enable 和 bypass_stats；限额 handler 检查主 ctx、limit、bypass_limit，并不检查这个局部 enable。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-defaults",
+          "zone-enable",
+          "stats-handler",
+          "limit-handler",
+          "readme-default"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "README 将默认值写为 off；固定实现的主 ctx 默认 0 和局部合并默认 1 属于不同层级，不能只用一个 on/off 概括整体是否工作。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-defaults",
+          "zone-enable",
+          "stats-handler",
+          "limit-handler",
+          "readme-default"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "main-defaults",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 970,
+        "end_line": 980
+      },
+      {
+        "id": "zone-enable",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 583,
+        "end_line": 605
+      },
+      {
+        "id": "stats-handler",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 281,
+        "end_line": 329
+      },
+      {
+        "id": "limit-handler",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 54
+      },
+      {
+        "id": "readme-default",
+        "file": "README.md",
+        "start_line": 1328,
+        "end_line": 1337
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1328-L1337",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_filter",
+    "syntax": "vhost_traffic_status_filter on | off;",
+    "summary": "控制自定义过滤统计、Host 分组条件和 ACCESS 阶段读取统计变量的处理；关闭后仍可保留 server、upstream 等统计。",
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-values",
+        "filter-handler",
+        "set-handler"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "filter-handler",
+        "set-handler"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "Host 分组需要 filter 与 filter_host 同时为真；它不是关闭整个统计 handler 的开关。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "filter-handler",
+          "set-handler"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "set_handler 在主 ctx 或 filter 关闭时提前返回。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "filter-handler",
+          "set-handler"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "filter-handler",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 521,
+        "end_line": 589
+      },
+      {
+        "id": "set-handler",
+        "file": "src/ngx_http_vhost_traffic_status_set.c",
+        "start_line": 30,
+        "end_line": 52
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1418-L1426",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_filter_by_host",
+    "syntax": "vhost_traffic_status_filter_by_host on | off;",
+    "summary": "选择 server 统计节点的名称：filter 与 filter_host 同时开启且请求的 server 字段非空时按 Host；否则按当前 server_name，空名称使用下划线。",
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-values",
+        "host-key"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "host-key"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它改变 server 统计节点的键，不为每个 Host 自动建立独立 Nginx server 配置。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "host-key"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅本项 on 仍受 filter 条件约束；默认 off。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "host-key"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "host-key",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 521,
+        "end_line": 554
+      },
+      {
+        "id": "final25-log-register",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 876,
+        "end_line": 884
+      },
+      {
+        "id": "final25-log-finish",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 3744,
+        "end_line": 3748
+      },
+      {
+        "id": "final25-log-call",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 3793,
+        "end_line": 3808
+      },
+      {
+        "id": "final25-stats-entry",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 290,
+        "end_line": 304
+      },
+      {
+        "id": "final25-stats-return",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 314,
+        "end_line": 329
+      },
+      {
+        "id": "final25-host-key",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 521,
+        "end_line": 554
+      },
+      {
+        "id": "final25-key-build",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 13,
+        "end_line": 36
+      },
+      {
+        "id": "final25-shared-node",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 178,
+        "end_line": 283
+      },
+      {
+        "id": "final25-node-find",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 98,
+        "end_line": 117
+      },
+      {
+        "id": "final25-server-no-lru",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 218,
+        "end_line": 245
+      },
+      {
+        "id": "final25-node-update-call",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 449,
+        "end_line": 503
+      },
+      {
+        "id": "final25-node-update",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 506,
+        "end_line": 587
+      },
+      {
+        "id": "final25-shared-unlock",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 285,
+        "end_line": 325
+      },
+      {
+        "id": "final25-host-doc",
+        "file": "README.md",
+        "start_line": 1428,
+        "end_line": 1441
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1428-L1438",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    },
+    "patch_status": {
+      "status": "not_applicable",
+      "note": "本项仅研究独立上游 commit 快照，不属于本站发行补丁处理范围；现场补丁、安装及兼容性未知。 本轮另核VTS统计/展示所列运行消费与Nginx日志阶段、内容回调入口；34项发行补丁未直接改动所引新增入口片段，不代表公共输出、错误页或现场扩展兼容性全部通过。",
+      "source_ids": [
+        "module-build",
+        "registration",
+        "final25-log-register",
+        "final25-log-finish",
+        "final25-log-call",
+        "final25-stats-entry",
+        "final25-stats-return",
+        "final25-host-key",
+        "final25-key-build",
+        "final25-shared-node",
+        "final25-node-find",
+        "final25-server-no-lru",
+        "final25-node-update-call",
+        "final25-node-update",
+        "final25-shared-unlock"
+      ]
+    },
+    "runtime": {
+      "status": "verified",
+      "text": "限定LOG阶段serverZones键选择与计数消费；filter_by_host不是请求过滤器。保留固定快照既有默认值说明，本轮不改默认值或宣称已部署。",
+      "steps": [
+        {
+          "condition": "请求结束进入LOG阶段，模块已注册统计handler",
+          "action": "Nginx在尚未记录日志时调用LOG handler数组。VTS读取主配置和局部配置；主或局部enable关闭、bypass_stats开启、shm_zone为NULL均返回DECLINED。否则调用shm_add_server，失败仅记录日志，最终返回DECLINED，不把统计失败改写成业务拒绝。",
+          "source_ids": [
+            "final25-log-register",
+            "final25-log-finish",
+            "final25-log-call",
+            "final25-stats-entry",
+            "final25-stats-return"
+          ]
+        },
+        {
+          "condition": "生成server分组键",
+          "action": "仅在filter、filter_host均开启且r->headers_in.server.len非零时，取已解析的Host值作为分组；否则使用cscf->server_name，空名回退下划线。生成带分组前缀与分隔符的键，内存分配失败返回NGX_ERROR；本开关改变统计分组，不是访问控制。",
+          "source_ids": [
+            "final25-host-key",
+            "final25-key-build"
+          ]
+        },
+        {
+          "condition": "键生成成功，进入共享区server节点更新",
+          "action": "空key返回NGX_ERROR。计算hash后持共享锁查红黑树；未命中分配节点，分配失败解锁返回错误；启用指定状态计数时，附加计数数组分配失败会释放新节点并解锁返回。server类型不触发filter分组LRU淘汰，不能保证共享区自动扩容或按请求释放节点。",
+          "source_ids": [
+            "final25-shared-node",
+            "final25-node-find",
+            "final25-server-no-lru"
+          ]
+        },
+        {
+          "condition": "共享锁内新增或命中server节点，state为NULL",
+          "action": "新节点初始化后插入树，已有节点调用node_set；两条路径均调用node_update。更新last_seen后，命中ignore_status则提前返回，不增加请求计数；否则增加请求计数、按r->request_length与r->connection->sent累计字节，并累计请求耗时。这里按源码字段说明，不推断线上统计与网络抓包逐字节一致。server类型跳过upstream附加分支，最后解锁。",
+          "source_ids": [
+            "final25-host-key",
+            "final25-shared-node",
+            "final25-node-update-call",
+            "final25-node-update",
+            "final25-shared-unlock"
+          ]
+        }
+      ],
+      "source_ids": [
+        "final25-log-register",
+        "final25-log-finish",
+        "final25-log-call",
+        "final25-stats-entry",
+        "final25-stats-return",
+        "final25-host-key",
+        "final25-key-build",
+        "final25-shared-node",
+        "final25-node-find",
+        "final25-server-no-lru",
+        "final25-node-update-call",
+        "final25-node-update",
+        "final25-shared-unlock"
+      ],
+      "corroboration_source_ids": [
+        "final25-host-doc"
+      ]
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_filter_check_duplicate",
+    "syntax": "vhost_traffic_status_filter_check_duplicate on | off;",
+    "summary": "在配置初始化或合并时处理过滤规则的重复条目，处理对象为 filter_key 与 filter_name 的组合。",
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-values",
+        "main-filter-unique",
+        "local-filter-unique",
+        "filter-unique"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "main-filter-unique",
+        "local-filter-unique",
+        "filter-unique"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是配置期的规则去重，不是对重复 HTTP 请求去重。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-filter-unique",
+          "local-filter-unique",
+          "filter-unique"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定函数将组合值的 CRC32 哈希排序后去重；不能据此宣称逐字节无碰撞的请求识别。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-filter-unique",
+          "local-filter-unique",
+          "filter-unique"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "configuration",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "main-filter-unique",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 934,
+        "end_line": 951
+      },
+      {
+        "id": "local-filter-unique",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1069,
+        "end_line": 1083
+      },
+      {
+        "id": "filter-unique",
+        "file": "src/ngx_http_vhost_traffic_status_filter.c",
+        "start_line": 36,
+        "end_line": 129
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1540-L1549",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_filter_by_set_key",
+    "syntax": "vhost_traffic_status_filter_by_set_key key [group];",
+    "summary": "把统计键及可选组名编译为复杂值，在 LOG 阶段分别处理 http 主规则和局部规则，按求值后的键累计过滤统计。",
+    "defaults": {
+      "status": "verified",
+      "text": "不自动创建过滤键规则。若 http 及当前配置的父级链均未配置本指令，主列表和局部列表均为空，不执行自定义过滤键统计；仅本层省略时，仍可能使用独立的 http 主规则及继承的父级局部规则。",
+      "source_ids": ["filter-main-create", "filter-local-create", "filter-parser", "filter-inheritance", "filter-runtime"]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "局部 filter_keys 为空时取父级局部列表；http 主列表独立保留并与局部列表分别运行。",
+      "source_ids": [
+        "filter-parser",
+        "filter-inheritance",
+        "filter-runtime"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "键不能为空；可选组名未给出时编译为空字符串。",
+        "source_ids": [
+          "registration",
+          "filter-parser",
+          "filter-inheritance",
+          "filter-runtime"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "http 规则保存在主 ctx，运行时独立处理；局部未配置时继承父级局部规则，局部新列表不自动追加父级局部列表，也不会覆盖掉主 ctx 的 http 规则。",
+        "source_ids": [
+          "registration",
+          "filter-parser",
+          "filter-inheritance",
+          "filter-runtime"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "filter-parser",
+        "file": "src/ngx_http_vhost_traffic_status_filter.c",
+        "start_line": 365,
+        "end_line": 437
+      },
+      {
+        "id": "filter-inheritance",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1069,
+        "end_line": 1083
+      },
+      {
+        "id": "filter-runtime",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 558,
+        "end_line": 589
+      },
+      {
+        "id": "filter-main-create",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 888,
+        "end_line": 903
+      },
+      {
+        "id": "filter-local-create",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 986,
+        "end_line": 1006
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1470-L1487",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_filter_max_node",
+    "syntax": "vhost_traffic_status_filter_max_node number [group_prefix ...];",
+    "summary": "限制匹配组的过滤统计节点数量，达到非零上限时选择匹配范围内最久未使用的节点淘汰；可选组条件使用前缀比较。",
+    "defaults": {
+      "status": "verified",
+      "text": "0（不限制过滤节点数量）",
+      "source_ids": [
+        "main-defaults",
+        "max-node-parser",
+        "group-prefix",
+        "filter-lru",
+        "last-used"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在 http 主配置中注册，没有 server/location 的本指令继承层级。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "number 必须为非负整数；0 不限数量。",
+        "source_ids": [
+          "registration",
+          "main-defaults",
+          "max-node-parser",
+          "group-prefix",
+          "filter-lru",
+          "last-used"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只针对过滤节点及匹配的过滤组，不限制所有 server/upstream/cache 节点；组条件不是正则表达式。",
+        "source_ids": [
+          "registration",
+          "main-defaults",
+          "max-node-parser",
+          "group-prefix",
+          "filter-lru",
+          "last-used"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "main-defaults",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 970,
+        "end_line": 980
+      },
+      {
+        "id": "max-node-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 702,
+        "end_line": 748
+      },
+      {
+        "id": "group-prefix",
+        "file": "src/ngx_http_vhost_traffic_status_filter.c",
+        "start_line": 336,
+        "end_line": 361
+      },
+      {
+        "id": "filter-lru",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 219,
+        "end_line": 291
+      },
+      {
+        "id": "last-used",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 327,
+        "end_line": 346
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1551-L1571",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_limit",
+    "syntax": "vhost_traffic_status_limit on | off;",
+    "summary": "启用或关闭 PREACCESS 阶段的 VTS 已有统计量阈值检查。启用后仍需要对应规则、主 ctx 以及未设置 bypass_limit。",
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-values",
+        "limit-handler"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "limit-handler"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开启本项不会自动创建限额规则。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "limit-handler"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "处理器不检查 vhost_traffic_status 的局部 enable，不能用该指令代替本项或 bypass_limit。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "limit-handler"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "preaccess",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "limit-handler",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 54
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1609-L1617",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_limit_check_duplicate",
+    "syntax": "vhost_traffic_status_limit_check_duplicate on | off;",
+    "summary": "在配置期处理普通限额规则和按键限额规则的重复项；合并时为局部规则列表去重。",
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-values",
+        "main-limit-unique",
+        "local-limit-unique",
+        "limit-unique"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "main-limit-unique",
+        "local-limit-unique",
+        "limit-unique"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是重复请求检测或请求频率限制。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-limit-unique",
+          "local-limit-unique",
+          "limit-unique"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定实现按键表达式与成员表达式组合的 CRC32 哈希去重，不应表述为按阈值/返回码的全字段比较。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "main-limit-unique",
+          "local-limit-unique",
+          "limit-unique"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "configuration",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "main-limit-unique",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 953,
+        "end_line": 970
+      },
+      {
+        "id": "local-limit-unique",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1085,
+        "end_line": 1120
+      },
+      {
+        "id": "limit-unique",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 378,
+        "end_line": 471
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1732-L1742",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_limit_traffic",
+    "syntax": "vhost_traffic_status_limit_traffic member:size [code];",
+    "summary": "配置当前 server 统计成员的累计阈值。PREACCESS 读取已存在节点的成员值，严格大于 size 时返回指定 code，未给 code 使用 503。",
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时无规则；配置且省略 code 时使用 503。",
+      "source_ids": [
+        "limit-parser",
+        "limit-evaluation",
+        "limit-inheritance"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "http 主规则独立；局部列表为 NULL 时继承父级局部规则，否则保留当前列表并按开关去重。",
+      "source_ids": [
+        "limit-parser",
+        "limit-evaluation",
+        "limit-inheritance"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是已积累统计量的阈值，不是每秒限速；不存在节点时继续下一规则。",
+        "source_ids": [
+          "registration",
+          "limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "http 与局部规则分别检查；局部列表未配置才继承父级局部规则，新局部列表不无条件追加父级列表。",
+        "source_ids": [
+          "registration",
+          "limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "回调解析 size，禁止所检查表达式中的 $vts_；可选 code 使用 ngx_atoi，未额外验证 HTTP 返回码范围。",
+        "source_ids": [
+          "registration",
+          "limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "preaccess",
+    "evidence": [
+      {
+        "id": "limit-parser",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 164,
+        "end_line": 255
+      },
+      {
+        "id": "limit-evaluation",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 159
+      },
+      {
+        "id": "limit-inheritance",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1085,
+        "end_line": 1120
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1619-L1649",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_limit_traffic_by_set_key",
+    "syntax": "vhost_traffic_status_limit_traffic_by_set_key key member:size [code];",
+    "summary": "配置指定统计节点的成员阈值；键和成员表达式编译为复杂值，运行时查找对应组/节点后按严格大于阈值返回 code，省略 code 为 503。",
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时无按键规则；省略 code 使用 503。",
+      "source_ids": [
+        "key-limit-parser",
+        "limit-evaluation",
+        "limit-inheritance"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "http 按键主规则独立；局部列表未配置时继承父级局部列表，显式局部列表不追加父级列表。",
+      "source_ids": [
+        "key-limit-parser",
+        "limit-evaluation",
+        "limit-inheritance"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本项不自动生成被引用的统计节点；节点不存在时继续。",
+        "source_ids": [
+          "registration",
+          "key-limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "键中 @ 转换为模块组分隔符，[:alpha:] 用于还原字面 @；不能把任意文本假定为已存在节点。",
+        "source_ids": [
+          "registration",
+          "key-limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "与普通限额共享 PREACCESS 比较路径；不是每秒速率控制，http 与局部规则独立处理。",
+        "source_ids": [
+          "registration",
+          "key-limit-parser",
+          "limit-evaluation",
+          "limit-inheritance"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "preaccess",
+    "evidence": [
+      {
+        "id": "key-limit-parser",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 259,
+        "end_line": 374
+      },
+      {
+        "id": "limit-evaluation",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 159
+      },
+      {
+        "id": "limit-inheritance",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1085,
+        "end_line": 1120
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1666-L1695",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_zone",
+    "syntax": "vhost_traffic_status_zone [shared:name:size];",
+    "summary": "仅在 http 中绑定统计共享内存区并启用模块主统计开关；无参使用源码中的默认名称和大小，显式参数必须为 shared:name:size。",
+    "defaults": {
+      "status": "verified",
+      "text": "未配置不建立本共享区，模块主统计开关默认关闭；无参配置使用 ngx_http_vhost_traffic_status 和 0xfffff。",
+      "source_ids": [
+        "module-constants",
+        "main-defaults",
+        "zone-parser",
+        "zone-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在 http 主配置中注册，没有 server/location 的本指令继承层级。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "无参名称为 ngx_http_vhost_traffic_status，大小为 0xfffff（1048575 字节），不是精确 1 MiB；README 的 shared:vhost_traffic_status:1m 与源码默认名称及大小不同。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "main-defaults",
+          "zone-parser",
+          "zone-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "显式大小小于 8 个内存页会被拒绝；同共享区已绑定 data 时返回配置错误。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "main-defaults",
+          "zone-parser",
+          "zone-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "源码存在共享区不证明现场已编入或加载 VTS，也不证明实际共享内存资源充足。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "main-defaults",
+          "zone-parser",
+          "zone-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "configuration",
+    "evidence": [
+      {
+        "id": "module-constants",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 49,
+        "end_line": 56
+      },
+      {
+        "id": "main-defaults",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 970,
+        "end_line": 980
+      },
+      {
+        "id": "zone-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 583,
+        "end_line": 666
+      },
+      {
+        "id": "zone-readme",
+        "file": "README.md",
+        "start_line": 1339,
+        "end_line": 1359
+      },
+      {
+        "id": "final25-log-register",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 876,
+        "end_line": 884
+      },
+      {
+        "id": "final25-log-finish",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 3744,
+        "end_line": 3748
+      },
+      {
+        "id": "final25-log-call",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 3793,
+        "end_line": 3808
+      },
+      {
+        "id": "final25-stats-entry",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 290,
+        "end_line": 304
+      },
+      {
+        "id": "final25-stats-return",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 314,
+        "end_line": 329
+      },
+      {
+        "id": "final25-host-key",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 521,
+        "end_line": 554
+      },
+      {
+        "id": "final25-key-build",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 13,
+        "end_line": 36
+      },
+      {
+        "id": "final25-shared-node",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 178,
+        "end_line": 283
+      },
+      {
+        "id": "final25-node-find",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 98,
+        "end_line": 117
+      },
+      {
+        "id": "final25-server-no-lru",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 218,
+        "end_line": 245
+      },
+      {
+        "id": "final25-node-update-call",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 449,
+        "end_line": 503
+      },
+      {
+        "id": "final25-node-update",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 506,
+        "end_line": 587
+      },
+      {
+        "id": "final25-shared-unlock",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 285,
+        "end_line": 325
+      },
+      {
+        "id": "final25-display-data",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 541,
+        "end_line": 570
+      },
+      {
+        "id": "final25-json-tree",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 875,
+        "end_line": 909
+      },
+      {
+        "id": "final25-json-server",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 261,
+        "end_line": 294
+      },
+      {
+        "id": "final25-json-server-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 147,
+        "end_line": 162
+      },
+      {
+        "id": "final25-display-buffer-check",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 770,
+        "end_line": 799
+      },
+      {
+        "id": "final25-zone-doc",
+        "file": "README.md",
+        "start_line": 1339,
+        "end_line": 1359
+      },
+      {
+        "id": "final25-capacity-doc",
+        "file": "README.md",
+        "start_line": 709,
+        "end_line": 719
+      },
+      {
+        "id": "final25-display-doc",
+        "file": "README.md",
+        "start_line": 196,
+        "end_line": 206
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1339-L1359",
+        "status": "unverified"
+      }
+    ],
+    "patch_status": {
+      "status": "not_applicable",
+      "note": "本项仅研究独立上游 commit 快照，不属于本站发行补丁处理范围；现场补丁、安装及兼容性未知。 本轮另核VTS统计/展示所列运行消费与Nginx日志阶段、内容回调入口；34项发行补丁未直接改动所引新增入口片段，不代表公共输出、错误页或现场扩展兼容性全部通过。",
+      "source_ids": [
+        "module-build",
+        "registration",
+        "final25-log-register",
+        "final25-log-finish",
+        "final25-log-call",
+        "final25-stats-entry",
+        "final25-stats-return",
+        "final25-host-key",
+        "final25-key-build",
+        "final25-shared-node",
+        "final25-node-find",
+        "final25-server-no-lru",
+        "final25-node-update-call",
+        "final25-node-update",
+        "final25-shared-unlock",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check"
+      ]
+    },
+    "runtime": {
+      "status": "verified",
+      "text": "限定共享区的server请求统计更新及JSON读取：配置共享区之后才有运行消费者，不保证无限容量、持久化或涵盖所有upstream/filter/cache统计分支。",
+      "steps": [
+        {
+          "condition": "请求结束进入LOG阶段，模块已注册统计handler",
+          "action": "Nginx在尚未记录日志时调用LOG handler数组。VTS读取主配置和局部配置；主或局部enable关闭、bypass_stats开启、shm_zone为NULL均返回DECLINED。否则调用shm_add_server，失败仅记录日志，最终返回DECLINED，不把统计失败改写成业务拒绝。",
+          "source_ids": [
+            "final25-log-register",
+            "final25-log-finish",
+            "final25-log-call",
+            "final25-stats-entry",
+            "final25-stats-return"
+          ]
+        },
+        {
+          "condition": "生成server分组键",
+          "action": "仅在filter、filter_host均开启且r->headers_in.server.len非零时，取已解析的Host值作为分组；否则使用cscf->server_name，空名回退下划线。生成带分组前缀与分隔符的键，内存分配失败返回NGX_ERROR；本开关改变统计分组，不是访问控制。",
+          "source_ids": [
+            "final25-host-key",
+            "final25-key-build"
+          ]
+        },
+        {
+          "condition": "键生成成功，进入共享区server节点更新",
+          "action": "空key返回NGX_ERROR。计算hash后持共享锁查红黑树；未命中分配节点，分配失败解锁返回错误；启用指定状态计数时，附加计数数组分配失败会释放新节点并解锁返回。server类型不触发filter分组LRU淘汰，不能保证共享区自动扩容或按请求释放节点。",
+          "source_ids": [
+            "final25-shared-node",
+            "final25-node-find",
+            "final25-server-no-lru"
+          ]
+        },
+        {
+          "condition": "共享锁内新增或命中server节点，state为NULL",
+          "action": "新节点初始化后插入树，已有节点调用node_set；两条路径均调用node_update。更新last_seen后，命中ignore_status则提前返回，不增加请求计数；否则增加请求计数、按r->request_length与r->connection->sent累计字节，并累计请求耗时。这里按源码字段说明，不推断线上统计与网络抓包逐字节一致。server类型跳过upstream附加分支，最后解锁。",
+          "source_ids": [
+            "final25-host-key",
+            "final25-shared-node",
+            "final25-node-update-call",
+            "final25-node-update",
+            "final25-shared-unlock"
+          ]
+        },
+        {
+          "condition": "展示请求选择JSON分支读取同一统计树",
+          "action": "展示handler在共享锁内调用display_set，从ctx->rbtree->root读取server节点，取请求及字节计数生成serverZones后解锁。输出节点前检查缓冲容量，不足时保留原buf并跳过该节点；因此生成JSON不等于所有节点一定完整展示。本项不展开全部JSON字段、控制删除或dump恢复。",
+          "source_ids": [
+            "final25-display-data",
+            "final25-json-tree",
+            "final25-json-server",
+            "final25-json-server-output",
+            "final25-display-buffer-check"
+          ]
+        }
+      ],
+      "source_ids": [
+        "final25-log-register",
+        "final25-log-finish",
+        "final25-log-call",
+        "final25-stats-entry",
+        "final25-stats-return",
+        "final25-host-key",
+        "final25-key-build",
+        "final25-shared-node",
+        "final25-node-find",
+        "final25-server-no-lru",
+        "final25-node-update-call",
+        "final25-node-update",
+        "final25-shared-unlock",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check"
+      ],
+      "corroboration_source_ids": [
+        "final25-zone-doc",
+        "final25-capacity-doc",
+        "final25-display-doc"
+      ]
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_measure_status_codes",
+    "syntax": "vhost_traffic_status_measure_status_codes all | code [code ...];",
+    "summary": "建立指定 HTTP 状态码的细分计数列表。数字解析为 100–599、非递减列表；all 分支填入 100–599。JSON/Prometheus 输出消费该计数。",
+    "defaults": {
+      "status": "verified",
+      "text": "未配置时 measure_status_codes 指针为 NULL，没有指定状态码列表。",
+      "source_ids": [
+        "main-allocation",
+        "status-code-parser",
+        "status-code-output",
+        "status-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在 http 主配置中注册，没有 server/location 的本指令继承层级。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册同时包含 NOARGS 与 1MORE，但回调直接访问 value[1]，缺少参数数量检查；本知识语法只展示有参形式，不能保证无参安全。",
+        "source_ids": [
+          "registration",
+          "main-allocation",
+          "status-code-parser",
+          "status-code-output",
+          "status-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "数字相等未被拒绝，回调未去重；all 分支只比较前三字节并提前返回，没有严格全词或后续参数校验。",
+        "source_ids": [
+          "registration",
+          "main-allocation",
+          "status-code-parser",
+          "status-code-output",
+          "status-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "README 目录未列本项，正文虽有章节但不能补足上述实现缺陷，文档依据不标为已核对。",
+        "source_ids": [
+          "registration",
+          "main-allocation",
+          "status-code-parser",
+          "status-code-output",
+          "status-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "main-allocation",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 889,
+        "end_line": 930
+      },
+      {
+        "id": "status-code-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 520,
+        "end_line": 579
+      },
+      {
+        "id": "status-code-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_prometheus.c",
+        "start_line": 80,
+        "end_line": 111
+      },
+      {
+        "id": "status-code-json-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 164,
+        "end_line": 181
+      },
+      {
+        "id": "status-readme",
+        "file": "README.md",
+        "start_line": 1983,
+        "end_line": 2016
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1983-L2016",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_dump",
+    "syntax": "vhost_traffic_status_dump path [period];",
+    "summary": "设置统计数据保存文件与周期，并打开 dump。worker 初始化仅在主 ctx、dump 和统计树条件满足时安排定时保存及恢复。",
+    "defaults": {
+      "status": "verified",
+      "text": "未配置 dump 默认关闭；启用并省略周期为 60 秒。",
+      "source_ids": [
+        "module-constants",
+        "main-defaults",
+        "dump-parser",
+        "dump-worker",
+        "dump-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在 http 主配置中注册，没有 server/location 的本指令继承层级。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "周期通过 ngx_parse_time 按毫秒解析；未配置本项不启用 dump，省略周期合并为 60 秒。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "main-defaults",
+          "dump-parser",
+          "dump-worker",
+          "dump-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "是否可写文件、能否恢复及退出时是否执行保存取决于运行环境和退出路径，不能用 README 关于 SIGKILL 的表述保证保存。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "main-defaults",
+          "dump-parser",
+          "dump-worker",
+          "dump-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "configuration",
+    "evidence": [
+      {
+        "id": "module-constants",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 49,
+        "end_line": 56
+      },
+      {
+        "id": "main-defaults",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 970,
+        "end_line": 980
+      },
+      {
+        "id": "dump-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 670,
+        "end_line": 698
+      },
+      {
+        "id": "dump-worker",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1167,
+        "end_line": 1230
+      },
+      {
+        "id": "dump-readme",
+        "file": "README.md",
+        "start_line": 1361,
+        "end_line": 1372
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1361-L1372",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_display",
+    "syntax": "vhost_traffic_status_display [ignored_argument];",
+    "summary": "在当前 server/location 的 HTTP 核心配置上安装 VTS content handler，提供统计展示以及 URI 对应的控制处理。",
+    "defaults": {
+      "status": "verified",
+      "text": "默认不由本指令安装展示入口；它不是 on/off 配置字段，只有显式调用回调才将当前 HTTP 核心 location 的 handler 设为 VTS 展示函数。VTS zone 启用、统计收集或输出格式的默认值，不等于自动开放展示地址。此结论限所列扩展快照及 Nginx 1.27.1 核心配置模型，不表示现场兼容性已验证。",
+      "source_ids": [
+        "display-binding",
+        "display-readme",
+        "core-location-create",
+        "display-module-create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "按所列 Nginx 1.27.1 核心源码，独立子 location 新建的 handler 初始为空，核心 merge_loc_conf 不复制父 handler；VTS 自身合并函数也不安装该 handler。因此不能因父 server/location 配置了 display 就认为每个独立子 location 都继承展示入口。请求仍使用已绑定的同一 location 配置，与新建子 location 继承不是一回事；格式等 VTS 字段的合并规则不代表入口继承。现场模块组合及运行兼容性仍未核实。",
+      "source_ids": [
+        "display-binding",
+        "core-location-create",
+        "core-location-merge",
+        "core-content-selection",
+        "display-module-create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册只允许 http.server/http.location；README 标注 http 与固定注册表冲突。",
+        "source_ids": [
+          "registration",
+          "display-binding",
+          "display-handler",
+          "control-commands",
+          "display-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "注册允许无参或一参，回调不读取参数；一参不会成为显示开关、路径或输出格式。",
+        "source_ids": [
+          "registration",
+          "display-binding",
+          "display-handler",
+          "control-commands",
+          "display-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "展示入口主 ctx 未启用返回 501，仅处理 GET/HEAD；控制路径包含 reset/delete，不能把整个入口描述为永远只读。",
+        "source_ids": [
+          "registration",
+          "display-binding",
+          "display-handler",
+          "control-commands",
+          "display-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "content",
+    "evidence": [
+      {
+        "id": "display-binding",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 1040,
+        "end_line": 1048
+      },
+      {
+        "id": "display-handler",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 116,
+        "end_line": 159
+      },
+      {
+        "id": "control-commands",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 45,
+        "end_line": 55
+      },
+      {
+        "id": "display-readme",
+        "file": "README.md",
+        "start_line": 1374,
+        "end_line": 1382
+      },
+      {
+        "id": "core-location-create",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3548,
+        "end_line": 3653
+      },
+      {
+        "id": "core-location-merge",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 3669,
+        "end_line": 3954
+      },
+      {
+        "id": "core-content-selection",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1377,
+        "end_line": 1384
+      },
+      {
+        "id": "display-module-create-merge",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 987,
+        "end_line": 1163
+      },
+      {
+        "id": "final25-display-binding",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 1039,
+        "end_line": 1048
+      },
+      {
+        "id": "final25-content-select",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1384
+      },
+      {
+        "id": "final25-content-call",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1259,
+        "end_line": 1263
+      },
+      {
+        "id": "final25-display-entry",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 115,
+        "end_line": 157
+      },
+      {
+        "id": "final25-display-format",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 422,
+        "end_line": 492
+      },
+      {
+        "id": "final25-display-prepare",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 494,
+        "end_line": 539
+      },
+      {
+        "id": "final25-display-data",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 541,
+        "end_line": 570
+      },
+      {
+        "id": "final25-json-tree",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 875,
+        "end_line": 909
+      },
+      {
+        "id": "final25-json-server",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 261,
+        "end_line": 294
+      },
+      {
+        "id": "final25-json-server-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 147,
+        "end_line": 162
+      },
+      {
+        "id": "final25-display-buffer-check",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 770,
+        "end_line": 799
+      },
+      {
+        "id": "final25-display-html",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 571,
+        "end_line": 601
+      },
+      {
+        "id": "final25-display-output",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 603,
+        "end_line": 618
+      },
+      {
+        "id": "final25-display-doc",
+        "file": "README.md",
+        "start_line": 196,
+        "end_line": 206
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1374-L1382",
+        "status": "unverified"
+      }
+    ],
+    "patch_status": {
+      "status": "not_applicable",
+      "note": "本项仅研究独立上游 commit 快照，不属于本站发行补丁处理范围；现场补丁、安装及兼容性未知。 本轮另核VTS统计/展示所列运行消费与Nginx日志阶段、内容回调入口；34项发行补丁未直接改动所引新增入口片段，不代表公共输出、错误页或现场扩展兼容性全部通过。",
+      "source_ids": [
+        "module-build",
+        "registration",
+        "final25-display-binding",
+        "final25-content-select",
+        "final25-content-call",
+        "final25-display-entry",
+        "final25-display-format",
+        "final25-display-prepare",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check",
+        "final25-display-html",
+        "final25-display-output"
+      ]
+    },
+    "runtime": {
+      "status": "verified",
+      "text": "限定普通GET/HEAD展示入口、格式分派、HTML框架与JSON server统计读取、容量/发送失败；不包括/control管理API、完整JSON/Prometheus字段或现场访问权限验证。",
+      "steps": [
+        {
+          "condition": "进入已选择的VTS content handler",
+          "action": "location有效handler被复制到r->content_handler，content阶段实际调用并把返回值交给finalize。VTS主enable关闭返回501，仅允许GET/HEAD，其余方法返回405；结尾/control进入单独控制分支，本项不核其管理操作，只核普通展示路径。",
+          "source_ids": [
+            "final25-display-binding",
+            "final25-content-select",
+            "final25-content-call",
+            "final25-display-entry"
+          ]
+        },
+        {
+          "condition": "普通展示请求选择输出格式",
+          "action": "在URI中按源码扫描/format/片段，识别jsonp、json、html、prometheus；识别结果优先于配置，未识别则回退vtscf->format。字符串按对应前缀长度比较，不声称严格完整路径匹配。该行为不是根据Accept自动协商。",
+          "source_ids": [
+            "final25-display-format"
+          ]
+        },
+        {
+          "condition": "格式确定后准备响应",
+          "action": "先丢弃请求正文，失败直接返回其rc；按格式设置Content-Type。HEAD先发送响应头，遇ERROR、正返回值或header_only直接返回；不声称HEAD必定进入统计树遍历。获取所需大小返回NGX_ERROR或创建缓冲失败则500。",
+          "source_ids": [
+            "final25-display-prepare"
+          ]
+        },
+        {
+          "condition": "GET等尚未提前返回的请求进入JSON、JSONP或Prometheus分派",
+          "action": "三个数据分支各自在共享锁内调用对应生成函数再解锁；JSON空输出补{}，JSONP用配置callback及括号包装，Prometheus空输出补#。这里只核格式分派及JSON server节点读取与缓冲检查，不代表完整指标、转义与所有上游字段均已审。JSON节点空间不足时跳过节点，不能以200推断数据完整。",
+          "source_ids": [
+            "final25-display-data",
+            "final25-json-tree",
+            "final25-json-server",
+            "final25-json-server-output",
+            "final25-display-buffer-check"
+          ]
+        },
+        {
+          "condition": "HTML分支而非直接输出统计JSON",
+          "action": "裁剪页面前缀URI的尾斜杠，必要时转义HTML；转义缓冲分配失败或输出缓冲容不下内置HTML模板返回500，否则插入模板。本分支生成页面框架，README说明前端另请求/format/json读取统计；不是在这里同步遍历全部统计树。",
+          "source_ids": [
+            "final25-display-html"
+          ]
+        },
+        {
+          "condition": "展示缓冲生成后交给Nginx输出链",
+          "action": "设置200和实际正文长度，主请求标last_buf，链尾标last_in_chain；send_header返回ERROR、正值或header_only时直接返回，其他情况返回output_filter结果。这里只证明模块输出调用与返回，不保证客户端已收到、没有后续过滤器或网络失败。",
+          "source_ids": [
+            "final25-display-output"
+          ]
+        }
+      ],
+      "source_ids": [
+        "final25-display-binding",
+        "final25-content-select",
+        "final25-content-call",
+        "final25-display-entry",
+        "final25-display-format",
+        "final25-display-prepare",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check",
+        "final25-display-html",
+        "final25-display-output"
+      ],
+      "corroboration_source_ids": [
+        "final25-display-doc"
+      ]
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_display_format",
+    "syntax": "vhost_traffic_status_display_format json | html | jsonp | prometheus;",
+    "summary": "设置展示 handler 使用的输出格式，固定枚举包含 JSON、HTML、JSONP 和 Prometheus，合并默认 JSON。",
+    "defaults": {
+      "status": "verified",
+      "text": "json",
+      "source_ids": [
+        "merge-values",
+        "formats",
+        "format-output",
+        "format-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "formats",
+        "format-output",
+        "format-readme"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在 http.server/http.location 注册；README 将 http 列为 context 与源码冲突。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "formats",
+          "format-output",
+          "format-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "配置格式不会自动安装展示 handler，需要结合 display；输出实际分支还按请求 URI 处理。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "formats",
+          "format-output",
+          "format-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "content",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "formats",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 49,
+        "end_line": 55
+      },
+      {
+        "id": "format-output",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 410,
+        "end_line": 540
+      },
+      {
+        "id": "format-readme",
+        "file": "README.md",
+        "start_line": 1384,
+        "end_line": 1396
+      },
+      {
+        "id": "final25-display-binding",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 1039,
+        "end_line": 1048
+      },
+      {
+        "id": "final25-content-select",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1384
+      },
+      {
+        "id": "final25-content-call",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1259,
+        "end_line": 1263
+      },
+      {
+        "id": "final25-display-entry",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 115,
+        "end_line": 157
+      },
+      {
+        "id": "final25-display-format",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 422,
+        "end_line": 492
+      },
+      {
+        "id": "final25-display-prepare",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 494,
+        "end_line": 539
+      },
+      {
+        "id": "final25-display-data",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 541,
+        "end_line": 570
+      },
+      {
+        "id": "final25-json-tree",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 875,
+        "end_line": 909
+      },
+      {
+        "id": "final25-json-server",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 261,
+        "end_line": 294
+      },
+      {
+        "id": "final25-json-server-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 147,
+        "end_line": 162
+      },
+      {
+        "id": "final25-display-buffer-check",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 770,
+        "end_line": 799
+      },
+      {
+        "id": "final25-display-html",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 571,
+        "end_line": 601
+      },
+      {
+        "id": "final25-display-output",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 603,
+        "end_line": 618
+      },
+      {
+        "id": "final25-format-doc",
+        "file": "README.md",
+        "start_line": 1384,
+        "end_line": 1396
+      },
+      {
+        "id": "final25-display-doc",
+        "file": "README.md",
+        "start_line": 196,
+        "end_line": 206
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1384-L1396",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1352,
+      "end_line": 1385
+    },
+    "patch_status": {
+      "status": "not_applicable",
+      "note": "本项仅研究独立上游 commit 快照，不属于本站发行补丁处理范围；现场补丁、安装及兼容性未知。 本轮另核VTS统计/展示所列运行消费与Nginx日志阶段、内容回调入口；34项发行补丁未直接改动所引新增入口片段，不代表公共输出、错误页或现场扩展兼容性全部通过。",
+      "source_ids": [
+        "module-build",
+        "registration",
+        "final25-display-binding",
+        "final25-content-select",
+        "final25-content-call",
+        "final25-display-entry",
+        "final25-display-format",
+        "final25-display-prepare",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check",
+        "final25-display-html",
+        "final25-display-output"
+      ]
+    },
+    "runtime": {
+      "status": "verified",
+      "text": "限定配置格式被普通展示请求消费的优先级及输出分派；URI可覆盖配置，HTML框架与统计数据请求分开。不是全部VTS API或输出字段完整性验证。",
+      "steps": [
+        {
+          "condition": "进入已选择的VTS content handler",
+          "action": "location有效handler被复制到r->content_handler，content阶段实际调用并把返回值交给finalize。VTS主enable关闭返回501，仅允许GET/HEAD，其余方法返回405；结尾/control进入单独控制分支，本项不核其管理操作，只核普通展示路径。",
+          "source_ids": [
+            "final25-display-binding",
+            "final25-content-select",
+            "final25-content-call",
+            "final25-display-entry"
+          ]
+        },
+        {
+          "condition": "普通展示请求选择输出格式",
+          "action": "在URI中按源码扫描/format/片段，识别jsonp、json、html、prometheus；识别结果优先于配置，未识别则回退vtscf->format。字符串按对应前缀长度比较，不声称严格完整路径匹配。该行为不是根据Accept自动协商。",
+          "source_ids": [
+            "final25-display-format"
+          ]
+        },
+        {
+          "condition": "格式确定后准备响应",
+          "action": "先丢弃请求正文，失败直接返回其rc；按格式设置Content-Type。HEAD先发送响应头，遇ERROR、正返回值或header_only直接返回；不声称HEAD必定进入统计树遍历。获取所需大小返回NGX_ERROR或创建缓冲失败则500。",
+          "source_ids": [
+            "final25-display-prepare"
+          ]
+        },
+        {
+          "condition": "GET等尚未提前返回的请求进入JSON、JSONP或Prometheus分派",
+          "action": "三个数据分支各自在共享锁内调用对应生成函数再解锁；JSON空输出补{}，JSONP用配置callback及括号包装，Prometheus空输出补#。这里只核格式分派及JSON server节点读取与缓冲检查，不代表完整指标、转义与所有上游字段均已审。JSON节点空间不足时跳过节点，不能以200推断数据完整。",
+          "source_ids": [
+            "final25-display-data",
+            "final25-json-tree",
+            "final25-json-server",
+            "final25-json-server-output",
+            "final25-display-buffer-check"
+          ]
+        },
+        {
+          "condition": "HTML分支而非直接输出统计JSON",
+          "action": "裁剪页面前缀URI的尾斜杠，必要时转义HTML；转义缓冲分配失败或输出缓冲容不下内置HTML模板返回500，否则插入模板。本分支生成页面框架，README说明前端另请求/format/json读取统计；不是在这里同步遍历全部统计树。",
+          "source_ids": [
+            "final25-display-html"
+          ]
+        },
+        {
+          "condition": "展示缓冲生成后交给Nginx输出链",
+          "action": "设置200和实际正文长度，主请求标last_buf，链尾标last_in_chain；send_header返回ERROR、正值或header_only时直接返回，其他情况返回output_filter结果。这里只证明模块输出调用与返回，不保证客户端已收到、没有后续过滤器或网络失败。",
+          "source_ids": [
+            "final25-display-output"
+          ]
+        }
+      ],
+      "source_ids": [
+        "final25-display-binding",
+        "final25-content-select",
+        "final25-content-call",
+        "final25-display-entry",
+        "final25-display-format",
+        "final25-display-prepare",
+        "final25-display-data",
+        "final25-json-tree",
+        "final25-json-server",
+        "final25-json-server-output",
+        "final25-display-buffer-check",
+        "final25-display-html",
+        "final25-display-output"
+      ],
+      "corroboration_source_ids": [
+        "final25-format-doc",
+        "final25-display-doc"
+      ]
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_display_jsonp",
+    "syntax": "vhost_traffic_status_display_jsonp callback;",
+    "summary": "设置 JSONP 输出所使用的回调名称字符串，不负责选择输出格式。",
+    "defaults": {
+      "status": "verified",
+      "text": "ngx_http_vhost_traffic_status_jsonp_callback",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "jsonp-output",
+        "jsonp-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "jsonp-output",
+        "jsonp-readme"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册只允许 http.server/http.location；README 的 http context 与注册不一致。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "jsonp-output",
+          "jsonp-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅设置本项不把 JSON 输出改为 JSONP，格式选择使用 display_format。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "jsonp-output",
+          "jsonp-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "content",
+    "evidence": [
+      {
+        "id": "module-constants",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 49,
+        "end_line": 56
+      },
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "jsonp-output",
+        "file": "src/ngx_http_vhost_traffic_status_display.c",
+        "start_line": 480,
+        "end_line": 560
+      },
+      {
+        "id": "jsonp-readme",
+        "file": "README.md",
+        "start_line": 1398,
+        "end_line": 1406
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1398-L1406",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1090
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_display_sum_key",
+    "syntax": "vhost_traffic_status_display_sum_key name;",
+    "summary": "设置展示汇总节点使用的键名，默认星号；它改变汇总标识而不重建统计分组。",
+    "defaults": {
+      "status": "verified",
+      "text": "*",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "sum-output",
+        "sum-readme"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "sum-output",
+        "sum-readme"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册只允许 http.server/http.location；README 的 http context 与注册冲突。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "sum-output",
+          "sum-readme"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "汇总键名称不是 filter_by_set_key 的分组规则，也不是统计开关。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "sum-output",
+          "sum-readme"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "content",
+    "evidence": [
+      {
+        "id": "module-constants",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 49,
+        "end_line": 56
+      },
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "sum-output",
+        "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+        "start_line": 880,
+        "end_line": 934
+      },
+      {
+        "id": "sum-readme",
+        "file": "README.md",
+        "start_line": 1408,
+        "end_line": 1416
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1408-L1416",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1090
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_set_by_filter",
+    "syntax": "vhost_traffic_status_set_by_filter $variable group/zone/member;",
+    "summary": "把统计成员读取结果写入指定 Nginx 变量；第二参数编译为复杂值，并在 ACCESS 阶段按 group/zone/member 查找统计。",
+    "defaults": {
+      "status": "verified",
+      "text": "不自动声明统计成员到变量的赋值规则。本层及父级链均未配置时，启用模块的配置合并将 filter_vars 归为 NULL，ACCESS 处理不执行此类变量赋值；本层省略但父级有规则时仍使用继承列表。这不是变量默认值为 0 的保证。",
+      "source_ids": ["set-local-create", "set-merge-enabled", "merge-values", "set-parser", "set-value", "set-handler", "phase-hook"]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "未设置 filter_vars 时由 merge_loc_conf 继承父级列表；显式列表不自动追加父级列表。",
+      "source_ids": [
+        "merge-values",
+        "set-parser",
+        "set-handler",
+        "set-value",
+        "set-format",
+        "phase-hook"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "首参数须以 $ 开头；注册包含 location 内 if，但不包含 server 内 if。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "set-parser",
+          "set-handler",
+          "set-value",
+          "set-format",
+          "phase-hook"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "处理器受主 ctx 与 filter 开关约束；读取发生于 ACCESS 阶段，不能承诺包含本请求在 LOG 阶段才追加的统计。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "set-parser",
+          "set-handler",
+          "set-value",
+          "set-format",
+          "phase-hook"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "找不到节点或解析失败时会将变量标记为 not_found，而非保证返回零。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "set-parser",
+          "set-handler",
+          "set-value",
+          "set-format",
+          "phase-hook"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "access",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "set-parser",
+        "file": "src/ngx_http_vhost_traffic_status_set.c",
+        "start_line": 483,
+        "end_line": 544
+      },
+      {
+        "id": "set-handler",
+        "file": "src/ngx_http_vhost_traffic_status_set.c",
+        "start_line": 30,
+        "end_line": 52
+      },
+      {
+        "id": "set-value",
+        "file": "src/ngx_http_vhost_traffic_status_set.c",
+        "start_line": 392,
+        "end_line": 479
+      },
+      {
+        "id": "set-format",
+        "file": "src/ngx_http_vhost_traffic_status_set.c",
+        "start_line": 157,
+        "end_line": 249
+      },
+      {
+        "id": "phase-hook",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 850,
+        "end_line": 884
+      },
+      {
+        "id": "set-local-create",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 986,
+        "end_line": 1031
+      },
+      {
+        "id": "set-merge-enabled",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1063,
+        "end_line": 1067
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1744-L1769",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_average_method",
+    "syntax": "vhost_traffic_status_average_method AMM | WMA [period];",
+    "summary": "设置请求/上游响应耗时队列的平均计算方法和时间窗口。枚举支持 AMM 与 WMA，合并默认 AMM、60 秒。",
+    "defaults": {
+      "status": "verified",
+      "text": "AMM 60s",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "average-parser",
+        "average-methods",
+        "average-runtime"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "module-constants",
+        "merge-values",
+        "average-parser",
+        "average-methods",
+        "average-runtime"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "period 是有效平均样本时间窗口，不是 dump 的保存周期。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "average-parser",
+          "average-methods",
+          "average-runtime"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "回调先通过通用 enum setter 处理方法，再通过 ngx_parse_time 处理可选窗口；没有在本网站计算平均值或验证运行样本。",
+        "source_ids": [
+          "registration",
+          "module-constants",
+          "merge-values",
+          "average-parser",
+          "average-methods",
+          "average-runtime"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "module-constants",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 49,
+        "end_line": 56
+      },
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "average-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 752,
+        "end_line": 787
+      },
+      {
+        "id": "average-methods",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 57,
+        "end_line": 62
+      },
+      {
+        "id": "average-runtime",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 658,
+        "end_line": 759
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1834-L1851",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_histogram_buckets",
+    "syntax": "vhost_traffic_status_histogram_buckets second [second ...];",
+    "summary": "设置耗时直方图桶边界，输入按三位小数解析为毫秒整数；未设置时没有分桶，局部配置可继承。",
+    "defaults": {
+      "status": "verified",
+      "text": "未设置时无分桶（NULL）；有父级分桶时继承。",
+      "source_ids": [
+        "merge-values",
+        "histogram-parser",
+        "bucket-limit",
+        "bucket-consumer"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "histogram-parser",
+        "bucket-limit",
+        "bucket-consumer"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "无效值或解析为 0 被拒绝；回调未检查排序，不会自动排序，也不能宣称拒绝全部乱序输入。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "histogram-parser",
+          "bucket-limit",
+          "bucket-consumer"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "桶上限为 32；第 33 项触发错误日志后跳出循环，保留前 32 项并返回成功，而不是必然拒绝整条配置。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "histogram-parser",
+          "bucket-limit",
+          "bucket-consumer"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "histogram-parser",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 791,
+        "end_line": 837
+      },
+      {
+        "id": "bucket-limit",
+        "file": "src/ngx_http_vhost_traffic_status_node.h",
+        "start_line": 8,
+        "end_line": 16
+      },
+      {
+        "id": "bucket-consumer",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 809,
+        "end_line": 848
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1853-L1877",
+        "status": "unverified"
+      }
+    ]
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_bypass_limit",
+    "syntax": "vhost_traffic_status_bypass_limit on | off;",
+    "summary": "让 PREACCESS 的 VTS 限额 handler 提前返回，跳过 VTS 阈值检查。",
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-values",
+        "limit-bypass",
+        "stats-handler"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "limit-bypass",
+        "stats-handler"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不关闭 LOG 统计，也不绕过 Nginx 其他限流/访问模块。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "limit-bypass",
+          "stats-handler"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "它与主 ctx、limit 一起决定该 handler 是否运行；仅影响该 VTS 限额入口。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "limit-bypass",
+          "stats-handler"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "preaccess",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "limit-bypass",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 54
+      },
+      {
+        "id": "stats-handler",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 281,
+        "end_line": 329
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1880-L1890",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_bypass_stats",
+    "syntax": "vhost_traffic_status_bypass_stats on | off;",
+    "summary": "让 LOG 阶段 VTS 统计 handler 提前返回，跳过该入口的 server、upstream、filter 以及条件缓存统计。",
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-values",
+        "stats-bypass",
+        "limit-handler"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "stats-bypass",
+        "limit-handler"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本项不自动绕过 PREACCESS 限额检查，已有统计仍可能被该限额路径读取。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "stats-bypass",
+          "limit-handler"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "它不是 ignore_status：后者先更新 last_seen，再按状态码决定是否跳过节点内的统计；调用者后续仍可能更新上游响应耗时或缓存容量。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "stats-bypass",
+          "limit-handler",
+          "node-update",
+          "node-callers"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "stats-bypass",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 281,
+        "end_line": 329
+      },
+      {
+        "id": "node-update",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 507,
+        "end_line": 586
+      },
+      {
+        "id": "node-callers",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 249,
+        "end_line": 317
+      },
+      {
+        "id": "limit-handler",
+        "file": "src/ngx_http_vhost_traffic_status_limit.c",
+        "start_line": 13,
+        "end_line": 54
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1911-L1921",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_stats_by_upstream",
+    "syntax": "vhost_traffic_status_stats_by_upstream on | off;",
+    "summary": "控制 LOG 统计 handler 是否调用上游统计分支；默认 on，只有 http 主层级允许配置。",
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-values",
+        "upstream-switch"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅允许在 http 设置，merge_loc_conf 将主层级字段传入子配置；不允许子级显式覆写。",
+      "source_ids": [
+        "merge-values",
+        "upstream-switch"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "虽然字段位于 loc_conf 并通过合并传递，注册表仍只允许 http，不能因此在 server/location 配置。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "upstream-switch"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "关闭不会关闭 server、filter 或条件缓存统计；不保证现场性能变化。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "upstream-switch"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "upstream-switch",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 281,
+        "end_line": 329
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [
+      {
+        "title": "固定 commit README（差异与核实边界见限制）",
+        "url": "https://github.com/vozlt/nginx-module-vts/blob/52fe11e44c47a49b052be89e36dfa17d81bf52a5/README.md#L1943-L1957",
+        "status": "unverified"
+      }
+    ],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1063
+    }
+  },
+  {
+    "component": "nginx-module-vts",
+    "module": "ngx_http_vhost_traffic_status_module",
+    "name": "vhost_traffic_status_ignore_status",
+    "syntax": "vhost_traffic_status_ignore_status 1xx | 2xx | 3xx | 4xx | 5xx | off [mask ...];",
+    "summary": "按状态码类别位掩码过滤 node_update 的统计。重试尝试使用 state.status，其他情况使用响应状态；命中后该函数先更新 last_seen 再返回。",
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-values",
+        "status-masks",
+        "mask-check",
+        "node-update",
+        "node-callers"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "启用 zone 的前提下，未设置的局部字段由 merge_loc_conf 继承父级值；最终默认值见本项。",
+      "source_ids": [
+        "merge-values",
+        "status-masks",
+        "mask-check",
+        "node-update",
+        "node-callers"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "命中后跳过 node_update 后续请求数、响应码、字节、请求耗时和缓存状态计数，但调用者仍可能更新上游响应耗时或缓存容量，不能说跳过全部统计。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "status-masks",
+          "mask-check",
+          "node-update",
+          "node-callers"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "通用 bitmask setter 对重复值记录警告并按位累计；off 的位不消除已设置的其他类别位。",
+        "source_ids": [
+          "configuration-definition",
+          "registration",
+          "merge-values",
+          "status-masks",
+          "mask-check",
+          "node-update",
+          "node-callers"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定 README 目录没有列本项，也没有对应完整指令章节；以注册和消费者源码为依据，文档不标已核对。",
+        "source_ids": [
+          "registration",
+          "merge-values",
+          "status-masks",
+          "mask-check",
+          "node-update",
+          "node-callers"
+        ]
+      }
+    ],
+    "availability": {
+      "status": "unverified",
+      "dependencies": [
+        "需要额外编入或加载本扩展模块；固定 config 设置 NGX_STAT_STUB，使用 Nginx HTTP、共享内存及通用配置接口。本站未核实现场二进制、模块版本、加载状态或与发行基线的运行兼容性。"
+      ],
+      "deprecated": null
+    },
+    "phase": "log",
+    "evidence": [
+      {
+        "id": "merge-values",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 1123,
+        "end_line": 1150
+      },
+      {
+        "id": "status-masks",
+        "file": "src/ngx_http_vhost_traffic_status_module.c",
+        "start_line": 64,
+        "end_line": 72
+      },
+      {
+        "id": "mask-check",
+        "file": "src/ngx_http_vhost_traffic_status_module.h",
+        "start_line": 64,
+        "end_line": 78
+      },
+      {
+        "id": "node-update",
+        "file": "src/ngx_http_vhost_traffic_status_node.c",
+        "start_line": 507,
+        "end_line": 586
+      },
+      {
+        "id": "node-callers",
+        "file": "src/ngx_http_vhost_traffic_status_shm.c",
+        "start_line": 249,
+        "end_line": 317
+      }
+    ],
+    "related": [
+      "vhost_traffic_status_zone"
+    ],
+    "documentation": [],
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1433
+    }
+  }
+]

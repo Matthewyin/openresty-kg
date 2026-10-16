@@ -1,0 +1,6216 @@
+[
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_load_resty_core",
+    "summary": "保留Stream Lua旧配置入口，但已不控制resty.core加载。",
+    "syntax": "lua_load_resty_core on | off;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 180,
+      "end_line": 190
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 3367,
+        "end_line": 3381
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1191,
+        "end_line": 1210
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定callback只输出deprecated告警并返回OK，不读取开关值；VM初始化无条件require resty.core，off不能禁用。不能按HTTP历史版本推导可选加载。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_max_running_timers",
+    "summary": "限制Stream Lua每worker同时运行的timer数量。",
+    "syntax": "lua_max_running_timers count;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_timer.c",
+        "start_line": 600,
+        "end_line": 625
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_timer.c",
+        "start_line": 562,
+        "end_line": 766
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 779,
+        "end_line": 781
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3584,
+        "end_line": 3602
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认256。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "定时器到期后才检查running_timers，达到上限走失败处理而不是保证等待执行；与pending创建限制分开，运行timer还使用伪连接资源。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_max_pending_timers",
+    "summary": "限制Stream Lua每worker尚未执行的等待timer数量。",
+    "syntax": "lua_max_pending_timers count;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_timer.c",
+        "start_line": 180,
+        "end_line": 202
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 775,
+        "end_line": 777
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3565,
+        "end_line": 3583
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认1024。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "创建时达到pending上限返回nil与too many pending timers；该限制不是所有Lua协程或活动连接的数量，也不保证到期时可运行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_shared_dict",
+    "summary": "在stream域声明供本域Lua共享字典使用的命名共享内存区。",
+    "syntax": "lua_shared_dict name size;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 72,
+      "end_line": 153
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_shdict.c",
+        "start_line": 78,
+        "end_line": 131
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_shdict.c",
+        "start_line": 322,
+        "end_line": 387
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_api.c",
+        "start_line": 90,
+        "end_line": 157
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3141,
+        "end_line": 3174
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "要求非空名称、大小至少8192字节，本域同名重复拒绝；模块tag为ngx_stream_lua_module，不能假定与HTTP同名字典共享。zone init使用slab/rbtree/queue，向本域Lua VM注入ngx.shared；不是持久数据库。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_sa_restart",
+    "summary": "控制Stream worker初始化是否为指定信号设置SA_RESTART。",
+    "syntax": "lua_sa_restart on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 87,
+        "end_line": 91
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 3653,
+        "end_line": 3676
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 783,
+        "end_line": 787
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3603,
+        "end_line": 3619
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "支持能力宏时默认on。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "NGX_STREAM_LUA_HAVE_SA_RESTART分支调用本模块sigaction设置函数；off只是跳过设置，不清除外部已设置标志，也不保证所有系统调用都自动重启。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_capture_error_log",
+    "summary": "配置Stream Lua错误日志截获环形缓冲区。",
+    "syntax": "lua_capture_error_log size;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 1190,
+      "end_line": 1253
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_log.c",
+        "start_line": 328,
+        "end_line": 348
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_log_ringbuf.c",
+        "start_line": 164,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_log.c",
+        "start_line": 95,
+        "end_line": 196
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_log.h",
+        "start_line": 76,
+        "end_line": 76
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1211,
+        "end_line": 1261
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-intercept_error_log",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-intercept_error_log.patch",
+        "start_line": 1,
+        "end_line": 60
+      },
+      {
+        "id": "patch-larger_max_error_str",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-larger_max_error_str.patch",
+        "start_line": 1,
+        "end_line": 13
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需发行HAVE_INTERCEPT_ERROR_LOG_PATCH；容量至少当前NGX_MAX_ERROR_STR，larger_max_error_str影响该下限。cycle只有一个截获handler，若HTTP或其他模块已经挂接会拒绝，不承诺两个域可同时各自捕获。环形缓冲可覆盖旧记录，正常日志输出仍继续。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-intercept_error_log",
+          "patch-larger_max_error_str"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "patch-intercept_error_log",
+        "patch-larger_max_error_str"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_regex_cache_max_entries",
+    "summary": "为Stream Lua正则实现提供每worker缓存容量参数。",
+    "syntax": "lua_regex_cache_max_entries num;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_regex.c",
+        "start_line": 978,
+        "end_line": 988
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 765,
+        "end_line": 768
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1369,
+        "end_line": 1393
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "PCRE构建默认1024。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域注册本身受NGX_PCRE保护，缺PCRE不能套用HTTP同名专用callback的返回OK行为。num slot保存容量，FFI getter供Lua正则层消费；resty.core实现可用LRU，不统一断言满后永久不缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_regex_match_limit",
+    "summary": "限制Stream Lua正则匹配内部工作量。",
+    "syntax": "lua_regex_match_limit num;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_regex.c",
+        "start_line": 207,
+        "end_line": 217
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_regex.c",
+        "start_line": 480,
+        "end_line": 496
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 770,
+        "end_line": 772
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1394,
+        "end_line": 1412
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认0，沿用库默认。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "NGX_PCRE注册分支才存在；PCRE2设置match_limit，旧PCRE在study数据存在且非DFA路径设MATCH_LIMIT。0沿用库默认，不是执行时间毫秒，也不等于禁用超限保护。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_package_cpath",
+    "summary": "设置Stream Lua VM查找C模块的package.cpath。",
+    "syntax": "lua_package_cpath lua-style-cpath;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 193,
+      "end_line": 212
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 287,
+        "end_line": 302
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 142,
+        "end_line": 179
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1430,
+        "end_line": 1446
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域初始化替换cpath并处理旧路径与前缀占位；配置路径不保证动态库存在或ABI匹配，不能混同Lua源码搜索路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_package_path",
+    "summary": "设置Stream Lua VM查找Lua模块的package.path。",
+    "syntax": "lua_package_path lua-style-path;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 215,
+      "end_line": 234
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 271,
+        "end_line": 285
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 142,
+        "end_line": 179
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1413,
+        "end_line": 1429
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "由本域VM初始化读取，双分号保留旧路径，$prefix/${prefix}替换Nginx前缀；不是每个连接的变量复杂值，也不自动加载模块。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_code_cache",
+    "summary": "控制Stream Lua会话的代码与VM复用。",
+    "syntax": "lua_code_cache on | off;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 156,
+      "end_line": 177
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.h",
+        "start_line": 283,
+        "end_line": 385
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_cache.c",
+        "start_line": 226,
+        "end_line": 317
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 992,
+        "end_line": 992
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1312,
+        "end_line": 1347
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认on。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off配置告警；create_ctx在真实连接且未启用缓存时初始化会话独立VM，并运行init_handler，不是每条TCP消息都新建VM。伪连接分支不按此条件重建；内嵌配置修改仍需重载。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_log_errors",
+    "summary": "控制Stream Lua cosocket常见错误是否额外写错误日志。",
+    "syntax": "lua_socket_log_errors on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1831,
+        "end_line": 1868
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3420,
+        "end_line": 3437
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3458,
+        "end_line": 3475
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1016,
+        "end_line": 1016
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3296,
+        "end_line": 3310
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "closed-socket-log",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 2812,
+        "end_line": 2826
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认on。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域TCP超时、已关闭socket与TLS校验路径分别读取该值；off不改变Lua错误返回，不屏蔽所有core、库或其他模块日志。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "closed-socket-log"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "closed-socket-log"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_by_lua_block",
+    "summary": "初始化Stream Lua VM，执行配置中的Lua块。",
+    "syntax": "init_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 602,
+      "end_line": 618
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 621,
+        "end_line": 666
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initby.c",
+        "start_line": 24,
+        "end_line": 35
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 526,
+        "end_line": 532
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 594,
+        "end_line": 659
+      },
+      {
+        "id": "implementation-5",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_api.c",
+        "start_line": 196,
+        "end_line": 218
+      },
+      {
+        "id": "implementation-6",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.h",
+        "start_line": 308,
+        "end_line": 373
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1474,
+        "end_line": 1550
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "postconfiguration跳过test/signaller；没有共享区时直接调init_handler，有共享区时等待本域共享区全部完成。code_cache关闭时会话独立VM也调用该handler，不能说成每个HTTP请求或只在master一次。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "init",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_by_lua",
+    "summary": "初始化Stream Lua VM，执行配置字符串脚本。",
+    "syntax": "init_by_lua <lua-script-str>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 621,
+      "end_line": 666
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initby.c",
+        "start_line": 24,
+        "end_line": 35
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 526,
+        "end_line": 532
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 594,
+        "end_line": 659
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_api.c",
+        "start_line": 196,
+        "end_line": 218
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.h",
+        "start_line": 308,
+        "end_line": 373
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1447,
+        "end_line": 1473
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "postconfiguration跳过test/signaller；没有共享区时直接调init_handler，有共享区时等待本域共享区全部完成。code_cache关闭时会话独立VM也调用该handler，不能说成每个HTTP请求或只在master一次。 单字符串形式要遵守Nginx转义，不对正文进行Nginx变量替换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "init",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_by_lua_file",
+    "summary": "初始化Stream Lua VM，加载外部Lua文件。",
+    "syntax": "init_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 621,
+      "end_line": 666
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initby.c",
+        "start_line": 38,
+        "end_line": 48
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 526,
+        "end_line": 532
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 594,
+        "end_line": 659
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_api.c",
+        "start_line": 196,
+        "end_line": 218
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.h",
+        "start_line": 308,
+        "end_line": 373
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1551,
+        "end_line": 1567
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "postconfiguration跳过test/signaller；没有共享区时直接调init_handler，有共享区时等待本域共享区全部完成。code_cache关闭时会话独立VM也调用该handler，不能说成每个HTTP请求或只在master一次。 本域file只按Nginx前缀补全路径，不编译stream变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "init",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_worker_by_lua_block",
+    "summary": "执行Stream Lua进程初始化逻辑，执行配置中的Lua块。",
+    "syntax": "init_worker_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 669,
+      "end_line": 685
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 688,
+        "end_line": 727
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 327,
+        "end_line": 338
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 53,
+        "end_line": 96
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 290,
+        "end_line": 311
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.h",
+        "start_line": 20,
+        "end_line": 40
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 889,
+        "end_line": 903
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1597,
+        "end_line": 1647
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-privileged_agent_process",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process.patch",
+        "start_line": 1,
+        "end_line": 203
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块init_process实际挂ngx_stream_lua_init_worker；普通cache helper不执行，发行privileged agent条件分支例外。以stream伪请求准备上下文，调用脚本返回值未继续向core传播；不是连接内容处理器。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-privileged_agent_process"
+        ]
+      }
+    ],
+    "phase": "process",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing",
+        "patch-privileged_agent_process"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_worker_by_lua",
+    "summary": "执行Stream Lua进程初始化逻辑，执行配置字符串脚本。",
+    "syntax": "init_worker_by_lua <lua-script-str>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 688,
+      "end_line": 727
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 327,
+        "end_line": 338
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 53,
+        "end_line": 96
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 290,
+        "end_line": 311
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.h",
+        "start_line": 20,
+        "end_line": 40
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 889,
+        "end_line": 903
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1568,
+        "end_line": 1596
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-privileged_agent_process",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process.patch",
+        "start_line": 1,
+        "end_line": 203
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块init_process实际挂ngx_stream_lua_init_worker；普通cache helper不执行，发行privileged agent条件分支例外。以stream伪请求准备上下文，调用脚本返回值未继续向core传播；不是连接内容处理器。 单字符串形式要遵守Nginx转义，不对正文进行Nginx变量替换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-privileged_agent_process"
+        ]
+      }
+    ],
+    "phase": "process",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "patch-privileged_agent_process"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "init_worker_by_lua_file",
+    "summary": "执行Stream Lua进程初始化逻辑，加载外部Lua文件。",
+    "syntax": "init_worker_by_lua_file <lua-file-path>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 688,
+      "end_line": 727
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 341,
+        "end_line": 351
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 53,
+        "end_line": 96
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_initworkerby.c",
+        "start_line": 290,
+        "end_line": 311
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_cycle.h",
+        "start_line": 20,
+        "end_line": 40
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/os/unix/ngx_process_cycle.c",
+        "start_line": 889,
+        "end_line": 903
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1648,
+        "end_line": 1664
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-privileged_agent_process",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-privileged_agent_process.patch",
+        "start_line": 1,
+        "end_line": 203
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块init_process实际挂ngx_stream_lua_init_worker；普通cache helper不执行，发行privileged agent条件分支例外。以stream伪请求准备上下文，调用脚本返回值未继续向core传播；不是连接内容处理器。 本域file只按Nginx前缀补全路径，不编译stream变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-privileged_agent_process"
+        ]
+      }
+    ],
+    "phase": "process",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "patch-privileged_agent_process"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "preread_by_lua_file",
+    "summary": "在Stream预读阶段执行连接预处理，加载外部Lua文件。",
+    "syntax": "preread_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 262,
+      "end_line": 355
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_prereadby.c",
+        "start_line": 153,
+        "end_line": 191
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 536,
+        "end_line": 547
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_prereadby.c",
+        "start_line": 24,
+        "end_line": 123
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 187,
+        "end_line": 208
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1018,
+        "end_line": 1023
+      },
+      {
+        "id": "official-doc",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 212,
+        "end_line": 233
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "requires_preread真实挂NGX_STREAM_PREREAD_PHASE，默认将Lua移动到阶段尾部，no_postpone可取消。request socket的receive会消费预读缓冲，下游不能再看到已消费数据；peek等待更多数据时返回AGAIN交回core。不能套用HTTP rewrite/access阶段语义。 本域file编译stream复杂值，在session上求值后补全相对路径，允许变量但需约束可控路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "preread",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "content_by_lua",
+    "summary": "作为Stream server内容处理器处理会话数据，执行配置字符串脚本。",
+    "syntax": "content_by_lua <lua-script-str>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 376,
+      "end_line": 483
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 255,
+        "end_line": 279
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 471,
+        "end_line": 482
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 157,
+        "end_line": 208
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1822,
+        "end_line": 1846
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置入口直接设置stream core srv_conf.handler，不是HTTP location handler；与同server proxy_pass等竞争内容处理器应避免并置。运行使用本域伪请求/session，TCP数据没有HTTP响应头或请求体语义；已启用code cache时文件修改需重载配置。 单字符串形式要遵守Nginx转义，不对正文进行Nginx变量替换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "content_by_lua_block",
+    "summary": "作为Stream server内容处理器处理会话数据，执行配置中的Lua块。",
+    "syntax": "content_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 357,
+      "end_line": 373
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 376,
+        "end_line": 483
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 255,
+        "end_line": 279
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 471,
+        "end_line": 482
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 157,
+        "end_line": 208
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1847,
+        "end_line": 1873
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置入口直接设置stream core srv_conf.handler，不是HTTP location handler；与同server proxy_pass等竞争内容处理器应避免并置。运行使用本域伪请求/session，TCP数据没有HTTP响应头或请求体语义；已启用code cache时文件修改需重载配置。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "content_by_lua_file",
+    "summary": "作为Stream server内容处理器处理会话数据，加载外部Lua文件。",
+    "syntax": "content_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 376,
+      "end_line": 483
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 213,
+        "end_line": 252
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 471,
+        "end_line": 482
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 157,
+        "end_line": 208
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1874,
+        "end_line": 1911
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置入口直接设置stream core srv_conf.handler，不是HTTP location handler；与同server proxy_pass等竞争内容处理器应避免并置。运行使用本域伪请求/session，TCP数据没有HTTP响应头或请求体语义；已启用code cache时文件修改需重载配置。 本域file编译stream复杂值，在session上求值后补全相对路径，允许变量但需约束可控路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "log_by_lua_block",
+    "summary": "在Stream日志阶段执行会话结束记录，执行配置中的Lua块。",
+    "syntax": "log_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 486,
+      "end_line": 502
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 505,
+        "end_line": 597
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 146,
+        "end_line": 170
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 551,
+        "end_line": 571
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 74,
+        "end_line": 143
+      },
+      {
+        "id": "implementation-5",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 210,
+        "end_line": 273
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1025,
+        "end_line": 1030
+      },
+      {
+        "id": "official-doc",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 234,
+        "end_line": 250
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "requires_log将本域handler置于Stream LOG链前端，不替代原有访问日志。同步lua_pcall，不允许cosocket、sleep、ngx.say等需要yield或继续输出的API；此时不是HTTP响应过滤阶段。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "log_by_lua_file",
+    "summary": "在Stream日志阶段执行会话结束记录，加载外部Lua文件。",
+    "syntax": "log_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 505,
+      "end_line": 597
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 173,
+        "end_line": 207
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 551,
+        "end_line": 571
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 74,
+        "end_line": 143
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 210,
+        "end_line": 273
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1025,
+        "end_line": 1030
+      },
+      {
+        "id": "official-doc",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 251,
+        "end_line": 272
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "requires_log将本域handler置于Stream LOG链前端，不替代原有访问日志。同步lua_pcall，不允许cosocket、sleep、ngx.say等需要yield或继续输出的API；此时不是HTTP响应过滤阶段。 本域file编译stream复杂值，在session上求值后补全相对路径，允许变量但需约束可控路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "preread_by_lua_no_postpone",
+    "summary": "控制Stream Lua预读处理器是否取消向preread阶段尾部移动。",
+    "syntax": "preread_by_lua_no_postpone on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_prereadby.c",
+        "start_line": 24,
+        "end_line": 123
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 545,
+        "end_line": 547
+      },
+      {
+        "id": "official-doc",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 290,
+        "end_line": 304
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认off。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "字段为postponed_to_preread_phase_end；on使首次请求不移动phase handler，off按当前phase数组重排。不是HTTP rewrite/access选项，也不改变内容handler。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "balancer_by_lua_block",
+    "summary": "在Stream upstream取peer时由Lua选择后端，执行配置中的Lua块。",
+    "syntax": "balancer_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_balancer.c",
+      "start_line": 118,
+      "end_line": 134
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 137,
+        "end_line": 223
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 96,
+        "end_line": 115
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 226,
+        "end_line": 238
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 241,
+        "end_line": 293
+      },
+      {
+        "id": "implementation-5",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 296,
+        "end_line": 393
+      },
+      {
+        "id": "implementation-6",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 396,
+        "end_line": 448
+      },
+      {
+        "id": "implementation-7",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 476,
+        "end_line": 505
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 732,
+        "end_line": 758
+      },
+      {
+        "id": "implementation-9",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.h",
+        "start_line": 138,
+        "end_line": 147
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2637,
+        "end_line": 2696
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-balancer_status_code",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-balancer_status_code.patch",
+        "start_line": 1,
+        "end_line": 72
+      },
+      {
+        "id": "patch-stream_balancer_export",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-stream_balancer_export.patch",
+        "start_line": 1,
+        "end_line": 53
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域初始化固定调用round_robin并覆盖init/get/free；未选动态peer时回退round_robin，不保留任意前算法，也没有HTTP Lua自动插入占位server的代码。Lua同步执行不允许yield；可能因重试多次调用。发行balancer_status_code支持特殊Stream状态结束连接，不是HTTP响应码；stream_balancer_export提供RR TLS会话函数，动态peer的session保存/设置分支仍为TODO，不能承诺复用。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "implementation-9",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-balancer_status_code",
+          "patch-stream_balancer_export"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "distribution-processing",
+        "patch-balancer_status_code",
+        "patch-stream_balancer_export"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "balancer_by_lua_file",
+    "summary": "在Stream upstream取peer时由Lua选择后端，加载外部Lua文件。",
+    "syntax": "balancer_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_balancer.c",
+      "start_line": 137,
+      "end_line": 223
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 76,
+        "end_line": 93
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 226,
+        "end_line": 238
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 241,
+        "end_line": 293
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 296,
+        "end_line": 393
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 396,
+        "end_line": 448
+      },
+      {
+        "id": "implementation-5",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_balancer.c",
+        "start_line": 476,
+        "end_line": 505
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 732,
+        "end_line": 758
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_upstream_round_robin.h",
+        "start_line": 138,
+        "end_line": 147
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2697,
+        "end_line": 2713
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-balancer_status_code",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-balancer_status_code.patch",
+        "start_line": 1,
+        "end_line": 72
+      },
+      {
+        "id": "patch-stream_balancer_export",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-stream_balancer_export.patch",
+        "start_line": 1,
+        "end_line": 53
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域初始化固定调用round_robin并覆盖init/get/free；未选动态peer时回退round_robin，不保留任意前算法，也没有HTTP Lua自动插入占位server的代码。Lua同步执行不允许yield；可能因重试多次调用。发行balancer_status_code支持特殊Stream状态结束连接，不是HTTP响应码；stream_balancer_export提供RR TLS会话函数，动态peer的session保存/设置分支仍为TODO，不能承诺复用。 本域file只按Nginx前缀补全路径，不编译stream变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-balancer_status_code",
+          "patch-stream_balancer_export"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "distribution-processing",
+        "patch-balancer_status_code",
+        "patch-stream_balancer_export"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_keepalive_timeout",
+    "summary": "设置Stream Lua TCP连接归还cosocket池时的默认空闲时间。",
+    "syntax": "lua_socket_keepalive_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5263,
+        "end_line": 5280
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5224,
+        "end_line": 5493
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 995,
+        "end_line": 996
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3279,
+        "end_line": 3295
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "setkeepalive显式timeout可覆盖该值；必须主动归还连接，不自动缓存任何socket。空闲超时不是读写操作总超时，也不是stream proxy_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_connect_timeout",
+    "summary": "设置Stream Lua cosocket连接建立及TLS握手等待的默认超时。",
+    "syntax": "lua_socket_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1070,
+        "end_line": 1100
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1495,
+        "end_line": 1505
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1757,
+        "end_line": 1770
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3350,
+        "end_line": 3372
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 998,
+        "end_line": 999
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3175,
+        "end_line": 3191
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "connect读取显式socket timeout或srv_conf默认，TCP等待在write事件加timer，TLS AGAIN在read事件使用connect_timeout。settimeout/settimeouts可覆盖，不等于Stream proxy_connect_timeout或会话总时长。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_send_timeout",
+    "summary": "设置Stream Lua cosocket发送及本域输出等待的默认超时。",
+    "syntax": "lua_socket_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1088,
+        "end_line": 1093
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3558,
+        "end_line": 3567
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 1350,
+        "end_line": 1367
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 1540,
+        "end_line": 1554
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 176,
+        "end_line": 179
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1001,
+        "end_line": 1002
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3192,
+        "end_line": 3208
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "cosocket显式timeout可覆盖；本域还把该字段用于Lua输出write handler的等待计时，弥补stream没有HTTP send_timeout的场景。是等待发送事件的超时，不是整个脚本或全部连接的总期限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_send_lowat",
+    "summary": "设置Stream Lua发送事件低水位。",
+    "syntax": "lua_socket_send_lowat size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 64,
+        "end_line": 65
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 668,
+        "end_line": 694
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3558,
+        "end_line": 3567
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 1540,
+        "end_line": 1554
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1007,
+        "end_line": 1008
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3209,
+        "end_line": 3221
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认0。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "module64–65的post确实绑定本域检查器；FreeBSD校验sendspace，不支持SO_SNDLOWAT则告警置0。TCP cosocket及本域输出write event实际传入send_lowat，不是发送缓冲块大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_buffer_size",
+    "summary": "设置Stream Lua TCP接收缓冲块默认容量。",
+    "syntax": "lua_socket_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 2226,
+        "end_line": 2238
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5880,
+        "end_line": 5893
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5938,
+        "end_line": 5951
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1010,
+        "end_line": 1012
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3241,
+        "end_line": 3257
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认系统页大小。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域receive链按字段分配/复用缓冲；分隔符前缀较长时可使用更大的块。不是TCP消息最大长度，不保证一次系统读取刚好该大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_pool_size",
+    "summary": "设置Stream Lua cosocket每个池的默认缓存连接数量。",
+    "syntax": "lua_socket_pool_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 905,
+        "end_line": 945
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5263,
+        "end_line": 5280
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 5375,
+        "end_line": 5387
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1014,
+        "end_line": 1014
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3258,
+        "end_line": 3278
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认30。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "setkeepalive未显式给pool_size时使用本值，connect options还可指定pool_size/backlog。池按worker及pool key区分，不是所有活动连接数上限，也不是HTTP Lua balancer_keepalive。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_socket_read_timeout",
+    "summary": "设置Stream Lua cosocket接收等待的默认超时。",
+    "syntax": "lua_socket_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1095,
+        "end_line": 1100
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 2759,
+        "end_line": 2764
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3366,
+        "end_line": 3371
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1004,
+        "end_line": 1005
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3222,
+        "end_line": 3240
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认60s。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "初始化时可被settimeout/settimeouts覆盖，接收read event活跃时加对应timer；不是core preread_timeout，也不能据此推断读完整报文的总期限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_check_client_abort",
+    "summary": "控制Stream Lua处理会话时的客户端断开检测。",
+    "syntax": "lua_check_client_abort on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_contentby.c",
+        "start_line": 99,
+        "end_line": 131
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 2714,
+        "end_line": 2734
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 3044,
+        "end_line": 3069
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_util.c",
+        "start_line": 3000,
+        "end_line": 3063
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 993,
+        "end_line": 993
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3530,
+        "end_line": 3564
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认off。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "content handler根据字段挂读事件检测，下游request socket也据此决定client-abort错误路径。不是HTTP请求体读取开关，不自动开启TCP keepalive，也不保证即时发现半开连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_protocols",
+    "summary": "设置Stream Lua cosocket作为TLS客户端的协议掩码。",
+    "syntax": "lua_ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 77,
+        "end_line": 87
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1066,
+        "end_line": 1068
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 296,
+        "end_line": 399
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1628,
+        "end_line": 1638
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 964,
+        "end_line": 967
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3343,
+        "end_line": 3360
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "固定默认SSLv3 TLSv1 TLSv1.1 TLSv1.2；这是配置掩码，不保证库仍支持SSLv3。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册枚举支持TLS1.3依赖NGX_SSL_TLSv1_3，但固定merge默认不包含它且仍含SSLv3，不能复制HTTP Lua默认。掩码进入ngx_ssl_create，实际协议能力受SSL库与编译宏约束；不是下游server的ssl_protocols。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_ciphers",
+    "summary": "设置Stream Lua cosocket客户端SSL上下文的密码套件串。",
+    "syntax": "lua_ssl_ciphers ciphers;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1078,
+        "end_line": 1086
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1113,
+        "end_line": 1118
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1628,
+        "end_line": 1638
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 969,
+        "end_line": 970
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3311,
+        "end_line": 3327
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认DEFAULT，由SSL库解释。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域set_ssl直接SSL_CTX_set_cipher_list；不是TLS1.3专用ciphersuites，也不是下游SSL server cipher设置。后置ssl_conf_command可改变上下文，实际协商受库与远端约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "ssl_client_hello_by_lua_block",
+    "summary": "在Stream下游TLS ClientHello回调执行Lua，执行配置中的Lua块。",
+    "syntax": "ssl_client_hello_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+      "start_line": 74,
+      "end_line": 90
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+        "start_line": 93,
+        "end_line": 178
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+        "start_line": 52,
+        "end_line": 71
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 875,
+        "end_line": 919
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+        "start_line": 181,
+        "end_line": 359
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 881,
+        "end_line": 887
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2765,
+        "end_line": 2866
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_STREAM_SSL及OpenSSL至少1.1.1，拒绝LibreSSL。固定Nginx版本对应merge外层只有sscf->ssl.ctx存在才继承并安装SSL_CTX_set_client_hello_cb；不能借HTTP分支声称所有无SSL server均配置报错。yield还要求库和发行握手错误分支支持，同端口早期回调不能当作后续SNI server配置已生效。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "ssl-client-hello",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "ssl_client_hello_by_lua_file",
+    "summary": "在Stream下游TLS ClientHello回调执行Lua，加载外部Lua文件。",
+    "syntax": "ssl_client_hello_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+      "start_line": 93,
+      "end_line": 178
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+        "start_line": 32,
+        "end_line": 49
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 875,
+        "end_line": 919
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+        "start_line": 181,
+        "end_line": 359
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 881,
+        "end_line": 887
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2867,
+        "end_line": 2883
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_STREAM_SSL及OpenSSL至少1.1.1，拒绝LibreSSL。固定Nginx版本对应merge外层只有sscf->ssl.ctx存在才继承并安装SSL_CTX_set_client_hello_cb；不能借HTTP分支声称所有无SSL server均配置报错。yield还要求库和发行握手错误分支支持，同端口早期回调不能当作后续SNI server配置已生效。 本域file只按Nginx前缀补全路径，不编译stream变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "ssl-client-hello",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "ssl_certificate_by_lua_block",
+    "summary": "在Stream下游完整TLS握手的证书回调执行Lua，执行配置中的Lua块。",
+    "syntax": "ssl_certificate_by_lua_block { lua-script }",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_ssl_certby.c",
+      "start_line": 91,
+      "end_line": 107
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_certby.c",
+        "start_line": 110,
+        "end_line": 193
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 776,
+        "end_line": 933
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_certby.c",
+        "start_line": 69,
+        "end_line": 88
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 875,
+        "end_line": 880
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 921,
+        "end_line": 957
+      },
+      {
+        "id": "implementation-5",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_certby.c",
+        "start_line": 196,
+        "end_line": 372
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 921,
+        "end_line": 925
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2884,
+        "end_line": 2976
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "要求OpenSSL至少1.0.2e、非LibreSSL；当前版本merge只有存在SSL_CTX才进入继承/安装SSL_CTX_set_cert_cb。代码从stream session取得配置，不创建HTTP request语义；成功会话恢复可跳过证书回调。yield依赖库返回状态与发行补丁；不同于lua_ssl_certificate的cosocket客户端证书。 专用块解析器收集Lua正文，不进行Nginx变量插值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "ssl-certificate",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "ssl_certificate_by_lua_file",
+    "summary": "在Stream下游完整TLS握手的证书回调执行Lua，加载外部Lua文件。",
+    "syntax": "ssl_certificate_by_lua_file <path-to-lua-script-file>;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_ssl_certby.c",
+      "start_line": 110,
+      "end_line": 193
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_certby.c",
+        "start_line": 49,
+        "end_line": 66
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 875,
+        "end_line": 880
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 921,
+        "end_line": 957
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_ssl_certby.c",
+        "start_line": 196,
+        "end_line": 372
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 921,
+        "end_line": 925
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 2977,
+        "end_line": 2993
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "要求OpenSSL至少1.0.2e、非LibreSSL；当前版本merge只有存在SSL_CTX才进入继承/安装SSL_CTX_set_cert_cb。代码从stream session取得配置，不创建HTTP request语义；成功会话恢复可跳过证书回调。yield依赖库返回状态与发行补丁；不同于lua_ssl_certificate的cosocket客户端证书。 本域file只按Nginx前缀补全路径，不编译stream变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield"
+        ]
+      }
+    ],
+    "phase": "ssl-certificate",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行patch与本域真实使用链关联，实际回放记录共享Nginx证据变化；平台宏与SSL库支持限制实际生效，不作为运行实测。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_verify_depth",
+    "summary": "设置Stream Lua cosocket验证远端证书时的链深度参数。",
+    "syntax": "lua_ssl_verify_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1098,
+        "end_line": 1105
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 961
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1693,
+        "end_line": 1695
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1831,
+        "end_line": 1868
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 972,
+        "end_line": 973
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3416,
+        "end_line": 3432
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认1。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅非空trusted_certificate分支把该值交共享SSL_CTX_set_verify_depth；实际失败拒绝由sslhandshake verify参数决定，单配深度不自动验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_certificate",
+    "summary": "配置Stream Lua cosocket供远端验证的客户端证书链。",
+    "syntax": "lua_ssl_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1052,
+        "end_line": 1064
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1088,
+        "end_line": 1096
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 434,
+        "end_line": 481
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1628,
+        "end_line": 1638
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 974,
+        "end_line": 975
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3361,
+        "end_line": 3379
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认没有显式客户端证书。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域配置期静态检查证书/key数量并调用ngx_ssl_certificates，支持PEM链而不做stream变量脚本编译。不是ssl_certificate_by_lua的下游握手脚本，私钥口令参数为NULL。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_certificate_key",
+    "summary": "配置Stream Lua cosocket客户端证书对应私钥。",
+    "syntax": "lua_ssl_certificate_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1052,
+        "end_line": 1064
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1088,
+        "end_line": 1096
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 553,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 738,
+        "end_line": 852
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1628,
+        "end_line": 1638
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 976,
+        "end_line": 977
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3380,
+        "end_line": 3398
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认没有显式客户端私钥。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "证书数组存在时要求key数量足够并按序加载，无证书时不单独加载key。共享私钥loader的file/data/engine能力受库宏限制，本域不提供变量私钥路径求值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_trusted_certificate",
+    "summary": "配置Stream Lua cosocket校验远端服务器证书的信任文件。",
+    "syntax": "lua_ssl_trusted_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1098,
+        "end_line": 1105
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 984
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1693,
+        "end_line": 1695
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1831,
+        "end_line": 1868
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 978,
+        "end_line": 979
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3399,
+        "end_line": 3415
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅非空路径配置期加载PEM信任链；TLS握手Lua调用的verify参数决定是否检查证书验证结果及名称。设置CA不自动开启验证，与下游客户端CA公告无关。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_crl",
+    "summary": "为Stream Lua cosocket远端证书验证加载PEM撤销列表。",
+    "syntax": "lua_ssl_crl file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1107,
+        "end_line": 1111
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 987,
+        "end_line": 1029
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1693,
+        "end_line": 1695
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_socket_tcp.c",
+        "start_line": 1831,
+        "end_line": 1868
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 980,
+        "end_line": 980
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3328,
+        "end_line": 3342
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认空路径。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域set_ssl调用共享CRL loader；非空文件加入存储并设置CRL_CHECK/ALL，空路径跳过。不是在线撤销查询；是否以验证失败拒绝连接仍受sslhandshake verify参数控制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_ssl_conf_command",
+    "summary": "在Stream Lua cosocket的SSL上下文初始化后执行OpenSSL配置命令。",
+    "syntax": "lua_ssl_conf_command name value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 68,
+        "end_line": 69
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1123,
+        "end_line": 1131
+      },
+      {
+        "id": "implementation-2",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 805,
+        "end_line": 856
+      },
+      {
+        "id": "implementation-3",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 981,
+        "end_line": 988
+      },
+      {
+        "id": "implementation-4",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 1113,
+        "end_line": 1118
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.h",
+        "start_line": 210,
+        "end_line": 213
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 1129,
+        "end_line": 1163
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1595,
+        "end_line": 1664
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 3433,
+        "end_line": 3463
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "NGX_STREAM_SSL且版本条件满足才注册，TAKE2要求两个参数；post从module68–69绑定平台检查。create_srv_conf的pcalloc保留ssl_conf_commands为NULL，未赋UNSET_PTR；merge_ptr只合并UNSET_PTR，不能照搬HTTP的父级命令继承。泛型keyval setter支持NULL并分配数组，不据此声称配置会崩溃。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_malloc_trim",
+    "summary": "按Stream Lua日志阶段计数周期调用libc malloc_trim。",
+    "syntax": "lua_malloc_trim request-count;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_module.c",
+      "start_line": 1136,
+      "end_line": 1168
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 551,
+        "end_line": 571
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_logby.c",
+        "start_line": 74,
+        "end_line": 143
+      },
+      {
+        "id": "merge-default",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 789,
+        "end_line": 793
+      },
+      {
+        "id": "official-doc",
+        "component": "lua-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1279,
+        "end_line": 1311
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "支持平台默认阈值1000，执行还依赖LOG handler实际挂接。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0关闭，支持能力宏时显式非0配置要求挂LOG handler；默认阈值初始化本身没有设置requires_log，不能保证没有Lua log挂接的任意server都会计数。作用于libc空闲缓存，不是Lua GC；不支持平台警告忽略。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "stream-lua-nginx-module",
+    "module": "ngx_stream_lua_module",
+    "name": "lua_add_variable",
+    "summary": "在stream主配置注册可由Lua写入的变量。",
+    "syntax": "lua_add_variable $var;",
+    "callback_definition": {
+      "component": "stream-lua-nginx-module",
+      "file": "src/ngx_stream_lua_directive.c",
+      "start_line": 1300,
+      "end_line": 1335
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_module.c",
+        "start_line": 484,
+        "end_line": 510
+      },
+      {
+        "id": "implementation-0",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_directive.c",
+        "start_line": 1290,
+        "end_line": 1297
+      },
+      {
+        "id": "implementation-1",
+        "component": "stream-lua-nginx-module",
+        "file": "src/ngx_stream_lua_variable.c",
+        "start_line": 67,
+        "end_line": 211
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_variables.c",
+        "start_line": 149,
+        "end_line": 218
+      },
+      {
+        "id": "official-doc",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 273,
+        "end_line": 289
+      },
+      {
+        "id": "stream-doc-scope",
+        "component": "stream-lua-nginx-module",
+        "file": "README.md",
+        "start_line": 126,
+        "end_line": 185
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 633,
+        "end_line": 639
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认规则未核定，不从移植文档直接推断本域默认脚本或启用条件。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整继承未逐项核定；本域create/merge与HTTP不同，不推断跨上下文追加或自动执行。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "必须以$开头，空变量名由core拒绝；使用CHANGEABLE|WEAK注册并获取索引，缺getter则设置返回not_found。已有可变变量可复用，但已有不可变变量会配置报错，不能照抄README的一律无操作描述；实际赋值仍由本域ngx.var setter检查并写入。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "stream-doc-scope",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行流程没有对本组件直接应用patch，所引Nginx片段在实际回放中保持；结论限于明示事实，不外推整个Stream Lua运行行为不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "openresty_version": "1.27.1.1",
+  "openresty_revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+  "component": "redis-nginx-module",
+  "version": "0.3.9",
+  "revision": "411fef36e130129b670fa7f2672bcad6ab2cbdd3",
+  "processing": {"file":"util/mirror-tarballs","start_line":692,"end_line":715},
+  "patches": [
+    {"file":"patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch","hunks":[{"hunk":1,"line":24,"fuzz":0,"offset":0},{"hunk":2,"line":51,"fuzz":0,"offset":0},{"hunk":3,"line":199,"fuzz":0,"offset":0},{"hunk":4,"line":257,"fuzz":0,"offset":0},{"hunk":5,"line":936,"fuzz":0,"offset":0},{"hunk":6,"line":956,"fuzz":0,"offset":0}]},
+    {"file":"patches/ngx_http_redis-0.3.9-default_port_fix.patch","hunks":[{"hunk":1,"line":1023,"fuzz":0,"offset":2}]},
+    {"file":"patches/ngx_http_redis-0.3.9-remove_content_encoding.patch","hunks":[{"hunk":1,"line":614,"fuzz":0,"offset":0}]}
+  ],
+  "targets": [{"file":"ngx_http_redis_module.c","sha256":"a22574b45a0ee2be65626d9cdc4bc5d4f7d4215a5aa22f31d8952d1f68d4db2a"}]
+}

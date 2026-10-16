@@ -1,0 +1,878 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "rewrite",
+    "summary": "在 rewrite 处理阶段用正则匹配当前请求 URI，并按替换表达式改写 URI 或返回重定向；同一配置中的指令按编译后的顺序执行。",
+    "syntax": "rewrite regex replacement [last | break | redirect | permanent];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_rewrite_module.c",
+      "start_line": 298,
+      "end_line": 438
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1038,
+        "end_line": 1191
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1195,
+        "end_line": 1296
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1044,
+        "end_line": 1086
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 256,
+        "end_line": 358
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条暂未核实可单独表达的完整默认行为，不以文档空 default 节点推断配置效果。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条暂未核实完整配置指令组的层级合并与执行关系，不根据相同 callback 推定逐条继承。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "last 停止本组并可重新匹配 location；break 停止本组且清除本次 URI 重新匹配标志；redirect/permanent 分别生成302/301。它们不等同于全部终止请求处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "替换以 http://、https:// 或 $scheme 开头时进入临时重定向路径；新参数默认追加旧参数，替换末尾的 ? 可阻止追加。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "正则匹配的是当前 URI，不把查询参数拼入该匹配输入；反复改写受内部跳转次数保护，超限按500处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L256-L358",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "return",
+    "summary": "编译一个结束本组 rewrite 处理的返回指令，可指定状态、响应文本或重定向 URL；只写 HTTP(S)/$scheme 开头 URL 时采用302，不再执行后续本组指令。",
+    "syntax": "return code [text];\nreturn code URL;\nreturn URL;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_rewrite_module.c",
+      "start_line": 442,
+      "end_line": 510
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1489,
+        "end_line": 1506
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1753,
+        "end_line": 1827
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 2541,
+        "end_line": 2553
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 199,
+        "end_line": 253
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条暂未核实可单独表达的完整默认行为，不以文档空 default 节点推断配置效果。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条暂未核实完整配置指令组的层级合并与执行关系，不根据相同 callback 推定逐条继承。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "301、302、303、307、308 在所引发送路径使用 Location；其他带文本的状态走响应正文路径，文本和URL可含变量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "return 444; 不发送普通响应头，而进入请求终止路径；不能解释为客户端必收到HTTP444报文，也不据此保证所有协议下整条传输连接都关闭。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "配置入口仅校验十进制状态不超过999，接受某个数值不表示它是标准HTTP状态或在所有协议路径都具有有用语义。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L199-L253",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "break",
+    "summary": "结束当前 rewrite 指令组的执行；若本组已经改写 URI，同时清除 URI 改变标志并使原 location 映射失效，不重新查找 location。后续请求阶段仍继续。",
+    "syntax": "break;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_rewrite_module.c",
+      "start_line": 514,
+      "end_line": 528
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1510,
+        "end_line": 1522
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1044,
+        "end_line": 1086
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 67,
+        "end_line": 95
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条暂未核实可单独表达的完整默认行为，不以文档空 default 节点推断配置效果。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条暂未核实完整配置指令组的层级合并与执行关系，不根据相同 callback 推定逐条继承。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是结束连接或直接生成响应；与 last 的重新匹配 location 行为不同，也不是跳出任意编程语言循环。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L67-L95",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "if",
+    "summary": "在 rewrite 阶段求值受支持的条件，真时执行块内编译指令；location 内的 if 还会切换请求到该块的配置，假时跳过块内指令。",
+    "syntax": "if (condition) { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_rewrite_module.c",
+      "start_line": 532,
+      "end_line": 644
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 648,
+        "end_line": 864
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1526,
+        "end_line": 1551
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1611,
+        "end_line": 1748
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 98,
+        "end_line": 196
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条暂未核实可单独表达的完整默认行为，不以文档空 default 节点推断配置效果。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条暂未核实完整配置指令组的层级合并与执行关系，不根据相同 callback 推定逐条继承。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "变量值为空或恰为单字符0时为假，0abc 不因此为假；支持字符串相等/不等、正则/反向正则及 -f/-d/-e/-x 等文件测试，不是可执行任意表达式的语言。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅接受 server/location 层的配置块，块内指令须支持相应 if context；server 层 if 不使用 location 配置切换。正则 ~* / !~* 不区分大小写，普通 ~ / !~ 区分。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "文件测试走文件信息与缓存检查，不是在网站解析时访问用户配置中的文件；本知识站识别身份不执行此条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L98-L196",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "set",
+    "summary": "在 rewrite 运行时把表达式求值结果写入当前 HTTP 请求变量，或调用变量自有 setter；表达式可由文本、变量和捕获值组合，配置时编译而非当场赋予所有请求。",
+    "syntax": "set $variable value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_rewrite_module.c",
+      "start_line": 897,
+      "end_line": 962
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 966,
+        "end_line": 1020
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 222
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1813,
+        "end_line": 1863
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 413,
+        "end_line": 493
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 379,
+        "end_line": 391
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条暂未核实可单独表达的完整默认行为，不以文档空 default 节点推断配置效果。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条暂未核实完整配置指令组的层级合并与执行关系，不根据相同 callback 推定逐条继承。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "目标必须以 $ 开头；既有不可变变量会被变量注册入口拒绝，不能对所有内置变量任意赋值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "写入的是请求变量或其 setter，不是共享字典、操作系统环境变量，也不等同 stream 模块同名 set；执行位置和 if/break/return 会影响是否赋值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L379-L391",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "rewrite_log",
+    "summary": "控制 rewrite 正则处理结果是否主动以 notice 级别写入错误日志，涵盖匹配、未匹配及改写结果；不改变 rewrite 的执行结果。",
+    "syntax": "rewrite_log on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 225,
+        "end_line": 270
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1038,
+        "end_line": 1110
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 1195,
+        "end_line": 1296
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 361,
+        "end_line": 376
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层 log 标志；没有父层值时为0。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "notice 是否实际输出还取决于 error_log 级别和日志路径；off 不屏蔽整个请求的日志，源码的 HTTP debug 日志条件也可能进入这些 notice 分支。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L361-L376",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_rewrite_module",
+    "name": "uninitialized_variable_warn",
+    "summary": "控制 rewrite 模块新变量在尚未赋值时被读取所产生的 warn 日志；该占位读取在 on/off 两种模式下都返回空变量值，不自动初始化为用户期望的内容。",
+    "syntax": "uninitialized_variable_warn on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 120,
+        "end_line": 133
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 187,
+        "end_line": 222
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 225,
+        "end_line": 270
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 897,
+        "end_line": 942
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_rewrite_module.xml",
+        "start_line": 394,
+        "end_line": 406
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层对应标志；没有父层值时为1。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只控制本模块的未初始化变量 warn，不关闭其他变量/日志模块的所有告警；是否输出还取决于日志级别。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际按固定34项发行补丁回放，142个hunk与47个最终摘要一致；所引注册、真实配置回调及运行片段均保留原文，仅核本条列出的行为，不据此宣称整个请求/日志链没有补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_rewrite_module.xml#L394-L406",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

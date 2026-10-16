@@ -1,0 +1,2589 @@
+{
+  "baseline_release": "1.27.1.1-f9f6f0ffb7eba3d8",
+  "baseline_index_sha256": "4276b2a74f8d071e3b85bb5c82489899b30c35cb1791bcc25f0e46b639c32b4f",
+  "knowledge_sha256": "aa4cec0555f452638815b155ea0b625f626ae5cd7cac61fb80ba70531ddaeb14",
+  "counts": {
+    "identities": 340,
+    "defaults": 225,
+    "inheritance": 312
+  },
+  "items": [
+    {
+      "id": "nginx--ngx_core_module--daemon",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "57cfb7ca60f5fce32bc540c4bf197a676a756f8c66b1dbd7145482cc05979d63"
+    },
+    {
+      "id": "nginx--ngx_core_module--master_process",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d0b04769fedf032cc2bc5f41f519f22c3f2ec5239f1b67c9549fecd80f895bbd"
+    },
+    {
+      "id": "nginx--ngx_core_module--timer_resolution",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "82ce5888550b353a15e3ae52365bbec7783cdf7d1b0f692f1fecf019d135a313"
+    },
+    {
+      "id": "nginx--ngx_core_module--lock_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "872a03a688ac70602a3d7277028a3dfa878e9b2a468d927c25d856a4b9d94e00"
+    },
+    {
+      "id": "nginx--ngx_core_module--debug_points",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "579d4e840bfaf0d531a9123ac7c6dd05ecf63c2c173d451a98210e838762c2ad"
+    },
+    {
+      "id": "nginx--ngx_core_module--user",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3a7f0612321a314116bd0f81a414e560705473b2310cc198a210d0e4f712078d"
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_priority",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7c237d6ec04ddd493ea232cacbb359eecb769578a65aacd885f73780fcaa95c0"
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_rlimit_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "125031d40d7ceb94ebbfe5a450abdff174558a79cf40f126f9a0ce6b2c176860"
+    },
+    {
+      "id": "nginx--ngx_core_module--worker_shutdown_timeout",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7d9a4de19dc2d4925259677b896907ef550a6f874c92740a9a2c17a06c6ebe3a"
+    },
+    {
+      "id": "nginx--ngx_core_module--working_directory",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "540f6d5c962245061fd095b1e9d6f4819859662a5eb5e263ebf16e9135c2c35e"
+    },
+    {
+      "id": "nginx--ngx_core_module--env",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1628fed066df64a9e13dbbd8935fea14df0b8e16b9e2e4b606e266d56b756dc9"
+    },
+    {
+      "id": "nginx--ngx_core_module--load_module",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "dbd53fddbef49c6a49a7dff14f2aa182eb6e514a46ce40de4781b1edc3144935"
+    },
+    {
+      "id": "nginx--ngx_regex_module--pcre_jit",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b1ebb06e960efcb561f926d181ab59d2f34f6127440c164b1340f3a2b49d9873"
+    },
+    {
+      "id": "nginx--ngx_thread_pool_module--thread_pool",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "837f94a48f7565fade44fd0fb30ef104fc5e1c771c7bba081884d2a780ff389e"
+    },
+    {
+      "id": "nginx--ngx_devpoll_module--devpoll_changes",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "e8dc97d3e29da20df30bacf7c684a0e2af9003a261a57679b5230557fd3714ce"
+    },
+    {
+      "id": "nginx--ngx_devpoll_module--devpoll_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "f8058b298bdc750d0d77d54a1480b7b919c74a53611d04fe46b57ed30164a6fa"
+    },
+    {
+      "id": "nginx--ngx_epoll_module--epoll_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "689f01e332751f55015cde65aaf77578d41914f3a4e96779f70608b12f0c1e69"
+    },
+    {
+      "id": "nginx--ngx_epoll_module--worker_aio_requests",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "19327dd970309267db009a56e1a9607d4cc2e884ca917bf75e3b013e836ff5ec"
+    },
+    {
+      "id": "nginx--ngx_eventport_module--eventport_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "33f1dae6fc246d19a3c89a0fe58645460fb9c9a1a2b07670a832561209cc4ec0"
+    },
+    {
+      "id": "nginx--ngx_iocp_module--iocp_threads",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "85a4ecb6e35ed0615c9cc23e5cbb28a6c8c6341bd45ea51a68dc573434325848"
+    },
+    {
+      "id": "nginx--ngx_iocp_module--post_acceptex",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "83ea445c3c4786fdc698aa7a40327b41beb6550725c935c7a5a4f04d3914dce1"
+    },
+    {
+      "id": "nginx--ngx_iocp_module--acceptex_read",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a5afb267c51cc69f4cd2d255dca9b506d4f40bd816a78f9458ca7eaa2f3a0344"
+    },
+    {
+      "id": "nginx--ngx_kqueue_module--kqueue_changes",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b6b5edee46357464feb57f3cd0b836193c1fe969898e6c2d454284c104b552b0"
+    },
+    {
+      "id": "nginx--ngx_kqueue_module--kqueue_events",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2384eb81b6a5cbca374104eb9df1d8291f71e3d095903100c34babf20007b902"
+    },
+    {
+      "id": "nginx--ngx_event_core_module--use",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "988c591b2ab1f8ef544145584aec8a995205a99187ffb5b8c6e2b3be375784e3"
+    },
+    {
+      "id": "nginx--ngx_event_core_module--debug_connection",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "100c78536f4f82e9af34000cbf357b7af00ce5edd57a342223896f1a77ba8aa5"
+    },
+    {
+      "id": "nginx--ngx_openssl_module--ssl_engine",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1928284367714bdf63628c4e2d50d2e3b4748e4517b6199b8166dce296e531e2"
+    },
+    {
+      "id": "nginx--ngx_quic_bpf_module--quic_bpf",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2fe6398cf207a51b783c8ff0b7d2f407356958388ce2c117c1b202a0a7a8db0c"
+    },
+    {
+      "id": "nginx--ngx_http_empty_gif_module--empty_gif",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "bea94c5cec4a1fb577497e40efb63fd7d665728e25c982f5ea73782f5f20eeab"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d43e5b51573a3fe4c5826aa430ee0bbab663ecd780fa6c4c9c05871958672a65"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_split_path_info",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "432077b0e8e8f94f70eff6d14bee83c71ee70ff0a9df27addab19e50307a236a"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0c2d4b61df1e2462e7d86662e8aaf6891f8f10e5d88198aebd82cd3ab4f6aa74"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ff3435388f9d7eeadab550d38feb21cd61cf72841969205106a3cb7f73e34739"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "4f118e4eca46ea8e5d9d306009e6dd826ffbb92bf2ac73e3ccbc44a1ffbda4ee"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "bfe4caaa0f27ee0ab6024ab4281040f6912c1ac5a5dfbc556f6523b1f5f4673b"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "4f99b03d7ec1389f82c8d30ae588ff3b1d0db882e408d4ab99a2ede712ac8af1"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "8277ff31a1a903e53b21ca014ccf34e76cbc811e2d1e03a1e0d527934c493d2b"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "a29afc490cc41a5ff63ad84315038cf8a95efad356c33956f8dfabec90e209ba"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3f4b1fda888fe8e3a20bd25af4995fe2cc66b48ec3e152c7b232493398109f94"
+    },
+    {
+      "id": "nginx--ngx_http_fastcgi_module--fastcgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "fe11efe0d85eed5ae16a195803937424c4db06c81a40018ae8173755d3ada5f4"
+    },
+    {
+      "id": "nginx--ngx_http_flv_module--flv",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6faf5f17f385ea9d4ef87885d4215daa54fd52f84d51b8c69897269c6c70c84e"
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3e49c618c6012d8dc3de02fd045b9fd51cb689e70389c78472cb7c4ef722e6d7"
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_set_header",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "1ba1f5f11daaef1e7611fbc4669179d98220bce1b19a32ec6107c09e3b80f18e"
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a5b3cabe1bf90620c94932cf516a1b1fe363f6102a0f58e7b70f53beac828006"
+    },
+    {
+      "id": "nginx--ngx_http_grpc_module--grpc_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1a0cfac3f7dc9c2c492b96711676fd980dcd582aea134bd27d7be66fc5ae7d0b"
+    },
+    {
+      "id": "nginx--ngx_http_gzip_filter_module--gzip_window",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "ff0fc200c367aefb57f5f64dabbc2f893515f10638cae48f22d58ed61055e2cc"
+    },
+    {
+      "id": "nginx--ngx_http_gzip_filter_module--gzip_hash",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "cf84558c2f85c152fda12042195b59d9110ea36648fa933e56a25b260861735c"
+    },
+    {
+      "id": "nginx--ngx_http_image_filter_module--image_filter_sharpen",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "419264f301b3bbc74de634674cef3ae6c4cfb9b368ab0d393f743fb432ed3252"
+    },
+    {
+      "id": "nginx--ngx_http_memcached_module--memcached_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a0256cd1fd5459360f55f61968e3632e72e2884560d85cb3140cebacb02f4e6e"
+    },
+    {
+      "id": "nginx--ngx_http_mp4_module--mp4",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "70b101f3313febab8f3657fd980a56540f603217498980d10f0e047b2638528b"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_redirect",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "62029dcbb92d35ef7be831fc024f57164e0f71021cc332d82a93e5ec07faad35"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "8e419757fd68e1e714a5066cdbe829518d5b1f36a1f07f9bebd710dcb7f03fff"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_set_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7f9ec035ae93809b923156e43df0cada11a1556e5983b739f6771bf3e855d64f"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_method",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7a65a930759d5bfdc0e9fdfe4575690a1eed2924b0430ef83301f1842bb01c8e"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_busy_buffers_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0c203f6a9a8248f16678d8155729c719c21af99e905109d1436467a9c6934d6a"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1946a9c762dbd9449479696e8097f28c3e1d204ac02d400152d8d7d32cea2640"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_key",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "6fa930b68fcad2b090bc7d8d2900a03788dc8a2858eb0c25660b08d572c26c03"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "9c520ee7059d1d7095efb1674e98d0f1be2684e77e677520244fa9f054dcfb93"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_cache_methods",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0fd63c86e5262f32e1f8ce842815b4421260cba880d28c931a31153abd2a9664"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6cfb789d4e8f09ebfc37fa47ef77bb5d645f7c6c4f11304d4ee0da1c60d415cb"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_max_temp_file_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ad6ea56713f3e4e3d168973fbd3ba034985ce80fd8f3d372429ac5b9f7e672d7"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_temp_file_write_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "e8f906805b2804962cd0d294e9cd43433ebd3b75bc291e792f390e60456eeeef"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2188436dc505898a3c66422fad18115420121e93fbcdc197d85e735d04b6c387"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "91a96f1440b76256ceb278261cc8c64574eb9e78ec5b2e57e16a7bc6e545c13f"
+    },
+    {
+      "id": "nginx--ngx_http_proxy_module--proxy_ignore_headers",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c80e0c0bfde92be946a24b006d384572e363579d829be6dbeb77cb069edcbb68"
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--rewrite",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ef998a3d12831eee8649cd4a5a1e116a3121910546273aaa003cdbe9732c7b88"
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--return",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b298655dd3ba7efa47dad98ae1ad2798bfed7fbc437ea99474dee6a3d07520ef"
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--break",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "aa4449cef5ed7c6fd82a3d1e38558cb80d8f074fd025db4d2b10a0472653920a"
+    },
+    {
+      "id": "nginx--ngx_http_rewrite_module--if",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "53cc8b6cf922628e76d9f786fd07b4dcd207e18ca95de910b0ea3685f125fa14"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "96905ef2f2431200acf62f3fa034abe5dd6ba2b79bf28b00ec9fa9949450c1da"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "36219d17d9258f52f6b9b149c32aa3fc0870d5e2f9798ee06dafb506897166e5"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ded84ec6c8215bea2756f2e7c5a1dce3a0f9e25d8f99f29ca3f06731a8aab4ae"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "90fd318f1d94708746df2fe2e2b9419e14439be582afc0c63a637779ffe87216"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "9663571202aa7968fcd7d86d914c9de1ee1ec89fc2c8b1b73141cfd795a2086c"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "7b3abe91ec6bc5d6e8b71850a1ca4ff34b8e131ebe193902a7c6d24e29e34472"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "17f3b7b9d42db13742a8c597e5f2ea500f951ae51283bd819312170340eeee52"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "70fca05661047210235ba691944709845f6a7b02e22417d46e5188417967de55"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "361aedfd6b81d5a9c54033844e0e51276de5e762064330d8029e894d8b484ad1"
+    },
+    {
+      "id": "nginx--ngx_http_scgi_module--scgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "78109841f0e5c587ccfa34c918a87c5cc3781f3e791943bad50e83d83bd14c58"
+    },
+    {
+      "id": "nginx--ngx_http_stub_status_module--stub_status",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c189d786a80791d8e241e6cda2e2f4ddcede0ffafa4f0c03cfc899820393faa4"
+    },
+    {
+      "id": "nginx--ngx_http_try_files_module--try_files",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f03c45f18f0c7d43b1697afcbfe50baef9e57672aca484deb5e901c893b6689d"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9ed93ee02e6c5fb054c0721b8b1b6aceabf32012cbcb36b2e1ccbd91fa707322"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_store",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "e71bf372a5d2e223269ca961ead6ae420297ee2aa7958593d2421033efcfeb31"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_limit_rate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a077dbd654b6945b11c0a47bccbe3cad436d748091333a5a2a47a8e65ab6c840"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ce9dc5e6d400e8cf8d764741ad9c1d5659520a4c9120275df80a2791cf589bdb"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache_key",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "66af0b5d2ccb26d4790e0ac3be0a432c5814ed3219639a1a25f2360ce584e54a"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_cache_path",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "ada099bab45195748b786658ab7f4d88315782434753bf0ce6a5638abaf292c6"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_temp_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "94a8e926ac2842812a1e88b3159b0de18b1008bbcdffcb522c5239afc2b375e5"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_param",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "f08633074849e1f1d223a199f225ea675389292fb0299c625d8e36c8986b18e4"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2535ee9cc4fde5062f884b5b6f3757924e3881395feee049c0e2bfbf495ba22c"
+    },
+    {
+      "id": "nginx--ngx_http_uwsgi_module--uwsgi_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "37f1af5740a42e3b6c5e765fef263537dc75cc5930a357cfad95a1fcdc3a9f0d"
+    },
+    {
+      "id": "nginx--ngx_http_perl_module--perl_modules",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "7d352a8903d18932f8335c0c391ba2f0e23b3d68a9029bae28021182cb6089dd"
+    },
+    {
+      "id": "nginx--ngx_http_perl_module--perl",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "0053b3b5d58c2c6b0a8121c352ea562e536e30b8524ee10f27888fc84e7d6eb1"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--server_name",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6635ca004c9051583ee4c5d23628805c311e5942adfa92a4694b2b56c1c907d4"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--types",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "bce0766464d53563885b397d7d4d9b9709833722a5994afb078f1d7fe844ef72"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--root",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "6f8ab80d6c6fe8419f7b3a255c08a4fec1eeea40e401b3a332bf66e472eea9a1"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--alias",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "8ce2e56a3850013add4957db4afe2c76af6e0706154c0e348cc3d3fcce433710"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--limit_except",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "00e6797de2984d619dd5aa3cf23424fc182074697bc68eb32d8b27c7703f74be"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--client_body_temp_path",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "130691203e9e0893f82f4b4a0e411410cf76719a0e2bdd775beab638fdd81392"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--subrequest_output_buffer_size",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7b8b534b54cf81cf4b02458b900e1d584f4504425e1f68ff250284119563b745"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--aio",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3930d16be4d91c5d36c7ca1ee9113ea73d44752c81d161ad549ec1d21b6154d8"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--aio_write",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a255776fa34238682c4096fe69f30b0920cb1b259c9868521d4dd59097f4c6cc"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--read_ahead",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "f7203a5779d2a06f233e80570c945ec50562f417ba355d01d486376604885f38"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--directio",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6d25aab1f5b89d5790691a8ad4b6c9b4c9daa6e38bdabc50f70cd72246e50b0e"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--directio_alignment",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a9266c96a513b8c53f83e4b681ee82e0a75eda7a760355f055ed4bc2b106140a"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--error_page",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "6fe28456159fbd7d4d359cc3c6869369af512c4b798485d1125f6cf610a75c93"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--post_action",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "a2ae016121cba7829f98ab178d3c7052189897e481ff9c76012e7784d903fbf1"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--gzip_disable",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "cb488069749ab2e272d4d1cad908cb8ebaa00ef91b7382eae5facf827a477ffe"
+    },
+    {
+      "id": "nginx--ngx_http_core_module--disable_symlinks",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "85e6db0e0a56f5948dd5f6faf1004c376e66a470cfe6ebfe7eb5a93ba7bf3c6a"
+    },
+    {
+      "id": "nginx--ngx_mail_module--mail",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "f6ff0a7a0c4247391f1382087530c26d307ab641a4bd46af54626ddb8cb5035e"
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--server",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "99c3e646065d51a984643f95986b4f12fbdf63958dafb29e2070ffe579bb761b"
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--listen",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "889741bd1a5487892103ba8cfb348ca4b33882d53fde5811ea478bf16204e3bd"
+    },
+    {
+      "id": "nginx--ngx_mail_core_module--protocol",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "63a7a1059dd8068c3489cbfc6426374294a2e3b37ee3c114aec54c3f0a118020"
+    },
+    {
+      "id": "nginx--ngx_google_perftools_module--google_perftools_profiles",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6af93fa072efbf8b122ccf9d1b74df00418ae63285287f15ac33660a1612befe"
+    },
+    {
+      "id": "nginx--ngx_stream_core_module--server_name",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "26e3f6fe665449bb5385738df64ec4a5d0468b89d1f4d851a01d2a9ad17e12ab"
+    },
+    {
+      "id": "nginx--ngx_stream_pass_module--pass",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "39d799259cf6b03881df1aa4e0a9b7f6a770969136f8f7a9be98504498619496"
+    },
+    {
+      "id": "nginx--ngx_stream_return_module--return",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "d334a3044cded93cfffb8fa53d7378257b3cc1d76ac7986d5081437de0bf112c"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_load_resty_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b511caeeb308f8ed29133768b9901356d4f20d512d78dd6b74b5bac657c51f40"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_thread_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "ec6c9ceb8533d371ca6aef3d37daeb5308fdffbbd5d078aeeaf78e8b8bd70533"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_max_running_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f784e7af263ad968dfdf90f32519c6bd1cf4c4a63ce549bfe9187deb0cbaf4fc"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_max_pending_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "197b28a8914417a3251eeb90ec8f7ca7eb5eadcf854daa255402291695f4913a"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_shared_dict",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "cbaec3e138d8d3af90cd0a55da3c97deb2f9647cc23832139a11303b0acb1d11"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_capture_error_log",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "09876edfb20718f28413c2a68d5a84f0dfad12effc024ddf916f8479b44738ae"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_sa_restart",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "21beb1c2a11c9ab82353a7f2cecabd7cf67a102dff2a82740a19f81f060bb91e"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_regex_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "9f6210a9c01e2cfc630425ba47a52ff8a9c16ef3465ea08580f093b9aa7a4bf1"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_regex_match_limit",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "23f09d2e214ff5202a7021cf7a81400fefd16e243b8bc40188a3b78058c1850e"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_package_cpath",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "821736f38ae29d41009ed9b72bdf3e5ca01ae738cd3b3a2b7bdbf664ec353f5f"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_package_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "427d5ebb6e837385c77de569b0dd1c712c08f8e60364c5a77aa504587c41cfab"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_code_cache",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "6cb318506bc23a3862cc5713f329b03106faa6283a29da365546f060b66d546f"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_need_request_body",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "66c5ab2c27666a0b4a3e8d9c761ac1a17a1bf06fb98e407dc7ecf5d9042976be"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_transform_underscores_in_response_headers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "afd979e687dcfbff67cb7f2c3c4b7401cd6eab2480262dafaa27c915f15fe2a2"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_log_errors",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "bb0e95a81227ca779464523e6d2706824bf218e3585186a64fe4437711d30eec"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "971422bc04af7c5964945ee75c8ef8f5b4d7fc54195f0361936b5ae712ee504f"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2c3cc78a26bbc45c32ec4a6c5c4f4676976d147937508c9c20306d7a3c7b81f3"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3ea8e75cda26538e3f3cba965f134544346d939ff9d4878730d3a206d0540864"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9eadc89daefb2decb5a335a767da108ec761cccb8deaa1f71504a9bcaaddd4e2"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0674a76fbd347e4112cf2ba07e91a5d3752ff866401e44bfd60723512936adae"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--init_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "26466bf91b51217a5b96c38bdaa9dba24d67631187a7654ed87cd5045480c67b"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--exit_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "f7fe2229ca3638d5a2ea56a557894ad4269219c6ae0aa1f7cb1b28ca2ca32606"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--exit_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "acbf9acf48aea0e8d636813bb3fb609b811dd2c13468b14f76e89e03793eb891"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "4f065a6a5ee58e432566f7e4cf545afb8ebeb303b936270495d5f1d90b069ab8"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "fa71edbede64ef2792ff135666639da8f988c7e1b40c34a449bb0f519de1cfa1"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--set_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "23f47ded6f5b19ac4474d5957699258829344c8cf25762c3f3e847073e38fa23"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--server_rewrite_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "10bde1ae2430e60f1204f18c7a020726103768a7d79106c5d0d4fe2c47342fcc"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--server_rewrite_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c93b4b4395fd2cbdaa9c30bef71423e60b40b3e0e3d44bb94e79fca285decddd"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9b98fc0f0ef080dd8627a13018c1097ff244f718a811a2d09e46a43093f4019c"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "892c42382f73556eba7048612fda9ed480cca15e32b83ca5fbd5d1ab0f232a2a"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "87bd119609153f89b1e4b49c641b4c54b707aa87f412166728695d3ef3469a0f"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "62d9f399d9c92ea9a0bb7518453d2b354ef056855b34b702d5f90a4609f3cd2d"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "726e0f09b6bcc1fafe7916334511c80f54e4eacadac652870ec1867da02c5345"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2f4a2f73138beaa5d23c85c0d68c391f6fcc917f35e9082fc37f432b35d95b2e"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ce3f2b1cb7ad9d47ca3d6590447433538d3669ed43b430df1defb2632bba2cd7"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "dbd344891c8599cddb417cc5dd12222362697688947ecec026d9c247c5413353"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2df39e44115f9bb70ea3240edf64ff20a688c7e0b2767f969a8d7ced15fa1ff7"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--rewrite_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "b11871b57321983976ef4f80e19f0d26d08d65b2f9f979f2be1bebf255e751ee"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "446e51396d2b14d61f19504a49dde5a6da3dd1d1a33a30abd0a042a8e33f1b37"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--access_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "9c6472d5463e22126aedc33d8f900c8e038c862aa44f49564d57a9c77b90ec8d"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ca5fc8377361470da5bd6db3cdf59d60949379bdf5913b2c09397fa6f747d4e2"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--log_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "272720c4f5b55c868e1b908e3142b87f25b8f7ef9d50d2416840f496bcc1b9d9"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d85dfd768eef3b5232949418305aa1afa323184cb735753a946c10ee4f695229"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9f88f394260dffdb8e89fc470fb76a3f02132c5872b3ca3e4f3b38de019246c8"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--header_filter_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a0732c79193afc6c7cb73dbe8f6473d6ddd6c3e9af67b6e98f32c0a30e4d261e"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "a03a706ce53e6dbe19b8fd93ae7d722eed1e0ff2e84c501a9e4652bdb1aaa996"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "45e9bd8f4539e00a240519542b0382a264c5fa8145d932a2d38f6b99b264cbdc"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--body_filter_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "84a4af60cd55dba320629b1c3ca984f53838afcf282a17281948c97e11a8b322"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "4fc4930f1fd89dfb9b483e2a83841992854664ef0d46376f794d1507ca3d3eb8"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "59a27173de389b8cb4662d03a3b97da332f5c27b5988b9cc5fb34bcc42e0ba12"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--balancer_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "8bda2eadbc5fe5f1ea7f9fc72b5ceab8dd6f95cf393264e50eafc4f64ebe0942"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_keepalive_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "199037ed2280c471d18f84c1c84565d245bb7a0a9fd61193215031cf8464c08c"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "81df5a878166bca8bf75f24f4a76a76baaad2165140344a7d232110fdf07dbd5"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_send_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a82f9a19502d11ad69e3d0a279353cc553ae76952f966e21793d396ef592247c"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_send_lowat",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "8ae577c566a1296bfb3f2e10c33e769e6689556f61e66455f8c8ec9c2c1dc929"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "c0a5a169ba51c008ed7f70a9bde0bbf0092420bc29f149c4200fbbf86faff4b1"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a990cdabf07617ce8867e2d0256287a6ffdaa1fa9d5dfc1ab737580dfc3ce975"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_read_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f3053b9da3ca3f82eddfe1e60f817ee3cfefe2b784a5f9fb9e83b870ac8d5e05"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_http10_buffering",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "ad828bf4c87c570b80c9a81a138987fe6b3376bc8bf9d995133880ce99eaec36"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_check_client_abort",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "ebf13a83e3189cba64616aa3f2e99ac00cbb487f3f97f5645cebaa073fd16523"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_use_default_type",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "3814246ca97091c0d367c9b68dc9f431e1ca12b7ed068586c2176132ba2259f2"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_protocols",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "8632d9c33fd0ab93efe0f3b4fc577c91e8db176578eaa1cc2836d67322e311f9"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_ciphers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "9ecd25d6fdf2b5cb604f4282de266a75eb82149a5e546fc104c192b5c60a8458"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_client_hello_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d5c49f4bb04b2e0b03dd3fc3a398e44610df8e36daa22934a405d95163a180b3"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_client_hello_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "92c5a21c25b1bf90d9a1ca14dd9878ea2aa2762693bc8f5e4b9a579b3b61a907"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_certificate_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b6b0fce5f636178ba09387a062f92272b9f6fcc0514e4aaf635c2b315d0a8c8d"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_certificate_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "fd66a3774d948a339d26ae28f5cd8bf1b3c24a4b726c239cbefc31837b1e2a2e"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_store_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c2b0444c1aec434f8c39c8446db27a7bca39c9e4bc4f6727af8725f47ec211c9"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_store_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0912715bdee446b06f24a2cb7d59bf55c7ba49d1719946d5131d5c4cfad69b0d"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_fetch_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "26f65a330aff7a028fd7fdf7b56ba976858b22b10529a312e784784f9bb0d1c4"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--ssl_session_fetch_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "54f998ebfc6ca31745b5258195cc11d86f97d1d2320d26d31596c5ca30ae9a39"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_verify_depth",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "daf42dd69d49ff13462b5d4ec673b9ac6280adbd09d68f91527fb5bf4b0bcc12"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "eb24774d23d0b5368b9d1c7faef21e4bbf6c0fc725239be386c7bb1c75c03dda"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_certificate_key",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "eea2cba6075b10348f191fd907083bcfa48178205e1b72a2f24df3b01f9b5d6b"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_trusted_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f674379965ad109c54a50b85b09bb810965ac11631775c27d51a2ef361743abf"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_crl",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "3dea414ac8396550a81d545e0bef7ef66b1db502832b29afd541110260190999"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_ssl_conf_command",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "603c1e78e4b24cc2dc3390812fd988fa8ee1d1e50b84ede56980dedc96950eb1"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_malloc_trim",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "fcb1cf9cbe9cd3448a8681e306f3f2164f317b335eb298d510d497eb2e466940"
+    },
+    {
+      "id": "lua-nginx-module--ngx_http_lua_module--lua_worker_thread_vm_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "5d5e1ac3e4ff99274776e24847c283f497c14e6530b786876995c099c723b701"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_load_resty_core",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "acbd4c2260536eb44f3ae136b686e1083dd0b6f5825bbe850708a1b454e323a0"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_running_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "914329162c4b26bb9cc153dd03daac91bf1867da8dccb55a8699834b6e75868a"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_pending_timers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f47a3c47d526535160372a24d079d7059edf69dcf193e30944c6693e29a130d1"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_shared_dict",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "8e74de1190e597b3b8a1c9d09cfcb9ac4cd43528370d8f70c6e0063060f61144"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_sa_restart",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "40f97bf5d62bcf5389a85e98bd287d86304c6e0056613879e20e4404de94052e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_capture_error_log",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "4134638bd9e0a222438968c00c4f24b5aa0c41492848e177c3c57d3a0dd8c016"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_cache_max_entries",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "94a6f13ccd97d151daa7943be08909a6fefed84beadec6e84af2ca899be588b5"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_match_limit",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "6cdf1af116f6c09a82a06f7690c9a0d9864b6928d97f9edb666e9c949ab0d35e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_cpath",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2f2a078aa83e9a55c223ee16ee041529dafeaa1c1536d59a4a43c4af0932abd0"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_path",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b96b7be54f08d6d024b967a2244fafa86abfd5f97b4bf507bd5ef074a91075e9"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_code_cache",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a614d2d75a0195c879da69ab3af1adc03720947cbbbf44cfc3228879c06c5bc2"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_log_errors",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a20d10aef8ccc827ce1633ecdbe2c258eb071a73c9cab373cef10e5da4f4247e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ef7c8396285b47e4c8d09de011c2399580fbadf4741df841444d07d9cc1ebdeb"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9b6861a87bf39ad2230301dc2f78c8c66d9b93973ebd9d74e109994c1c132646"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "be0b9c2cd5ea0efdda54d0a3c6b7fd2bb3580233802959ac4569be73f100a916"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7491a61a9992c7c52bfdad849088db0f5db3d3d5bcbbf279ea342c11b7c5355b"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "617b44150d533c26bbf6743e9cbef71c8f682483694e5aa24e6eccace0e51cd6"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "f530861497a57cf46bd89ecb427c87991de1d00da16bf26950dc4123c418da98"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "5ab8e76e6289d3b3fe5320c7dce7ef2715c52b8906912da20cd0e25438b55af3"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "489f620339e2c801369fc1f80fbac969d90835a6ddd45f6905dfce8395fa9bad"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "bc48b73a7fa4131710994a1b8db36c465bdb7be4dcb1b384ec519103471d5e5b"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "08f0213de31aebd5c633af2d412d3dcba861fe10efcf31338126ac8099486b26"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b76eed6fa835f157741881c2d85db29ea6afefffca5dcd0b36602f27bac8fc80"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "98d07298280a53b38ae695d293210af4f7932e5ef6de50eb4d7a66d466460ffc"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7dc8ab7cd8304591cbc56215635d9521f718be878a51ec2cc8e15bf9c0052af7"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_no_postpone",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "8aeb146b4dc1ecb60f7c5610d7e98068e3019d7733e6273b08b636113c399bf4"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "95bcc162cc8d8fd7dcad116cb486e3bf24dc94e5e08cf8299fc755e9ec49befe"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c28b0f41ad9b5a9dde9353be7cf2b1c70012220e388eefa77a84632030eab1f6"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_keepalive_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "86ed7ca5a12d172b553754666904e5b04df750c0f0d5ef35246e051f1a1d8f22"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f91a73b0c8f890e891c330e22dc0e1925331b07d3609948b1823be63dbbbd19b"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "5b4d0535ddf6639b03d6bbf70ad60ab9ab2083d1e5e607a7fe0ec32ce136a469"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_lowat",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "2a6b32e06fd709813875f1983ad5d4b1fc00f80bbb075b5822a5691ea6fef4dd"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a136b8116477fa7d87a0ece7ab9266e481dbb15d1497797d1c2c8cbc1975e3b9"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_pool_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "5c6c2dda7eec453f3cf6847e41207d257005c7e08ec9f9740c62da8d27b31cd4"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_read_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "6f49d47b3d22bc0380947fb7f730cc8a3ff48393ce1865afa541e18c56ea8bcd"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_check_client_abort",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "9c54e0d59975816956fa5d7a956957328f19cf97f0ff1fefe3ed33c23389643e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_protocols",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "877b6e3b05f207c5c7a9c26bd74745ca1a2ca9d01525c116a10699eb3a4693c1"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_ciphers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "036d25d810a2e830693581ce3ceb3ce50fd4e0230977fafdc4e81eac0e1e50fa"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "416495cfcdbf8e605ae5d3e20bed6a1656338a741ac77fc0298ef87888ef4adf"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c6c73a6746cf48e254cdf8fdbbbb56f24bcc4b90a5b3fa2cd191f2b5064f2d7e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_block",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "e75d6d973b4d71ad93abd1a9d1c1ebc90b8b391d28fa32416676393ff92ebfd2"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_file",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d380cafa0d5e93c21b018081a82c2f33407ed7272bb1af5d4118c796c04432f7"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_verify_depth",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "a1fe5d213a29a6b4f2f9cc0a094fc3e75da867ef8bb6cf606deb3b3d730b7063"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "2962e17c4d094a0f18569dfb88f120865f15ea30525b8eb12e31050dc0395e6b"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate_key",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "2fc953c36d2a66486b9e422efb29198438db36769562ca0617aff8ba977e0ef2"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_trusted_certificate",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "68862cc21b2355e1a8833251290963600f020044d35f99dfdb1ce82f278fc566"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_crl",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "90e831236ffa5e2a7181b3a239e54a2732584de28dbdb427900f22f56378df8f"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_conf_command",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "bdef22746105485a30c190267aed1428f494d06aa96535d16f46d0aee2946b33"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_malloc_trim",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f31ffc5bd98fa3aafec7ed50fe45c409fc5c1b1a5a7ace197aa06cff760e159e"
+    },
+    {
+      "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_add_variable",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2ac6507c9b21b119d8e0f1910fa3349c6bb5b1fe07c0a5df97b6d1bb0ead8ae5"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "616af67cfbec52ab270cf8972046311faacb7618ee907a107e616c71f42afe05"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_request_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "96d5d89e3e35686461696f3be6d82d8ad4cc3e5f932f72faa478182c9e07e654"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_sleep",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "99fb8e55660d7d5879dda22f33666a07065f71fbcefc1d48152ac6e46eddcb72"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_flush",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "fac186ef1ee2720b366d991110c7e4c100a7cc22a6c015194f0e9fead82b1d00"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_blocking_sleep",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "2eeb91c8178ef10805f5cbbc80bfb7de00e16e5cbaed58ea7c88c8291497553d"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_reset_timer",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "871c6d8c4a261f973caa00b5ee759a93fa265256fc90a170a21ea3167f390e1f"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_before_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "e211dc0932087e1648a98a1b458880fc7c00b35b454218d9d509e6a07d81a921"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_after_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1c9e3a015838c8f54879590f06113f795c5d2f6d154f04809142fde2170812cb"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_location_async",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b24e0729982aa207ed8b363bc9f48b3d94976d0db20a9c7ef3f31e000ca4cf0b"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_location",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b0b9a4349a09b4f681a3c0f5eec212adf9bb52ec1fd7d12f942b6710ae251eea"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest_async",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "129a4b40c37f7286cd10053e06809820186e3aa6d500216a824ce79384e44a35"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "54c029550c2e4fccf7c567a4851c2ffec525ac623fe258cb908810bf06fa6b19"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_duplicate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c58f414fec624f2def9fbaee2a4a50ed33e4021e5708616742c980fd1390aca5"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_read_request_body",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "398f46b6d18f5870870761a5c1196eec6889c94a3c2c48fe09162234227e9c2e"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_foreach_split",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d4e44745b7f1d3f9bec1dc945f30f1beb7833f4189efe79bfd824204e54fa883"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_end",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "abdef7152653bda8e2c4c216fea9ee4fdf2c1538eeb0e561c0b8ee5c675ff4e6"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_abort_parent",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "fd8f8c272ffeb101b0984355412de0645e2f09855b7a238c97b4654faee2a66c"
+    },
+    {
+      "id": "echo-nginx-module--ngx_http_echo_module--echo_exec",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c0c0c36d2f8a314ed79696ab7d74c06b46d047cbeb5e5991a9d8d73e5784cd40"
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_headers",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "14d1c287b54c038585a550f167e43f8cd5fb9b4f369e23ad245a0858a51d4cfa"
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_headers",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "a386f37f0fbd3362b39f06bee1ef3ca1ffc820e8227acd3a04c0ac246f8f2d4c"
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_input_headers",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "0aa0bb4b23f13500bd02ba43070a775753039ba1a181153d0df8f9f3d43be451"
+    },
+    {
+      "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_input_headers",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "290080dfe8320de9f19554597911c3cf63f0e5d04421848619d72a4bb9cefbb4"
+    },
+    {
+      "id": "memc-nginx-module--ngx_http_memc_module--memc_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b734c51fb38ba3fa9d96ad404731d87bd3f31225ab2d6c7159f580b12b751017"
+    },
+    {
+      "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_hide_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "1ce5d112876813e6ea7c2da9db9b68a6090467e5ae616966b43527ec2027655c"
+    },
+    {
+      "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_pass_header",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "aced71aabd62c6d2196a4885f77e57eda38c2af6d92bcc760c7615bb45487fa9"
+    },
+    {
+      "id": "ngx_devel_kit--ndk_http_module--upstream_list",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "0a4458d6946c0821841f06910d916b78a65882717c76c6cbfee35ab6f4e7cec6"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "c88e4326c8c96b01858274a08dff303ecf487b8054d94bf3db29073f74063d9f"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "036a566ff3c81e21f01549c3922ddcc72071f21d694455cc3c04003ceaef1e7c"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64url",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "8cf69b78d834ec9bf6a72d5e91d8a10d7b33beab57bcb6af26b2ff188710f188"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64url",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "aa7944c9d5b07a9fda85af7628403dcc2986f8cd5ba6c1e2a751193278233511"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_hex",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "4789817a9ca57e626020565cdd83083cac9ce593b12c0760d89349e414e956c7"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_hex",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "de5fa2a329ce23cca7a8b7b1abe04ecee21ba437736e63059d7f3bc5f80ec649"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha1",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6969faaddd35c852664a3d6d9716bed9cf4b800c34cadf5f9a057adcd9c77955"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha256",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "c7dd0379bc52bca0a2762de300df3a53a7c99679db5d4bf849a4bbc046a7a95c"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_md5",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "e93db43a30d8494665832b7c19638c70b60decae645d0241a1c9f11226c1b1ef"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_sha1",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "ed081fb083bee506b28f2678e82ff56fc9e11c47f433184b6068df6b914a621f"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_unescape_uri",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "bc572f0eccc6a001fe678fc7203abdb73d56c2c371b3e0e46fbea42b878305db"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_escape_uri",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "4dbb8bdd27772b55c24473c4f060b2626971b33f477e97aa3823c5f9d49b245b"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_sql_str",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "eb426ae7a65ce39bb558f579770b31e1970bad29cb1d6ac9151a395ae9589708"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_pgsql_str",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "250deb8c1e04c45494d1b5e4dde08edfe28bfcc6259e31353fa77e4cf1039f9e"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_json_str",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "b6f4581d9cb937082105fb2101d315947e6ea1030a6f67ff06a4e1034fdf914d"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_if_empty",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "7c034b2e7f22c38211320233d8c673ccfdde4a221d4409f3a527e4610186ce63"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hashed_upstream",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b88da161fbc880a35a328264b521e4d508863312a42d62084f168ada4038263c"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base32",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "b9b491b7268d717a2c385b867a58467d1a5facef2d6e1c24248075cc5f3d2d74"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base32",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "7abb8c4b4b111625bc1c3a4279ad39fabda81659947e36d60307560a3a9b95c3"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_local_today",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "b4785383f5a24d7f08c8e7b039202785db5d256333b948179c5a2562ece91612"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_gmt_time",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "6e73c08cc4fcc6aa43e9ea5f0670d388413ea680c56a5dc1301427fbba6c07d9"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_local_time",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "ed4529923892c32cf27147c5c8d6fa7eb091987c689d46e893ef1262f45d5df3"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_random",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "0a24f1a34afe1dee487d64895e71f587a7e69e350b4520447758248c9d600e2d"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_alphanum",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "13143919cbaeeab8ac02eae11e8317da18a467ea34936a086b6c09b1cbcf02eb"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_lcalpha",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "4fa2d7d604b1d0f4c88e839caee2c731004c48e9f45d4a28cc116e76f37f8277"
+    },
+    {
+      "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_rotate",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "36ee25883ebddd5e29e6d0856ec44737b264bedb971a60c28e848f422841d1e2"
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_split",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "14245229f3f2102e3069eeb687db04b54142823b88ec332992c10869a7da97d2"
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_map",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "7c4e145edcbbff7a60ed7c233af30d2a37a2432189aad08e20e66dcd05ea2382"
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_map_op",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "9dae8229f5387217e94317be717a59d7a7f6bc7607b46a05b224e9afa020a3a8"
+    },
+    {
+      "id": "array-var-nginx-module--ngx_http_array_var_module--array_join",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "c4333af8ae599cd1ad0ea348ecc8492ca46a4062582a064b5151657955f9b4ee"
+    },
+    {
+      "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "2ff383a06fe5a6b7892a09a045358d493cf8284f72a7d5c8f71d7b875e9f3cab"
+    },
+    {
+      "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input_multi",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "b0a79a420ccf6105919017eba36f95ce170ad514f8357d49e5a0e00fe831e909"
+    },
+    {
+      "id": "rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_ret",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "9fef92d54d199340b995aa557efa465df2795cd20fb477ac0cd52274bb5e4b95"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_server",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "72efabde379b7753be003745fb643802dad89e6065ccb5e239a166fd30c27989"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "59843882f427d7f198291b51a5ee1a304fa147e4156badfc9a585e17c0eceef8"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_query",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "39265fdcfb9c4b0fd883e24ce9c38e4943ac68e36c102886ba66f95ff5c31ef6"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_dbname",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "1283b3ae8ea2de25b45a084cd906125a61b87d442697c0c3d789f5021557050b"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "3ae0712b7a2259f8b6884975dda17bd908dfdc61c5e841bd12fb869e703ac87a"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "3aa361e0254a15a363d62e4c54bb1bbbd47130408e2bc14e3750f6be38df8472"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_send_query_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "70865bea1724798cdc12fd683015908f23e0a6505d57365fa939613e59483c1f"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_cols_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "7b72a2c8d782a415f71b7b6fee8cfd3df37a784ce3039a0b30bd387400bb5552"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_rows_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "617dea90776bd0eacfc768c788c98b902e41ce8030041f5a1935b842f1e9b648"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_module_header",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f9146ade1eaed71e5cb24cdff7867ab1a79266df2d1a132bc531c32d8f9c7d90"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_buffer_size",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "69b714877eb4157edcad5bb660737b364778297560103765ebd653ac56e4aaad"
+    },
+    {
+      "id": "drizzle-nginx-module--ngx_http_drizzle_module--drizzle_status",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "14258c9c12f757fbdc274f3ec096f897706945528796c0d4ddfd0217bdbc8220"
+    },
+    {
+      "id": "iconv-nginx-module--ngx_http_iconv_module--set_iconv",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d4c7d99e789f4f2497e59c5394f672a28f310da218d7f178f452df215028bf1b"
+    },
+    {
+      "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_encrypt_session",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "66a59a59bed323f717ede804bb5122595119f70f2a21d6baa8c2e4db86c75f18"
+    },
+    {
+      "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_decrypt_session",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "e5d62a5f02cfa98a0128205f6ef67a1628b1ae92317dfb6474797cfcfc2c208c"
+    },
+    {
+      "id": "redis-nginx-module--ngx_http_redis_module--redis_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "d3b0cdf6a6735310afbb3ebcb5fa7fd08dbdfc895a79d7587504458de8154240"
+    },
+    {
+      "id": "redis-nginx-module--ngx_http_redis_module--redis_bind",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f2d79067772b528206dcaca9a8417e500f832f15e01dd058d6eba5c6458bb15f"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_server",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "f6438230cd264fc60347cb692729536619ce8620f93e811615c31108fbdc631b"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_keepalive",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "bce2d88aba8191fccbf0fdd65ebe5d5b8a95fd5251e470b0ae88685025bbdf43"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_pass",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "0b4b15467d3a6e5cb9c314f246363168cf020c363b73f603000fe221a8137f0c"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_query",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "4bc1a94281aa2821ee4d377c3cf183ffc0db70fb660259ec8984079843d9d925"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_rewrite",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "809406cf11e34b2fca4e330bc076c0dbae407757beedb2c292477c2b9234b3fa"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_output",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "627dc3a69ff2a5377e20e9517dff2c1df3c774e22b54342fa5620e956d9b0189"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_set",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "5aa18e50d4355897615e2b8ac798ab9fd9e7e604a97c8c7ca5bbe9052f623d84"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_escape",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "7f480769f68ec3ad507470eb71195f566aeb6bbe055a56ed8ff074f9003dd81b"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_connect_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "04a56cab18d8ff33477f92b07728f0e58e4395084bd85ebb5448e06a6e8d29da"
+    },
+    {
+      "id": "ngx_postgres--ngx_postgres_module--postgres_result_timeout",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "2048ccbf47ef5227dbb4f07e0dd236f04f6956c6c6744cabd722590b26e4c84c"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_query",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "df54b685d709150890b4168fd4cc6e969557ddbcd9132c7bb31fe9f8154e3d10"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_raw_query",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "d464052727e61ff9a08ca863be055a8429f9189bb927804f6729ee029640d6c5"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_raw_queries",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "2e5747f4ce59303e2eefeca1f5a3ab9f380a42fdb3f22c6b58652e861333e14f"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_literal_raw_query",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "3456aa7a17bc55c58ef7c8486c72ca78f890f882c9e50e789ff3bcd8fdcc0fe3"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_pass",
+      "fields": [
+        "defaults",
+        "inheritance"
+      ],
+      "baseline_sha256": "23b44b057486847534de21dcd35d5fb9e4ea06a51e79b22ddfde095b9394509c"
+    },
+    {
+      "id": "redis2-nginx-module--ngx_http_redis2_module--redis2_bind",
+      "fields": [
+        "inheritance"
+      ],
+      "baseline_sha256": "eee1e69e5d231c60c072337f5a62045706b1d14bf7df980cf2c596128531737d"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_set_key",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "dc3f7ee318edf82c40beeaa8adc4e239f6798ac5a271e4663ed103e5a66a4fd4"
+    },
+    {
+      "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_set_by_filter",
+      "fields": [
+        "defaults"
+      ],
+      "baseline_sha256": "b40498e9f7af65aa8594e8c02aa1a643b6a743457670bf2a7f2d9d4b3a36fe04"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# P21 redis2完整11项基础内容
+
+2026-10-13主准备；正式677未增加本组。固定c989c829a2877132cb100f901e320921250e068d，HEAD/clean核定。完整读取module/handler/util、结构体及config，读取实际编译reply.c的状态续接/完成计数/输出路径和README相关指令；未执行生成器、Redis服务或Nginx。
+
+四种query说明区分参数编码、变量求值、字面文本及显式回复计数。create_request优先queries，其次非空literal_query，最后complex_query；这些字段及count分别继承，因此不写成跨层任何新形式都会覆盖旧形式。N只控制预期回复，不预解析原始命令计数，也不是事务。原始回复不自动JSON化，错误回复及空值不自动映射HTTP错误。
+
+动态pass与memc一样只匹配预配置upstream名称/port0，不作运行DNS。bind存在固定版本接口不匹配：module create用pcalloc且从未设upstream.local哨兵，Nginx共享bind setter6433–6450先与(void*)-1比较，NULL导致首次声明也返回is duplicate，off亦未能到达。用真实注册/完整create-merge/结构体/哨兵定义交叉核对；按源码静态结论标注，未声称运行验证，也未修改用户源码。未把共享setter支持transparent扩展到本项TAKE1注册。
+
+默认60s/pagesize/error timeout及普通继承据merge核定；三timeout共享路径标affected；缓冲不等于回复上限，next_upstream不按Redis命令语义判断幂等，Redis空值不等于not_found。固定发行732–735仅解包，无直接redis2补丁。
+
+mkdtemp实际34patch/142hunk/47最终SHA回放通过，128处显式来源真实EOF通过，17段Nginx引用13保持、4变化对应三timeout路径；bind回调及哨兵原文保持。隔离677+11=688基础/329仅注册，release1.27.1.1-67408f3d88a6a810，完整owner差集及basic/来源检查通过；current前后字节不变，临时目录finally清理。交独立语义审核，候选不计正式覆盖。

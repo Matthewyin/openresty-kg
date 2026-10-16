@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pi SDK 最小接入验证</title>
+<style>body{font:16px/1.6 system-ui;max-width:1050px;margin:28px auto;padding:0 20px;color:#172638}textarea{width:100%;box-sizing:border-box;font:14px/1.5 monospace}input,select,button{font:inherit;margin:5px;padding:5px}input{max-width:90%}button{cursor:pointer}article{border:1px solid #bbc8d6;border-radius:8px;padding:14px;margin:16px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f5f9;padding:12px;font-size:13px}small{color:#526477}#status{position:sticky;top:0;background:#edf5fb;padding:10px}label{display:inline-block}a{color:#1656a0}</style></head>
+<body><h1>Pi SDK 最小接入验证</h1><p id="environment">正在读取隔离环境…</p><p>知识事实由原解析器与固定版本知识库提供。mock 不证明模型理解或任意追问解释质量；匹配不等于现场运行有效。</p>
+<label>合成脱敏样例<select id="fixture"><option value="events">events</option><option value="stream">stream 代理</option><option value="vts">VTS</option><option value="fragment">缺少外层的 server</option><option value="map">map 与外部引用</option><option value="invalid">未闭合配置</option></select></label>
+<textarea id="input" rows="9" aria-label="脱敏配置"></textarea><br>
+<label>解析模式<select id="parseMode"><option value="main">完整主配置</option><option value="fragment">配置片段</option></select></label><label>上下文<input id="context" placeholder="不猜测，可留空"></label><label>模块<input id="module" placeholder="可留空"></label><br>
+<label>问题 / 追问<input id="question" size="60" value="说明功能、默认值、继承及依据"></label><br>
+<button id="submit">提交 / 追问</button><button id="cancel" disabled>取消</button><button id="fresh">新会话（用于同条件缓存比较）</button><br>
+<label>会话 ID<input id="sessionId" size="42"></label><button id="restore">恢复会话</button>
+<div id="status" role="status">空闲</div><main id="result"></main><script type="module" src="/app.mjs"></script></body></html>

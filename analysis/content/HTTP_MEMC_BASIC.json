@@ -1,0 +1,1300 @@
+[
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_cmds_allowed",
+    "summary": "限定本位置允许通过memc内容处理器执行的memcached命令。",
+    "syntax": "memc_cmds_allowed command ...;",
+    "callback_definition": {
+      "component": "memc-nginx-module",
+      "file": "src/ngx_http_memc_module.c",
+      "start_line": 350,
+      "end_line": 390
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "command-selection",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 56,
+        "end_line": 148
+      },
+      {
+        "id": "allowed-check",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 414,
+        "end_line": 435
+      },
+      {
+        "id": "supported-commands",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_util.c",
+        "start_line": 14,
+        "end_line": 114
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认允许本模块支持的全部命令。",
+      "source_ids": [
+        "create-merge",
+        "allowed-check"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未声明时继承父层整个列表；本层声明替代父层，同层重复声明重新创建列表，以后一次为准。",
+      "source_ids": [
+        "create-merge",
+        "configuration-definition"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "命令按小写精确匹配，支持set/add/get/incr/decr/stats/append/delete/replace/prepend/version/flush_all；cas、gets及verbosity未实现。未知配置命令使配置失败；请求选择的命令不在列表时返回403。它不是按客户端身份授权。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "command-selection",
+          "allowed-check",
+          "supported-commands"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "command-selection",
+        "allowed-check",
+        "supported-commands"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_pass",
+    "summary": "设置memcached后端，并将当前位置交给memc文本协议内容处理器。",
+    "syntax": "memc_pass address|upstream|expression;",
+    "callback_definition": {
+      "component": "memc-nginx-module",
+      "file": "src/ngx_http_memc_module.c",
+      "start_line": 259,
+      "end_line": 321
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "method-selection",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 56,
+        "end_line": 148
+      },
+      {
+        "id": "dispatch",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 236,
+        "end_line": 292
+      },
+      {
+        "id": "body-read",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 374,
+        "end_line": 388
+      },
+      {
+        "id": "dynamic-upstream",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_util.c",
+        "start_line": 118,
+        "end_line": 160
+      },
+      {
+        "id": "storage-value",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_request.c",
+        "start_line": 18,
+        "end_line": 80
+      },
+      {
+        "id": "dynamic-upstream-call",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 180,
+        "end_line": 206
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅允许location及location内if；README列出的http/server不符合此版本真实注册。无$memc_cmd或其为空时，GET/HEAD取get、POST取add、PUT取set、DELETE取delete，其余方法返回400；显式命令另行解析。变量目标只在已配置upstream集合按名称和端口0查找，不提供任意运行时地址解析或DNS查询，空目标/找不到组返回500。存储命令优先使用已设置的$memc_value，否则使用请求体；并非内置只读memcached模块。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "method-selection",
+          "dispatch",
+          "body-read",
+          "dynamic-upstream",
+          "storage-value",
+          "dynamic-upstream-call"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "method-selection",
+        "dispatch",
+        "body-read",
+        "dynamic-upstream",
+        "storage-value",
+        "dynamic-upstream-call"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_connect_timeout",
+    "summary": "设置建立memcached上游连接的等待超时。",
+    "syntax": "memc_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "connect-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1669
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接返回NGX_AGAIN时安装等待定时器，不是命令全程总时限。发行补丁将运行计时改为请求级字段，在upstream初始化时从配置复制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "connect-wait",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "组件本身未直接打补丁；所述共享上游计时路径被发行upstream_timeout_fields补丁修改，初值仍来自本项配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "connect-wait",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_send_timeout",
+    "summary": "设置发送memcached命令或存储数据时的写等待超时。",
+    "syntax": "memc_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "send-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "storage-value",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_request.c",
+        "start_line": 18,
+        "end_line": 80
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "控制共享上游发送等待，不是整个命令的总超时；该模块可发送存储数据，不能套用内置memcached仅发送get的描述。发行版计时使用从配置初始化的请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "send-wait",
+          "storage-value",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "组件本身未直接打补丁；所述共享上游计时路径被发行upstream_timeout_fields补丁修改，初值仍来自本项配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "send-wait",
+        "storage-value",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_read_timeout",
+    "summary": "设置读取memcached响应时的等待超时。",
+    "syntax": "memc_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "header-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "body-wait",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "发送完成后等待响应及非缓冲正文读取分别使用共享计时路径，不是完整响应总耗时预算。发行版使用从配置初始化的请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "header-wait",
+          "body-wait",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "组件本身未直接打补丁；所述共享上游计时路径被发行upstream_timeout_fields补丁修改，初值仍来自本项配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "header-wait",
+        "body-wait",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_buffer_size",
+    "summary": "设置memc响应的输入缓冲大小：get首行及其他命令的完整响应使用此缓冲。",
+    "syntax": "memc_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "simple-response",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_response.c",
+        "start_line": 692,
+        "end_line": 788
+      },
+      {
+        "id": "get-response",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_response.c",
+        "start_line": 945,
+        "end_line": 977
+      },
+      {
+        "id": "buffer-allocation",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "header-limit",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "模块固定采用非缓冲上游传输；get的值可以继续流式读取，该配置不是缓存对象最大长度。非get命令由process_header收集完整响应，解析仍需更多数据但缓冲已满时走INVALID_HEADER；不能据此保证任意长度stats响应可处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "simple-response",
+          "get-response",
+          "buffer-allocation",
+          "header-limit"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "simple-response",
+        "get-response",
+        "buffer-allocation",
+        "header-limit"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_next_upstream",
+    "summary": "指定memc上游失败或未命中时允许转到下一台服务器的条件。",
+    "syntax": "memc_next_upstream error|timeout|invalid_response|not_found|off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "retry-mask",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 37,
+        "end_line": 44
+      },
+      {
+        "id": "get-missing",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_response.c",
+        "start_line": 1059,
+        "end_line": 1080
+      },
+      {
+        "id": "simple-error",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_response.c",
+        "start_line": 758,
+        "end_line": 788
+      },
+      {
+        "id": "header-retry",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2517
+      },
+      {
+        "id": "status-retry",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2528,
+        "end_line": 2562
+      },
+      {
+        "id": "retry-guard",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4406,
+        "end_line": 4426
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error timeout。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层掩码，同层多次声明累加；off在合并时覆盖其他位。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "可用参数表不含HTTP代理的其他状态及non_idempotent。not_found对应HTTP404，get的END响应产生404；共享逻辑仍受可用尝试次数及已发送请求限制。HTTP POST/LOCK/PATCH在请求已发出后会附加NON_IDEMPOTENT条件，而此模块没有对应开关，不能用error/timeout保证写操作自动重放。非get解析器某些协议错误映射HTTP502并返回NGX_OK，不等于invalid_response的INVALID_HEADER路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "retry-mask",
+          "get-missing",
+          "simple-error",
+          "header-retry",
+          "status-retry",
+          "retry-guard"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "retry-mask",
+        "get-missing",
+        "simple-error",
+        "header-retry",
+        "status-retry",
+        "retry-guard"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_upstream_max_fails",
+    "summary": "保留的拒绝入口：配置此指令会直接报不支持并使配置失败。",
+    "syntax": "memc_upstream_max_fails number;",
+    "callback_definition": {
+      "component": "memc-nginx-module",
+      "file": "src/ngx_http_memc_module.c",
+      "start_line": 325,
+      "end_line": 334
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      }
+    ],
+    "defaults": {
+      "status": "not_applicable",
+      "text": "此入口总是拒绝配置，不产生可用默认值。",
+      "source_ids": [
+        "configuration-definition"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "配置失败，无可继承的有效设置。",
+      "source_ids": [
+        "configuration-definition"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是有效的失败计数设置，也不是被静默忽略的选项；回调提示改用upstream块server指令的max_fails参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_upstream_fail_timeout",
+    "summary": "保留的拒绝入口：配置此指令会直接报不支持并使配置失败。",
+    "syntax": "memc_upstream_fail_timeout time;",
+    "callback_definition": {
+      "component": "memc-nginx-module",
+      "file": "src/ngx_http_memc_module.c",
+      "start_line": 338,
+      "end_line": 347
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      }
+    ],
+    "defaults": {
+      "status": "not_applicable",
+      "text": "此入口总是拒绝配置，不产生可用默认值。",
+      "source_ids": [
+        "configuration-definition"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "配置失败，无可继承的有效设置。",
+      "source_ids": [
+        "configuration-definition"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是有效的失败观察窗口设置，也不是被静默忽略的选项；回调提示改用upstream块server指令的fail_timeout参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_flags_to_last_modified",
+    "summary": "将get响应的memcached flags按时间值写入HTTP Last-Modified时间字段。",
+    "syntax": "memc_flags_to_last_modified on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "flags-time",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_response.c",
+        "start_line": 945,
+        "end_line": 1033
+      },
+      {
+        "id": "conditional-response",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_not_modified_filter_module.c",
+        "start_line": 54,
+        "end_line": 165
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "读取VALUE响应行中的flags并通过ngx_atotm转换，不修改存储值或自动生成时间。只允许location及location内if；能否形成304仍取决于HTTP条件请求及not-modified过滤器，开启并不保证每次返回304。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "flags-time",
+          "conditional-response"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "flags-time",
+        "conditional-response"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "memc-nginx-module",
+    "module": "ngx_http_memc_module",
+    "name": "memc_ignore_client_abort",
+    "summary": "控制共享上游路径是否因客户端提前断开而主动检查并终止memc请求。",
+    "syntax": "memc_ignore_client_abort on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 131,
+        "end_line": 159
+      },
+      {
+        "id": "create-merge",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_module.c",
+        "start_line": 162,
+        "end_line": 255
+      },
+      {
+        "id": "upstream-binding",
+        "component": "memc-nginx-module",
+        "file": "src/ngx_http_memc_handler.c",
+        "start_line": 207,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 649,
+        "end_line": 652
+      },
+      {
+        "id": "abort-check-install",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 612,
+        "end_line": 628
+      },
+      {
+        "id": "abort-check",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1381,
+        "end_line": 1408
+      },
+      {
+        "id": "connection-error",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4406,
+        "end_line": 4410
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on跳过共享upstream中由本标志控制的客户端断连检查；不是持久化任务队列，也不保证后端命令一定完成，后续网络错误和超时仍可终止请求。真实注册允许location及location内if。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "upstream-binding",
+          "abort-check-install",
+          "abort-check",
+          "connection-error"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包本组件；所引共享Nginx局部按有效补丁回放比较。结论仅限列出的配置及消费事实，不扩展为整个请求生命周期无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "upstream-binding",
+        "distribution-processing",
+        "component-distribution",
+        "abort-check-install",
+        "abort-check",
+        "connection-error"
+      ]
+    },
+    "related": []
+  }
+]

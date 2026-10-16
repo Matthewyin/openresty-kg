@@ -1,0 +1,25 @@
+# P16 Stream代理28项准备
+
+## 2026-10-12 SNI条件差异
+
+R33补充：同样只收窄proxy_ssl_name限制中的“空名称或IP字面量不发送SNI”为上述源码条件，完整来源为本域1177–1272（前段记录1268并非函数终点）；其他正文与来源不变。该项与server_name两句一并交独立差异复核。
+
+R32同类修正：主复读本域ngx_stream_proxy_module.c:1177–1268，proxy_ssl_server_name同样按名称空、首字符[或ngx_inet_addr结果不等于INADDR_NONE跳过SNI。仅收窄一处限制，其他27项及全部来源保持；修后SHA为5e5726b8041c405995e15abdb214211b3f0f3cf074d0daa31c60620c3faf2f22，旧fa74摘要属修正前记录。待独立审核，不重跑补丁。
+
+2026-10-12。主线程负责ngx_stream_proxy_module剩余28项及随后Stream upstream六项；固定完整身份见C02_REMAINING_CONTENT_PLAN.md P16，当前516正式知识已有proxy_pass、proxy_connect_timeout、proxy_timeout，不重写它们。本文保留准备过程，最新28项草稿、实际回放及隔离构建结果见文末；仍待独立逐义审核，未增加正式basic计数。
+
+已读固定Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928的src/stream/ngx_stream_proxy_module.c注册/枚举/post110–389、create/merge2058–2204、merge_ssl2210–2256、set_ssl2259–2350，配置bind2414–2507、password1014–1034、ssl_conf post1038–1045；固定XML同名节点已读，两个旧buffer别名没有节点。后续JSON需要两个别名deprecated:true，不能重犯P14正文与结构化状态不一致。
+
+已读使用：local设置644–694与调用428，keepalive433–435→event_connect.c76–86（setsockopt失败仅告警忽略），buffer450–458/854–864；代理SSL资格803–820；PROXY前置构造888–922及TLS前直接发送943–1010；速率924–925和process1626–1745，以读取节流和累计预算控制，UDP不会按TCP方式截小读取长度。UDP requests/responses与会话完成1806–1854，超时分支1420–1487；half_close1772–1789与1857–1874；next_upstream1896起、次数截断585–589/1387–1391，0不额外收紧peer次数，超时是重试窗口而非定时中止当前传输。bind静态无效拒绝，变量值空/无效分别跳过或记错而不必结束；transparent受平台及路由条件限制。
+
+TLS读取：1050–1114初始化/握手、1118–1165验证和失败重试、1172–1181保存session、1185–1272名称/SNI、1276–1320动态证书；SSL名初值479/575来自resolved host或upstream host。set_ssl将证书/密码/可信CA/CRL/conf命令接到共享OpenSSL代码，ciphers只调用SSL_CTX_set_cipher_list，不扩展TLS1.3套件声明。已读ngx_event_openssl.c296–433协议选项、457–576静态证书与私钥、578–671连接证书、884–899ciphers、951–1043信任/CRL、1199–1360密码读取/保留、1596–1707conf commands和client session cache、4869–4959名称校验前半段；仍按每条实际需要补读完整使用，不把这里清单当已发布证据。
+
+发行补丁已读（OpenResty8c37412c31621225e7aa7e825b5b50106c9c71c4）：stream_proxy_timeout_fields把等待timer改为会话ctx字段；stream_proxy_get_next_upstream_tries导出配置值getter；balancer_status_code新增连接选择返回特殊状态直接结束分支；stream_balancer_export使round_robin session设置/保存函数外部可调用。后续逐项引用并实际回放，不能因自己的注册没改就将共享使用声明为完全不受影响。当前未跑P16隔离回放/构建，没有运行Nginx、TLS或真实密钥读取。
+
+## 准备结果与固定输入
+
+STREAM_PROXY_BASIC.json SHA256 fa74a37bd3b58afbfdd971a11a109b3d6e5189764c898d91c5f7a26e078d9e36，完整28项，两个旧buffer别名均同时设置deprecated:true，明确仍写共享buffer_size而不是忽略参数。14项上游TLS与14项非TLS分别核实现，不从HTTP代理换前缀。补读OpenSSL静态私钥加载及协议设置终段，ssl_conf_command post绑定范围包含122行变量声明；session_reuse、certificate和verify_depth引用含实际资格if，而不是只保留调用行。
+
+实际在临时副本回放34发行补丁/142hunk，核47最终摘要；255处固定引用有效EOF，198段Nginx所引原文196保持、2改变，精确为proxy_next_upstream/implementation-0及proxy_protocol/implementation-3。回放后实际读回特殊状态直接finalize分支、tries getter函数及PROXY发送等待使用ctx->timeout，与标注对应。三项affected为next_upstream、next_upstream_tries（新增getter）、proxy_protocol；其余25项只对所列局部事实标unaffected，不声称外部SSL库或整个调用链未受补丁影响。26活跃同名XML，两个旧别名仅以源码证明。
+
+隔离516+28实际构建得到544基础候选1.27.1.1-142e8d2117c09154，1017注册、0深度、473仅注册、范围true；完整owner差集、身份唯一和28项basic状态通过，正式current前后保持516，临时目录finally清理。未运行OpenResty/TLS/网络或实际密钥文件。本批候审，P16上游六项仍需另准备，不混入本次计数。

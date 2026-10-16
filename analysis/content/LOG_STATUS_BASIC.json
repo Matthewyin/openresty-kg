@@ -1,0 +1,924 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_log_module",
+    "name": "log_format",
+    "summary": "定义 HTTP 请求日志格式，将文字和变量编译为日志写入操作；escape=default/json/none 选择变量的转义方式，默认转义还受本发行版 log_escape_non_ascii 控制。",
+    "syntax": "log_format name [escape=default|json|none] string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_log_module.c",
+      "start_line": 1537,
+      "end_line": 1577
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 208,
+        "end_line": 221
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1581,
+        "end_line": 1756
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 916,
+        "end_line": 1122
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1126,
+        "end_line": 1158
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 226,
+        "end_line": 233
+      },
+      {
+        "id": "distribution-patch-0",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-log_escape_non_ascii.patch",
+        "start_line": 43,
+        "end_line": 117
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_log_module.xml",
+        "start_line": 194,
+        "end_line": 345
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "格式编译默认使用 escape=default，预建 combined 格式名；默认转义中的非ASCII开关无父层值时为on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-patch-0"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在 http 主层定义命名格式，不存在 server/location 同名格式指令逐层继承；access_log 另行选择该命名格式。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-patch-0"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "escape=json 只转义变量字符串，不自动给整行加引号、字段或JSON结构；文字部分按原文复制，不能保证任意格式是合法JSON。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "distribution-patch-0"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "default 模式对未找到变量输出 -，json/none 对所引普通变量分支不输出字符；默认非ASCII转义受 log_escape_non_ascii，JSON与none路径独立。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "distribution-patch-0"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行版 log_escape_non_ascii 补丁为默认转义增加请求配置开关并设缺省on，改写普通变量长度计算/写出路径；JSON及none路径独立。引用保留原上游与原补丁坐标，不把上游文档的固定非ASCII转义概括成最终行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-patch-0",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_log_module.xml#L194-L345",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_log_module",
+    "name": "access_log",
+    "summary": "设置 HTTP 请求结束时的访问日志目标、命名格式、缓冲/压缩及条件表达式；同层可写多个日志，off跳过该层全部访问日志，不等同关闭 error_log。",
+    "syntax": "access_log path [format [buffer=size] [gzip[=level]] [flush=time] [if=condition]];\naccess_log off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_log_module.c",
+      "start_line": 1238,
+      "end_line": 1533
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 208,
+        "end_line": 221
+      },
+      {
+        "id": "default-path",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 224,
+        "end_line": 233
+      },
+      {
+        "id": "log-phase",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1868,
+        "end_line": 1909
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 254,
+        "end_line": 402
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 472,
+        "end_line": 581
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1178,
+        "end_line": 1234
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 916,
+        "end_line": 1122
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 719,
+        "end_line": 759
+      },
+      {
+        "id": "distribution-patch-0",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-log_escape_non_ascii.patch",
+        "start_line": 43,
+        "end_line": 117
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_log_module.xml",
+        "start_line": 49,
+        "end_line": 191
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未显式指定格式时采用combined；日志默认路径由NGX_HTTP_LOG_PATH构建常量决定，本条不猜测用户的实际安装路径。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-patch-0",
+        "default-path",
+        "log-phase"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层没有日志数组且未off时继承父层日志数组与off；本层日志列表替代父层而非追加，本层off优先跳过。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-patch-0",
+        "default-path",
+        "log-phase"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "if= 表达式在日志阶段求值，空或单字符0不写该条；变量文件名不能buffer/gzip，syslog也不能缓冲，flush要求已设置缓冲，gzip要求zlib。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "distribution-patch-0",
+          "default-path",
+          "log-phase"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "日志使用处理结束时的location配置，可能与最初匹配位置不同；变量文件名写入路径还检查请求root目录，并可使用open_log_file_cache。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "distribution-patch-0",
+          "default-path",
+          "log-phase"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "默认模式的变量转义受发行补丁log_escape_non_ascii影响；不能仅凭上游文档断言所有非ASCII字节都被转义。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "distribution-patch-0",
+          "default-path",
+          "log-phase"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行版 log_escape_non_ascii 补丁为默认转义增加请求配置开关并设缺省on，改写普通变量长度计算/写出路径；JSON及none路径独立。引用保留原上游与原补丁坐标，不把上游文档的固定非ASCII转义概括成最终行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "default-path",
+        "log-phase",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-patch-0",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_log_module.xml#L49-L191",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_log_module",
+    "name": "open_log_file_cache",
+    "summary": "为含变量名称的 HTTP 访问日志缓存打开文件的描述符和文件信息；max限制缓存条目，inactive和min_uses影响条目清理与描述符保留，valid参与访问时重验证。",
+    "syntax": "open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time];\nopen_log_file_cache off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_log_module.c",
+      "start_line": 1760,
+      "end_line": 1864
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 208,
+        "end_line": 221
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 1187,
+        "end_line": 1197
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_log_module.c",
+        "start_line": 530,
+        "end_line": 581
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 213,
+        "end_line": 243
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 1032,
+        "end_line": 1066
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 1094,
+        "end_line": 1128
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_log_module.xml",
+        "start_line": 348,
+        "end_line": 410
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无父层值时off；启用且未给可选值时inactive=10s、valid=60s、min_uses=1，max必须非零。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层缓存对象、valid与min_uses；显式off用NULL阻断继承，显式启用建立本层缓存。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "缓存的是文件打开信息而非日志行正文，也不是buffer参数；valid是访问检查条件，不是每隔该时间必做后台轮转或立即切到新日志文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "变量文件名仍需目录可写、文件可打开；缓存存在不能保证每条日志都成功落盘，描述符不足使用次数时可关闭但元数据不一定立即移除。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放34项有效补丁并核47个最终摘要，所引注册、配置入口及运行片段保持原文；仅覆盖这里列出的缓存/格式/状态事实，不推广到完整会话或错误日志链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_log_module.xml#L348-L410",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_log_module",
+    "name": "log_format",
+    "summary": "定义 stream 会话日志的文字/变量格式，选择default、json或none变量转义；这是会话日志格式，不是HTTP请求的combined格式，也不受HTTP的log_escape_non_ascii开关控制。",
+    "syntax": "log_format name [escape=default|json|none] string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_log_module.c",
+      "start_line": 1266,
+      "end_line": 1307
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 184,
+        "end_line": 197
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 1311,
+        "end_line": 1469
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 693,
+        "end_line": 901
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 905,
+        "end_line": 922
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_log_module.xml",
+        "start_line": 155,
+        "end_line": 206
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "编译默认escape=default；主配置只建立空格式数组，没有HTTP的内置combined格式。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "仅在stream主层定义命名格式，不存在server层同名格式指令的继承；会话access_log选择该格式。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "default转义引号、反斜杠、控制字节和非ASCII字节，未找到变量输出 -；json/none 的所引缺值分支不输出字符。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "escape=json不自动构成整行JSON；定义格式不自行启用access_log，不能用HTTP同名指令的默认路径或格式替代。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放34项有效补丁并核47个最终摘要，所引注册、配置入口及运行片段保持原文；仅覆盖这里列出的缓存/格式/状态事实，不推广到完整会话或错误日志链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_log_module.xml#L155-L206",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_log_module",
+    "name": "open_log_file_cache",
+    "summary": "为含变量文件名的 stream 会话日志缓存打开文件的描述符及信息；在会话日志写入时传入valid和min_uses，减少重复打开，max/inactive限制缓存保留。",
+    "syntax": "open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time];\nopen_log_file_cache off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_log_module.c",
+      "start_line": 1473,
+      "end_line": 1577
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 184,
+        "end_line": 197
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 942,
+        "end_line": 966
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 420,
+        "end_line": 472
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 213,
+        "end_line": 243
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 1032,
+        "end_line": 1066
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/core/ngx_open_file_cache.c",
+        "start_line": 1094,
+        "end_line": 1128
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_log_module.c",
+        "start_line": 1195,
+        "end_line": 1213
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_log_module.xml",
+        "start_line": 209,
+        "end_line": 270
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无父层值时off；启用时可选参数默认inactive=10s、valid=60s、min_uses=1，max必须非零。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层缓存对象及valid/min_uses；off用NULL阻断继承，显式启用创建自己的缓存。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只缓存打开文件信息，不缓存日志行；valid按访问重验证，不保证时间一到立即更换轮转文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "本stream写入路径没有HTTP请求root目录检查，不借用HTTP同名指令的请求目录限制；缓存不改变变量文件名不支持日志缓冲的限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5"
+        ]
+      }
+    ],
+    "phase": "log",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放34项有效补丁并核47个最终摘要，所引注册、配置入口及运行片段保持原文；仅覆盖这里列出的缓存/格式/状态事实，不推广到完整会话或错误日志链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_log_module.xml#L209-L270",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_stub_status_module",
+    "name": "stub_status",
+    "summary": "把当前 HTTP 配置的内容处理器设为基础状态输出，返回活动连接、接受/处理连接、请求数和Reading/Writing/Waiting计数的text/plain页面；不是配置审计或完整监控系统。",
+    "syntax": "stub_status;\nstub_status argument;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_stub_status_module.c",
+      "start_line": 218,
+      "end_line": 226
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_stub_status_module.c",
+        "start_line": 49,
+        "end_line": 62
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_stub_status_module.c",
+        "start_line": 84,
+        "end_line": 150
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_stub_status_module.c",
+        "start_line": 64,
+        "end_line": 80
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_stub_status_module.xml",
+        "start_line": 54,
+        "end_line": 72
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "运行处理器仅接受GET/HEAD，其他方法返回405；HEAD遵循header_only不输出该正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定注册兼容零参数或一个参数，但callback不读取参数；因此旧式on不是可切换的布尔值，stub_status off也不据此关闭该处理器。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "计数直接读取运行中的全局原子状态，源码存在不表示用户当前环境启用或提供此页面；内容是基础状态而非每个upstream的健康检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放34项有效补丁并核47个最终摘要，所引注册、配置入口及运行片段保持原文；仅覆盖这里列出的缓存/格式/状态事实，不推广到完整会话或错误日志链。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_stub_status_module.xml#L54-L72",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

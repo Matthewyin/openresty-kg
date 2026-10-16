@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "lua-nginx-module--ngx_http_lua_module--lua_load_resty_core",
+  "name": "lua_load_resty_core",
+  "module": "ngx_http_lua_module",
+  "component": "lua-nginx-module",
+  "contexts": [
+    "http"
+  ],
+  "contexts_verified": true,
+  "syntax": "lua_load_resty_core on | off;",
+  "summary": "历史上用于控制 resty.core 加载；在锁定的模块版本中已废弃，Lua VM 初始化强制加载 resty.core，该指令不再改变此行为。",
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "指定此项会输出废弃告警，不能通过 off 禁用 resty.core。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": true,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_http_lua_load_resty_core",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_module.c",
+      "start_line": 100,
+      "end_line": 105,
+      "code": "    { ngx_string(\"lua_load_resty_core\"),\n      NGX_HTTP_MAIN_CONF|NGX_CONF_FLAG,\n      ngx_http_lua_load_resty_core,\n      NGX_HTTP_MAIN_CONF_OFFSET,\n      0,\n      NULL },",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_module.c#L100-L105",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 189,
+      "end_line": 228,
+      "code": "ngx_http_lua_load_resty_core(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_conf_log_error(NGX_LOG_WARN, cf, 0,\n                       \"lua_load_resty_core is deprecated (the lua-resty-core \"\n                       \"library is required since ngx_lua v0.10.16)\");\n\n    return NGX_CONF_OK;\n}\n\n\nchar *\nngx_http_lua_package_cpath(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_http_lua_main_conf_t *lmcf = conf;\n    ngx_str_t                *value;\n\n    if (lmcf->lua_cpath.len != 0) {\n        return \"is duplicate\";\n    }\n\n    dd(\"enter\");\n\n    value = cf->args->elts;\n\n    lmcf->lua_cpath.len = value[1].len;\n    lmcf->lua_cpath.data = value[1].data;\n\n    return NGX_CONF_OK;\n}\n\n\nchar *\nngx_http_lua_package_path(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_http_lua_main_conf_t *lmcf = conf;\n    ngx_str_t                *value;\n\n    if (lmcf->lua_path.len != 0) {\n        return \"is duplicate\";\n    }",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L189-L228",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "README.markdown",
+      "start_line": 1191,
+      "end_line": 1207,
+      "code": "lua_load_resty_core\n-------------------\n\n**syntax:** *lua_load_resty_core on|off*\n\n**default:** *lua_load_resty_core on*\n\n**context:** *http*\n\nThis directive is deprecated since the `v0.10.16` release of this\nmodule. The `resty.core` module from\n[lua-resty-core](https://github.com/openresty/lua-resty-core) is now mandatorily\nloaded during the Lua VM initialization. Specifying this directive will have no\neffect.\n\nThis directive was first introduced in the `v0.10.15` release and\nused to optionally load the `resty.core` module.",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L1191-L1207",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-1",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 189,
+      "end_line": 197,
+      "code": "ngx_http_lua_load_resty_core(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    ngx_conf_log_error(NGX_LOG_WARN, cf, 0,\n                       \"lua_load_resty_core is deprecated (the lua-resty-core \"\n                       \"library is required since ngx_lua v0.10.16)\");\n\n    return NGX_CONF_OK;\n}\n",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L189-L197",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 621,
+      "end_line": 625,
+      "code": "ver=0.10.27\n$root/util/get-tarball \"https://github.com/openresty/lua-nginx-module/archive/v$ver.tar.gz\" -O lua-nginx-module-$ver.tar.gz || exit 1\ntar -xzf lua-nginx-module-$ver.tar.gz || exit 1\nmv lua-nginx-module-$ver ngx_lua-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L621-L625",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "lua-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L1191-L1207",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "init"
+  ],
+  "mechanism": null,
+  "related": []
+}

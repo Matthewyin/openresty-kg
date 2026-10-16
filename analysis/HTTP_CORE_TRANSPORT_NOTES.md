@@ -1,0 +1,13 @@
+# HTTP 核心基础内容：发送与连接首组
+
+日期：2026-10-10。准备17条，不代完整HTTP core 84条或C02全部完成。仅准备文件，正式current仍c049ff9edb810ae4、88basic。
+
+集合：sendfile、sendfile_max_chunk、tcp_nopush、tcp_nodelay、send_timeout、send_lowat、postpone_output、limit_rate、limit_rate_after、keepalive_time、keepalive_timeout、keepalive_requests、keepalive_disable、lingering_close、lingering_time、lingering_timeout、reset_timedout_connection。
+
+固定Nginx及nginx.org revision沿用HTTP_CORE_HASH_TYPES_NOTES。逐条读注册、回调、merge与运行使用点，而非根据字段名生成正文。重点区分：send_timeout不限制响应总时长；keepalive_time不是中断长响应的定时器，keepalive_timeout第二参数只影响响应头；lingering_time总上限与lingering_timeout每次等待独立；limit_rate按请求且可变量求值，after单独不启用限速；send_lowat不是速率限制，须遵守平台post检查；postpone_output按大小且flush/last可绕过；sendfile需平台能力，max_chunk是一次链发送限制；tcp_nopush/nodelay不是无缓冲或压缩开关；reset受请求超时/444与非QUIC条件约束，keep-alive空闲关闭另走路径。
+
+默认及继承引用实际merge（变量限速补运行默认0证据）；未扩展为用户部署支持性。keepalive_disable仅解释固定枚举和请求已解析标志，不捏造浏览器检测全流程。
+
+实际隔离回放冻结34patch，47个最终文件摘要全同；17项103段注册/owner/callback/实现原文在补丁后保留。随后显式补同一已核owner:800–813，各来源坐标均交真实build范围门禁；临时源码副本已删除。局部未改不代表整个HTTP请求链未改。
+
+与修正后的hash/types/path10条一同隔离构建成功：1017注册、115basic、0deep、8参考，inventory_complete=false。隔离配置/源码链接/数据仅在mkdtemp中，finally清理；不覆盖正式88basic，不改变门禁以求通过。独立审核通过后才由主接入正式发布。

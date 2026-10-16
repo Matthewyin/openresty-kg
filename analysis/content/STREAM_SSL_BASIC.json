@@ -1,0 +1,3011 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_handshake_timeout",
+    "summary": "限制Stream下游TLS握手等待时间。",
+    "syntax": "ssl_handshake_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 364
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 401,
+        "end_line": 460
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 2143,
+        "end_line": 2163
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 808,
+        "end_line": 809
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 373,
+        "end_line": 383
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅SSL会话走此模块；ngx_ssl_handshake返回AGAIN时给连接read事件计时，完成删除计时并恢复stream phases，失败或超时结束session。不是上游proxy_ssl或传输空闲超时；发行回调让出也进入共享AGAIN机制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件处理证书、session及ClientHello回调让出，不声称本指令自行安装或触发所有第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_certificate",
+    "summary": "设置Stream TLS服务器证书链并按静态或变量方式装载。",
+    "syntax": "ssl_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 852,
+        "end_line": 931
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1011,
+        "end_line": 1096
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 621,
+        "end_line": 670
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1329,
+        "end_line": 1368
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 434,
+        "end_line": 481
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 648,
+        "end_line": 735
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 827,
+        "end_line": 827
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 111,
+        "end_line": 172
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无证书列表。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层无certificate指令才整组继承stream层；key数组另行继承并按下标配对。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "多证书按序对应key；少key配置失败。变量使用stream complex value在当前session求值，非HTTP临时request；每次握手可装载文件或data:内容，需库支持cert callback。证书配置本身不打开listen ssl。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件处理证书、session及ClientHello回调让出，不声称本指令自行安装或触发所有第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_certificate_key",
+    "summary": "为Stream终止TLS提供服务器私钥列表。",
+    "syntax": "ssl_certificate_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 852,
+        "end_line": 931
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1024,
+        "end_line": 1096
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 637,
+        "end_line": 670
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 553,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 624,
+        "end_line": 644
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 738,
+        "end_line": 852
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 828,
+        "end_line": 829
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 175,
+        "end_line": 209
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无私钥列表。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有key列表时整组继承父层，不逐项合并。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持PEM文件、data:内容及库允许的engine:name:id；变量key与证书共同编译，在session握手回调装载。不是转发到后端所用客户端私钥，配置不触发实际连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件处理证书、session及ClientHello回调让出，不声称本指令自行安装或触发所有第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_password_file",
+    "summary": "配置Stream服务器私钥加载时的逐行口令来源。",
+    "syntax": "ssl_password_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_ssl_module.c",
+      "start_line": 1099,
+      "end_line": 1119
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1090,
+        "end_line": 1096
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1199,
+        "end_line": 1325
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1329,
+        "end_line": 1388
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 819,
+        "end_line": 852
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 831,
+        "end_line": 831
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 386,
+        "end_line": 422
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有显式口令文件。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "专用配置callback读取一次，变量证书编译后复制保留供握手加载；不在每次握手重读文件，本层重复设置报错。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_dhparam",
+    "summary": "在Stream服务端SSL上下文加载DHE参数文件。",
+    "syntax": "ssl_dhparam file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 962,
+        "end_line": 964
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1407,
+        "end_line": 1481
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 833,
+        "end_line": 833
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 309,
+        "end_line": 327
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空，未设置DH参数。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "空值不加载；真实调用共享DH加载器，OpenSSL新旧接口按宏分支，参数读取/设置失败报错。不是证书文件，也不配置ECDHE曲线。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_ecdh_curve",
+    "summary": "设置Stream服务端支持的ECDHE曲线。",
+    "syntax": "ssl_ecdh_curve curve;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 17,
+        "end_line": 18
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 966,
+        "end_line": 968
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1484,
+        "end_line": 1563
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 842,
+        "end_line": 843
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 330,
+        "end_line": 370
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "auto",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "库支持列表时可使用冒号列表，auto保留库默认；旧接口auto映射prime256v1，无ECDH时跳过。曲线列表不保证每种证书与客户端都可协商。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_protocols",
+    "summary": "配置Stream TLS上下文启用的协议版本。",
+    "syntax": "ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 63,
+        "end_line": 71
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 869,
+        "end_line": 885
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 401,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 514,
+        "end_line": 556
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 296,
+        "end_line": 399
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 819,
+        "end_line": 822
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 439,
+        "end_line": 476
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "固定默认TLSv1 TLSv1.1 TLSv1.2 TLSv1.3。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未指定掩码时继承父层；本层指定则替代，同层多个参数由bitmask累加。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "名称由本域表映射，实际版本仍依SSL库/宏；不能把Stream UDP或SSL preread视作本模块终止TLS。握手先从连接上下文开始，默认server的协议值可能被使用，不能保证SNI切换后重新协商全部协议选择。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_ciphers",
+    "summary": "配置Stream下游TLS使用的OpenSSL cipher-list字符串。",
+    "syntax": "ssl_ciphers ciphers;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 17,
+        "end_line": 17
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1003,
+        "end_line": 1005
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 845,
+        "end_line": 845
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 212,
+        "end_line": 232
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "HIGH:!aNULL:!MD5",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "S894–899实际调用SSL_CTX_set_cipher_list，不覆盖TLS1.3专用ciphersuites接口；不是Stream proxy上游cipher配置。后执行ssl_conf_command可能影响最终上下文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_verify_client",
+    "summary": "在Stream SSL阶段验证客户端证书并决定是否继续会话。",
+    "syntax": "ssl_verify_client on|off|optional|optional_no_ca;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1351,
+      "end_line": 1385
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 74,
+        "end_line": 80
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 366,
+        "end_line": 398
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 933,
+        "end_line": 960
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 947
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.h",
+        "start_line": 254,
+        "end_line": 259
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 824,
+        "end_line": 824
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 662,
+        "end_line": 695
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on缺证书或验证错误返回ERROR；optional可无证书；optional_no_ca只接受宏列出的部分CA错误，不是放过全部错误。模块在SSL阶段检查并结束失败session，不产生HTTP错误页；verify非零才装载CA/trusted/CRL。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_verify_depth",
+    "summary": "设置Stream客户端证书链检查的深度。",
+    "syntax": "ssl_verify_depth number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 941,
+        "end_line": 955
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 540,
+        "end_line": 543
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 914
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 961
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 825,
+        "end_line": 825
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 698,
+        "end_line": 709
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅给真实client/trusted加载调用传verify_depth，SNI切换也更新连接深度；本项不独立开启验证或限制转发层级。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_client_certificate",
+    "summary": "提供Stream客户端证书验证的CA文件并公告可接受CA名称。",
+    "syntax": "ssl_client_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 933,
+        "end_line": 960
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 903,
+        "end_line": 947
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 835,
+        "end_line": 836
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 235,
+        "end_line": 253
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空，无客户端CA文件。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在verify非零分支加载；on/optional缺此文件路径会报错，optional_no_ca可空。即使另配trusted文件也不绕过此路径检查；单独设置不自动打开验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_trusted_certificate",
+    "summary": "设置Stream客户端证书验证使用、但不向客户端公告名称的附加CA文件。",
+    "syntax": "ssl_trusted_certificate file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 933,
+        "end_line": 960
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 950,
+        "end_line": 984
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 837,
+        "end_line": 838
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 642,
+        "end_line": 659
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空，无附加信任文件。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域ngx_ssl_trusted_certificate实际位于if(conf->verify)内部，verify关闭时不会执行加载；不能照HTTP无条件调用解释。仅改变信任存储，不设置客户端可见CA列表。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_prefer_server_ciphers",
+    "summary": "请求Stream服务端按服务器套件偏好进行TLS协商。",
+    "syntax": "ssl_prefer_server_ciphers on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 884,
+        "end_line": 899
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 814,
+        "end_line": 815
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 425,
+        "end_line": 436
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "经本域ngx_ssl_ciphers调用设置SSL_OP_CIPHER_SERVER_PREFERENCE；不修改允许套件字符串，最终行为仍受协议和库版本限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_session_cache",
+    "summary": "配置Stream TLS会话缓存模式与worker共享区域。",
+    "syntax": "ssl_session_cache off|none|[builtin[:size]] [shared:name:size];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_ssl_module.c",
+      "start_line": 1122,
+      "end_line": 1231
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 336,
+        "end_line": 336
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 970,
+        "end_line": 983
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 3713,
+        "end_line": 3784
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4395,
+        "end_line": 4461
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1881,
+        "end_line": 1942
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 970,
+        "end_line": 975
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 512,
+        "end_line": 574
+      },
+      {
+        "id": "patch-ssl_cert_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_cert_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 64
+      },
+      {
+        "id": "patch-ssl_sess_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_sess_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 41
+      },
+      {
+        "id": "patch-ssl_client_hello_cb_yield",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-ssl_client_hello_cb_yield.patch",
+        "start_line": 1,
+        "end_line": 38
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "none，无默认共享区。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "内置缓存模式未设时继承父层；shm_zone为空时另行继承父层指针，两字段独立合并。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "Stream专用callback使用ngx_stream_ssl_module作为共享区tag，session-id上下文为STREAM；shared至少8页，builtin按条数。共享区绑定new/get/remove回调；off/none不应等同于所有票据恢复禁用，发行共享握手支持条件性异步session回调。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "patch-ssl_cert_cb_yield",
+          "patch-ssl_sess_cb_yield",
+          "patch-ssl_client_hello_cb_yield",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际发行回放确认共享SSL握手错误分支扩展；按宏条件处理证书、session及ClientHello回调让出，不声称本指令自行安装或触发所有第三方异步回调。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing",
+        "patch-ssl_cert_cb_yield",
+        "patch-ssl_sess_cb_yield",
+        "patch-ssl_client_hello_cb_yield",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_session_tickets",
+    "summary": "控制Stream下游TLS上下文session ticket选项。",
+    "syntax": "ssl_session_tickets on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 985,
+        "end_line": 1001
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 985,
+        "end_line": 986
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 614,
+        "end_line": 625
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on",
+      "source_ids": [
+        "merge-default",
+        "implementation-0"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off只在SSL_OP_NO_TICKET存在时设置对应库选项；session cache是独立设置，不能推断关闭该项已禁止所有TLS版本的全部恢复形式。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_session_ticket_key",
+    "summary": "配置Stream TLS票据加解密与轮换使用的密钥文件列表。",
+    "syntax": "ssl_session_ticket_key file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 994,
+        "end_line": 1001
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4395,
+        "end_line": 4553
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4570,
+        "end_line": 4644
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4695,
+        "end_line": 4821
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4833,
+        "end_line": 4846
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 994,
+        "end_line": 995
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 577,
+        "end_line": 611
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无显式ticket-key列表。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有ticket_key指令时整组继承父层列表。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "文件必须48或80字节，首文件加密、按key名称尝试解密；缺自定义文件时由共享cache自动密钥或库默认路径处理。key callback缺失时指定文件会警告忽略；不读取当前用户真实密钥作为证据。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_session_timeout",
+    "summary": "设置Stream TLS会话参数可复用的时间。",
+    "syntax": "ssl_session_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1290,
+      "end_line": 1318
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 977,
+        "end_line": 983
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 3713,
+        "end_line": 3728
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 4725,
+        "end_line": 4729
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 811,
+        "end_line": 812
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 628,
+        "end_line": 639
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "5m",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域merge将秒数交共享session cache设置SSL_CTX_set_timeout；票据轮换也参考该值，不是stream proxy空闲超时或本域handshake_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_crl",
+    "summary": "为Stream客户端证书验证配置PEM吊销列表。",
+    "syntax": "ssl_crl file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 933,
+        "end_line": 960
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 987,
+        "end_line": 1029
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 366,
+        "end_line": 390
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 839,
+        "end_line": 839
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 293,
+        "end_line": 306
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空，不配置CRL。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "加载调用处于verify非零分支；verify关闭不会因路径存在就执行CRL加载。共享函数设置CRL_CHECK与CRL_CHECK_ALL，不是在线OCSP检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_conf_command",
+    "summary": "对Stream服务端SSL上下文执行OpenSSL配置命令。",
+    "syntax": "ssl_conf_command name value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1129,
+      "end_line": 1163
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 83,
+        "end_line": 84
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1288,
+        "end_line": 1296
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 994,
+        "end_line": 1007
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_openssl.c",
+        "start_line": 1595,
+        "end_line": 1664
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 847,
+        "end_line": 847
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 256,
+        "end_line": 290
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无命令列表。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层无任何conf_command时整组继承父层；同层按配置顺序保存并执行。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "本域post从S83–84绑定到S1288–1296，库无SSL_CONF_FLAG_FILE拒绝；S1003在session/ticket配置后执行，可能改变最终上下文。不是Stream变量脚本或shell命令。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_reject_handshake",
+    "summary": "拒绝选中指定Stream TLS server的握手。",
+    "syntax": "ssl_reject_handshake on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 852,
+        "end_line": 885
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 485,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1329,
+        "end_line": 1368
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 817,
+        "end_line": 817
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 479,
+        "end_line": 509
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承stream层；父子均未设置使用上述默认值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "SNI回调选择/更新srv_conf后检查并返回UNRECOGNIZED_NAME致命告警；默认server可由reject代替证书，但其他SSL server仍要求证书或拒绝配置。不是ssl_preread路由规则，也不是HTTP状态响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_ssl_module",
+    "name": "ssl_alpn",
+    "summary": "设置Stream终止TLS时与客户端协商的应用协议列表。",
+    "syntax": "ssl_alpn protocol ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_ssl_module.c",
+      "start_line": 1234,
+      "end_line": 1285
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 240,
+        "end_line": 265
+      },
+      {
+        "id": "tls-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 339,
+        "end_line": 440
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 887,
+        "end_line": 892
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 579,
+        "end_line": 616
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 294,
+        "end_line": 295
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 840,
+        "end_line": 840
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_ssl_module.xml",
+        "start_line": 82,
+        "end_line": 108
+      },
+      {
+        "id": "phase-binding",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_ssl_module.c",
+        "start_line": 1299,
+        "end_line": 1317
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空，不安装ALPN选择回调。",
+      "source_ids": [
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设字符串时继承父层整组编码列表；同层重复指令报错。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "每项长度最多255，按长度前缀编码；无ALPN库支持时报错。配置列表且客户端使用ALPN时必须选出共同协议，否则回调致命失败；客户端不发送ALPN不能据此断言一定拒绝。不会自动实现h2/HTTP解析，也不是ssl_preread收集声明。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "tls-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "merge-default",
+          "official-doc",
+          "phase-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际发行patch回放逐片段比较保持；结论仅覆盖本条所写配置与使用事实，不代表整个TLS生命周期或SSL库完全不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "tls-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "merge-default",
+        "distribution-processing",
+        "phase-binding"
+      ]
+    },
+    "related": []
+  }
+]

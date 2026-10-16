@@ -1,0 +1,2614 @@
+[
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo",
+    "syntax": "echo [-n] [--] [string ...];",
+    "summary": "在 content 阶段输出以空格连接的参数，默认在本次输出末尾追加换行；-n 抑制末尾换行，参数可包含 Nginx 变量。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 397,
+      "end_line": 408
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "无参数时仅输出换行；变量值中的 -n 不作为选项，输出字面量前导 -n 可使用 --。",
+        "source_ids": [
+          "locked-doc",
+          "arguments",
+          "runtime"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "输出提交到过滤链后仍可能缓冲；echo 本身不保证客户端立刻收到数据。",
+        "source_ids": [
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "配置回调将 echo opcode 与参数模板存入 handler_cmds，并设置 echo 内容处理器；执行器展开参数后构造内存缓冲链，插入空格及可选换行，再提交输出。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 348,
+        "end_line": 455
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 79,
+        "end_line": 225
+      },
+      {
+        "id": "arguments",
+        "file": "src/ngx_http_echo_util.c",
+        "start_line": 39,
+        "end_line": 104
+      },
+      {
+        "id": "script-compiler",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 460,
+        "end_line": 611,
+        "component": "nginx"
+      },
+      {
+        "id": "script-run",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 615,
+        "end_line": 660,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_flush",
+      "echo_duplicate"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_request_body",
+    "syntax": "echo_request_body;",
+    "summary": "输出当前请求已经读取的请求体缓冲链；可转交包含临时文件数据的缓冲区，本项自身不发起请求体读取。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 412,
+      "end_line": 424
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "尚未读取请求体或没有 bufs 时直接返回，不产生本项输出；需要主动读取时先用 echo_read_request_body。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 request_body opcode；执行时检查 request_body/bufs，复制非特殊缓冲描述符、清除终止标记后交给 echo 输出链。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1145,
+        "end_line": 1172
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 235,
+        "end_line": 281
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_read_request_body"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_sleep",
+    "syntax": "echo_sleep seconds;",
+    "summary": "在 content 命令序列中暂停当前请求，按秒参数设置请求级定时器，到期后继续执行；等待期间不以 sleep 调用阻塞整个 worker。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 428,
+      "end_line": 433
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数在请求执行时解析为毫秒精度，解析失败返回 NGX_HTTP_BAD_REQUEST；代码没有额外检查必须大于 0.001 秒，不能把 README 的该说法作为有效最小值。",
+        "source_ids": [
+          "runtime",
+          "duration-parser",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "配置阶段保存参数；执行时以 ngx_atofp(..., 3) 转为毫秒，加入 ctx->sleep 定时器并返回 NGX_AGAIN；超时回调标记请求可继续并进入 echo 写事件处理器。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 585,
+        "end_line": 613
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_sleep.c",
+        "start_line": 26,
+        "end_line": 109
+      },
+      {
+        "id": "duration-parser",
+        "file": "src/core/ngx_string.c",
+        "start_line": 997,
+        "end_line": 1047,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_blocking_sleep",
+      "echo_reset_timer"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_flush",
+    "syntax": "echo_flush;",
+    "summary": "向 Nginx 输出链发送 FLUSH 标记，请求刷新此前可能缓冲的输出；不输出业务文本。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 437,
+      "end_line": 448
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是提交刷新标记，不保证客户端立即可见；已有子请求造成的输出排序缓冲及后续过滤器仍可能延迟数据。",
+        "source_ids": [
+          "locked-doc",
+          "flush-core"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 flush opcode，执行器调用 ngx_http_send_special(r, NGX_HTTP_FLUSH)，由核心构造 flush 缓冲并交给输出过滤器。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 517,
+        "end_line": 579
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 228,
+        "end_line": 232
+      },
+      {
+        "id": "flush-core",
+        "file": "src/http/ngx_http_request.c",
+        "start_line": 3596,
+        "end_line": 3625,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo",
+      "echo_location_async"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_blocking_sleep",
+    "syntax": "echo_blocking_sleep seconds;",
+    "summary": "按秒参数暂停当前 worker 的执行；这是阻塞式等待，在等待结束前该 worker 不能正常推进其他请求。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 452,
+      "end_line": 458
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "阻塞整个当前 worker，锁定模块文档明确不应在生产环境使用；需要请求级异步等待时使用 echo_sleep。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "参数解析失败返回 NGX_HTTP_BAD_REQUEST；没有独立的最小正时长检查。",
+        "source_ids": [
+          "runtime",
+          "duration-parser"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 blocking_sleep opcode；执行器用 ngx_atofp(..., 3) 转成毫秒，再直接调用 ngx_msleep 后返回。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 615,
+        "end_line": 631
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_sleep.c",
+        "start_line": 160,
+        "end_line": 184
+      },
+      {
+        "id": "duration-parser",
+        "file": "src/core/ngx_string.c",
+        "start_line": 997,
+        "end_line": 1047,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_sleep"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_reset_timer",
+    "syntax": "echo_reset_timer;",
+    "summary": "将当前请求的 echo 计时起点重置为执行此项时的时间，影响随后读取 $echo_timer_elapsed 的结果。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 462,
+      "end_line": 466
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是重置 echo 计时基准，不是重置请求超时或修改系统时钟；可以在同一请求的命令序列中多次使用。",
+        "source_ids": [
+          "runtime",
+          "elapsed-variable",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 reset_timer opcode；执行器更新 Nginx 时间缓存，并把当前时间写入 ctx->timer_begin。elapsed 变量以当前时间与该起点求差。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 635,
+        "end_line": 675
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_timer.c",
+        "start_line": 78,
+        "end_line": 94
+      },
+      {
+        "id": "elapsed-variable",
+        "file": "src/ngx_http_echo_timer.c",
+        "start_line": 15,
+        "end_line": 74
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_sleep"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_before_body",
+    "syntax": "echo_before_body [-n] [--] [string ...];",
+    "summary": "作为响应体过滤操作，把参数生成的文本插入原内容处理器输出的正文之前；参数以空格连接并默认追加换行，可用 -n 抑制换行。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 470,
+      "end_line": 475
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "无正文链或 header_only 请求会跳过正文改写；本项是过滤操作，可与其他内容处理器组合。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "文本参数支持变量，-n 与 -- 的处理沿用 echo。",
+        "source_ids": [
+          "arguments",
+          "echo-output",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "output-body-filter",
+    "mechanism": "回调将命令加入 before_body_cmds 并要求安装过滤器；body filter 在首次有效正文链到达时执行前置命令，再把原正文交给下一过滤器。文本生成复用 echo 输出逻辑。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1284,
+        "end_line": 1344
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 111,
+        "end_line": 223
+      },
+      {
+        "id": "filter-dispatch",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 226,
+        "end_line": 282
+      },
+      {
+        "id": "echo-output",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 79,
+        "end_line": 225
+      },
+      {
+        "id": "arguments",
+        "file": "src/ngx_http_echo_util.c",
+        "start_line": 39,
+        "end_line": 104
+      },
+      {
+        "id": "filter-install",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 31,
+        "end_line": 108
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_after_body",
+      "echo"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_after_body",
+    "syntax": "echo_after_body [-n] [--] [string ...];",
+    "summary": "作为响应体过滤操作，把参数生成的文本追加到原内容处理器正文末尾；默认追加换行，实际实现同样支持 -n 与 --。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 479,
+      "end_line": 483
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只有检测到原正文结束且前序过滤返回允许继续时才执行追加；无正文链或 header_only 请求跳过正文改写。",
+        "source_ids": [
+          "runtime"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "-n 与 -- 经同一参数解析器和 echo 执行器处理；README 正文也明确支持，不能因本项简写语法行省略选项就认为不支持。",
+        "source_ids": [
+          "arguments",
+          "echo-output",
+          "filter-dispatch",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "output-body-filter",
+    "mechanism": "回调将命令加入 after_body_cmds；body filter 检测原链的终止标记，先提交原正文，再执行追加命令并发送新的终止缓冲。文本生成复用 echo 的选项与输出逻辑。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1348,
+        "end_line": 1407
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 111,
+        "end_line": 223
+      },
+      {
+        "id": "filter-dispatch",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 226,
+        "end_line": 282
+      },
+      {
+        "id": "echo-output",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 79,
+        "end_line": 225
+      },
+      {
+        "id": "arguments",
+        "file": "src/ngx_http_echo_util.c",
+        "start_line": 39,
+        "end_line": 104
+      },
+      {
+        "id": "filter-install",
+        "file": "src/ngx_http_echo_filter.c",
+        "start_line": 31,
+        "end_line": 108
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_before_body",
+      "echo"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_location_async",
+    "syntax": "echo_location_async uri [query_string];",
+    "summary": "向指定 URI 发起 GET 子请求，并继续执行当前请求后续 echo 命令，不等待该子请求完成后才推进命令序列。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 487,
+      "end_line": 506
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定实现可从 URI 中分离 ?query；提供第二参数时以第二参数为准，与 README 中旧的禁止拼接查询串说法不同。测试规格覆盖这一行为，本站未运行该测试。",
+        "source_ids": [
+          "runtime",
+          "query-spec"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "子请求目标使用普通 URI，不提供 echo_exec 的命名 location 跳转语义；异步推进命令不等于整个响应已完成。",
+        "source_ids": [
+          "locked-doc",
+          "runtime",
+          "subrequest-core"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录异步 location opcode；执行时解析 URI/查询串，向 ngx_http_subrequest 传入空完成回调和 flags=0，成功后返回 NGX_OK。调度器在必要时先读取当前请求体。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 732,
+        "end_line": 845
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_location.c",
+        "start_line": 16,
+        "end_line": 75
+      },
+      {
+        "id": "subrequest-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2315,
+        "end_line": 2495,
+        "component": "nginx"
+      },
+      {
+        "id": "body-before-subrequest",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 240,
+        "end_line": 288
+      },
+      {
+        "id": "query-spec",
+        "file": "t/location.t",
+        "start_line": 317,
+        "end_line": 343
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_location",
+      "echo_subrequest_async"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_location",
+    "syntax": "echo_location uri [query_string];",
+    "summary": "向指定 URI 发起 GET 子请求，暂停当前 echo 命令序列，待子请求完成后再继续后续命令；这是请求级串行等待。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 510,
+      "end_line": 528
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "等待子请求不会调用阻塞式 sleep；本项后续 echo 命令在该子请求完成后继续。",
+        "source_ids": [
+          "locked-doc",
+          "runtime",
+          "continuation"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定实现支持 URI 内查询串，显式第二参数优先；命名 location 不是本项提供的跳转方式。",
+        "source_ids": [
+          "runtime",
+          "query-spec",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录同步 location opcode；执行器给子请求设置 ngx_http_echo_post_subrequest 完成回调并返回 NGX_AGAIN，完成回调把父请求标记为可恢复。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 851,
+        "end_line": 921
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_location.c",
+        "start_line": 78,
+        "end_line": 153
+      },
+      {
+        "id": "subrequest-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2315,
+        "end_line": 2495,
+        "component": "nginx"
+      },
+      {
+        "id": "body-before-subrequest",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 240,
+        "end_line": 288
+      },
+      {
+        "id": "query-spec",
+        "file": "t/location.t",
+        "start_line": 317,
+        "end_line": 343
+      },
+      {
+        "id": "continuation",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 383,
+        "end_line": 433
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_location_async",
+      "echo_subrequest"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_subrequest_async",
+    "syntax": "echo_subrequest_async method uri [-q query_string] [-b body] [-f body_file];",
+    "summary": "用指定 HTTP 方法向 URI 发起子请求，可设置查询串及字符串或文件形式的请求体；成功发起后继续当前 echo 命令序列。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 532,
+      "end_line": 551
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "-b 与 -f 不构成自动合并的请求体：实现优先采用非空 -b，否则才读取非空 -f 指定的文件。",
+        "source_ids": [
+          "subrequest-options"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "文件作为子请求体读取，读取及路径使用发生在请求执行时；本项不提供命名 location 内部跳转。",
+        "source_ids": [
+          "subrequest-options",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录异步 subrequest opcode。请求执行时解析方法、URI 及 -q/-b/-f，创建子请求后按解析结果调整方法、请求体等字段，成功返回 NGX_OK。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 925,
+        "end_line": 1039
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 62,
+        "end_line": 118
+      },
+      {
+        "id": "subrequest-options",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 200,
+        "end_line": 450
+      },
+      {
+        "id": "subrequest-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2315,
+        "end_line": 2495,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_subrequest",
+      "echo_location_async"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_subrequest",
+    "syntax": "echo_subrequest method uri [-q query_string] [-b body] [-f body_file];",
+    "summary": "用指定 HTTP 方法、查询串和可选请求体发起子请求，并等它完成后继续当前 echo 命令序列。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 555,
+      "end_line": 574
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同步描述的是当前命令序列等待，不是阻塞整个 worker；完成后通过回调恢复父请求。",
+        "source_ids": [
+          "runtime",
+          "continuation",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "非空 -b 的请求体优先于 -f；不提供命名 location 内部跳转。",
+        "source_ids": [
+          "subrequest-options",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "配置回调记录同步 subrequest opcode；执行器解析请求描述，建立完成回调并调整子请求的方法/请求体，返回 NGX_AGAIN 等待请求级续执行。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1027,
+        "end_line": 1043
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 121,
+        "end_line": 197
+      },
+      {
+        "id": "subrequest-options",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 200,
+        "end_line": 450
+      },
+      {
+        "id": "subrequest-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2315,
+        "end_line": 2495,
+        "component": "nginx"
+      },
+      {
+        "id": "continuation",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 383,
+        "end_line": 433
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_subrequest_async",
+      "echo_location"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_duplicate",
+    "syntax": "echo_duplicate count string;",
+    "summary": "把指定字符串连续重复 count 次作为响应正文输出，不自动追加换行。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 578,
+      "end_line": 588
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "计数允许下划线，0 或空字符串不产生重复正文；负号和非数字/下划线字符被计数解析器拒绝。",
+        "source_ids": [
+          "count-parser",
+          "runtime",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "实现按重复结果长度申请缓冲；不要将其理解为不占用结果大小内存的流式重复。",
+        "source_ids": [
+          "runtime"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "配置回调记录 duplicate opcode；执行器读取计数和字符串，分配 count×字符串长度的缓冲，循环复制后提交输出链。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 459,
+        "end_line": 513
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_echo.c",
+        "start_line": 284,
+        "end_line": 342
+      },
+      {
+        "id": "count-parser",
+        "file": "src/ngx_http_echo_util.c",
+        "start_line": 172,
+        "end_line": 198
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_read_request_body",
+    "syntax": "echo_read_request_body;",
+    "summary": "显式请求读取当前请求体，供后续命令使用；本项自身不输出正文。当前请求可能是带有父请求所构造请求体的子请求。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 592,
+      "end_line": 597
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "读取后也不能保证 $request_body 变量始终含全部正文；正文落盘的场景需区分变量和 echo_request_body 指令。",
+        "source_ids": [
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 read_request_body opcode；执行器调用 ngx_http_read_client_request_body 并注册完成回调，调度器按返回值立即继续或等待读取完成后恢复。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 679,
+        "end_line": 693
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_request_info.c",
+        "start_line": 25,
+        "end_line": 51
+      },
+      {
+        "id": "read-dispatch",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 310,
+        "end_line": 341
+      },
+      {
+        "id": "body-read-core",
+        "file": "src/http/ngx_http_request_body.c",
+        "start_line": 32,
+        "end_line": 228,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_request_body"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_foreach_split",
+    "syntax": "echo_foreach_split [--] delimiter string;",
+    "summary": "用指定分隔串切分字符串，逐项执行其后到 echo_end 之间的 echo 命令；当前项通过 $echo_it 取得。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 601,
+      "end_line": 605
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "必须与 echo_end 配对；当前实现拒绝嵌套循环，返回内部错误。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "分隔符是字面字符串而非正则；相邻分隔符产生的空项被跳过。分隔符以 - 开头时先用 -- 终止选项解析。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录循环开始 opcode；执行时保存命令位置并构造非空切分项数组。echo_end 推进数组索引，尚有项时把命令游标移回循环体。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1047,
+        "end_line": 1089
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_foreach.c",
+        "start_line": 48,
+        "end_line": 183
+      },
+      {
+        "id": "iteration-value",
+        "file": "src/ngx_http_echo_foreach.c",
+        "start_line": 12,
+        "end_line": 45
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_end"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_end",
+    "syntax": "echo_end;",
+    "summary": "结束 echo_foreach_split 的循环体，推进到下一项；还有项时重新执行循环体，全部完成后继续循环后的命令。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 609,
+      "end_line": 613
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "没有对应活动 foreach 上下文时记录错误并返回 NGX_ERROR；本项不是通用 return 或任意请求终止指令。",
+        "source_ids": [
+          "runtime"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 end opcode；执行器递增 foreach->next_choice，完成时清除循环上下文，否则回置 next_handler_cmd 以继续下一次迭代。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1129,
+        "end_line": 1141
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_foreach.c",
+        "start_line": 153,
+        "end_line": 183
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_foreach_split"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_abort_parent",
+    "syntax": "echo_abort_parent;",
+    "summary": "锁定 v0.63 中保留注册但未接入有效执行分派的指令；不能用它实现终止父请求。执行到该 opcode 时，分派器走 unknown opcode 分支并返回内部错误。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 617,
+      "end_line": 621
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "已注册和配置可接受不代表功能可用；源码返回 NGX_HTTP_INTERNAL_SERVER_ERROR，但响应头是否已发送会影响客户端最终看到的结果，不能承诺总会得到一份新的 HTTP 500 响应。",
+        "source_ids": [
+          "configuration-definition",
+          "runtime",
+          "disabled-implementation"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仓库对应测试使用 skip_all 并注明 not working at all；这是读取测试规格，不是本站运行测试的结论。",
+        "source_ids": [
+          "skipped-test"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "配置回调把独立的 abort_parent opcode 加入 handler_cmds；执行 switch 没有对应 case。另一个同名用途的执行辅助函数主体处于 #if 0，且没有从命令分派调用它。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_handler.c",
+        "start_line": 220,
+        "end_line": 359
+      },
+      {
+        "id": "opcode-enum",
+        "file": "src/ngx_http_echo_module.h",
+        "start_line": 19,
+        "end_line": 40
+      },
+      {
+        "id": "disabled-implementation",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 556,
+        "end_line": 633
+      },
+      {
+        "id": "skipped-test",
+        "file": "t/abort-parent.t",
+        "start_line": 1,
+        "end_line": 9
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": []
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_exec",
+    "syntax": "echo_exec uri [query_string]; 或 echo_exec @named_location;",
+    "summary": "把当前请求内部重定向到普通 URI 或命名 location，转交目标内容处理；这是内部跳转，不向客户端发送外部重定向地址。",
+    "callback_definition": {
+      "component": "echo-nginx-module",
+      "file": "src/ngx_http_echo_module.c",
+      "start_line": 625,
+      "end_line": 629
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "普通 URI 支持内嵌查询串或第二参数，显式第二参数优先；命名 location 不使用本项额外提供的查询串，非空值会告警。",
+        "source_ids": [
+          "runtime",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "应在输出响应头/正文之前内部跳转；不要先执行 echo 输出再期待得到目标 location 的完整正常响应。",
+        "source_ids": [
+          "locked-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "回调记录 exec opcode；执行器解析 URI/查询串，普通 URI 调用 ngx_http_internal_redirect，@ 名称调用 ngx_http_named_location 并清理模块上下文；调度器直接返回该处理结果。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "command-compiler",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 295,
+        "end_line": 393
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1176,
+        "end_line": 1232
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_subrequest.c",
+        "start_line": 637,
+        "end_line": 697
+      },
+      {
+        "id": "internal-redirect",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2499,
+        "end_line": 2550,
+        "component": "nginx"
+      },
+      {
+        "id": "named-location",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2554,
+        "end_line": 2626,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；正式 config 连接模块源文件并处理 postpone filter 依赖。注册项没有独立编译 guard，实际二进制是否启用仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo_location"
+    ]
+  },
+  {
+    "component": "echo-nginx-module",
+    "module": "ngx_http_echo_module",
+    "name": "echo_status",
+    "syntax": "echo_status status_code;",
+    "summary": "设置 echo 内容处理器发送响应头时使用的状态码；这是配置值，不是按命令顺序执行的输出操作，单独使用不会安装 echo 内容处理器。",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "defaults": {
+      "status": "verified",
+      "text": "200。",
+      "source_ids": [
+        "merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层 status；父链也未设置时合并为200。",
+      "source_ids": [
+        "merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "同一配置层重复设置由数字 slot 拒绝；注册 post 为 NULL，不提供独立 HTTP 状态码范围校验，不能把所有可解析数字都当作适合发送的状态。",
+        "source_ids": [
+          "registration",
+          "configuration-definition"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只有 echo 发送响应头的路径读取此字段，不会替代其他内容处理器的状态配置。",
+        "source_ids": [
+          "runtime",
+          "registration"
+        ]
+      }
+    ],
+    "phase": "content",
+    "mechanism": "注册项使用 ngx_conf_set_num_slot，按 offset 写入 echo location 配置的 status。合并配置默认200，echo_send_header_if_needed 在头未发送时赋给 r->headers_out.status。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 63
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 565,
+        "end_line": 570,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "merge",
+        "file": "src/ngx_http_echo_module.c",
+        "start_line": 269,
+        "end_line": 291
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_echo_util.c",
+        "start_line": 144,
+        "end_line": 169
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 1236,
+        "end_line": 1271
+      },
+      {
+        "id": "number-parser",
+        "file": "src/core/ngx_string.c",
+        "start_line": 967,
+        "end_line": 991,
+        "component": "nginx"
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 echo v0.63 后未修改模块源码；本条所列配置和模块执行逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，所引用公共入口正文未变。结论限于本条陈述，不表示后续过滤器、完整请求链或部署环境均不受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "merge",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_echo_module；本项注册无独立编译 guard，实际启用状态仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "echo"
+    ]
+  },
+  {
+    "component": "headers-more-nginx-module",
+    "module": "ngx_http_headers_more_filter_module",
+    "name": "more_clear_headers",
+    "syntax": "more_clear_headers [-t types]... [-s statuses]... name ...;",
+    "summary": "在响应头过滤阶段清除指定响应头；可用 -t 限定响应 Content-Type，用 -s 限定响应状态，同时指定时须同时匹配。",
+    "callback_definition": {
+      "component": "headers-more-nginx-module",
+      "file": "src/ngx_http_headers_more_headers_out.c",
+      "start_line": 554,
+      "end_line": 559
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有命令时沿用父层；本层有命令时将父层命令放在前、本层命令放在后，按序执行。",
+      "source_ids": [
+        "merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "头名可以末尾 * 表示前缀匹配，但单独 * 被解析器拒绝；匹配不区分头名大小写。",
+        "source_ids": [
+          "clear-parser",
+          "output-match"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "清除发生在本模块的输出头过滤位置；后续过滤器仍可能生成同名字段，不能据此保证任意响应头最终都不存在。",
+        "source_ids": [
+          "filter-install"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "-a 仅允许 more_set_headers，本项使用 -a 会在配置解析时失败。",
+        "source_ids": [
+          "option-parser"
+        ]
+      }
+    ],
+    "phase": "output-header-filter",
+    "mechanism": "配置回调以 clear opcode 解析头名及筛选选项，将值置空并要求安装输出头过滤器；执行时先按类型和状态筛选，再调用相应头处理函数清除字段。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 32
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 607,
+        "end_line": 612,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "merge",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 176,
+        "end_line": 207
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 218,
+        "end_line": 261
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_headers_more_headers_out.c",
+        "start_line": 109,
+        "end_line": 149
+      },
+      {
+        "id": "clear-parser",
+        "file": "src/ngx_http_headers_more_util.c",
+        "start_line": 18,
+        "end_line": 128
+      },
+      {
+        "id": "output-match",
+        "file": "src/ngx_http_headers_more_headers_out.c",
+        "start_line": 191,
+        "end_line": 255
+      },
+      {
+        "id": "option-parser",
+        "file": "src/ngx_http_headers_more_headers_out.c",
+        "start_line": 611,
+        "end_line": 756
+      },
+      {
+        "id": "filter-install",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 114,
+        "end_line": 153
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 headers-more v0.37 后未修改模块源码；本条解析、合并与头处理逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，核对的 rewrite 调度及复杂值入口正文未变。后续核心过滤器仍可能生成响应头，不能据此推定整个输出链或环境未受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_headers_more_filter_module；注册支持 http/server/location/location 内 if，未注册 server 内 if。实际二进制是否包含模块仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "more_set_headers"
+    ]
+  },
+  {
+    "component": "headers-more-nginx-module",
+    "module": "ngx_http_headers_more_filter_module",
+    "name": "more_set_input_headers",
+    "syntax": "more_set_input_headers [-r] [-t types]... \"Name: value\" ...;",
+    "summary": "在 rewrite 阶段尾部设置或替换请求头，值可含 Nginx 变量；-t 按请求 Content-Type 筛选，-r 阻止为不存在的普通请求头新建字段。",
+    "callback_definition": {
+      "component": "headers-more-nginx-module",
+      "file": "src/ngx_http_headers_more_headers_in.c",
+      "start_line": 469,
+      "end_line": 474
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有命令时沿用父层；本层有命令时将父层命令放在前、本层命令放在后，按序执行。",
+      "source_ids": [
+        "merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "-t 检查请求头而非响应头；锁定实现对请求 Content-Type 完整值做长度与字节比较，不自动剥离 charset 等参数。",
+        "source_ids": [
+          "input-type-match",
+          "locked-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只修改请求侧头字段；不支持输出侧的 -s 状态筛选。HTTP 版本低于1.0时该 rewrite handler 跳过处理。",
+        "source_ids": [
+          "input-options",
+          "rewrite-tail"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "请求头值由复杂值机制求值；-r 没有匹配到普通头项时不新建，清空值则按删除处理。",
+        "source_ids": [
+          "parse-header",
+          "header-update",
+          "replace-spec"
+        ]
+      }
+    ],
+    "phase": "rewrite-tail",
+    "mechanism": "配置回调记录 set 类型的输入头命令，解析复杂值和 replace 标志并要求注册 rewrite handler。handler 首次执行时移到当前 rewrite 阶段末尾，随后执行输入头命令。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 32
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 607,
+        "end_line": 612,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "merge",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 176,
+        "end_line": 207
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 265,
+        "end_line": 285
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 175,
+        "end_line": 209
+      },
+      {
+        "id": "header-update",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 220,
+        "end_line": 340
+      },
+      {
+        "id": "input-options",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 521,
+        "end_line": 660
+      },
+      {
+        "id": "input-type-match",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 486,
+        "end_line": 518
+      },
+      {
+        "id": "parse-header",
+        "file": "src/ngx_http_headers_more_util.c",
+        "start_line": 18,
+        "end_line": 158
+      },
+      {
+        "id": "rewrite-tail",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 241,
+        "end_line": 328
+      },
+      {
+        "id": "rewrite-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 922,
+        "end_line": 945,
+        "component": "nginx"
+      },
+      {
+        "id": "complex-value",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 58,
+        "end_line": 104,
+        "component": "nginx"
+      },
+      {
+        "id": "replace-spec",
+        "file": "t/input.t",
+        "start_line": 307,
+        "end_line": 335
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 headers-more v0.37 后未修改模块源码；本条解析、合并与头处理逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，核对的 rewrite 调度及复杂值入口正文未变。后续核心过滤器仍可能生成响应头，不能据此推定整个输出链或环境未受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_headers_more_filter_module；注册支持 http/server/location/location 内 if，未注册 server 内 if。实际二进制是否包含模块仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "more_clear_input_headers",
+      "more_set_headers"
+    ]
+  },
+  {
+    "component": "headers-more-nginx-module",
+    "module": "ngx_http_headers_more_filter_module",
+    "name": "more_clear_input_headers",
+    "syntax": "more_clear_input_headers [-t types]... name ...;",
+    "summary": "在 rewrite 阶段尾部清除指定请求头，可按请求 Content-Type 筛选，并用头名末尾 * 清除匹配前缀的请求头。",
+    "callback_definition": {
+      "component": "headers-more-nginx-module",
+      "file": "src/ngx_http_headers_more_headers_in.c",
+      "start_line": 478,
+      "end_line": 483
+    },
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有命令时沿用父层；本层有命令时将父层命令放在前、本层命令放在后，按序执行。",
+      "source_ids": [
+        "merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "-t 对请求 Content-Type 完整值进行匹配，缺失该请求头时有类型约束的命令不执行；它不是按响应 MIME 类型筛选。",
+        "source_ids": [
+          "input-type-match",
+          "runtime"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "末尾 * 表示前缀匹配，单独 * 被拒绝；没有对应头项时不创建新字段。",
+        "source_ids": [
+          "parse-header",
+          "header-update"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "只作用于请求头；本项不接受 -s，HTTP 版本低于1.0时跳过。共用解析器也接受 -r，但清除动作本来就不会新建普通请求头。",
+        "source_ids": [
+          "input-options",
+          "rewrite-tail",
+          "header-update"
+        ]
+      }
+    ],
+    "phase": "rewrite-tail",
+    "mechanism": "配置回调使用 clear opcode，头解析器将值置空，执行时删除匹配的输入头项；它与 more_set_input_headers 共用输入命令队列和尾部 rewrite handler。",
+    "evidence": [
+      {
+        "id": "module-config",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 32
+      },
+      {
+        "id": "distribution",
+        "file": "util/mirror-tarballs",
+        "start_line": 607,
+        "end_line": 612,
+        "component": "openresty"
+      },
+      {
+        "id": "patch-effective-set",
+        "file": "util/mirror-tarballs",
+        "start_line": 35,
+        "end_line": 550,
+        "component": "openresty"
+      },
+      {
+        "id": "merge",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 176,
+        "end_line": 207
+      },
+      {
+        "id": "locked-doc",
+        "file": "README.markdown",
+        "start_line": 288,
+        "end_line": 338
+      },
+      {
+        "id": "runtime",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 175,
+        "end_line": 209
+      },
+      {
+        "id": "header-update",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 220,
+        "end_line": 340
+      },
+      {
+        "id": "input-options",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 521,
+        "end_line": 660
+      },
+      {
+        "id": "input-type-match",
+        "file": "src/ngx_http_headers_more_headers_in.c",
+        "start_line": 486,
+        "end_line": 518
+      },
+      {
+        "id": "parse-header",
+        "file": "src/ngx_http_headers_more_util.c",
+        "start_line": 18,
+        "end_line": 158
+      },
+      {
+        "id": "rewrite-tail",
+        "file": "src/ngx_http_headers_more_filter_module.c",
+        "start_line": 241,
+        "end_line": 328
+      },
+      {
+        "id": "rewrite-core",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 922,
+        "end_line": 945,
+        "component": "nginx"
+      },
+      {
+        "id": "wildcard-spec",
+        "file": "t/input.t",
+        "start_line": 1295,
+        "end_line": 1311
+      }
+    ],
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本获取 headers-more v0.37 后未修改模块源码；本条解析、合并与头处理逻辑保持原文。隔离连续回放34项有效 Nginx 补丁，47个最终文件摘要与审计一致，核对的 rewrite 调度及复杂值入口正文未变。后续核心过滤器仍可能生成响应头，不能据此推定整个输出链或环境未受补丁影响；未编译运行。",
+      "source_ids": [
+        "distribution",
+        "patch-effective-set",
+        "configuration-definition",
+        "runtime"
+      ]
+    },
+    "availability": {
+      "status": "verified",
+      "dependencies": [
+        "须构建 ngx_http_headers_more_filter_module；注册支持 http/server/location/location 内 if，未注册 server 内 if。实际二进制是否包含模块仍需核对。"
+      ],
+      "deprecated": null
+    },
+    "related": [
+      "more_set_input_headers",
+      "more_clear_headers"
+    ]
+  }
+]

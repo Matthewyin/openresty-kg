@@ -1,0 +1,1420 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_stream_module",
+    "name": "stream",
+    "summary": "建立Stream配置上下文，创建各Stream模块配置，解析server配置并完成合并、处理阶段和监听地址初始化。",
+    "syntax": "stream { ... }",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream.c",
+      "start_line": 92,
+      "end_line": 279
+    },
+    "evidence": [
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream.c",
+        "start_line": 75,
+        "end_line": 88
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 639,
+        "end_line": 649
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是main层无参数配置块，同一配置上下文重复声明被拒绝；不是http中的块，也不单独提供会话内容处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-0",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "implementation-0",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L639-L649",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "variables_hash_max_size",
+    "summary": "设置Stream变量查找哈希表构建时尝试的最大桶数。",
+    "syntax": "variables_hash_max_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 650,
+        "end_line": 675
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_variables.c",
+        "start_line": 1315,
+        "end_line": 1340
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 682,
+        "end_line": 694
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1024。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受整数，非k/m字节量；这是哈希构建容量参数，不是可定义变量数量的硬上限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L682-L694",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "variables_hash_bucket_size",
+    "summary": "设置Stream变量查找哈希表每桶的空间预算。",
+    "syntax": "variables_hash_bucket_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 650,
+        "end_line": 675
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_variables.c",
+        "start_line": 1315,
+        "end_line": 1340
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 667,
+        "end_line": 679
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "初始64，随后按ngx_cacheline_size向上对齐。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用整数语法，非带k/m后缀的size槽；实际值按缓存行对齐，桶过小不能容纳单个键时哈希构建失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L667-L679",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "server_names_hash_max_size",
+    "summary": "设置Stream虚拟服务器名称哈希表构建时的最大桶数。",
+    "syntax": "server_names_hash_max_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 650,
+        "end_line": 675
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream.c",
+        "start_line": 714,
+        "end_line": 834
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 624,
+        "end_line": 636
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "512。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用整数语法；限制哈希构建的桶数选择，不是虚拟服务器数量的硬上限，正则名称单独处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L624-L636",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "server_names_hash_bucket_size",
+    "summary": "设置Stream虚拟服务器名称哈希表的桶空间预算，用于精确名称及通配名称表。",
+    "syntax": "server_names_hash_bucket_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1195
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 650,
+        "end_line": 675
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream.c",
+        "start_line": 714,
+        "end_line": 834
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 251,
+        "end_line": 325
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 608,
+        "end_line": 621
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "ngx_cacheline_size；显式配置也按缓存行向上对齐。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅stream主配置，不按server分别继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "语法为整数；缓存行大小依平台而定，不固定为某一个字节数。桶过小不能容纳名称时构建失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L608-L621",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "server_name",
+    "summary": "声明Stream虚拟服务器名称，供按名称查找服务器时使用，支持精确名、通配名及编译条件允许的正则名。",
+    "syntax": "server_name name ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_core_module.c",
+      "start_line": 1284,
+      "end_line": 1381
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 711
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 715,
+        "end_line": 795
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 566,
+        "end_line": 614
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream.c",
+        "start_line": 714,
+        "end_line": 834
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 498,
+        "end_line": 605
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未声明名称时补入空名称。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整规则尚未核定。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅server层；多次声明追加。$hostname按配置期主机名替换，不是任意请求变量展开；正则以~开头并需要PCRE。配置名称本身不自动开启TLS或TLS预读。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L498-L605",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "resolver",
+    "summary": "配置Stream运行时域名解析器；例如代理目标需要动态解析时，用它提供的DNS服务器发起解析。",
+    "syntax": "resolver address ... [valid=time] [ipv4=on|off] [ipv6=on|off] [local=on|off|path];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/stream/ngx_stream_core_module.c",
+      "start_line": 1385,
+      "end_line": 1403
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 715,
+        "end_line": 742
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/core/ngx_resolver.c",
+        "start_line": 213,
+        "end_line": 309
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 532,
+        "end_line": 559
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 394,
+        "end_line": 454
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "resolver-local-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-resolver_conf_parsing.patch",
+        "start_line": 1,
+        "end_line": 263
+      },
+      {
+        "id": "resolver-ipv6-patch",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-safe_resolver_ipv6_option.patch",
+        "start_line": 1,
+        "end_line": 60
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有配置DNS服务器；继承链为空时创建无nameserver的占位resolver，不自动读取系统DNS。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层resolver对象；本层显式配置替代上层对象。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "固定OpenResty的local参数仅非Windows有效：on读取/etc/resolv.conf，path读取指定文件，off跳过该读取但不关闭显式DNS服务器；显式resolver配置最终没有任何DNS服务器会报错，仅配置local=off也属于此情况，local=on/path未读到服务器同样不能通过。status_zone是文档中的商业功能，不属于这里的开源实现。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "resolver-local-patch",
+          "resolver-ipv6-patch"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "有效发行补丁允许未编译IPv6支持时使用ipv6=off，但ipv6=on仍报错；不能把固定Nginx原始片段当作补丁后的完整行为。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "implementation-1",
+          "resolver-local-patch",
+          "resolver-ipv6-patch"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "共享ngx_resolver_create由resolver_conf_parsing增加非Windows local参数，并由safe_resolver_ipv6_option调整IPv6选项校验；Stream回调实际调用此共享入口，因此列为受影响，不能因Stream文件未变而标无影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing",
+        "resolver-local-patch",
+        "resolver-ipv6-patch"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L394-L454",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "resolver_timeout",
+    "summary": "设置Stream运行时名称解析请求使用的超时时间。",
+    "syntax": "resolver_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 742
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 532,
+        "end_line": 559
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 457,
+        "end_line": 475
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "30s。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层，均未设置使用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "该值赋给解析请求ctx->timeout，不是连接上游的超时，也不是整个代理会话的时限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L457-L475",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "proxy_protocol_timeout",
+    "summary": "限制Stream接收客户端PROXY协议头时等待可读数据的时间。",
+    "syntax": "proxy_protocol_timeout timeout;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 761
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_handler.c",
+        "start_line": 176,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_handler.c",
+        "start_line": 209,
+        "end_line": 290
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 377,
+        "end_line": 391
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "30s。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层，均未设置使用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只有监听地址启用PROXY协议才进入对应处理路径；该参数不启用协议本身。超时会关闭会话，但已收到的头解析失败也会提前结束，并不保证一直等待到超时时间。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L377-L391",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "tcp_nodelay",
+    "summary": "控制Stream客户端及代理上游TCP连接是否启用TCP_NODELAY选项。",
+    "syntax": "tcp_nodelay on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 765
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 441,
+        "end_line": 472
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_proxy_module.c",
+        "start_line": 779,
+        "end_line": 803
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 652,
+        "end_line": 664
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层，均未设置使用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "调用受SOCK_STREAM条件限制，对UDP不应用；客户端设置选项失败结束会话，上游设置失败进入next_upstream处理，不保证关闭Nagle后必然获得特定吞吐或延迟。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L652-L664",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "preread_buffer_size",
+    "summary": "设置Stream预读阶段在需要更多客户端数据且尚无连接缓冲区时创建的缓冲区大小。",
+    "syntax": "preread_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 765
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 231,
+        "end_line": 312
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 345,
+        "end_line": 437
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 347,
+        "end_line": 359
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "16k（16384字节）。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层，均未设置使用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "预读处理器仍要求更多数据而缓冲区已满时会结束会话；不是后续代理转发缓冲区大小，也不会覆盖已经存在的连接缓冲区。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preread",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L347-L359",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_stream_core_module",
+    "name": "preread_timeout",
+    "summary": "设置Stream预读处理器等待更多客户端数据时的超时时间。",
+    "syntax": "preread_timeout timeout;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 152,
+        "end_line": 165
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 679,
+        "end_line": 765
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/stream/ngx_stream_core_module.c",
+        "start_line": 231,
+        "end_line": 312
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/stream/ngx_stream_core_module.xml",
+        "start_line": 362,
+        "end_line": 374
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "30s。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置时继承上层，均未设置使用默认值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "处理器返回NGX_AGAIN且读事件尚无定时器时才设置；已有定时器不会在每次处理时重新开始。超时会结束会话，不是每两次读取的固定间隔或整个代理会话时限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "preread",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放核对所列配置入口、合并及局部使用片段保持；仅对所列事实成立，不扩展到所有下游调用或目标运行环境。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/stream/ngx_stream_core_module.xml#L362-L374",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

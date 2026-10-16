@@ -1,0 +1,6126 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_pass",
+    "summary": "指定处理请求的 FastCGI 服务端地址或 upstream 组，在 content 阶段创建 FastCGI 请求并接入共享上游处理。",
+    "syntax": "fastcgi_pass address;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_fastcgi_module.c",
+      "start_line": 3658,
+      "end_line": 3716
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 681,
+        "end_line": 757
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 762,
+        "end_line": 806
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 611,
+        "end_line": 631
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1046,
+        "end_line": 1108
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 693,
+        "end_line": 785
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6322,
+        "end_line": 6340
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1262,
+        "end_line": 1297
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "静态目标由专用回调交给 upstream 配置；含变量时请求期求值，命名目标先查已定义组，再按条件使用 resolver。目标使用地址/端口或 UNIX socket 语法，脚本路径及请求参数通过 fastcgi_param 传递，不进行 HTTP proxy_pass 式 URI 前缀替换。回调安装 location handler，core 将其赋给 r->content_handler 并在 content 阶段调用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_index",
+    "summary": "在生成 $fastcgi_script_name 时，为以斜杠结尾的脚本名追加配置的名称。",
+    "syntax": "fastcgi_index name;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 634,
+        "end_line": 644
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3520,
+        "end_line": 3558
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3587,
+        "end_line": 3629
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 933,
+        "end_line": 955
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3235,
+        "end_line": 3235
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为空字符串，不自动补 index.php。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "改变的是 FastCGI 脚本名变量；不检查磁盘文件是否存在、不执行目录索引跳转。名称由字符串槽位原样保存，实际传给应用的 SCRIPT_FILENAME 仍取决于 fastcgi_param 配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_split_path_info",
+    "summary": "以正则表达式对请求 URI 提取两个捕获组，分别供 $fastcgi_script_name 与 $fastcgi_path_info 使用。",
+    "syntax": "fastcgi_split_path_info regex;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_fastcgi_module.c",
+      "start_line": 3720,
+      "end_line": 3762
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3520,
+        "end_line": 3583
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3587,
+        "end_line": 3654
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3264,
+        "end_line": 3269
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1455,
+        "end_line": 1480
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层没有配置 split_regex 时继承父层的正则和名称；本层配置后使用本层正则。",
+      "source_ids": [
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 PCRE；配置回调要求恰好两个捕获组，未匹配时脚本名取请求 URI，path_info 保持空值。它只拆分变量，不验证脚本存在或自动发送 PATH_INFO 参数。固定源码注册允许 http/server/location，采用注册范围而不是 XML 仅列 location 的缩略范围。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_store",
+    "summary": "把符合保存条件的 FastCGI 响应从临时文件转存到本地路径；on 使用 URI 到文件路径的映射，也可指定含变量的文件名。",
+    "syntax": "fastcgi_store on | off | string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_fastcgi_module.c",
+      "start_line": 3766,
+      "end_line": 3814
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2955,
+        "end_line": 2973
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4164,
+        "end_line": 4180
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4244,
+        "end_line": 4321
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1483,
+        "end_line": 1545
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅在200状态、上游结束/EOF及长度完整性条件满足时尝试转存；不是带有效期和缓存键的 fastcgi_cache。配置回调拒绝与已启用 cache 同层并用，合并时也处理二者冲突；文件权限与实际写入结果仍受文件系统条件约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_store_access",
+    "summary": "设置 FastCGI store 转存文件及所需路径的访问权限，交给文件重命名和路径创建逻辑使用。",
+    "syntax": "fastcgi_store_access users:permissions ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 460,
+      "end_line": 522
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4279,
+        "end_line": 4284
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4312,
+        "end_line": 4321
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_file.c",
+        "start_line": 660,
+        "end_line": 704
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1548,
+        "end_line": 1570
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2975,
+        "end_line": 2976
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为0600，即 user:rw。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "接受 user/group/all 的 r 或 rw 权限，最多三个参数；省略 user 项时保留 user:rw。只设置访问位，不改变文件所有者，也不会开启 fastcgi_store。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_buffering",
+    "summary": "选择 FastCGI 响应使用事件管道缓冲，还是通过非缓冲输入过滤器向下游传递。",
+    "syntax": "fastcgi_buffering on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 743
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2929,
+        "end_line": 2932
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3228,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5111,
+        "end_line": 5145
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 108,
+        "end_line": 147
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2981,
+        "end_line": 2982
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开启后可使用内存及临时文件，关闭仍保留响应读取缓冲；这不控制客户端请求正文。FastCGI 启用 change_buffering，所接收的 X-Accel-Buffering: yes/no 可改变选择，除非由 fastcgi_ignore_headers 禁用该头的处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_request_buffering",
+    "summary": "控制读取客户端请求正文时是否允许流式发送，FastCGI 专用输出过滤器把流入的正文封装为 STDIN 记录。",
+    "syntax": "fastcgi_request_buffering on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 745,
+        "end_line": 757
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1228,
+        "end_line": 1235
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1393,
+        "end_line": 1443
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1510,
+        "end_line": 1573
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1616,
+        "end_line": 1637
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2312,
+        "end_line": 2345
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1365,
+        "end_line": 1391
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2984,
+        "end_line": 2985
+      },
+      {
+        "id": "upstream-pipelining",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_pipelining.patch",
+        "start_line": 1,
+        "end_line": 23
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off 且 pass_request_body 开启才设置 request_body_no_buffering；不借用 HTTP 代理的版本/chunked 限制。已发请求且正文未缓冲时不能重试；发行 pipelining 补丁将写事件停止条件从已发响应头改为请求正文发送完毕。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc",
+          "merge-default",
+          "upstream-pipelining"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所列事实受本条原补丁影响，上游与补丁分别引用固定原坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing",
+        "merge-default",
+        "upstream-pipelining"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_ignore_client_abort",
+    "summary": "控制共享上游初始化时是否安装客户端断连检查，从而影响客户端离开后的 FastCGI 请求处理。",
+    "syntax": "fastcgi_ignore_client_abort on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 612,
+        "end_line": 628
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1505,
+        "end_line": 1523
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4232,
+        "end_line": 4238
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 859,
+        "end_line": 872
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2987,
+        "end_line": 2988
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "关闭时通常检查断连，但 store、post_action 及缓存状态有各自分支。开启不保证请求一定完成，也不提供独立持久后台任务；上游错误、超时等仍可能结束请求。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_bind",
+    "summary": "为连接 FastCGI 后端指定本地源地址及可选端口，支持变量求值和透明源地址选项。",
+    "syntax": "fastcgi_bind address [transparent] | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6433,
+      "end_line": 6529
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 642
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6533,
+        "end_line": 6582
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 95,
+        "end_line": 158
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 47,
+        "end_line": 86
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2993,
+        "end_line": 2994
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时 local 为NULL，由系统选择源地址和端口。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off 清除继承的绑定；静态地址必须可解析为地址/端口，变量地址在请求期处理，非法动态地址会记录错误并跳过绑定。transparent 依赖平台能力、权限及路由条件，不能仅据配置存在宣称可用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_socket_keepalive",
+    "summary": "为新建 FastCGI 上游套接字请求开启 SO_KEEPALIVE。",
+    "syntax": "fastcgi_socket_keepalive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 644,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 76,
+        "end_line": 86
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1436,
+        "end_line": 1452
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2996,
+        "end_line": 2997
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off；本项不主动开启 SO_KEEPALIVE。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它是操作系统 TCP keepalive 选项，不创建 upstream 空闲连接池，也不等同 FastCGI 协议 keep_conn；本项不设置探测间隔，setsockopt 失败路径会记录错误。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_connect_timeout",
+    "summary": "设置等待建立 FastCGI 上游连接时使用的超时配置。",
+    "syntax": "fastcgi_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1678
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 806,
+        "end_line": 818
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2999,
+        "end_line": 3000
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为60s，作为请求级连接超时字段的初始化来源。",
+      "source_ids": [
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接返回 NGX_AGAIN 时在写事件上添加连接定时器，不能解释成整个 FastCGI 请求的累计期限。发行补丁在请求初始化时复制配置到 u->connect_timeout，生效调用读取这个请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所列事实受本条原补丁影响，上游与补丁分别引用固定原坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_send_timeout",
+    "summary": "设置发送 FastCGI 请求数据遇到写事件等待时使用的超时。",
+    "syntax": "fastcgi_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2312,
+        "end_line": 2345
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1418,
+        "end_line": 1433
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3002,
+        "end_line": 3003
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      },
+      {
+        "id": "upstream-pipelining",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_pipelining.patch",
+        "start_line": 1,
+        "end_line": 23
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为60s，作为请求级发送超时字段的初始化来源。",
+      "source_ids": [
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "发送返回 NGX_AGAIN 且不可写或 request_body_blocked 时加timer，能够推进或发送完成时有移除路径；不是整份请求发送总时限。发行版使用请求级 u->send_timeout，并以 request_body_sent 决定写事件是否停止。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields",
+          "upstream-pipelining"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所列事实受本条原补丁影响，上游与补丁分别引用固定原坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields",
+        "upstream-pipelining"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_send_lowat",
+    "summary": "设置 FastCGI 上游写事件处理的发送低水位，供事件后端减少小块发送触发。",
+    "syntax": "fastcgi_send_lowat size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2121,
+        "end_line": 2125
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3909,
+        "end_line": 3934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1394,
+        "end_line": 1415
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3011,
+        "end_line": 3012
+      },
+      {
+        "id": "lowat-post-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 204,
+        "end_line": 205
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际将值传给 ngx_handle_write_event；FreeBSD 检查 sendspace 上限，不支持 SO_SNDLOWAT 的分支告警并置零。不是每秒速率限制，效果受事件后端和操作系统支持约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default",
+          "lowat-post-binding"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default",
+        "lowat-post-binding"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_buffer_size",
+    "summary": "设置接收 FastCGI 响应首段的缓冲区大小，用于协议记录与响应首部处理，并在非缓冲正文路径复用。",
+    "syntax": "fastcgi_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1704,
+        "end_line": 1731
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1767,
+        "end_line": 1831
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 862,
+        "end_line": 870
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 89,
+        "end_line": 105
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3014,
+        "end_line": 3016
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为一个 ngx_pagesize，实际字节数取决于平台页大小。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "该缓冲区还可能包含缓存键元数据及 FastCGI STDERR/STDOUT 记录；首部未解析完且缓冲区填满时按无效响应处理，不是单个HTTP头字段的专用上限，也不限制完整响应体大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_pass_request_headers",
+    "summary": "控制是否把客户端原始请求头转换为 HTTP_ 前缀的大写下划线参数，写入 FastCGI PARAMS。",
+    "syntax": "fastcgi_pass_request_headers on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 898,
+        "end_line": 997
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1046,
+        "end_line": 1108
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1111,
+        "end_line": 1207
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3413,
+        "end_line": 3431
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1331,
+        "end_line": 1344
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3222,
+        "end_line": 3223
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off 关闭的是原始头转换，显式 fastcgi_param 仍会编码。配置过的 HTTP_* 参数会抑制对应自动头参数；多值头按实现合并，Cookie 用分号，其余用逗号。PARAMS 总编码长度超过65535时构造失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_pass_request_body",
+    "summary": "控制是否将原始客户端正文封装成 FastCGI STDIN 记录发送给后端。",
+    "syntax": "fastcgi_pass_request_body on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 745,
+        "end_line": 757
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1228,
+        "end_line": 1245
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1267,
+        "end_line": 1308
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1343,
+        "end_line": 1359
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1046,
+        "end_line": 1108
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1315,
+        "end_line": 1328
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3224,
+        "end_line": 3225
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开启时缓冲正文与流式正文分别走专用封装路径；关闭不等于删除 fastcgi_param 的 CONTENT_LENGTH 等参数，参数内容需要与后端实际收到的正文一致。非流式路径以空 STDIN 记录结束正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_intercept_errors",
+    "summary": "允许把 FastCGI 返回且匹配本地 error_page 的错误状态交给 Nginx 错误页处理。",
+    "syntax": "fastcgi_intercept_errors on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2508,
+        "end_line": 2517
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2667,
+        "end_line": 2759
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 958,
+        "end_line": 972
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3227,
+        "end_line": 3228
+      },
+      {
+        "id": "no-error-pages",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-no_error_pages.patch",
+        "start_line": 1,
+        "end_line": 91
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享入口在状态>=300时先检查重试再检查拦截；on 仍要求匹配 error_page，不会自动处理所有错误状态。发行 no_error_pages 补丁可以显式清空映射并改变继承，影响可否拦截。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default",
+          "no-error-pages"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所列事实受本条原补丁影响，上游与补丁分别引用固定原坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default",
+        "no-error-pages"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_read_timeout",
+    "summary": "设置等待 FastCGI 响应数据的超时，供响应头、非缓冲正文和缓冲事件管道各自的等待路径使用。",
+    "syntax": "fastcgi_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2436,
+        "end_line": 2466
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3336,
+        "end_line": 3340
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 60,
+        "end_line": 80
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1347,
+        "end_line": 1362
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3005,
+        "end_line": 3006
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为60s，作为请求级读取超时字段的初始化来源。",
+      "source_ids": [
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是整份响应的总期限。响应头 recv 循环中 NGX_AGAIN 分支的 ngx_add_timer 位于 #if 0，不能称每收到头字节都会重置；正文路径按事件状态加减timer。发行版复制配置到 u->read_timeout，并将请求级值传入事件管道。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所列事实受本条原补丁影响，上游与补丁分别引用固定原坐标。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_buffers",
+    "summary": "为缓冲中的 FastCGI 响应设置正文缓冲块的数量和每块大小，由事件管道按需分配。",
+    "syntax": "fastcgi_buffers number size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1322,
+      "end_line": 1348
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3238
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 224,
+        "end_line": 254
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3022,
+        "end_line": 3029
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 150,
+        "end_line": 165
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3022,
+        "end_line": 3029
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为8个缓冲块，每块一个 ngx_pagesize。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "合并时要求至少两个缓冲块；这组缓冲不替代 fastcgi_buffer_size 的初始读取缓冲，也不是全worker共享内存上限。忙缓冲、落盘等另由各自配置约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_busy_buffers_size",
+    "summary": "限制 FastCGI 缓冲响应尚在接收时，正在向客户端发送的可回收缓冲区容量。",
+    "syntax": "fastcgi_busy_buffers_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3032,
+        "end_line": 3066
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3238
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 603,
+        "end_line": 664
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 168,
+        "end_line": 186
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3032,
+        "end_line": 3066
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层与父层均未设置该配置时，为 fastcgi_buffer_size 和单个 fastcgi_buffers 大小较大值的两倍。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "未设置时先继承父层的 busy_buffers_size_conf；若继承后仍未设置，再按本层合并后的缓冲大小计算并校验。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "事件管道按忙缓冲的实际容量统计并决定flush，不是传输速率或响应总大小限制。合并值不得小于 buffer_size 与单个 buffers 大小的较大者，且不得大于 (buffers数量−1)×单块大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_force_ranges",
+    "summary": "为 FastCGI 响应启用字节范围处理资格，使其不依赖后端的 Accept-Ranges 声明。",
+    "syntax": "fastcgi_force_ranges on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2951,
+        "end_line": 2960
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5564,
+        "end_line": 5586
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 821,
+        "end_line": 835
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2990,
+        "end_line": 2991
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "设置 allow_ranges；非缓存命中响应还设置 single_range，已命中的缓存响应解除该单范围标志。它只提供范围处理资格，不保证任意状态或任意响应长度都能产生206，也不改变后端请求参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_limit_rate",
+    "summary": "限制缓冲模式下从 FastCGI 后端读取响应的速率，值按每请求的每秒字节数计算，支持变量。",
+    "syntax": "fastcgi_limit_rate rate;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 317,
+      "end_line": 343
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3242
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 205,
+        "end_line": 222
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 108,
+        "end_line": 135
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 996,
+        "end_line": 1017
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0取消此限速；运行时求值后写入事件管道，由读取预算和延迟timer控制，仅作用于缓冲路径。不是整个worker的共享限额，也不是向客户端发送速率；动态值非法时遵循共享size求值函数的回退。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache",
+    "summary": "选择用于 FastCGI 响应缓存的共享区，支持固定区名、变量求值区名及 off。",
+    "syntax": "fastcgi_cache zone | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_fastcgi_module.c",
+      "start_line": 3820,
+      "end_line": 3875
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 722
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3140,
+        "end_line": 3158
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 826,
+        "end_line": 860
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1006,
+        "end_line": 1046
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3196,
+        "end_line": 3203
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3173,
+        "end_line": 3211
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 567,
+        "end_line": 578
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 189,
+        "end_line": 204
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。必须有对应 fastcgi_cache_path 区及 NGX_HTTP_CACHE；静态未知区在合并时报错，动态空值或off跳过缓存，其他未知动态区返回错误。与store存在冲突检查；方法、缓存键、有效期及响应头条件仍决定每次请求是否可缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_key",
+    "summary": "求值配置表达式并作为 FastCGI 缓存键的内容，随后由共享文件缓存计算键摘要。",
+    "syntax": "fastcgi_cache_key string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_fastcgi_module.c",
+      "start_line": 3879,
+      "end_line": 3903
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 812,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3196,
+        "end_line": 3203
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 228,
+        "end_line": 261
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 248,
+        "end_line": 262
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层cache_key.value.data为空时整体继承父层cache_key；本层显式配置后不再继承。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。模块不会自动采用 HTTP proxy 模块的URL拼接算法；启用cache而无配置或继承的key时合并只发警告。是否区分请求URI、方法、正文或其他业务参数由键表达式决定，不能仅设置cache就假定键唯一。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_path",
+    "summary": "定义 FastCGI 文件缓存目录、键元数据共享区及磁盘清理/加载参数。",
+    "syntax": "fastcgi_cache_path path [levels=levels] [use_temp_path=on|off] keys_zone=name:size [inactive=time] [max_size=size] [min_free=size] [manager_files=number] [manager_sleep=time] [manager_threshold=time] [loader_files=number] [loader_sleep=time] [loader_threshold=time];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_file_cache.c",
+      "start_line": 2379,
+      "end_line": 2722
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 812,
+        "end_line": 829
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 228,
+        "end_line": 261
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 994,
+        "end_line": 1025
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2022,
+        "end_line": 2105
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2109,
+        "end_line": 2151
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3250,
+        "end_line": 3263
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 975,
+        "end_line": 983
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 1860,
+        "end_line": 1919
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 381,
+        "end_line": 554
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "本项注册于http主配置，创建独立缓存路径和共享区；不走server/location配置继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。只允许http层，要求非空keys_zone且共享区至少两页；此固定开源回调不接受文档商业purger参数。文件键摘要来自 fastcgi_cache_key 的求值内容，并非固定某个URL；inactive是未访问淘汰时间，不是响应有效期。max_size/min_free由manager异步检查，不构成写入瞬间的硬配额；min_free还受平台接口支持限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_bypass",
+    "summary": "根据表达式条件决定本次请求是否绕过已有 FastCGI 缓存读取。",
+    "syntax": "fastcgi_cache_bypass string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 402,
+      "end_line": 441
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 881,
+        "end_line": 892
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 347,
+        "end_line": 370
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3143,
+        "end_line": 3166
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 227,
+        "end_line": 245
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3187,
+        "end_line": 3188
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层都未配置时没有bypass谓词。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有配置谓词数组时整体继承父层；本层有配置时不追加父层数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。任一值非空且不等于单字符0即命中；绕过读取不等于禁止保存，后续no_cache未命中且满足条件时仍可建立缓存。需要已启用缓存的请求路径。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_no_cache",
+    "summary": "根据表达式条件禁止把本次 FastCGI 响应保存到缓存。",
+    "syntax": "fastcgi_no_cache string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 402,
+      "end_line": 441
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3143,
+        "end_line": 3166
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 347,
+        "end_line": 370
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1180,
+        "end_line": 1198
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3190,
+        "end_line": 3191
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层都未配置时没有no_cache谓词。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有配置谓词数组时整体继承父层；本层有配置时不追加父层数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。任一值非空且不等于单字符0即使u->cacheable清零；它作用于响应保存判断，不保证跳过已经存在的缓存读取，需要绕过读取时另设cache_bypass。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_valid",
+    "summary": "为指定 FastCGI 响应状态配置缓存有效时长，在响应尚无有效期时供共享缓存逻辑选择。",
+    "syntax": "fastcgi_cache_valid [code ...] time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_file_cache.c",
+      "start_line": 2726,
+      "end_line": 2799
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2353,
+        "end_line": 2375
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3173,
+        "end_line": 3211
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2825,
+        "end_line": 2827
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 702,
+        "end_line": 777
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3193,
+        "end_line": 3194
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层都未配置时没有状态有效期表；不能据此断言响应头指定的缓存期限也失效。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有配置有效期数组时整体继承父层；本层有配置时使用本层数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。仅给时间时为200/301/302建立记录；any是状态通配，显式数字须为100–599。只有响应尚无valid_sec时才回退此表；缓存资格和响应头条件仍可禁止缓存，因此不是强制缓存所有匹配状态。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_min_uses",
+    "summary": "设置缓存键达到多少次使用后才允许进入 FastCGI 响应的缓存填充路径。",
+    "syntax": "fastcgi_cache_min_uses number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 873,
+        "end_line": 879
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 310,
+        "end_line": 338
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 893,
+        "end_line": 927
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 366,
+        "end_line": 378
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3160,
+        "end_line": 3161
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为1。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。阈值按共享缓存节点uses参与判断，不是客户端请求限流或并发限制；已有文件和冷启动查盘有独立路径，达到次数也仍须满足有效期、响应头等其他缓存条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_max_range_offset",
+    "summary": "根据请求 Range 的起始偏移决定是否允许缓存 FastCGI 上游响应。",
+    "syntax": "fastcgi_cache_max_range_offset number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1229,
+      "end_line": 1256
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1141,
+        "end_line": 1187
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 996,
+        "end_line": 1002
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 325,
+        "end_line": 340
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3163,
+        "end_line": 3165
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为 NGX_MAX_OFF_T_VALUE，此分支不按Range偏移禁用缓存。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。实际比较是 offset >= 阈值时禁用该次缓存资格；0和后缀范围另有直接拒绝缓存分支。不是拒绝客户端请求，也不是限制响应文件大小；尚可继续请求后端。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_use_stale",
+    "summary": "允许在指定错误或更新状态下返回已过期的 FastCGI 缓存响应。",
+    "syntax": "fastcgi_cache_use_stale error | timeout | invalid_header | updating | http_500 | http_503 | http_403 | http_404 | http_429 | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3167,
+        "end_line": 3179
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 208,
+        "end_line": 220
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 908,
+        "end_line": 938
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2562,
+        "end_line": 2591
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4423,
+        "end_line": 4460
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 631,
+        "end_line": 699
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3167,
+        "end_line": 3179
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层均未设置时配置位为off；不据此取消响应头stale扩展的独立判断。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有设置位掩码时继承父层；含off时归一为off，含error时增加NOLIVE条件。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。必须已有可用旧缓存；error合并时还包含无可选后端条件。更新中旧值、指定HTTP错误和连接错误分别走共享分支，响应头stale扩展还有独立允许条件；off不能概括为删除旧文件或清除这些响应头能力。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_methods",
+    "summary": "指定可进入 FastCGI 缓存资格检查的客户端请求方法。",
+    "syntax": "fastcgi_cache_methods GET | HEAD | POST ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 452,
+        "end_line": 457
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3181,
+        "end_line": 3185
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 834,
+        "end_line": 848
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 812,
+        "end_line": 829
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 343,
+        "end_line": 363
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3181,
+        "end_line": 3185
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层都未配置时为GET HEAD。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层方法掩码为0时取父层，然后无论是否继承都补GET和HEAD。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。配置表仅接受GET/HEAD/POST；合并总会补GET和HEAD。允许POST不会自动把请求正文纳入cache_key，且列出方法仍不保证响应被缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_lock",
+    "summary": "协调相同 FastCGI 缓存键的首次填充，让其他请求等待填充结果或锁释放。",
+    "syntax": "fastcgi_cache_lock on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 460
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 503,
+        "end_line": 539
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 973,
+        "end_line": 977
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 265,
+        "end_line": 283
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3205,
+        "end_line": 3206
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。锁属于共享缓存键节点，并非全站串行锁；lock_age到期可再放行填充者，等待达到lock_timeout可转后端而不缓存，因此不能保证任何时刻只有一个后端请求。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_lock_timeout",
+    "summary": "限制请求等待同一 FastCGI 缓存键填充锁的时间。",
+    "syntax": "fastcgi_cache_lock_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 896
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 460
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 503,
+        "end_line": 539
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 973,
+        "end_line": 977
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 304,
+        "end_line": 322
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3208,
+        "end_line": 3209
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为5s。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。等待到期把lock_timeout设为0，后续返回SCARCE并清除本次cacheable，允许转后端但不填缓存。此值不限制持锁请求的整个响应时间，也不替代read_timeout。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_lock_age",
+    "summary": "设置 FastCGI 缓存节点一次填充锁的有效年龄，超过后允许另一请求尝试填充。",
+    "syntax": "fastcgi_cache_lock_age time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 896
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 439
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 286,
+        "end_line": 301
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3211,
+        "end_line": 3212
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为5s。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。检查node->lock_time与当前时间，不是终止旧填充者的定时器；旧请求未结束也可能再放行一个请求。只在cache_lock相关路径使用，与等待者的lock_timeout分开。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_revalidate",
+    "summary": "为已过期的 FastCGI 缓存提供条件参数，并在后端返回304时重验证旧缓存。",
+    "syntax": "fastcgi_cache_revalidate on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 661,
+        "end_line": 670
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 862,
+        "end_line": 866
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3279,
+        "end_line": 3292
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3364,
+        "end_line": 3411
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5994,
+        "end_line": 6043
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2598,
+        "end_line": 2659
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 614,
+        "end_line": 628
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3214,
+        "end_line": 3215
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。缓存PARAMS默认项通过HTTP_IF_MODIFIED_SINCE/HTTP_IF_NONE_MATCH携带旧Last-Modified/ETag；值只在相应过期重验证状态存在，显式同名fastcgi_param可覆盖默认项。还需后端理解条件参数并正确返回304，不能保证所有应用都支持重验证。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_cache_background_update",
+    "summary": "在满足条件时创建后台子请求更新已过期 FastCGI 缓存，同时向当前请求返回旧值。",
+    "syntax": "fastcgi_cache_background_update on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 908,
+        "end_line": 938
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1118,
+        "end_line": 1137
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 207,
+        "end_line": 224
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3217,
+        "end_line": 3218
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要 NGX_HTTP_CACHE 构建支持。需要已有过期缓存，并通过cache_use_stale updating或响应头stale_updating等条件允许旧值；后台请求不会再递归触发同类更新。它由访问触发，不是定时刷新或预热服务。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_temp_path",
+    "summary": "指定 FastCGI 上游响应临时文件的目录及最多三层子目录布局。",
+    "syntax": "fastcgi_temp_path path [level1 [level2 [level3]]];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 361,
+      "end_line": 417
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 675,
+        "end_line": 677
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3130,
+        "end_line": 3136
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4254,
+        "end_line": 4276
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1593,
+        "end_line": 1624
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "用于响应落盘，不是客户端请求体目录；路径按配置前缀解析。cache开启且cache_path的use_temp_path=off时，缓存临时文件改用缓存目录；store也经共享临时文件路径转存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_max_temp_file_size",
+    "summary": "设置普通缓冲 FastCGI 响应写入临时文件的最大大小。",
+    "syntax": "fastcgi_max_temp_file_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3032,
+        "end_line": 3035
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3090,
+        "end_line": 3111
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 272,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 784,
+        "end_line": 821
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1020,
+        "end_line": 1049
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3090,
+        "end_line": 3111
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层与父层均未设置时为1024×1024×1024字节（1024m）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设时继承父层max_temp_file_size_conf；仍未设再取默认值，随后以本层缓冲大小校验。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0使普通非cache/store路径不再写响应临时文件；非零值不得小于 buffer_size 与单个buffers的较大者。事件管道把cache/store标记为cacheable，相关写盘路径不受此普通临时文件阈值限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_temp_file_write_size",
+    "summary": "限制普通缓冲 FastCGI 响应每批写入临时文件的数据规模。",
+    "syntax": "fastcgi_temp_file_write_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3032,
+        "end_line": 3035
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3069,
+        "end_line": 3087
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 784,
+        "end_line": 825
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1573,
+        "end_line": 1590
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3032,
+        "end_line": 3087
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层与父层均未设置时，为 fastcgi_buffer_size 和单个 fastcgi_buffers 大小较大值的两倍。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设时继承父层temp_file_write_size_conf；仍未设再按本层缓冲大小计算，随后校验。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "合并后不得小于 buffer_size 与单个buffers的较大者；事件管道按缓冲链边界截取，并非每秒速率限制。该限批判断位于非cacheable分支，不能无条件用来限制cache/store写入。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_next_upstream",
+    "summary": "指定 FastCGI 连接、发送、响应头失败或所列HTTP状态发生时，是否尝试下一个上游节点。",
+    "syntax": "fastcgi_next_upstream error | timeout | invalid_header | http_500 | http_503 | http_403 | http_404 | http_429 | non_idempotent | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 208,
+        "end_line": 220
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1052,
+        "end_line": 1143
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3119,
+        "end_line": 3128
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为error timeout。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设掩码时继承父层；含off时合并归一为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "重试还受剩余tries、超时窗口及未缓冲请求是否已发送的限制。已发出的POST/LOCK/PATCH通常须non_idempotent才允许重试，该选项不能使流式正文可重放，也不能修复已向客户端发送的响应。固定FastCGI选项表没有http_502/http_504，不照HTTP proxy列表扩充。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_next_upstream_tries",
+    "summary": "为 FastCGI 上游可尝试次数增加一个配置上限。",
+    "syntax": "fastcgi_next_upstream_tries number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1254,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1163,
+        "end_line": 1177
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2978,
+        "end_line": 2979
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为0，关闭额外次数上限。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "非零时只会把peer已有的可尝试次数向下收紧；0关闭这个额外上限，不表示无限重试。实际能否继续仍取决于next_upstream条件、剩余节点及请求可重放性。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_next_upstream_timeout",
+    "summary": "限制 FastCGI 请求允许继续转向其他上游的时间窗口。",
+    "syntax": "fastcgi_next_upstream_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 811,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1254,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2542,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1146,
+        "end_line": 1160
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3008,
+        "end_line": 3009
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "在重试判断时比较当前时间与peer.start_time，0取消此额外窗口；不是一个到点必定中断当前读写的全程timer。连接、发送、读取超时仍各自作用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_param",
+    "summary": "定义发送给 FastCGI 应用的 PARAMS 名值参数，配置期编译值表达式，请求期求值并编码。",
+    "syntax": "fastcgi_param parameter value [if_not_empty];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6586,
+      "end_line": 6626
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3271,
+        "end_line": 3292
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3330,
+        "end_line": 3337
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3364,
+        "end_line": 3496
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 868,
+        "end_line": 997
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1046,
+        "end_line": 1108
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1216,
+        "end_line": 1226
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1201,
+        "end_line": 1259
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只有本层params_source为NULL时才整体继承父层参数与已编译结构；本层配置任意fastcgi_param后不追加父层数组，缓存默认条件参数另按缺项合入。",
+      "source_ids": [
+        "implementation-0",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数名原样保存，值支持文字和变量；if_not_empty只跳过空值，字符串0仍可发送。HTTP_前缀参数进入自动请求头抑制表，显式空HTTP_*值可抑制对应原始头。配置参数和自动头合计的PARAMS编码长度不得超过65535；本项不验证应用脚本或自动补全应用必需参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_pass_header",
+    "summary": "将指定 FastCGI 响应头从隐藏集合中移除，允许该字段进入后续向客户端复制流程。",
+    "syntax": "fastcgi_pass_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3237,
+        "end_line": 3246
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6707,
+        "end_line": 6735
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 1300,
+        "end_line": 1312
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它允许已有响应字段通过，不创建缺失字段、不配置发往FastCGI的PARAMS，也不关闭字段对缓存等的特殊处理；是否有最终输出仍受后续头处理器约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_hide_header",
+    "summary": "向 FastCGI 响应隐藏表追加字段名，使向客户端复制响应头时跳过这些字段。",
+    "syntax": "fastcgi_hide_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 648,
+        "end_line": 656
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3237,
+        "end_line": 3246
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6667,
+        "end_line": 6705
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 838,
+        "end_line": 856
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "本条尚未核实完整默认配置及相关分支，不据文档空default猜测有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "本条完整合并规则尚未核实，不据此推断父层与本层配置如何组合。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "默认隐藏表是Status和源码列出的X-Accel-Expires/Redirect/Limit-Rate/Buffering/Charset，并非任意X-Accel-*通配。隐藏输出不等于禁用该头的内部处理；需要关闭特殊处理时另用ignore_headers。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_ignore_headers",
+    "summary": "按名称关闭 FastCGI 响应中受支持字段的特殊处理，包括缓存控制、内部跳转、下游限速、响应缓冲和字符集覆盖。",
+    "syntax": "fastcgi_ignore_headers field ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 710,
+        "end_line": 744
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 460,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2825,
+        "end_line": 2832
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4789,
+        "end_line": 4810
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4828,
+        "end_line": 4853
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4966,
+        "end_line": 4991
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5016,
+        "end_line": 5068
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5092,
+        "end_line": 5145
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5149,
+        "end_line": 5163
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5251,
+        "end_line": 5268
+      },
+      {
+        "id": "implementation-9",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2914
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 875,
+        "end_line": 930
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3114,
+        "end_line": 3116
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层与父层都未设时只保留内部已设置标志，不忽略任何上述字段。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设字段掩码时继承父层；本层配置按本层掩码使用，不自动追加父层忽略项。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅接受固定掩码表的X-Accel-Redirect、X-Accel-Expires、X-Accel-Limit-Rate、X-Accel-Buffering、X-Accel-Charset、Expires、Cache-Control、Set-Cookie、Vary；不会因此删除字段，输出隐藏仍由hide/pass_header决定。缓存相关效果还要求缓存请求状态存在。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "implementation-9",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_catch_stderr",
+    "summary": "在 FastCGI 响应首部解析期间搜索 STDERR 数据中的配置字符串，匹配后将响应判为无效首部。",
+    "syntax": "fastcgi_catch_stderr string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1681,
+        "end_line": 1704
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1767,
+        "end_line": 1831
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2493,
+        "end_line": 2496
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 780,
+        "end_line": 803
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3230,
+        "end_line": 3230
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "当前层和父层都未配置时没有catch_stderr字符串数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未配置数组时整体继承父层；本层有配置时不拼接父层数组。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用字符串查找而非正则；只检查当前收到的STDERR片段，不保证跨片段匹配或扫描完整响应正文。命中返回INVALID_HEADER，是否重试仍由fastcgi_next_upstream及可重放条件决定，配置本项不会自动启用重试。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_fastcgi_module",
+    "name": "fastcgi_keep_conn",
+    "summary": "在 FastCGI BEGIN_REQUEST 中设置 KEEP_CONN 标志，要求应用端在响应后保留连接以便复用。",
+    "syntax": "fastcgi_keep_conn on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 595,
+        "end_line": 608
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 611,
+        "end_line": 631
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 1026,
+        "end_line": 1030
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2132,
+        "end_line": 2161
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2211,
+        "end_line": 2280
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 2521,
+        "end_line": 2546
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_upstream_keepalive_module.c",
+        "start_line": 323,
+        "end_line": 348
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_fastcgi_module.xml",
+        "start_line": 975,
+        "end_line": 993
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_fastcgi_module.c",
+        "start_line": 3232,
+        "end_line": 3232
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未在当前层或父层设置时为off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未设置时继承父层对应值；显式设置时采用本层值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是FastCGI协议层标志，不等同SO_KEEPALIVE，也不独立创建upstream连接缓存。响应过滤器在完整END_REQUEST及padding边界等条件下才标记可复用；实际复用仍需要upstream keepalive配置与后端配合。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已按固定34项发行补丁隔离回放并核对47个最终文件摘要；所引注册、回调、模块归属与局部实现保持原文，仅证明本条所述有限事实，不推广为整个FastCGI请求链不受发行补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  }
+]

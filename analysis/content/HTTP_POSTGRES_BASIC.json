@@ -1,0 +1,1490 @@
+[
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_server",
+    "summary": "向PostgreSQL upstream登记数据库服务器及dbname、user、password连接选项。",
+    "syntax": "postgres_server address [dbname=name] [user=name] [password=value];",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 392,
+      "end_line": 486
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 40,
+        "end_line": 129
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 332,
+        "end_line": 384
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 392,
+        "end_line": 486
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 26,
+        "end_line": 34
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有隐式服务器；未指定dbname/user/password时字段为空。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置期解析地址，默认端口5432；未知选项拒绝。运行时拼接libpq连接字符串并调用PQconnectStart/PQsetnonblocking，明确附加sslmode=disable，不提供本指令TLS开关；Unix socket连接在实现中仍标为TODO。dbname/user/password直接拼入连接字符串，不能据此宣称任意空格或引号均被正确转义。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_keepalive",
+    "summary": "控制每worker PostgreSQL连接缓存容量、复用匹配方式及溢出策略。",
+    "syntax": "postgres_keepalive off | max=count [mode=single|multi] [overflow=ignore|reject];",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 488,
+      "end_line": 604
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 196,
+        "end_line": 206
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 120,
+        "end_line": 126
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 264,
+        "end_line": 330
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_keepalive.c",
+        "start_line": 64,
+        "end_line": 167
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_keepalive.c",
+        "start_line": 184,
+        "end_line": 258
+      },
+      {
+        "id": "implementation-5",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 218,
+        "end_line": 241
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 254,
+        "end_line": 292
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 35,
+        "end_line": 49
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "max=10、mode=single、overflow=ignore。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "single优先取池头空闲连接；multi先选peer，再仅按socket地址匹配，不比较数据库名或用户。ignore允许活动连接数超过缓存容量，归还时池满会关闭缓存尾连接；reject在活动数达到max时走503。off或max=0关闭缓存；重复检测仅依据max是否仍为默认10，不能声称所有重复配置都会拒绝。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_pass",
+    "summary": "把location内容处理绑定到PostgreSQL请求处理器，选择已配置的数据库upstream。",
+    "syntax": "postgres_pass upstream;",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 606,
+      "end_line": 681
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 41,
+        "end_line": 150
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 188,
+        "end_line": 216
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 1294,
+        "end_line": 1338
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 40,
+        "end_line": 110
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-7",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 153,
+        "end_line": 167
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 294,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 50,
+        "end_line": 59
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无本层静态或动态目标时继承父目标；没有父目标时保持空。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "目标可含变量，但请求时按已登记upstream的名称及端口查找，不是任意动态DNS连接。目标不能为空，同层重复拒绝。处理器拒绝subrequest_in_memory，并丢弃HTTP请求体；使用共享upstream初始化后覆盖本域读写事件处理器，非HTTP协议代理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_query",
+    "summary": "设置静态或含变量的SQL，可按HTTP方法选择查询。",
+    "syntax": "postgres_query [method ...] query;",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 683,
+      "end_line": 811
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 176,
+        "end_line": 194
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 69,
+        "end_line": 83
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 169,
+        "end_line": 222
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 231,
+        "end_line": 283
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 286,
+        "end_line": 368
+      },
+      {
+        "id": "implementation-5",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 447,
+        "end_line": 491
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 294,
+        "end_line": 366
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 60,
+        "end_line": 71
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无隐式SQL；只有本层默认查询和方法查询都未配置时才整组继承父级，非按方法逐条追加。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "匹配方法的查询优先于默认查询；无适用方法且无默认查询时405，完全无query时500。配置SQL和运行时变量展开均不得为空；变量拼接不自动转义。普通输出用PQsendQuery，binary_value用零绑定参数的PQsendQueryParams，均不能描述为参数化SQL。只处理一个结果；结束阶段发现额外PGresult会报500，不支持把多条查询当多个结果正常返回。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_rewrite",
+    "summary": "依据结果行数或受影响行数改写HTTP响应状态，可为每个条件配置方法专用和默认规则。",
+    "syntax": "postgres_rewrite [method ...] no_changes|changes|no_rows|rows [=]status_code;",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 813,
+      "end_line": 981
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 214,
+        "end_line": 220
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_rewrite.c",
+        "start_line": 36,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 389,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 493,
+        "end_line": 513
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_util.c",
+        "start_line": 81,
+        "end_line": 87
+      },
+      {
+        "id": "implementation-5",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 353,
+        "end_line": 367
+      },
+      {
+        "id": "implementation-6",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_output.c",
+        "start_line": 546,
+        "end_line": 574
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_request.h",
+        "start_line": 78,
+        "end_line": 144
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 318,
+        "end_line": 382
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 72,
+        "end_line": 93
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无隐式改写；本层未配置时继承父规则数组，非按条件与父级追加。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "先按条件首次出现顺序分组匹配，每组内按请求方法选择专用规则，否则使用该组默认规则；首个适用条件结束匹配，不是把每条指令按原行序独立执行。允许200–299或400–507，拒绝3xx。状态前加=以负值保留生成正文；普通错误状态提前结束结果转换并跳过postgres_set。changes/no_changes依据非SELECT命令的PQcmdTuples计数，不能用于判断SELECT结果有无行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_output",
+    "summary": "选择PostgreSQL结果的RDS、换行文本、单值文本、单值二进制或无正文输出。",
+    "syntax": "postgres_output rds|text|value|binary_value|none;",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 983,
+      "end_line": 1021
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 222,
+        "end_line": 229
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 255,
+        "end_line": 260
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 404,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_output.c",
+        "start_line": 38,
+        "end_line": 119
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_output.c",
+        "start_line": 121,
+        "end_line": 203
+      },
+      {
+        "id": "implementation-5",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_output.c",
+        "start_line": 206,
+        "end_line": 270
+      },
+      {
+        "id": "implementation-6",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_output.c",
+        "start_line": 546,
+        "end_line": 574
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 368,
+        "end_line": 380
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 94,
+        "end_line": 114
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认rds；本层未设置时同时继承父output_handler与output_binary。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "value与binary_value都要求恰好一行一列且非NULL、非零长度，否则500。binary_value请求libpq二进制结果，不是把文本做Base64。text逐字段用换行连接，NULL写为(null)；none仍执行SQL与变量提取，只跳过正文生成。RDS设置专用Content-Type，其他非none输出用core default_type；未在本批实现JSON/CSV转换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_set",
+    "summary": "从数据库结果的指定行和列提取单个值，保存为Nginx变量。",
+    "syntax": "postgres_set $variable row column [optional|required];",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 1023,
+      "end_line": 1160
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 208,
+        "end_line": 212
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 171,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 404,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_variable.c",
+        "start_line": 155,
+        "end_line": 288
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 318,
+        "end_line": 382
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 115,
+        "end_line": 133
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无隐式提取项；省略要求等级时为optional。本层未配置提取数组时继承父数组。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "行列索引从0开始，列也可按名查找；目标已具有get_handler时即拒绝，即使原变量允许更改。缺列、越界、NULL或空值返回空存储；执行到变量提取时required将其转成500，optional读取为not_found。状态重写在提取前执行，普通错误状态可能直接跳过提取，所以required不是所有响应路径均执行的校验。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_escape",
+    "summary": "在rewrite脚本执行时对输入进行SQL字符串转义并加单引号，将结果赋给目标变量。",
+    "syntax": "postgres_escape $escaped [[=]value];",
+    "callback_definition": {
+      "component": "ngx_postgres",
+      "file": "src/ngx_postgres_module.c",
+      "start_line": 1166,
+      "end_line": 1292
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_util.c",
+        "start_line": 318,
+        "end_line": 406
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_escape.c",
+        "start_line": 41,
+        "end_line": 97
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 271,
+        "end_line": 294
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_escape.c",
+        "start_line": 55,
+        "end_line": 74
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 134,
+        "end_line": 147
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认不保留空字符串：生成SQL NULL；源前=仅改变空值分支。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "单参数形式读取并覆盖同一变量；双参数源可为复杂值。默认空字符串转成SQL NULL，源前加=使空字符串转成两个单引号；实现中的not_found分支仍输出NULL。真实调用是无连接参数的PQescapeString，不是绑定参数、标识符转义或基于当前连接的PQescapeStringConn；不承诺任意连接编码设置下都安全。指令将代码追加到HTTP rewrite模块，实际运行于server/location rewrite而非数据库结果阶段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_connect_timeout",
+    "summary": "设置共享upstream连接阶段的写事件超时，供PostgreSQL非阻塞连接使用。",
+    "syntax": "postgres_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 188,
+        "end_line": 216
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 153,
+        "end_line": 167
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 268,
+        "end_line": 313
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 350,
+        "end_line": 384
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_upstream.c",
+        "start_line": 457,
+        "end_line": 461
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1555,
+        "end_line": 1576
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 34,
+        "end_line": 37
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1667
+      },
+      {
+        "id": "implementation-9",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 112,
+        "end_line": 158
+      },
+      {
+        "id": "implementation-10",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 203,
+        "end_line": 228
+      },
+      {
+        "id": "implementation-11",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 294,
+        "end_line": 315
+      },
+      {
+        "id": "implementation-12",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 247,
+        "end_line": 280
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 318,
+        "end_line": 355
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 148,
+        "end_line": 156
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      },
+      {
+        "id": "patch-upstream_timeout_fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      },
+      {
+        "id": "patch-balancer_status_code",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-balancer_status_code.patch",
+        "start_line": 1,
+        "end_line": 72
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认10s；本层未设置时继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "implementation-10",
+        "implementation-11",
+        "implementation-12"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "peer回调调用PQconnectStart并返回NGX_AGAIN，共享upstream据此挂写timer；PQconnectPoll结束后本域删除timer。复用peer也返回NGX_AGAIN，共享层仍可能挂该timer，随后get_result负责删除，不能宣称只作用于新TCP握手或整个SQL请求总时限。 发行补丁先在共享初始化复制配置超时到请求级u->connect_timeout，再由连接timer读取该字段；不能把原版直接读取u->conf的片段当发行最终代码。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "implementation-9",
+          "implementation-10",
+          "implementation-11",
+          "implementation-12",
+          "merge-default",
+          "official-doc",
+          "distribution-processing",
+          "patch-upstream_timeout_fields",
+          "patch-balancer_status_code"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "实际回放34个发行补丁后，upstream_timeout_fields在ngx_http_upstream_init将配置超时复制到u->connect_timeout，连接timer改读请求级字段；balancer_status_code在peer返回值处理处加入特殊HTTP状态结束分支。本域回调仍按NGX_AGAIN连接及本域timer清理路径运行，不将旧共享代码当发行最终实现。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "implementation-9",
+        "implementation-10",
+        "implementation-11",
+        "implementation-12",
+        "merge-default",
+        "distribution-processing",
+        "patch-upstream_timeout_fields",
+        "patch-balancer_status_code"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "ngx_postgres",
+    "module": "ngx_postgres_module",
+    "name": "postgres_result_timeout",
+    "summary": "设置SQL发送成功后等待结果和结束确认的读事件超时。",
+    "syntax": "postgres_result_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "lifecycle-owner",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 147,
+        "end_line": 174
+      },
+      {
+        "id": "implementation-0",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 188,
+        "end_line": 216
+      },
+      {
+        "id": "implementation-1",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 231,
+        "end_line": 283
+      },
+      {
+        "id": "implementation-2",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 294,
+        "end_line": 368
+      },
+      {
+        "id": "implementation-3",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_processor.c",
+        "start_line": 447,
+        "end_line": 491
+      },
+      {
+        "id": "implementation-4",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_handler.c",
+        "start_line": 283,
+        "end_line": 317
+      },
+      {
+        "id": "implementation-5",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_util.c",
+        "start_line": 173,
+        "end_line": 190
+      },
+      {
+        "id": "merge-default",
+        "component": "ngx_postgres",
+        "file": "src/ngx_postgres_module.c",
+        "start_line": 318,
+        "end_line": 355
+      },
+      {
+        "id": "official-doc",
+        "component": "ngx_postgres",
+        "file": "README.md",
+        "start_line": 157,
+        "end_line": 164
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 718,
+        "end_line": 721
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "默认30s；本层未设置时继承父值。",
+      "source_ids": [
+        "configuration-definition",
+        "merge-default",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整跨上下文继承规则未逐项核定；仅陈述所列merge直接支持的局部行为，不推断额外合并或执行顺序。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "PQsendQuery/PQsendQueryParams成功后只挂一次read_timeout；PQisBusy等待不会重置该timer，结束确认就绪后才删除。因此它覆盖结果及结束确认等待，不是每次读取之间刷新的空闲超时，也不覆盖前置建连阶段。读事件timedout经本域upstream_next处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "lifecycle-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "merge-default",
+          "official-doc",
+          "distribution-processing"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未直接修改本组件；所列Nginx共享片段经34个实际发行补丁回放保持。结论仅限本条事实，不表示整个模块运行时不受共享补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "lifecycle-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "merge-default",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  }
+]

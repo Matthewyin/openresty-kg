@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "lua-nginx-module--ngx_http_lua_module--content_by_lua_block",
+  "name": "content_by_lua_block",
+  "module": "ngx_http_lua_module",
+  "component": "lua-nginx-module",
+  "contexts": [
+    "http.location",
+    "http.if.location"
+  ],
+  "contexts_verified": true,
+  "syntax": "content_by_lua_block { lua-script }",
+  "summary": "在 HTTP 请求的 content 阶段执行内嵌 Lua，作为当前 location 的内容处理函数。配置阶段保存 Lua 源码和处理函数，请求阶段加载并运行代码。",
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "适用于 location 或 location 内的 if；不要与 proxy_pass 等其他内容处理指令放在同一 location。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1",
+        "evidence-2",
+        "evidence-3",
+        "evidence-4"
+      ]
+    },
+    {
+      "text": "本站只识别 Lua 块边界，不分析其中代码语义，也不判断变更安全性。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0",
+        "evidence-1",
+        "evidence-2",
+        "evidence-3",
+        "evidence-4"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_http_lua_content_by_lua_block",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_module.c",
+      "start_line": 363,
+      "end_line": 368,
+      "code": "    { ngx_string(\"content_by_lua_block\"),\n      NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,\n      ngx_http_lua_content_by_lua_block,\n      NGX_HTTP_LOC_CONF_OFFSET,\n      0,\n      (void *) ngx_http_lua_content_handler_inline },",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_module.c#L363-L368",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 802,
+      "end_line": 841,
+      "code": "ngx_http_lua_content_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,\n    void *conf)\n{\n    char        *rv;\n    ngx_conf_t   save;\n\n    save = *cf;\n    cf->handler = ngx_http_lua_content_by_lua;\n    cf->handler_conf = conf;\n\n    rv = ngx_http_lua_conf_lua_block_parse(cf, cmd);\n\n    *cf = save;\n\n    return rv;\n}\n\n\nchar *\nngx_http_lua_content_by_lua(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    size_t                       chunkname_len;\n    u_char                      *cache_key = NULL, *chunkname;\n    ngx_str_t                   *value;\n    ngx_http_core_loc_conf_t    *clcf;\n    ngx_http_lua_main_conf_t    *lmcf;\n    ngx_http_lua_loc_conf_t     *llcf = conf;\n\n    ngx_http_compile_complex_value_t         ccv;\n\n    dd(\"enter\");\n\n    /*  must specify a content handler */\n    if (cmd->post == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    if (llcf->content_handler) {\n        return \"is duplicate\";\n    }",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L802-L841",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "README.markdown",
+      "start_line": 1847,
+      "end_line": 1872,
+      "code": "content_by_lua_block\n--------------------\n\n**syntax:** *content_by_lua_block { lua-script }*\n\n**context:** *location, location if*\n\n**phase:** *content*\n\nFor instance,\n\n```nginx\n\n content_by_lua_block {\n     ngx.say(\"I need no extra escaping here, for example: \\r\\nblah\")\n }\n```\n\nActs as a \"content handler\" and executes Lua code string specified in `{ lua-script }` for every request.\nThe Lua code may make [API calls](#nginx-api-for-lua) and is executed as a new spawned coroutine in an independent global environment (i.e. a sandbox).\n\nDo not use this directive and other content handler directives in the same location. For example, this directive and the [proxy_pass](http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass) directive should not be used in the same location.\n\nThis directive was first introduced in the `v0.9.17` release.\n\n[Back to TOC](#directives)",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L1847-L1872",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-1",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 802,
+      "end_line": 817,
+      "code": "ngx_http_lua_content_by_lua_block(ngx_conf_t *cf, ngx_command_t *cmd,\n    void *conf)\n{\n    char        *rv;\n    ngx_conf_t   save;\n\n    save = *cf;\n    cf->handler = ngx_http_lua_content_by_lua;\n    cf->handler_conf = conf;\n\n    rv = ngx_http_lua_conf_lua_block_parse(cf, cmd);\n\n    *cf = save;\n\n    return rv;\n}",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L802-L817",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-2",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_directive.c",
+      "start_line": 894,
+      "end_line": 911,
+      "code": "    llcf->content_src_key = cache_key;\n    llcf->content_handler = (ngx_http_handler_pt) cmd->post;\n\n    lmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_lua_module);\n\n    lmcf->requires_capture_filter = 1;\n\n    /*  register location content handler */\n    clcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);\n    if (clcf == NULL) {\n        return NGX_CONF_ERROR;\n    }\n\n    clcf->handler = ngx_http_lua_content_handler;\n\n    return NGX_CONF_OK;\n}\n",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_directive.c#L894-L911",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-3",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_contentby.c",
+      "start_line": 157,
+      "end_line": 179,
+      "code": "ngx_http_lua_content_handler(ngx_http_request_t *r)\n{\n    ngx_http_lua_loc_conf_t     *llcf;\n    ngx_http_lua_ctx_t          *ctx;\n    ngx_int_t                    rc;\n\n    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,\n                   \"lua content handler, uri:\\\"%V\\\" c:%ud\", &r->uri,\n                   r->main->count);\n\n    llcf = ngx_http_get_module_loc_conf(r, ngx_http_lua_module);\n\n    if (llcf->content_handler == NULL) {\n        dd(\"no content handler found\");\n        return NGX_DECLINED;\n    }\n\n    ctx = ngx_http_get_module_ctx(r, ngx_http_lua_module);\n\n    dd(\"ctx = %p\", ctx);\n\n    if (ctx == NULL) {\n        ctx = ngx_http_lua_create_ctx(r);",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_contentby.c#L157-L179",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-4",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_contentby.c",
+      "start_line": 219,
+      "end_line": 224,
+      "code": "    ctx->entered_content_phase = 1;\n\n    dd(\"calling content handler\");\n    return llcf->content_handler(r);\n}\n",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_contentby.c#L219-L224",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 621,
+      "end_line": 625,
+      "code": "ver=0.10.27\n$root/util/get-tarball \"https://github.com/openresty/lua-nginx-module/archive/v$ver.tar.gz\" -O lua-nginx-module-$ver.tar.gz || exit 1\ntar -xzf lua-nginx-module-$ver.tar.gz || exit 1\nmv lua-nginx-module-$ver ngx_lua-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L621-L625",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "lua-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L1847-L1872",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [
+    "content"
+  ],
+  "mechanism": "配置回调 ngx_http_lua_content_by_lua_block 调用块解析器；ngx_http_lua_content_by_lua 保存 cmd->post，并将 ngx_http_lua_content_handler 挂入 location。请求时该入口调用已保存的 content_handler；内嵌代码由 ngx_http_lua_content_handler_inline 处理。",
+  "related": [
+    "lua_code_cache",
+    "proxy_pass"
+  ]
+}

@@ -1,0 +1,2151 @@
+[
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_buffer",
+    "summary": "写入模块保留的buf_size配置字段；此固定版本未见运行时消费该字段。",
+    "syntax": "srcache_buffer size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "build-inputs",
+        "component": "srcache-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 20
+      },
+      {
+        "id": "body-copy",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 304,
+        "end_line": 355
+      },
+      {
+        "id": "actual-header-buffer",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 692,
+        "end_line": 708
+      },
+      {
+        "id": "store-header-allocation",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 978,
+        "end_line": 1024
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是缓存容量或实际每块读写缓冲上限。正式构建的六个C源中buf_size只在注册、初始化、合并出现；缓存头解析使用header_buf_size，复制正文按当前输入块长度分配。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "build-inputs",
+          "body-copy",
+          "actual-header-buffer",
+          "store-header-allocation"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "build-inputs",
+        "body-copy",
+        "actual-header-buffer",
+        "store-header-allocation"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_fetch",
+    "summary": "在access阶段末尾发起内部子请求查找缓存，命中时恢复已缓存HTTP响应。",
+    "syntax": "srcache_fetch method uri [args];",
+    "callback_definition": {
+      "component": "srcache-nginx-module",
+      "file": "src/ngx_http_srcache_filter_module.c",
+      "start_line": 361,
+      "end_line": 446
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "phase-binding",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 515,
+        "end_line": 562
+      },
+      {
+        "id": "access",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 25,
+        "end_line": 59
+      },
+      {
+        "id": "access-end",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 199,
+        "end_line": 239
+      },
+      {
+        "id": "fetch-request",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 343,
+        "end_line": 439
+      },
+      {
+        "id": "fetch-completion",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 283,
+        "end_line": 339
+      },
+      {
+        "id": "fetch-response",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 69,
+        "end_line": 117
+      },
+      {
+        "id": "methods",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 145,
+        "end_line": 249
+      },
+      {
+        "id": "cached-body-output",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 132,
+        "end_line": 188
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置，不发起缓存读取子请求。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "URI及参数支持变量，目标是内部子请求路径而非自动直连缓存服务器；读取子请求非200或缓存响应格式/正文不完整时不作为命中。子请求返回体需要包含被缓存的状态行、头及正文，不是任意纯正文。方法名按大写支持集匹配；显式空字面args会在此版本回调清空location，运行时失败，应省略可选参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "phase-binding",
+          "access",
+          "access-end",
+          "fetch-request",
+          "fetch-completion",
+          "fetch-response",
+          "methods",
+          "cached-body-output"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "phase-binding",
+        "access",
+        "access-end",
+        "fetch-request",
+        "fetch-completion",
+        "fetch-response",
+        "methods",
+        "cached-body-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store",
+    "summary": "在输出过滤阶段收集状态行、响应头与正文，并以子请求正文提交缓存写入。",
+    "syntax": "srcache_store method uri [args];",
+    "callback_definition": {
+      "component": "srcache-nginx-module",
+      "file": "src/ngx_http_srcache_filter_module.c",
+      "start_line": 361,
+      "end_line": 446
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "store-guards",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 133,
+        "end_line": 268
+      },
+      {
+        "id": "body-store",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 399,
+        "end_line": 513
+      },
+      {
+        "id": "store-subrequest",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 520,
+        "end_line": 671
+      },
+      {
+        "id": "serialized-header",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 866,
+        "end_line": 897
+      },
+      {
+        "id": "header-body-chain",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1120,
+        "end_line": 1140
+      },
+      {
+        "id": "serialized-header-output",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1025,
+        "end_line": 1112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置，不发起缓存存储子请求。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不自带缓存存储，实际后端由目标location处理。复制正文同时继续下游输出，完整正文末尾才发起写入；存储子请求错误记日志，不直接替换原响应状态。HEAD不进入存储；还须满足状态、长度、编码及skip等条件。URI/参数支持变量；显式空字面args会清空location，应省略该可选参数。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "store-guards",
+          "body-store",
+          "store-subrequest",
+          "serialized-header",
+          "header-body-chain",
+          "serialized-header-output"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "store-guards",
+        "body-store",
+        "store-subrequest",
+        "serialized-header",
+        "header-body-chain",
+        "serialized-header-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_max_size",
+    "summary": "限制待存入缓存的序列化HTTP响应大小，超过时跳过存储。",
+    "syntax": "srcache_store_max_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "early-size-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 226,
+        "end_line": 240
+      },
+      {
+        "id": "body-size-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 399,
+        "end_line": 445
+      },
+      {
+        "id": "header-length",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1120,
+        "end_line": 1140
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，关闭本项大小检查。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "头过滤先用Content-Length加15字节作近似预判；正文过滤累计状态/头部序列化长度及正文长度再检查。不是仅正文大小，也不限制fetch读取或实际缓存后端容量。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "early-size-check",
+          "body-size-check",
+          "header-length"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "early-size-check",
+        "body-size-check",
+        "header-length"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_fetch_skip",
+    "summary": "表达式结果非空且不等于单字符0时跳过缓存读取。",
+    "syntax": "srcache_fetch_skip expression;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 243,
+      "end_line": 276
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "fetch-skip",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 89,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未设置跳过表达式，等效不因本项跳过。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "支持变量；00等非空字符串也算真，不是数值布尔解析。跳过fetch仍保留后续store机会，不能用本项单独禁止写缓存；表达式求值失败不会满足此跳过条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "fetch-skip"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "fetch-skip"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_skip",
+    "summary": "表达式结果非空且不等于单字符0时跳过缓存写入。",
+    "syntax": "srcache_store_skip expression;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 243,
+      "end_line": 276
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "header-skip",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 176,
+        "end_line": 193
+      },
+      {
+        "id": "body-skip",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 486,
+        "end_line": 506
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未设置跳过表达式，等效不因本项跳过。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "可在响应头阶段以及完整正文末尾最多求值两次；第一次为真就不进入收集，第一次不为真时仍可由后一次阻止写入。不影响fetch；求值失败不按真处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "header-skip",
+          "body-skip"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "header-skip",
+        "body-skip"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_statuses",
+    "summary": "指定允许进入缓存存储流程的HTTP响应状态码集合。",
+    "syntax": "srcache_store_statuses status ...;",
+    "callback_definition": {
+      "component": "srcache-nginx-module",
+      "file": "src/ngx_http_srcache_filter_module.c",
+      "start_line": 566,
+      "end_line": 621
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "status-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 197,
+        "end_line": 225
+      },
+      {
+        "id": "status-sort",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1288,
+        "end_line": 1294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "200、301、302、307、308。",
+      "source_ids": [
+        "create-merge",
+        "status-check"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未声明时继承父层整个状态列表，否则替代；同层重复声明被拒绝。",
+      "source_ids": [
+        "create-merge",
+        "configuration-definition"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "至少一个数值参数；回调并非严格限定HTTP三位码，0被接受但在列表消费时用作终止标记，不能作为有效存储状态。匹配状态仍须满足其他store条件，并不自动为该状态创建响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "status-check",
+          "status-sort"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "status-check",
+        "status-sort"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_methods",
+    "summary": "设置参与srcache读取及写入判定的主请求HTTP方法集合。",
+    "syntax": "srcache_methods GET|HEAD|POST|PUT|DELETE ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "method-mask",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 50,
+        "end_line": 57
+      },
+      {
+        "id": "method-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 39,
+        "end_line": 57
+      },
+      {
+        "id": "store-method",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 133,
+        "end_line": 151
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "GET HEAD。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层掩码；同层累加，合并时总是补入GET和HEAD。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "GET/HEAD不能通过省略被排除；HEAD只可读缓存，store另行排除HEAD。这里限制主请求方法，不是fetch/store子请求使用的方法。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "method-mask",
+          "method-check",
+          "store-method"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "method-mask",
+        "method-check",
+        "store-method"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_request_cache_control",
+    "summary": "按请求头中的no-cache标记跳过fetch，并在同一分支结合no-store决定是否保留store机会。",
+    "syntax": "srcache_request_cache_control on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "request-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_fetch.c",
+        "start_line": 59,
+        "end_line": 87
+      },
+      {
+        "id": "request-control-parser",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 478,
+        "end_line": 542
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "此固定实现按大小写不敏感子串查Cache-Control和Pragma的no-cache；函数只在no_cache为真时返回NGX_OK。单独Cache-Control:no-store虽被记录，但不足以进入调用方跳过分支；no-cache同时存在且no-store为真时不创建store上下文。不能直接套用README对单独no-store的承诺，也不是完整HTTP缓存语法解析器。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "request-control",
+          "request-control-parser"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "request-control",
+        "request-control-parser"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_response_cache_control",
+    "summary": "决定是否根据响应Cache-Control及Expires跳过存储并计算有效期。",
+    "syntax": "srcache_response_cache_control on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "response-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      },
+      {
+        "id": "response-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 546,
+        "end_line": 663
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "检查private/no-store/no-cache（受对应store开关影响）、max-age为0或非法值、过期或非法Expires；max-age先填valid_sec，尚未取得时才用Expires。实现是子串扫描，不承诺完整RFC缓存指令优先级；off会绕过这些检查及有效期提取，但其他store条件仍保留。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "response-check",
+          "response-control"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "response-check",
+        "response-control"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_private",
+    "summary": "允许响应带private标记时继续通过该项缓存存储检查。",
+    "syntax": "srcache_store_private on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "response-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      },
+      {
+        "id": "response-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 546,
+        "end_line": 663
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只在response_cache_control开启时取消private这一拒绝条件，不覆盖no-cache/no-store、过期、状态或skip等其他条件；不生成用户隔离缓存键。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "response-check",
+          "response-control"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "response-check",
+        "response-control"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_no_store",
+    "summary": "允许响应带no-store标记时继续通过该项缓存存储检查。",
+    "syntax": "srcache_store_no_store on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "response-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      },
+      {
+        "id": "response-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 546,
+        "end_line": 663
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只放宽响应Cache-Control:no-store这一条件；不控制请求no-store分支，也不覆盖其他存储限制。response_cache_control关闭时本项对应检查本就不执行。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "response-check",
+          "response-control"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "response-check",
+        "response-control"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_no_cache",
+    "summary": "允许响应带no-cache标记时继续通过该项缓存存储检查。",
+    "syntax": "srcache_store_no_cache on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "response-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      },
+      {
+        "id": "response-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 546,
+        "end_line": 663
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只放宽响应Cache-Control:no-cache这一条件，不自动执行重新验证，也不控制请求侧no-cache；其他有效期/状态/skip等限制仍有效。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "response-check",
+          "response-control"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "response-check",
+        "response-control"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_hide_header",
+    "summary": "从序列化缓存响应中排除指定响应头。",
+    "syntax": "srcache_store_hide_header header;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1126
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "default-hidden",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 36,
+        "end_line": 47
+      },
+      {
+        "id": "hide-build",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1144,
+        "end_line": 1284
+      },
+      {
+        "id": "header-serialization",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 970,
+        "end_line": 1024
+      },
+      {
+        "id": "header-output",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1054,
+        "end_line": 1112
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "头名不区分大小写，同层可多次追加；默认排除Connection、Keep-Alive、Proxy-Authenticate、Proxy-Authorization、TE、Trailers、Transfer-Encoding、Upgrade、Set-Cookie。此项影响写入缓存的副本，不是删除当前发给客户端的响应头；pass_header可从隐藏集合移除同名项。真实注册不允许location内if。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "default-hidden",
+          "hide-build",
+          "header-serialization",
+          "header-output"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "default-hidden",
+        "hide-build",
+        "header-serialization",
+        "header-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_pass_header",
+    "summary": "允许指定响应头进入缓存副本，覆盖隐藏集合中的同名项。",
+    "syntax": "srcache_store_pass_header header;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1126
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "default-hidden",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 36,
+        "end_line": 47
+      },
+      {
+        "id": "hide-build",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1144,
+        "end_line": 1284
+      },
+      {
+        "id": "header-output",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 1054,
+        "end_line": 1112
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "头名不区分大小写，同层可多次追加；用于解除默认或显式隐藏，不是向响应新建头部。真实注册不允许location内if；不把README列出的if作为本版本能力。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "default-hidden",
+          "hide-build",
+          "header-output"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "default-hidden",
+        "hide-build",
+        "header-output"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_store_ranges",
+    "summary": "允许在输出过滤阶段将原200响应转成206的分段响应继续写入缓存。",
+    "syntax": "srcache_store_ranges on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "range-store",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 399,
+        "end_line": 422
+      },
+      {
+        "id": "status-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 197,
+        "end_line": 225
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "针对先保存200头部、后被range过滤器改成206的路径，开启后同步修改缓存状态行；不是自动开放所有源站206状态，后者仍需statuses匹配。不会自动将Range加入缓存键，需在fetch/store键设计中区分；真实注册不允许location内if。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "range-store",
+          "status-check"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "range-store",
+        "status-check"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_ignore_content_encoding",
+    "summary": "忽略非空Content-Encoding对缓存存储的阻止条件。",
+    "syntax": "srcache_ignore_content_encoding on|off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "encoding-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off时非空Content-Encoding会跳过store；on只取消这项检查，不解压/压缩正文，也不自动按Accept-Encoding区分缓存键。真实注册不允许location内if。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "encoding-check"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "encoding-check"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_header_buffer_size",
+    "summary": "设置fetch恢复缓存响应时解析单条响应头所用的缓冲大小。",
+    "syntax": "srcache_header_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "header-parser",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 692,
+        "end_line": 860
+      },
+      {
+        "id": "parse-failure",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 306,
+        "end_line": 350
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "实际消费者在缓存响应解析路径，不是README描述的store序列化缓冲；每成功解析一条头部重置缓冲，不要求容纳所有头部总和。头部未完成且发生截断溢出时解析失败并放弃该缓存命中，不是整个缓存对象大小上限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "header-parser",
+          "parse-failure"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "header-parser",
+        "parse-failure"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_max_expire",
+    "summary": "限制$srcache_expire变量计算出的正向缓存有效期上限。",
+    "syntax": "srcache_max_expire time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1291,
+      "end_line": 1318
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "expiry-variable",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_var.c",
+        "start_line": 53,
+        "end_line": 99
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0，不施加此上限。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅当配置大于0且计算结果超过它才截断；不自动向Redis/Memcached发送过期设置，也不自行删除缓存。变量只在已有store_response上下文时可用，需由实际存储请求消费。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "expiry-variable"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "expiry-variable"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "srcache-nginx-module",
+    "module": "ngx_http_srcache_filter_module",
+    "name": "srcache_default_expire",
+    "summary": "在未取得响应有效期时为$srcache_expire变量提供默认秒数。",
+    "syntax": "srcache_default_expire time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1291,
+      "end_line": 1318
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 216,
+        "end_line": 244
+      },
+      {
+        "id": "create-merge",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_filter_module.c",
+        "start_line": 247,
+        "end_line": 357
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 656,
+        "end_line": 659
+      },
+      {
+        "id": "expiry-variable",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_var.c",
+        "start_line": 53,
+        "end_line": 99
+      },
+      {
+        "id": "response-check",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_store.c",
+        "start_line": 154,
+        "end_line": 175
+      },
+      {
+        "id": "response-control",
+        "component": "srcache-nginx-module",
+        "file": "src/ngx_http_srcache_util.c",
+        "start_line": 546,
+        "end_line": 663
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层，最终使用模块默认值。",
+      "source_ids": [
+        "create-merge"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "读取ctx.valid_sec为0时才使用默认，否则用valid_sec减当前时间，之后受max_expire正值限制；response_cache_control关闭后不会由其提取max-age/Expires。0的后端含义由实际存储实现决定，不表示本模块自动永久保存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "create-merge",
+          "expiry-variable",
+          "response-check",
+          "response-control"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行只解包srcache，没有直接组件补丁；所引共享Nginx配置槽位按有效补丁回放核对。结论仅限列出的模块配置及局部消费事实，不替代后端存储、完整子请求生命周期或现场运行验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "create-merge",
+        "distribution-processing",
+        "component-distribution",
+        "expiry-variable",
+        "response-check",
+        "response-control"
+      ]
+    },
+    "related": []
+  }
+]

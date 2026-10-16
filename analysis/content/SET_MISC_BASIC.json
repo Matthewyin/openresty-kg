@@ -1,0 +1,4841 @@
+[
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_encode_base64",
+    "summary": "把输入字节编码为标准Base64文本。",
+    "syntax": "set_encode_base64 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base64.c",
+        "start_line": 33,
+        "end_line": 48
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 602,
+        "end_line": 616
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1187,
+        "end_line": 1247
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用+/字母表并按需要添加=填充；不作加密或摘要。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_decode_base64",
+    "summary": "把标准Base64文本解码为原始字节。",
+    "syntax": "set_decode_base64 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base64.c",
+        "start_line": 11,
+        "end_line": 29
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 706,
+        "end_line": 720
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1251,
+        "end_line": 1274
+      },
+      {
+        "id": "shared-1",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1305,
+        "end_line": 1347
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "shared-1",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用标准字母表；遇首个=停止有效输入扫描，未严格校验其后内容。非法有效字符或有效长度模4为1时返回NGX_ERROR，不能当作严格规范格式验证器。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "shared-1",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "shared-1",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_encode_base64url",
+    "summary": "把输入字节编码为URL安全Base64文本。",
+    "syntax": "set_encode_base64url $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base64url.c",
+        "start_line": 34,
+        "end_line": 50
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 654,
+        "end_line": 668
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1187,
+        "end_line": 1247
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用-_替代+/且不添加=填充；不作URI其余部分的转义或加密。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_decode_base64url",
+    "summary": "按URL安全Base64字母表把文本解码为原始字节。",
+    "syntax": "set_decode_base64url $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base64url.c",
+        "start_line": 11,
+        "end_line": 30
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 724,
+        "end_line": 738
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1278,
+        "end_line": 1347
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用-_字母表；遇首个=停止扫描，未严格校验后续填充。非法有效字符或有效长度模4为1时返回NGX_ERROR。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_decode_hex",
+    "summary": "将十六进制文本逐两位解码为原始字节。",
+    "syntax": "set_decode_hex $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hex.c",
+        "start_line": 11,
+        "end_line": 47
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 794,
+        "end_line": 808
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1135,
+        "end_line": 1169
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输入必须为偶数长度；每两位通过ngx_hextoi解析，支持大小写A–F，不接受0x前缀、分隔空格或奇数半字节。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_encode_hex",
+    "summary": "把每个输入字节转成两位小写十六进制文本。",
+    "syntax": "set_encode_hex $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hex.c",
+        "start_line": 51,
+        "end_line": 62
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 742,
+        "end_line": 756
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1173,
+        "end_line": 1183
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输出长度为输入字节数的两倍，不添加0x前缀；仅编码，不是加密。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_hmac_sha1",
+    "summary": "用给定密钥计算输入的HMAC-SHA1，返回二进制摘要。",
+    "syntax": "set_hmac_sha1 $target key value;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 590,
+      "end_line": 602
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hmac.c",
+        "start_line": 15,
+        "end_line": 62
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 920,
+        "end_line": 934
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "受NGX_OPENSSL注册条件约束；目标、密钥、输入三个参数都必需，README的只给目标简写不符合真实TAKE3。结果不是hex/Base64文本，函数按摘要长度检查异常。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_hmac_sha256",
+    "summary": "用给定密钥计算输入的HMAC-SHA256，返回二进制摘要。",
+    "syntax": "set_hmac_sha256 $target key value;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 590,
+      "end_line": 602
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hmac.c",
+        "start_line": 15,
+        "end_line": 62
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 961,
+        "end_line": 975
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "受NGX_OPENSSL注册条件约束；目标、密钥、输入三个参数都必需，README的只给目标简写不符合真实TAKE3。结果不是hex/Base64文本，函数按摘要长度检查异常。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_md5",
+    "summary": "计算输入字节的MD5摘要并输出32位小写十六进制文本。",
+    "syntax": "set_md5 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hash.c",
+        "start_line": 19,
+        "end_line": 83
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 866,
+        "end_line": 880
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1173,
+        "end_line": 1183
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册受未定义NGX_HTTP_SET_HASH条件控制；输出是摘要文本，不是原数据的可逆编码。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_sha1",
+    "summary": "计算输入字节的SHA-1摘要并输出40位小写十六进制文本。",
+    "syntax": "set_sha1 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hash.c",
+        "start_line": 8,
+        "end_line": 55
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 812,
+        "end_line": 826
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_string.c",
+        "start_line": 1173,
+        "end_line": 1183
+      },
+      {
+        "id": "shared-1",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.h",
+        "start_line": 11,
+        "end_line": 15
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "shared-1",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "注册同时受NGX_HTTP_SET_HASH与NGX_HAVE_SHA1条件控制；模块头对新Nginx补充SHA1宏定义，不据此宣称任意构建启用。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "shared-1",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "shared-1",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_unescape_uri",
+    "summary": "解码URI组件中的百分号字节序列，并把加号转换为空格。",
+    "syntax": "set_unescape_uri $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_unescape_uri.c",
+        "start_line": 16,
+        "end_line": 184
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 372,
+        "end_line": 386
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用模块自己的状态机而非严格URI校验；非法或截断百分号序列可能被丢弃或部分保留，不保证报错，也不执行Unicode解码。不会因为遇到问号就停止，因为实际传入type=0。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_escape_uri",
+    "summary": "按模块URI组件转义表把指定字节写成大写%XX。",
+    "syntax": "set_escape_uri $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_escape_uri.c",
+        "start_line": 16,
+        "end_line": 210
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 424,
+        "end_line": 438
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "按字节表转义而不是解析完整URL；保留/转义哪些标点取决于本模块uri位图，不等同Nginx其他escape模式或HTML转义。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_quote_sql_str",
+    "summary": "给输入加单引号并按模块的MySQL风格字节规则转义。",
+    "syntax": "set_quote_sql_str $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_quote_sql.c",
+        "start_line": 230,
+        "end_line": 382
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 246,
+        "end_line": 260
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "空值或not_found输出两个单引号；转义NUL、控制字符、引号、反斜杠及$等字节，不感知数据库连接字符集或SQL模式，不是预编译参数绑定。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_quote_pgsql_str",
+    "summary": "把输入包装为PostgreSQL风格转义字符串字面量。",
+    "syntax": "set_quote_pgsql_str $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_quote_sql.c",
+        "start_line": 16,
+        "end_line": 382
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 301,
+        "end_line": 315
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "空值或not_found输出两个单引号；非空先共用SQL转义再加E前缀，内部UTF检查未通过时把高位字节转成八进制转义。不是数据库协议参数绑定，不保证任意字符集输入都有效。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_quote_json_str",
+    "summary": "把输入转成带双引号和控制字符转义的JSON字符串表示。",
+    "syntax": "set_quote_json_str $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_quote_json.c",
+        "start_line": 10,
+        "end_line": 165
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 319,
+        "end_line": 333
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "空值或not_found输出JSON null而不是空字符串；高位字节原样复制，不验证UTF-8合法性。只处理字符串字面量，不序列化对象或数组。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_if_empty",
+    "summary": "仅在目标变量不存在或内容长度为零时写入备选值。",
+    "syntax": "set_if_empty $target default_value;",
+    "callback_definition": {
+      "component": "set-misc-nginx-module",
+      "file": "src/ngx_http_set_default_value.c",
+      "start_line": 34,
+      "end_line": 48
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_default_value.c",
+        "start_line": 10,
+        "end_line": 48
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 213,
+        "end_line": 227
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "字符串0不是空；当前值和备选值经NDK参数路径求值，不能假设备选表达式只在目标为空时才计算。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_hashed_upstream",
+    "summary": "按输入键的哈希从NDK带权列表选出一个字符串写入目标变量。",
+    "syntax": "set_hashed_upstream $target list_name key;",
+    "callback_definition": {
+      "component": "set-misc-nginx-module",
+      "file": "src/ngx_http_set_hashed_upstream.c",
+      "start_line": 95,
+      "end_line": 141
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_hashed_upstream.c",
+        "start_line": 9,
+        "end_line": 141
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 442,
+        "end_line": 456
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "shared-0",
+        "component": "nginx",
+        "file": "src/core/ngx_hash.c",
+        "start_line": 650,
+        "end_line": 662
+      },
+      {
+        "id": "shared-1",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_upstream_list.c",
+        "start_line": 59,
+        "end_line": 204
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用ngx_hash_key_lc的小写键哈希再按桶数取模，不是consistent hash或实际后端连接。字面列表名须在配置时已经定义；带变量的列表名在运行时查找。空列表返回空值，单桶直接返回；不做健康检查或重试。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "shared-0",
+          "shared-1",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "shared-0",
+        "shared-1",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_misc_base32_padding",
+    "summary": "通过旧名称控制Base32编码是否补齐等号填充。",
+    "syntax": "set_misc_base32_padding on | off;",
+    "deprecated": true,
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base32.c",
+        "start_line": 112,
+        "end_line": 201
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 552,
+        "end_line": 566
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "deprecated-warning",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 1446,
+        "end_line": 1456
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "deprecated-warning"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置对应字段时继承父层；本层显式设置覆盖父层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "deprecated-warning"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "旧名称会告警但仍写同一个base32_padding字段，不是忽略参数；与新名称在同一配置层重复设置会被flag槽拒绝。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "deprecated-warning"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "deprecated-warning"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_base32_padding",
+    "summary": "控制Base32编码输出是否在末尾添加等号填充。",
+    "syntax": "set_base32_padding on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base32.c",
+        "start_line": 112,
+        "end_line": 201
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 535,
+        "end_line": 549
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置对应字段时继承父层；本层显式设置覆盖父层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响编码时末尾=填充，不控制Base64或强制解码必须携带填充。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_base32_alphabet",
+    "summary": "设置Base32编码及解码查表使用的32字节字母表。",
+    "syntax": "set_base32_alphabet alphabet;",
+    "callback_definition": {
+      "component": "set-misc-nginx-module",
+      "file": "src/ngx_http_set_misc_module.c",
+      "start_line": 570,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base32.c",
+        "start_line": 23,
+        "end_line": 263
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 566,
+        "end_line": 580
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "string-slot",
+        "component": "nginx",
+        "file": "src/core/ngx_conf_file.c",
+        "start_line": 1066,
+        "end_line": 1089
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0123456789abcdefghijklmnopqrstuv。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "string-slot"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置对应字段时继承父层；本层显式设置覆盖父层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "string-slot"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置仅检查32字节长度，再使用字符串槽；不检查字符唯一性，也不按变量求值。重复字符会在解码表中由后位置覆盖，不保证任意32字节集合可逆。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "string-slot"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "string-slot"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_encode_base32",
+    "summary": "用当前字母表把输入字节编码成Base32文本。",
+    "syntax": "set_encode_base32 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base32.c",
+        "start_line": 23,
+        "end_line": 201
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 479,
+        "end_line": 493
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "默认字母表是小写base32hex的0123456789abcdefghijklmnopqrstuv，填充默认on；可由同模块两项配置改变，不是加密或摘要。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_decode_base32",
+    "summary": "按当前Base32解码表把编码文本还原为字节。",
+    "syntax": "set_decode_base32 $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_base32.c",
+        "start_line": 59,
+        "end_line": 263
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 584,
+        "end_line": 598
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "遇首个=停止扫描，有效长度模8为1、3、6时判失败；内部失败被本层转为空值并返回NGX_OK。配置合并只写入字母表对应的表项，不能把它描述为严格拒绝全部表外字符的验证器；也不严格检查等号后的内容。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_local_today",
+    "summary": "把Nginx当前缓存时间对应的本地日期写成yyyy-mm-dd。",
+    "syntax": "set_local_today $target;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_local_today.c",
+        "start_line": 14,
+        "end_line": 41
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1166,
+        "end_line": 1180
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受目标变量；依据ngx_time及缓存时区偏移，不从请求参数读取日期，不是按客户端时区计算。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_formatted_gmt_time",
+    "summary": "用给定strftime格式输出Nginx当前时间的GMT表示。",
+    "syntax": "set_formatted_gmt_time $target format;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_local_today.c",
+        "start_line": 8,
+        "end_line": 110
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1200,
+        "end_line": 1214
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "格式经变量求值；not_found或空格式返回空值，strftime返回0则NGX_ERROR。输出缓冲由NGX_HTTP_SET_MISC_FMT_DATE_LEN决定，默认256字节，不是任意长度模板输出。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_formatted_local_time",
+    "summary": "用给定strftime格式输出Nginx当前时间的本地时区表示。",
+    "syntax": "set_formatted_local_time $target format;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_local_today.c",
+        "start_line": 8,
+        "end_line": 110
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1236,
+        "end_line": 1250
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "使用ngx_libc_localtime而非GMT；空格式返回空值，strftime返回0则NGX_ERROR。缓冲宏默认256字节，不支持无上限输出。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_random",
+    "summary": "在两个端点包含在内的整数区间中生成伪随机整数文本。",
+    "syntax": "set_random $target from to;",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 590,
+      "end_line": 602
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_random.c",
+        "start_line": 12,
+        "end_line": 57
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1002,
+        "end_line": 1016
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "端点经ngx_atoi解析，只接受非负整数；反序端点会交换。实际使用rand取模，不能据函数名推断密码学随机或严格无偏；极大边界的算术安全未另作保证。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_secure_random_alphanum",
+    "summary": "从系统随机字节生成由大小写字母和数字组成的字符串。",
+    "syntax": "set_secure_random_alphanum $target [length];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_secure_random.c",
+        "start_line": 12,
+        "end_line": 104
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1043,
+        "end_line": 1057
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "长度须为1–64；每次读取/dev/urandom，打开或未读足都会失败。字节经取模映射到62字符字母表，不把结果写成严格均匀分布。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_secure_random_lcalpha",
+    "summary": "从系统随机字节生成仅含小写字母的字符串。",
+    "syntax": "set_secure_random_lcalpha $target [length];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_secure_random.c",
+        "start_line": 12,
+        "end_line": 104
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1078,
+        "end_line": 1092
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略最后一个输入参数时，读取目标变量当前值作为输入，再把转换结果写回。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "长度须为1–64；每次读取/dev/urandom，打开或未读足都会失败。字节经模26映射到a–z，不把结果写成严格均匀分布。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "set-misc-nginx-module",
+    "module": "ngx_http_set_misc_module",
+    "name": "set_rotate",
+    "summary": "把当前变量递增并约束在给定闭区间，越界后回到起点。",
+    "syntax": "set_rotate $target from to;",
+    "callback_definition": {
+      "component": "set-misc-nginx-module",
+      "file": "src/ngx_http_set_rotate.c",
+      "start_line": 99,
+      "end_line": 112
+    },
+    "evidence": [
+      {
+        "id": "implementation",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_rotate.c",
+        "start_line": 12,
+        "end_line": 113
+      },
+      {
+        "id": "filter-bindings",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 40,
+        "end_line": 232
+      },
+      {
+        "id": "module-conf",
+        "component": "set-misc-nginx-module",
+        "file": "src/ngx_http_set_misc_module.c",
+        "start_line": 528,
+        "end_line": 586
+      },
+      {
+        "id": "module-build",
+        "component": "set-misc-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 79
+      },
+      {
+        "id": "official-doc",
+        "component": "set-misc-nginx-module",
+        "file": "README.markdown",
+        "start_line": 1113,
+        "end_line": 1127
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 585,
+        "end_line": 589
+      },
+      {
+        "id": "ndk-values",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 214
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 562
+      },
+      {
+        "id": "ndk-expressions",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_rewrite.c",
+        "start_line": 12,
+        "end_line": 67
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "端点为非负整数，反序会交换。空或无效当前值会使用该location保存的current，无保存值时从起点开始；保存状态是worker内配置对象上的值，不是跨worker全局共享计数器。 此项context以实际注册为准，README的较窄示例范围不替代注册结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation",
+          "filter-bindings",
+          "module-conf",
+          "module-build",
+          "official-doc",
+          "distribution-processing",
+          "component-distribution",
+          "ndk-values",
+          "ndk-compile",
+          "ndk-expressions",
+          "rewrite-execution",
+          "rewrite-phases"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行脚本未对该组件应用直接补丁；所引Nginx与NDK局部实现按固定版本核对。发行回放保持结论限于所列转换和配置事实，不代表实际部署、外部库或整个请求链已验证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation",
+        "filter-bindings",
+        "module-conf",
+        "module-build",
+        "official-doc",
+        "distribution-processing",
+        "component-distribution",
+        "ndk-values",
+        "ndk-compile",
+        "ndk-expressions",
+        "rewrite-execution",
+        "rewrite-phases"
+      ]
+    },
+    "related": []
+  }
+]

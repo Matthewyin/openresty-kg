@@ -1,0 +1,908 @@
+[
+  {
+    "component": "encrypted-session-nginx-module",
+    "module": "ngx_http_encrypted_session_module",
+    "name": "encrypted_session_key",
+    "summary": "设置本模块加密和解密会话值时使用的固定字节密钥。",
+    "syntax": "encrypted_session_key key;",
+    "callback_definition": {
+      "component": "encrypted-session-nginx-module",
+      "file": "src/ngx_http_encrypted_session_module.c",
+      "start_line": 239,
+      "end_line": 263
+    },
+    "evidence": [
+      {
+        "id": "defaults-and-types",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 14,
+        "end_line": 24
+      },
+      {
+        "id": "merge",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 394,
+        "end_line": 425
+      },
+      {
+        "id": "lengths",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.h",
+        "start_line": 19,
+        "end_line": 22
+      },
+      {
+        "id": "module-build",
+        "component": "encrypted-session-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 45
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 676,
+        "end_line": 680
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "encode-use",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 155,
+        "end_line": 196
+      },
+      {
+        "id": "decode-use",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 200,
+        "end_line": 235
+      },
+      {
+        "id": "official-doc",
+        "component": "encrypted-session-nginx-module",
+        "file": "README.md",
+        "start_line": 113,
+        "end_line": 127
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "父层和本层都未设置时为NULL，没有自动生成密钥；调用加解密指令时缺密钥会返回NGX_ERROR。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置key指针时继承父层；显式配置覆盖，重复声明报错。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数要求恰好32字节，按配置文本原字节保存，不自动进行hex/Base64解码、变量求值或密钥派生。依赖NDK及OpenSSL接口；这里只描述该固定模块的实现，不把设置该项等同于已经完成登录或访问控制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "defaults-and-types",
+          "merge",
+          "lengths",
+          "module-build",
+          "component-distribution",
+          "distribution-processing",
+          "encode-use",
+          "decode-use",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未向此组件应用直接补丁；所引Nginx rewrite局部片段经实际补丁回放保持。结论仅覆盖所列配置和模块转换事实，不评价外部密码库版本或实际部署。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "official-doc"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "encrypted-session-nginx-module",
+    "module": "ngx_http_encrypted_session_module",
+    "name": "encrypted_session_iv",
+    "summary": "设置会话加密及解密使用的初始化向量，短值按缓冲末尾补零。",
+    "syntax": "encrypted_session_iv iv;",
+    "callback_definition": {
+      "component": "encrypted-session-nginx-module",
+      "file": "src/ngx_http_encrypted_session_module.c",
+      "start_line": 267,
+      "end_line": 302
+    },
+    "evidence": [
+      {
+        "id": "defaults-and-types",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 14,
+        "end_line": 24
+      },
+      {
+        "id": "merge",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 394,
+        "end_line": 425
+      },
+      {
+        "id": "lengths",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.h",
+        "start_line": 19,
+        "end_line": 22
+      },
+      {
+        "id": "module-build",
+        "component": "encrypted-session-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 45
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 676,
+        "end_line": 680
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "encode-use",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 155,
+        "end_line": 196
+      },
+      {
+        "id": "decode-use",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 200,
+        "end_line": 235
+      },
+      {
+        "id": "cipher-init",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.c",
+        "start_line": 24,
+        "end_line": 103
+      },
+      {
+        "id": "official-doc",
+        "component": "encrypted-session-nginx-module",
+        "file": "README.md",
+        "start_line": 129,
+        "end_line": 145
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "本层与父层未设置时使用源码固定字符串deadbeefdeadbeef。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "cipher-init",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置iv指针时继承父层；显式配置覆盖，重复声明报错。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "cipher-init",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "接受长度不超过EVP_MAX_IV_LENGTH的原始配置字节，文档记为16字节；显式短值存入清零缓冲，尾部补零，不是hex解码。此实现按配置使用固定IV，不自动为每个会话生成随机IV；默认值不作为新系统密码设计建议。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "defaults-and-types",
+          "merge",
+          "lengths",
+          "module-build",
+          "component-distribution",
+          "distribution-processing",
+          "encode-use",
+          "decode-use",
+          "cipher-init",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未向此组件应用直接补丁；所引Nginx rewrite局部片段经实际补丁回放保持。结论仅覆盖所列配置和模块转换事实，不评价外部密码库版本或实际部署。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "decode-use",
+        "cipher-init",
+        "official-doc"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "encrypted-session-nginx-module",
+    "module": "ngx_http_encrypted_session_module",
+    "name": "encrypted_session_expires",
+    "summary": "设置生成会话值时嵌入的过期时长，解密时依据内嵌时间与当前系统时间检查。",
+    "syntax": "encrypted_session_expires time;",
+    "callback_definition": {
+      "component": "encrypted-session-nginx-module",
+      "file": "src/ngx_http_encrypted_session_module.c",
+      "start_line": 306,
+      "end_line": 327
+    },
+    "evidence": [
+      {
+        "id": "defaults-and-types",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 14,
+        "end_line": 24
+      },
+      {
+        "id": "merge",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 394,
+        "end_line": 425
+      },
+      {
+        "id": "lengths",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.h",
+        "start_line": 19,
+        "end_line": 22
+      },
+      {
+        "id": "module-build",
+        "component": "encrypted-session-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 45
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 676,
+        "end_line": 680
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "encode-use",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 155,
+        "end_line": 196
+      },
+      {
+        "id": "encrypt-time",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.c",
+        "start_line": 24,
+        "end_line": 132
+      },
+      {
+        "id": "decrypt-time",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.c",
+        "start_line": 138,
+        "end_line": 269
+      },
+      {
+        "id": "official-doc",
+        "component": "encrypted-session-nginx-module",
+        "file": "README.md",
+        "start_line": 147,
+        "end_line": 177
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "本层与父层都未设置时为86400秒（1d）；配置0时写入零过期时间，解密不做到期拒绝。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "encrypt-time",
+        "decrypt-time",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置expires时继承父层；显式配置覆盖，重复声明报错。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "encrypt-time",
+        "decrypt-time",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置回调以秒解析，支持时间单位；这是嵌入加密数据的时长，不设置HTTP Cookie的Expires/Max-Age。生成时非零值加上系统时间，解密时内嵌非零时间小于等于当前时间即失败；修改当前配置不会重写已有会话的内嵌时间。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "defaults-and-types",
+          "merge",
+          "lengths",
+          "module-build",
+          "component-distribution",
+          "distribution-processing",
+          "encode-use",
+          "encrypt-time",
+          "decrypt-time",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未向此组件应用直接补丁；所引Nginx rewrite局部片段经实际补丁回放保持。结论仅覆盖所列配置和模块转换事实，不评价外部密码库版本或实际部署。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "encode-use",
+        "encrypt-time",
+        "decrypt-time",
+        "official-doc"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "encrypted-session-nginx-module",
+    "module": "ngx_http_encrypted_session_module",
+    "name": "set_encrypt_session",
+    "summary": "把输入值及内嵌过期时间转换为本模块的二进制会话格式，写入目标变量。",
+    "syntax": "set_encrypt_session $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "defaults-and-types",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 14,
+        "end_line": 24
+      },
+      {
+        "id": "merge",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 394,
+        "end_line": 425
+      },
+      {
+        "id": "lengths",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.h",
+        "start_line": 19,
+        "end_line": 22
+      },
+      {
+        "id": "module-build",
+        "component": "encrypted-session-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 45
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 676,
+        "end_line": 680
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "filter-bindings",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 57,
+        "end_line": 69
+      },
+      {
+        "id": "ndk-runtime",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 146
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 529
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      },
+      {
+        "id": "encode-runtime",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 155,
+        "end_line": 196
+      },
+      {
+        "id": "encrypt-format",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.c",
+        "start_line": 24,
+        "end_line": 132
+      },
+      {
+        "id": "context-lifecycle",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 331,
+        "end_line": 390
+      },
+      {
+        "id": "official-doc",
+        "component": "encrypted-session-nginx-module",
+        "file": "README.md",
+        "start_line": 179,
+        "end_line": 206
+      },
+      {
+        "id": "upstream-tests",
+        "component": "encrypted-session-nginx-module",
+        "file": "t/sanity.t",
+        "start_line": 20,
+        "end_line": 70
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略value时读取目标变量原值并写回；未配置本指令时不自动生成会话。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "filter-bindings",
+        "ndk-runtime",
+        "ndk-compile",
+        "rewrite-execution",
+        "rewrite-phases",
+        "encode-runtime",
+        "encrypt-format",
+        "context-lifecycle",
+        "official-doc",
+        "upstream-tests"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输入经NDK表达式求值；实现是明文及8字节过期时间的MD5摘要前缀，加上AES-256-CBC加密数据，不是Base64文本或标准JWT，也不能把MD5前缀直接称为HMAC。缺密钥返回NGX_ERROR；其他加密函数失败在本层转为空结果并返回NGX_OK。它不自动设置Cookie、建立服务器会话或作授权判断。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "defaults-and-types",
+          "merge",
+          "lengths",
+          "module-build",
+          "component-distribution",
+          "distribution-processing",
+          "filter-bindings",
+          "ndk-runtime",
+          "ndk-compile",
+          "rewrite-execution",
+          "rewrite-phases",
+          "encode-runtime",
+          "encrypt-format",
+          "context-lifecycle",
+          "official-doc",
+          "upstream-tests"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未向此组件应用直接补丁；所引Nginx rewrite局部片段经实际补丁回放保持。结论仅覆盖所列配置和模块转换事实，不评价外部密码库版本或实际部署。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "filter-bindings",
+        "ndk-runtime",
+        "ndk-compile",
+        "rewrite-execution",
+        "rewrite-phases",
+        "encode-runtime",
+        "encrypt-format",
+        "context-lifecycle",
+        "official-doc",
+        "upstream-tests"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "encrypted-session-nginx-module",
+    "module": "ngx_http_encrypted_session_module",
+    "name": "set_decrypt_session",
+    "summary": "读取本模块二进制会话格式，解密并核对摘要与内嵌过期时间，成功时输出原始值。",
+    "syntax": "set_decrypt_session $target [value];",
+    "callback_definition": {
+      "component": "ngx_devel_kit",
+      "file": "src/ndk_set_var.c",
+      "start_line": 574,
+      "end_line": 586
+    },
+    "evidence": [
+      {
+        "id": "defaults-and-types",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 14,
+        "end_line": 24
+      },
+      {
+        "id": "merge",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 394,
+        "end_line": 425
+      },
+      {
+        "id": "lengths",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.h",
+        "start_line": 19,
+        "end_line": 22
+      },
+      {
+        "id": "module-build",
+        "component": "encrypted-session-nginx-module",
+        "file": "config",
+        "start_line": 1,
+        "end_line": 45
+      },
+      {
+        "id": "component-distribution",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 676,
+        "end_line": 680
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "filter-bindings",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 57,
+        "end_line": 69
+      },
+      {
+        "id": "ndk-runtime",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 45,
+        "end_line": 146
+      },
+      {
+        "id": "ndk-compile",
+        "component": "ngx_devel_kit",
+        "file": "src/ndk_set_var.c",
+        "start_line": 254,
+        "end_line": 529
+      },
+      {
+        "id": "rewrite-execution",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 136,
+        "end_line": 184
+      },
+      {
+        "id": "rewrite-phases",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_rewrite_module.c",
+        "start_line": 272,
+        "end_line": 294
+      },
+      {
+        "id": "decode-runtime",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 200,
+        "end_line": 235
+      },
+      {
+        "id": "decrypt-format",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_cipher.c",
+        "start_line": 138,
+        "end_line": 269
+      },
+      {
+        "id": "context-lifecycle",
+        "component": "encrypted-session-nginx-module",
+        "file": "src/ngx_http_encrypted_session_module.c",
+        "start_line": 331,
+        "end_line": 390
+      },
+      {
+        "id": "official-doc",
+        "component": "encrypted-session-nginx-module",
+        "file": "README.md",
+        "start_line": 208,
+        "end_line": 221
+      },
+      {
+        "id": "upstream-tests",
+        "component": "encrypted-session-nginx-module",
+        "file": "t/sanity.t",
+        "start_line": 20,
+        "end_line": 70
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "省略value时读取目标变量原值并写回；未配置本指令时不自动解密。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "filter-bindings",
+        "ndk-runtime",
+        "ndk-compile",
+        "rewrite-execution",
+        "rewrite-phases",
+        "decode-runtime",
+        "decrypt-format",
+        "context-lifecycle",
+        "official-doc",
+        "upstream-tests"
+      ]
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": null,
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "输入是本模块原始二进制格式，不自动解码Base32/Base64，也不是通用AES解密接口。缺密钥返回NGX_ERROR；格式、解密、MD5比较或到期检查失败在本层转为空结果并返回NGX_OK，不自动发送401/403。空结果也可能来自合法空明文，不能单凭非错误返回推断认证成功。过期判断使用数据内嵌时间，不使用解密端当前expires重新计算。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "defaults-and-types",
+          "merge",
+          "lengths",
+          "module-build",
+          "component-distribution",
+          "distribution-processing",
+          "filter-bindings",
+          "ndk-runtime",
+          "ndk-compile",
+          "rewrite-execution",
+          "rewrite-phases",
+          "decode-runtime",
+          "decrypt-format",
+          "context-lifecycle",
+          "official-doc",
+          "upstream-tests"
+        ]
+      }
+    ],
+    "phase": "rewrite",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行处理未向此组件应用直接补丁；所引Nginx rewrite局部片段经实际补丁回放保持。结论仅覆盖所列配置和模块转换事实，不评价外部密码库版本或实际部署。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "defaults-and-types",
+        "merge",
+        "lengths",
+        "module-build",
+        "component-distribution",
+        "distribution-processing",
+        "filter-bindings",
+        "ndk-runtime",
+        "ndk-compile",
+        "rewrite-execution",
+        "rewrite-phases",
+        "decode-runtime",
+        "decrypt-format",
+        "context-lifecycle",
+        "official-doc",
+        "upstream-tests"
+      ]
+    },
+    "related": []
+  }
+]

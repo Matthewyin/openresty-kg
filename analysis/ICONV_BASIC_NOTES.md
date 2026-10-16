@@ -1,0 +1,15 @@
+# P20 iconv完整3项基础内容
+
+2026-10-13主准备。固定iconv模块67d55c7edd3ab0535afa1e55ec8b2cdeb5167a82，HEAD及clean现场核对；共享NDK91e30eb05085e7f9762f130cbb883a0e753cf74d、Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928、OpenResty 8c37412c31621225e7aa7e825b5b50106c9c71c4。JSON SHA256为1c03caac60a073ad5e14d3be9eb7d369b331a6bde9290472ed5021661cf3702a，当前只是准备，不计入正式660。
+
+只新增content/ICONV_BASIC.json及本记录。完整读src/ngx_http_iconv_module.c、对应README与config；没有调用外部iconv库、配置探测或实际转换。源码注册只有location，保留这一context，不照搬其他NDK模块的http/server。config确实要求先有NDK并探测iconv库；发行util/configure将本模块默认disabled，不能冒称部署启用。
+
+- set_iconv：专用配置回调593–628，运行632–694，NDK编译/执行共享证据明确；from/to前缀后内容经表达式求值，空输入不调用iconv。没有替它补响应过滤器启用。默认/继承保留未知。
+- iconv_buffer_size：真实配置回调为Nginx ngx_conf_set_size_slot1198–1225，绑定buf_size；merge698–743默认页大小，拒绝父/子显式0或1。转换385–526按E2BIG继续分配，大小不是总量限制，至少2也不保证任意编码单字符能容纳。
+- iconv_filter：专用541–589，字面编码名，不走变量表达式；120–242安装/执行头体过滤器，246–381合并内存链及处理尾部。清Content-Length、HTTP/1.0关闭keepalive，没有自动改Content-Type charset或MIME类型筛选。默认enabled0及from/to内部缺省不能误解为自动转换；继承按三个字段分别处理，没有off语法。
+
+共用转换的EILSEQ分支跳一个输入字节并写?，不是严格无损；EINVAL停止当前调用，过滤器尝试保留尾部，变量路径不保存尾部。不承诺有状态编码、截断正文或任意输入的完整转换，没有从源码存在推导运行验证通过。
+
+实际固定git archive隔离回放34patch、142hunk匹配、47最终SHA通过；原46处来源有效EOF，3段Nginx槽/rewrite原文全保持。首次隔离构建拒绝重复module-owner source ID：catalog已经提供该来源，草稿又重复提供。只删草稿三个重复owner引用并对source_ids去重，剩余43处有效引用与原证明相同，未改正文/补丁事实。没有通过修改门禁绕开错误。
+
+修正后以正式660/d3966b115cc98f81加本组3项真实隔离build通过，临时release1.27.1.1-6c6c11c7870ee804，1017注册、663基础、354仅注册、0深度。三项basic、完整owner差集及唯一身份通过；正式current前后字节不变。补丁和构建目录finally清理，未改正式knowledge/dist，也未运行Nginx或来源生成器。交独立逐义审核，尚未准备放行。

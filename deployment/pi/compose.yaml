@@ -1,0 +1,42 @@
+services:
+  pi-agent:
+    container_name: ${PI_CONTAINER_NAME:-pi-knowledge-agent}
+    image: ${PI_IMAGE:?请指定经隔离验收的镜像}
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      PI_SPIKE_HOST: 0.0.0.0
+      PI_SPIKE_PORT: ${PI_PORT:-51808}
+      PI_SPIKE_BASE_PATH: ${PI_BASE_PATH:-/pi/}
+      PI_SPIKE_PUBLIC_ORIGIN: http://pi-agent:${PI_PORT:-51808}
+      PI_SPIKE_RELATIVE_LINKS: 'true'
+      PI_SPIKE_STATE_DIR: .state/container
+    volumes:
+      - pi-state:/app/experiments/pi-sdk/.state/container
+      - type: bind
+        source: ${PI_MODEL_ENV_FILE:?请指定模型环境文件绝对路径}
+        target: /run/secrets/model.env
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      existing:
+        aliases: [pi-agent]
+    healthcheck:
+      test: [CMD, node, -e, "require('http').get('http://127.0.0.1:'+process.env.PI_SPIKE_PORT+'/api/ready',{headers:{Host:new URL(process.env.PI_SPIKE_PUBLIC_ORIGIN).host}},r=>{r.resume();r.on('end',()=>process.exit(r.statusCode===200?0:1))}).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+networks:
+  existing:
+    external: true
+    name: ${PI_NETWORK:-gemini-net}
+volumes:
+  pi-state:

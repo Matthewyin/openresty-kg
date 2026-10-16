@@ -1,0 +1,15 @@
+{
+  "stateDir": ".state/live",
+  "port": 51807,
+  "timeoutMs": 180000,
+  "contextWindow": 1000000,
+  "maxTokens": 8192,
+  "thinkingLevel": "low",
+  "website": { "port": 51808, "stateDir": ".state/website" },
+  "envKeys": {
+    "baseUrl": "base-url",
+    "model": "MODEL",
+    "provider": "PROVIDER",
+    "apiKey": "GLM_API_KEY"
+  }
+}

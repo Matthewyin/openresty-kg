@@ -1,0 +1,20 @@
+# P08 文件、目录与媒体：17项准备
+
+2026-10-12。autoindex4、DAV4、empty_gif1、flv1、index1、random_index1、try_files1、mp4四项，共8个owner17身份。只新增HTTP_FILES_MEDIA_BASIC.json和本记录，不改正式knowledge/current。固定来源沿用Nginx e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928、nginx.org e8b581903e9d41252720053311cea687a5671674与OpenResty8c37412c31621225e7aa7e825b5b50106c9c71c4。
+
+## 内容边界
+
+- autoindex检查URI末尾斜杠及GET/HEAD，按开关和目录打开结果处理，跳过点开头条目；format分派及JSONP的callback校验单独核。localtime/exact_size只作用HTML，JSON/XML保持自身时间/字节表示。
+- DAV方法由掩码与五个方法分派决定，不等于全站认证。PUT写临时文件再移入，Content-Range与目录目标有独立限制；min_delete_depth看请求URI层级而不是文件系统绝对深度。create_full_put_path沿PUT的ext.create_path传入ngx_ext_rename_file，不套给MKCOL。dav_access沿实际PUT/MKCOL路径描述，权限槽位只接受r/rw并补默认用户读写，Unix目录补遍历位；不承诺对既有树递归chmod。
+- empty_gif读取内置GIF字节，1×1透明图，GET/HEAD；flv的start是字节偏移，非法或不小于文件长度退回0，非零附加FLV头；两者均核真实内容handler安装和core分派。
+- index按序检查并内部跳转，绝对候选直接当URI跳转而非任意操作系统文件；继承列表整体替换。random_index枚举非点号开头的普通文件，随机选择后内部跳转，无候选则DECLINED。
+- try_files归属独立owner，固定XML在core页面。普通候选按root/alias检查，末尾/测目录，最后项兜底而非再做存在检查；命中更新URI后继续当前上下文。未猜测该独立模块无merge回调时的完整跨上下文行为，继承字段保留unverified。
+- mp4的start/end以秒解析到毫秒，非字节偏移；无有效起点可返回普通文件，处理失败进入500。初始缓冲默认512K；max默认10M仅在moov大于当前缓冲需要扩容时检查，实际额外预留不冒充全进程硬内存上限。start_key_frame依同步样本表向前补关键帧，edit list表示前缀时间，不保证无表时凭空生成关键帧或转码。
+
+所有公开限制只写实际已读分支。empty_gif/flv/mp4内容handler的完整默认/继承保留未知，不根据无参数注册猜完整行为；其必需功能、语法、入口及局部补丁影响已核。
+
+## 实际准备验证
+
+151处引用在固定Git有效EOF内，17个同名XML去注释后活跃，真实回调定义/owner均提供。117段Nginx原始引用在mkdtemp回放34patch后全部保持，142hunk偏移/fuzz和47最终文件SHA256一致。临时目录finally清理，未执行来源生成器、Nginx或媒体操作。
+
+隔离构建基于正式197知识追加17项，得到214基础候选 `1.27.1.1-2dec7480cf88adef`，1017注册、0深度、范围true；检查完整身份差集及逐条basic状态，根current读取前后保持，临时目录finally清理。独立逐项审核尚未通过，本记录不作正式覆盖或全站完成结论。

@@ -1,0 +1,26 @@
+{
+  "inventory_complete": true,
+  "registration_count": 1041,
+  "basic_verified_count": 1041,
+  "deep_verified_count": 44,
+  "groups": {
+    "bundled": {
+      "inventory_complete": true,
+      "registration_count": 1017,
+      "basic_verified_count": 1017,
+      "deep_verified_count": 40
+    },
+    "department_extension": {
+      "inventory_complete": true,
+      "registration_count": 24,
+      "basic_verified_count": 24,
+      "deep_verified_count": 4
+    }
+  },
+  "gaps": [
+    "已收到部门配置样例；现场版本及模块安装信息待核实",
+    "Codex 宿主实际接入与内网站点可达性待验收",
+    "部门扩展按固定上游 commit 快照核对；现场版本、安装情况及运行兼容性未知"
+  ],
+  "release_id": "1.27.1.1-f43ab3d7392bdcc9"
+}

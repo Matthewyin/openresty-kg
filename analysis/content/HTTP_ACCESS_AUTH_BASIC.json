@@ -1,0 +1,1635 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_access_module",
+    "name": "allow",
+    "summary": "按请求连接的客户端地址允许访问指定 IP、CIDR 网段、全部地址或 UNIX-domain 连接；与 deny 按配置顺序匹配，命中第一条适用规则后停止。",
+    "syntax": "allow address | CIDR | unix: | all;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_access_module.c",
+      "start_line": 296,
+      "end_line": 403
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 106,
+        "end_line": 119
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 123,
+        "end_line": 179
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 183,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 208,
+        "end_line": 247
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 255,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 407,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 448,
+        "end_line": 463
+      },
+      {
+        "id": "access-combination",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1101,
+        "end_line": 1156
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_access_module.xml",
+        "start_line": 64,
+        "end_line": 82
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且无父层规则时没有地址规则；处理器返回 NGX_DECLINED，不等同取消其他认证检查。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅当前层没有任何 IPv4、IPv6 或 UNIX-domain allow/deny 规则时继承父层所有规则；任意类别的新规则都会阻止整组父规则继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "all 匹配全部受支持的地址类型；unix: 匹配全部 UNIX-domain 连接，不按套接字路径细分。IPv6 和 UNIX-domain 分支受实际构建能力限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "access-combination"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "本模块允许不保证最终请求获准；与其他访问模块的组合由 satisfy 控制，未命中任何规则时继续后续检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "access-combination"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_access_module.xml#L64-L82",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_access_module",
+    "name": "deny",
+    "summary": "按客户端 IP、CIDR 网段、全部地址或 UNIX-domain 连接拒绝访问；与 allow 按声明顺序检查，第一条适用规则决定本模块结果，命中 deny 时返回403。",
+    "syntax": "deny address | CIDR | unix: | all;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_access_module.c",
+      "start_line": 296,
+      "end_line": 403
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 106,
+        "end_line": 119
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 123,
+        "end_line": 179
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 183,
+        "end_line": 202
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 208,
+        "end_line": 247
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 255,
+        "end_line": 292
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 407,
+        "end_line": 444
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_access_module.c",
+        "start_line": 448,
+        "end_line": 463
+      },
+      {
+        "id": "access-combination",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1101,
+        "end_line": 1156
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_access_module.xml",
+        "start_line": 85,
+        "end_line": 103
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且无父层规则时没有地址规则；本模块不自动添加 deny all。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅当前层没有任何地址类别的 allow/deny 规则时继承父层整组规则；子层新规则不追加到父层规则末尾。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "deny all 的位置会影响后续 allow 是否可达；规则不是按网段最长前缀优先排序。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "access-combination"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "403 是本模块的拒绝结果；satisfy any 可允许其他访问检查覆盖此拒绝，因此不能从单条 deny 推断最终响应。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "access-combination"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "access-combination",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_access_module.xml#L85-L103",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_auth_basic_module",
+    "name": "auth_basic",
+    "summary": "设置 HTTP Basic 用户名/密码校验的 realm，可含请求变量；求值为 off 时跳过本模块认证。实际校验还要求 auth_basic_user_file 已配置，不是仅设置 realm 就自动生成用户库。",
+    "syntax": "auth_basic string | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 243,
+      "end_line": 275
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 73,
+        "end_line": 86
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 90,
+        "end_line": 138
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 285,
+        "end_line": 348
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 352,
+        "end_line": 397
+      },
+      {
+        "id": "complex-value",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 139,
+        "end_line": 178
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_auth_basic_module.xml",
+        "start_line": 51,
+        "end_line": 69
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且无父层值时 realm 为 NULL，本模块不执行校验，等效于关闭。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层 realm；当前层配置 off 后运行时跳过认证。realm 与 user_file 分别合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "未提供凭据、用户不存在或密码不匹配时，所引正常挑战路径返回401并设置 WWW-Authenticate；内部文件/计算错误另有403或500路径，不保证所有失败均为401。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "complex-value"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_auth_basic_module.xml#L51-L69",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_auth_basic_module",
+    "name": "auth_basic_user_file",
+    "summary": "指定 Basic 认证使用的本地用户名/密码文件，文件名可含变量；请求处理时打开文件查找用户名并调用 ngx_crypt 验证存储的密码表示，不是把文件原文发给客户端。",
+    "syntax": "auth_basic_user_file file;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_auth_basic_module.c",
+      "start_line": 401,
+      "end_line": 432
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 73,
+        "end_line": 86
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 90,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 285,
+        "end_line": 314
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_basic_module.c",
+        "start_line": 352,
+        "end_line": 397
+      },
+      {
+        "id": "complex-value",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 139,
+        "end_line": 178
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_auth_basic_module.xml",
+        "start_line": 72,
+        "end_line": 129
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "未配置且无父层值时 user_file 为 NULL；即使 realm 已设置，该处理器也跳过认证。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层 user_file 指针；当前层文件配置替代父层，独立于 realm 合并。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "文件按 name:password[:comment] 的行格式读取并忽略注释行；仅设置本项不会开启认证，还需非 off 的 auth_basic。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "complex-value"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定路径的相对名称经配置前缀补全；变量名称按复杂值求值，不能视为网站服务器已存在或可读的文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "complex-value"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "complex-value",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_auth_basic_module.xml#L72-L129",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_auth_request_module",
+    "name": "auth_request",
+    "summary": "向配置的固定 URI 发起等待完成的认证子请求：2xx允许，401或403以相应状态拒绝，其他响应状态按内部错误处理；off关闭此检查。",
+    "syntax": "auth_request uri | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_auth_request_module.c",
+      "start_line": 363,
+      "end_line": 385
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 85,
+        "end_line": 98
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 102,
+        "end_line": 234
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 309,
+        "end_line": 359
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_auth_request_module.xml",
+        "start_line": 78,
+        "end_line": 90
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off；无父层 URI 时合并为空字符串，访问处理器跳过。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层 URI；off 显式存为空字符串并阻止父 URI 生效。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "401 分支将认证子请求的 WWW-Authenticate 头复制给主请求；不把认证子请求正文当作主请求响应正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "URI 按注册参数原文保存，不通过复杂值编译把 $variable 自动展开；创建子请求时设置 header_only 并分配空请求正文对象，不转发主请求正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_auth_request_module.xml#L78-L90",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_auth_request_module",
+    "name": "auth_request_set",
+    "summary": "认证子请求完成后，在该子请求上下文求值指定表达式，再将结果写到主请求的变量；可用于读取认证上游的响应信息，不是普通 rewrite 阶段的 set。",
+    "syntax": "auth_request_set $variable value;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_auth_request_module.c",
+      "start_line": 389,
+      "end_line": 450
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 85,
+        "end_line": 98
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 102,
+        "end_line": 149
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 238,
+        "end_line": 305
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_auth_request_module.c",
+        "start_line": 309,
+        "end_line": 359
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_auth_request_module.xml",
+        "start_line": 93,
+        "end_line": 107
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无父层配置时没有待赋值变量数组；未完成认证子请求前本项不执行该赋值。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅当前层未声明 auth_request_set 时继承父层变量数组；声明任意一条后使用本层数组，不逐项追加父层。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "表达式在子请求完成后、判定其认证状态之前求值，因此失败状态也可能产生变量值；不能把变量存在视为认证已经成功。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "本项不自行发起认证子请求；auth_request 关闭时访问处理器直接跳过，读取新变量的占位 handler 只报告 not_found。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": "access",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_auth_request_module.xml#L93-L107",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_realip_module",
+    "name": "set_real_ip_from",
+    "summary": "配置允许提供替换客户端地址的受信任连接来源，包括 IP、CIDR、UNIX-domain 连接及配置时解析的主机名；它定义信任集合，不是 allow/deny 访问名单。",
+    "syntax": "set_real_ip_from address | CIDR | unix: | hostname;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_realip_module.c",
+      "start_line": 314,
+      "end_line": 413
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 101,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 130,
+        "end_line": 162
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 226,
+        "end_line": 246
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 478,
+        "end_line": 496
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 519,
+        "end_line": 541
+      },
+      {
+        "id": "forwarded-address",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2776,
+        "end_line": 2818
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_realip_module.xml",
+        "start_line": 49,
+        "end_line": 70
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无父层配置时 from 为 NULL，处理器不替换客户端地址。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "forwarded-address"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层没有本项时继承父层地址数组；配置任意一条后以本层数组替代父层，不自动追加。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "forwarded-address"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "主机名在配置入口调用 ngx_inet_resolve_host 并保存各解析地址，不是每个请求动态 DNS 查找。IPv6、UNIX-domain 支持受构建条件限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "forwarded-address"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "仅来源在信任集合中且替换地址可解析时更新连接地址；不把所有客户端提交的头值当作真实来源。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "forwarded-address"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "forwarded-address",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_realip_module.xml#L49-L70",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_realip_module",
+    "name": "real_ip_header",
+    "summary": "选择替换客户端地址及可选端口的来源：X-Real-IP、X-Forwarded-For、自定义 HTTP 头，或已解析的 PROXY protocol 信息；替换仍受 set_real_ip_from 信任集合约束。",
+    "syntax": "real_ip_header field | X-Real-IP | X-Forwarded-For | proxy_protocol;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_realip_module.c",
+      "start_line": 417,
+      "end_line": 449
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 101,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 130,
+        "end_line": 295
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 478,
+        "end_line": 496
+      },
+      {
+        "id": "forwarded-address",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2712,
+        "end_line": 2818
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_realip_module.xml",
+        "start_line": 73,
+        "end_line": 104
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "X-Real-IP；未配置且无父层值时使用 NGX_HTTP_REALIP_XREALIP。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层来源类型及自定义头名；同层重复设置此指令会拒绝。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "proxy_protocol 读取连接中已解析的数据，缺少该数据时跳过；本项不能代替 listen 的 proxy_protocol 启用。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "forwarded-address"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "成功替换后保存原连接地址供清理恢复；默认值不是 X-Forwarded-For，指定头缺失时不任意改用其他头。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "forwarded-address"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_realip_module.xml#L73-L104",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_realip_module",
+    "name": "real_ip_recursive",
+    "summary": "控制从转发地址链右端回溯受信任代理的方式：off最多替换一次；on在当前地址仍可信时继续取前一个地址，遇到非可信来源或不可解析项停止。",
+    "syntax": "real_ip_recursive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 101,
+        "end_line": 114
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 226,
+        "end_line": 246
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_realip_module.c",
+        "start_line": 453,
+        "end_line": 496
+      },
+      {
+        "id": "forwarded-address",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 2712,
+        "end_line": 2818
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_realip_module.xml",
+        "start_line": 107,
+        "end_line": 126
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层 recursive 值；没有父层值时为0。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是简单取头中的第一个地址；每一轮先核当前连接/候选地址是否属于信任集合。没有 set_real_ip_from 时不开始替换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "forwarded-address"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "遇到非法地址时保留已完成的替换或跳过；on 不会证明整条转发链真实性。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "forwarded-address"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "forwarded-address",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_realip_module.xml#L107-L126",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_referer_module",
+    "name": "valid_referers",
+    "summary": "定义哪些 Referer 值使 $invalid_referer 为空，否则设为1；支持缺失头、非 HTTP(S) 形式、服务器名、通配主机和正则。该指令只提供变量判断，不自行返回403。",
+    "syntax": "valid_referers none | blocked | server_names | string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_referer_module.c",
+      "start_line": 472,
+      "end_line": 542
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 95,
+        "end_line": 108
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 115,
+        "end_line": 284
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 320,
+        "end_line": 468
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 546,
+        "end_line": 640
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_referer_module.xml",
+        "start_line": 83,
+        "end_line": 153
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有规则及父层哈希/正则时，变量直接视为有效，不默认拒绝缺失 Referer。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "未创建本层规则 keys 时继承父层哈希、正则及 none/blocked 等值；有本层 keys 后建立本层哈希，但未设置的正则数组仍可能继承，不可概括为整组无条件替换。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "主机部分转小写匹配并忽略端口，URI 前缀使用区分大小写的字节比较；不能把所有路径匹配都说成不区分大小写。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "none 允许无头；blocked 允许不符合所引 HTTP(S) 检查的值。仅 none/blocked 而没有有效主机键会使配置合并报错。正则需要 PCRE，表达式匹配去掉协议的剩余字符串。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "Referer 可由客户端构造，此变量不是用户认证凭据；如需拒绝请求须另配置相应处理逻辑。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_referer_module.xml#L83-L153",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_referer_module",
+    "name": "referer_hash_max_size",
+    "summary": "设置 valid_referers 主机匹配哈希表的最大尺寸参数，供配置合并时构建哈希表使用；不改变 Referer 规则，也不是可接受域名数量的直接上限。",
+    "syntax": "referer_hash_max_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 95,
+        "end_line": 108
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 288,
+        "end_line": 316
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 320,
+        "end_line": 468
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_referer_module.xml",
+        "start_line": 67,
+        "end_line": 80
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "2048。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层数值，否则使用本层；无父层值时为2048。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "真实入口为 ngx_conf_set_num_slot，仅接受十进制整数，不支持 k/m 大小后缀；不能直接沿用官方 XML 的 size 字样当作任意尺寸语法。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_referer_module.xml#L67-L80",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_referer_module",
+    "name": "referer_hash_bucket_size",
+    "summary": "设置 valid_referers 主机匹配哈希的桶尺寸；实际构建本层哈希时按缓存行尺寸对齐，不是 Referer 字符串长度或规则条数限制。",
+    "syntax": "referer_hash_bucket_size number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 95,
+        "end_line": 108
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 288,
+        "end_line": 316
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_referer_module.c",
+        "start_line": 320,
+        "end_line": 468
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_referer_module.xml",
+        "start_line": 51,
+        "end_line": 64
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "初始合并默认64；创建本层哈希时进一步按 ngx_cacheline_size 向上对齐，不能保证所有平台有效值固定为64。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "当前层未配置时继承父层数值；无父层值时从64开始，哈希建立分支再做对齐。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "真实配置入口仅接受十进制整数，不支持 k/m 后缀；未生成本层哈希而复用父哈希时不会因该数值重新生成父哈希。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "实际回放固定发行版34项补丁，核对142个hunk及47个最终文件摘要，所引注册、配置入口、模块归属和运行片段保持原文；仅覆盖本条所列事实，不将其推广为完整请求链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "Nginx 固定版本官方文档",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_referer_module.xml#L51-L64",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

@@ -1,0 +1,5618 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_pass",
+    "summary": "指定SCGI服务端地址或上游组，并安装content阶段的SCGI内容处理函数。",
+    "syntax": "scgi_pass address;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_scgi_module.c",
+      "start_line": 1903,
+      "end_line": 1961
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 477,
+        "end_line": 556
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 559,
+        "end_line": 604
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 651,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 795,
+        "end_line": 810
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 947,
+        "end_line": 981
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 693,
+        "end_line": 785
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6322,
+        "end_line": 6340
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1252,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/http/ngx_http_core_module.c",
+        "start_line": 1381,
+        "end_line": 1383
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1162,
+        "end_line": 1197
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "目标可含变量，配置回调将其编译为脚本，请求期解析地址；域名先匹配已配置upstream组，否则按需使用resolver。协议请求是netstring参数头加原始正文，不进行HTTP URI前缀替换；标准CGI参数需配置scgi_param。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "content",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_store",
+    "summary": "把符合条件的SCGI响应写为本地持久文件，区别于按cache_key管理的缓存。",
+    "syntax": "scgi_store on | off | string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_scgi_module.c",
+      "start_line": 1964,
+      "end_line": 2013
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1354,
+        "end_line": 1371
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4164,
+        "end_line": 4180
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4244,
+        "end_line": 4321
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1337,
+        "end_line": 1399
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on按root/alias映射，字符串路径可用变量；成功完成且长度符合条件的200响应才进入保存。先写临时文件再重命名，跨文件系统可能复制；与scgi_cache在配置/合并时互斥，不能当作自动缓存淘汰机制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_store_access",
+    "summary": "设置SCGI持久存储中新文件及目录的访问权限。",
+    "syntax": "scgi_store_access users:permissions ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 460,
+      "end_line": 522
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1373,
+        "end_line": 1374
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4270,
+        "end_line": 4321
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/core/ngx_file.c",
+        "start_line": 660,
+        "end_line": 704
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1402,
+        "end_line": 1424
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1373,
+        "end_line": 1374
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "父子层均未指定时为0600，即user:rw。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只影响新建对象，不会追溯修改既有文件。支持user/group/all的r或rw权限；文件移动和目录创建使用该字段，不控制网络访问或缓存有效期。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_buffering",
+    "summary": "选择SCGI响应走事件管道缓冲或共享非缓冲响应过滤器。",
+    "syntax": "scgi_buffering on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 528,
+        "end_line": 540
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1332,
+        "end_line": 1337
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1202,
+        "end_line": 1230
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3228,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5111,
+        "end_line": 5145
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 101,
+        "end_line": 139
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1379,
+        "end_line": 1380
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开启时使用响应缓冲及必要的临时文件；关闭不会取消初始响应缓冲。SCGI启用change_buffering，后端X-Accel-Buffering可切换模式，除非scgi_ignore_headers禁用其处理；不控制请求体缓冲。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_request_buffering",
+    "summary": "控制客户端请求体是否完整读入后再构造并发送SCGI请求。",
+    "syntax": "scgi_request_buffering on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 542,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 651,
+        "end_line": 662
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 947,
+        "end_line": 981
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2312,
+        "end_line": 2345
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1265,
+        "end_line": 1297
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1382,
+        "end_line": 1383
+      },
+      {
+        "id": "upstream-pipelining",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_pipelining.patch",
+        "start_line": 1,
+        "end_line": 23
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅在off、pass_request_body开启且请求不是chunked时设置request_body_no_buffering；HTTP/1.1 chunked仍先缓冲。SCGI头后直接接正文，不生成FastCGI STDIN记录；已发送的非缓冲正文不能重放到另一上游。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default",
+          "upstream-pipelining"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行补丁影响本项所引共享链路；按局部实现与所列补丁共同解释，不以原始上游片段代替发行行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default",
+        "upstream-pipelining"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_ignore_client_abort",
+    "summary": "决定客户端提前断开时是否继续与SCGI上游交互。",
+    "syntax": "scgi_ignore_client_abort on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 612,
+        "end_line": 628
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1505,
+        "end_line": 1523
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 824,
+        "end_line": 837
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1385,
+        "end_line": 1386
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off并非所有分支都立即关闭：共享upstream对store、post_action以及可缓存请求有专门处理；on跳过常规客户端断开检查，不取消上游自身错误或超时。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_bind",
+    "summary": "指定SCGI出站连接使用的本地地址，可选择透明绑定。",
+    "syntax": "scgi_bind address [transparent] | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6433,
+      "end_line": 6529
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6533,
+        "end_line": 6582
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 95,
+        "end_line": 158
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 41,
+        "end_line": 79
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1391,
+        "end_line": 1392
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，即没有显式本地绑定。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "address支持变量及可选端口；off清除继承绑定，由系统选择地址。transparent还依赖平台支持、权限和回程路由，不等同于仅修改一个HTTP头。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_socket_keepalive",
+    "summary": "为到SCGI服务器的新出站套接字启用SO_KEEPALIVE。",
+    "syntax": "scgi_socket_keepalive on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 639,
+        "end_line": 646
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/event/ngx_event_connect.c",
+        "start_line": 76,
+        "end_line": 86
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1318,
+        "end_line": 1334
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1394,
+        "end_line": 1395
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on由连接代码设置SO_KEEPALIVE；off保持系统套接字默认。它不是SCGI请求级keep-connection指令，也不会创建upstream空闲连接池或配置探测间隔。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_connect_timeout",
+    "summary": "限制建立SCGI上游连接的等待时间。",
+    "syntax": "scgi_connect_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1660,
+        "end_line": 1678
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 771,
+        "end_line": 783
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1397,
+        "end_line": 1398
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "连接返回NGX_AGAIN时安装连接写事件定时器，不是整个请求的总时限。文档所述通常不能超过75秒是系统连接行为限制，不是配置回调的75秒硬上限；发行补丁把运行值复制到请求级upstream字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行补丁影响本项所引共享链路；按局部实现与所列补丁共同解释，不以原始上游片段代替发行行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_send_timeout",
+    "summary": "约束SCGI请求发送过程中相邻写入之间的等待。",
+    "syntax": "scgi_send_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2113,
+        "end_line": 2150
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2312,
+        "end_line": 2345
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 947,
+        "end_line": 981
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1300,
+        "end_line": 1315
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1400,
+        "end_line": 1401
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      },
+      {
+        "id": "upstream-pipelining",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_pipelining.patch",
+        "start_line": 1,
+        "end_line": 23
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不是从首字节到完整netstring及正文发完的总预算。共享发送路径安装/删除写定时器；pipelining补丁在已发请求、仍读客户端正文时处理上游写事件，timeout_fields改用请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields",
+          "upstream-pipelining"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行补丁影响本项所引共享链路；按局部实现与所列补丁共同解释，不以原始上游片段代替发行行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields",
+        "upstream-pipelining"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_buffer_size",
+    "summary": "设置读取SCGI响应首段、解析状态行与响应头所用的缓冲区大小。",
+    "syntax": "scgi_buffer_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1008,
+        "end_line": 1058
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1061,
+        "end_line": 1077
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2394,
+        "end_line": 2433
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2474,
+        "end_line": 2496
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3070,
+        "end_line": 3132
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 82,
+        "end_line": 98
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1412,
+        "end_line": 1414
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "一个ngx_pagesize；具体字节数取决于平台。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "头未解析完且缓冲已满会报upstream sent too big header并走INVALID_HEADER分支；非缓冲模式也需要此缓冲。SCGI先尝试HTTP状态行，再回退CGI头解析，不解析FastCGI记录头。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_pass_request_headers",
+    "summary": "控制是否把原客户端HTTP请求头自动转换为SCGI头参数。",
+    "syntax": "scgi_pass_request_headers on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 705,
+        "end_line": 793
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 872,
+        "end_line": 947
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1797,
+        "end_line": 1815
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 809,
+        "end_line": 810
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1231,
+        "end_line": 1244
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1620,
+        "end_line": 1621
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开启时生成HTTP_前缀、名称大写且横线改下划线的NUL分隔键值；重复Cookie以分号空格连接，其他重复头以逗号空格连接。显式scgi_param HTTP_*覆盖或抑制同名自动头；off不移除显式参数或模块生成的CONTENT_LENGTH。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_pass_request_body",
+    "summary": "选择是否把原始客户端请求体接到SCGI参数netstring之后。",
+    "syntax": "scgi_pass_request_body on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 542,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 651,
+        "end_line": 662
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 809,
+        "end_line": 810
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 947,
+        "end_line": 981
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1215,
+        "end_line": 1228
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1622,
+        "end_line": 1623
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "开关作用于正文链路，不控制scgi_param或自动HTTP_头。create_request先按已有request_bufs累计并生成CONTENT_LENGTH，再按该开关决定是否附加正文；因此不能声称off必然把该参数自动归零。非缓冲传送还受非chunked条件约束。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_intercept_errors",
+    "summary": "允许SCGI错误响应转入本地error_page处理。",
+    "syntax": "scgi_intercept_errors on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1008,
+        "end_line": 1058
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1131,
+        "end_line": 1183
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2508,
+        "end_line": 2517
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2667,
+        "end_line": 2759
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 898,
+        "end_line": 912
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1625,
+        "end_line": 1626
+      },
+      {
+        "id": "no-error-pages",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-no_error_pages.patch",
+        "start_line": 1,
+        "end_line": 91
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享upstream先依据已解析状态码进行>=300判定和重试，再检查intercept_errors及匹配的error_page；on不等于拦截所有状态。SCGI既可解析HTTP状态行，也可从Status头、Location或缺省200确定状态；发行no_error_pages补丁必须一起核对。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default",
+          "no-error-pages"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行补丁影响本项所引共享链路；按局部实现与所列补丁共同解释，不以原始上游片段代替发行行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default",
+        "no-error-pages"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_read_timeout",
+    "summary": "限制读取SCGI上游响应时两次读取之间的等待。",
+    "syntax": "scgi_read_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2174,
+        "end_line": 2187
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2436,
+        "end_line": 2466
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3336,
+        "end_line": 3340
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3797,
+        "end_line": 3815
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 60,
+        "end_line": 80
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1202,
+        "end_line": 1230
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1247,
+        "end_line": 1262
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1403,
+        "end_line": 1404
+      },
+      {
+        "id": "upstream-timeout-fields",
+        "component": "openresty",
+        "file": "patches/nginx-1.27.1-upstream_timeout_fields.patch",
+        "start_line": 1,
+        "end_line": 112
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "60s（60000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "并非整段响应的总时长。初次等待响应、响应管道及非缓冲模式分别使用对应定时器；U2436–2466内#if 0的重置代码不参与执行。OpenResty将运行超时放入请求级字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default",
+          "upstream-timeout-fields"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_affected",
+      "note": "固定发行补丁影响本项所引共享链路；按局部实现与所列补丁共同解释，不以原始上游片段代替发行行为。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default",
+        "upstream-timeout-fields"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_buffers",
+    "summary": "设置每个SCGI缓冲响应连接的事件管道缓冲数量与大小。",
+    "syntax": "scgi_buffers number size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1322,
+      "end_line": 1348
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1420,
+        "end_line": 1433
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3242
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 224,
+        "end_line": 254
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 142,
+        "end_line": 157
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1420,
+        "end_line": 1427
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "8个缓冲，每个ngx_pagesize。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "配置数量至少为2；单个缓冲大小与scgi_buffer_size共同影响busy及临时文件写入尺寸校验。这不是所有请求共享的内存总额度。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_busy_buffers_size",
+    "summary": "限制SCGI响应未读完时，正在向下游发送的忙缓冲总量。",
+    "syntax": "scgi_busy_buffers_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1430,
+        "end_line": 1464
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3242
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 603,
+        "end_line": 664
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 160,
+        "end_line": 178
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1430,
+        "end_line": 1464
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "两倍max(scgi_buffer_size,一个scgi_buffers缓冲)。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "须至少为max(scgi_buffer_size,一个scgi_buffers缓冲)，且不超过(number−1)×size；实际上界检查为>才拒绝，等于上界可通过。此值不代表全部响应或临时文件总大小。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_force_ranges",
+    "summary": "为SCGI响应强制启用字节范围处理资格。",
+    "syntax": "scgi_force_ranges on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2951,
+        "end_line": 2960
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5564,
+        "end_line": 5586
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 786,
+        "end_line": 800
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1388,
+        "end_line": 1389
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不以SCGI后端的Accept-Ranges为必要条件；共享upstream设置allow_ranges，非缓存响应还设置single_range。最终是否生成范围响应仍受HTTP范围过滤器和响应条件限制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_limit_rate",
+    "summary": "限制从SCGI上游读取缓冲响应的速率，单位为字节每秒。",
+    "syntax": "scgi_limit_rate rate;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 317,
+      "end_line": 343
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1416,
+        "end_line": 1417
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 108,
+        "end_line": 135
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3230,
+        "end_line": 3242
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 205,
+        "end_line": 222
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 272,
+        "end_line": 281
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 915,
+        "end_line": 936
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "表达式可含变量，运行时求值得到大小值；0取消限制。值只赋给缓冲事件管道，每请求单独计速，不是客户端下行limit_rate，也不是整个上游组共享限额。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache",
+    "summary": "为SCGI响应选择共享缓存区域，或关闭当前层缓存。",
+    "syntax": "scgi_cache zone | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_scgi_module.c",
+      "start_line": 2018,
+      "end_line": 2074
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 514,
+        "end_line": 519
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1354,
+        "end_line": 1364
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1538,
+        "end_line": 1556
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 567,
+        "end_line": 578
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1006,
+        "end_line": 1046
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 181,
+        "end_line": 196
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。专用回调允许静态区域名或变量表达式；静态未知区域在merge报错，运行时空值或off不使用缓存，其他名称必须找到SCGI所属区域。与store互斥；handler把SCGI自己的caches和create_key接到upstream，不能借用其他协议的区域身份。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_key",
+    "summary": "定义SCGI响应缓存键的复杂值表达式。",
+    "syntax": "scgi_cache_key string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_scgi_module.c",
+      "start_line": 2077,
+      "end_line": 2102
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 609,
+        "end_line": 627
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1594,
+        "end_line": 1601
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 228,
+        "end_line": 261
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 240,
+        "end_line": 254
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层cache_key.value.data为空时才继承父层整个cache_key。",
+      "source_ids": [
+        "implementation-1"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。专用create_key把表达式结果作为键片段交给file_cache，后者计算MD5；没有自动生成目标地址加URI的默认模板。开启缓存而未配置键时merge仅记录警告，不能写成配置必然失败；不同请求的区分字段应由表达式明确包含。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_path",
+    "summary": "定义SCGI文件缓存目录、共享keys_zone及缓存维护参数。",
+    "syntax": "scgi_cache_path path [levels=levels] [use_temp_path=on|off] keys_zone=name:size [inactive=time] [max_size=size] [min_free=size] [manager_files=number] [manager_sleep=time] [manager_threshold=time] [loader_files=number] [loader_sleep=time] [loader_threshold=time];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_file_cache.c",
+      "start_line": 2379,
+      "end_line": 2722
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1253,
+        "end_line": 1273
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 228,
+        "end_line": 261
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 994,
+        "end_line": 1025
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 1860,
+        "end_line": 1919
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2022,
+        "end_line": 2105
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2109,
+        "end_line": 2151
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 372,
+        "end_line": 545
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "not_applicable",
+      "text": "只在http主配置声明缓存区域，不是location的父子合并字段。",
+      "source_ids": [
+        "registration"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。只允许http主上下文；keys_zone为必需参数并以SCGI模块为tag。缓存文件名来自键的MD5；inactive不同于响应新鲜期，manager按容量/空闲空间清理，loader分批加载已有文件。此固定源码不接受商业purger参数。use_temp_path=off使缓存临时文件使用缓存目录。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_bypass",
+    "summary": "定义SCGI请求绕过缓存读取的条件表达式。",
+    "syntax": "scgi_cache_bypass string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 402,
+      "end_line": 441
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 347,
+        "end_line": 370
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 881,
+        "end_line": 892
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3143,
+        "end_line": 3166
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 219,
+        "end_line": 237
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1585,
+        "end_line": 1586
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无显式绕过条件。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。任一表达式求值非空且不等于单字符0即绕过读取；绕过不等于禁止写入，响应仍可能创建缓存文件。禁止保存应另配scgi_no_cache。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_no_cache",
+    "summary": "定义SCGI响应不得写入缓存的条件。",
+    "syntax": "scgi_no_cache string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_script.c",
+      "start_line": 402,
+      "end_line": 441
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_script.c",
+        "start_line": 347,
+        "end_line": 370
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3143,
+        "end_line": 3166
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2825,
+        "end_line": 2832
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1099,
+        "end_line": 1117
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1588,
+        "end_line": 1589
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，无显式禁止保存条件。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。条件按运行时字符串判断，任一非空且非0即禁止保存。它不代替cache_bypass：缓存已经命中时不因此自动跳过读取；响应头等其他条件也可阻止缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_valid",
+    "summary": "给SCGI响应状态码配置备用缓存有效时间。",
+    "syntax": "scgi_cache_valid [code ...] time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_file_cache.c",
+      "start_line": 2726,
+      "end_line": 2799
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 2353,
+        "end_line": 2375
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3173,
+        "end_line": 3211
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4789,
+        "end_line": 4810
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4828,
+        "end_line": 4853
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4966,
+        "end_line": 4991
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5016,
+        "end_line": 5068
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5251,
+        "end_line": 5268
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 693,
+        "end_line": 768
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1591,
+        "end_line": 1592
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NULL，没有状态码有效期配置表；不等于响应头不能启用缓存。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。只写time时登记200/301/302；按配置记录顺序取首个匹配项，any匹配任意状态，放在前面可遮住后面的具体状态。只有响应头尚未确定valid_sec时才采用此表；X-Accel-Expires、Expires、Cache-Control及Set-Cookie/Vary等仍可能改变或禁止缓存，不保证指定状态必然缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_min_uses",
+    "summary": "设置SCGI缓存对象达到多少次使用后才允许创建缓存。",
+    "syntax": "scgi_cache_min_uses number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 873,
+        "end_line": 879
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 310,
+        "end_line": 338
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 893,
+        "end_line": 927
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 973,
+        "end_line": 977
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 357,
+        "end_line": 369
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1558,
+        "end_line": 1559
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。计数来自同一缓存键的共享节点，冷缓存与已存在文件有各自判断；未达到阈值可走SCARCE分支，不是把第N次之后所有响应无条件永久保存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_max_range_offset",
+    "summary": "限制SCGI范围请求可参与缓存的起始字节偏移。",
+    "syntax": "scgi_cache_max_range_offset number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1229,
+      "end_line": 1256
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 996,
+        "end_line": 1002
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1141,
+        "end_line": 1187
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 317,
+        "end_line": 332
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1561,
+        "end_line": 1563
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "NGX_MAX_OFF_T_VALUE，使用该平台off_t的最大值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。共享范围判定对起始偏移>=阈值拒绝缓存，包含等于边界；后缀范围不走此可缓存路径，阈值0也直接拒绝。该项不是限制缓存文件最大长度，也不关闭已有正常缓存的所有命中。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_use_stale",
+    "summary": "指定SCGI上游失败或缓存正在更新时可返回过期缓存的情形。",
+    "syntax": "scgi_cache_use_stale error | timeout | invalid_header | updating | http_500 | http_503 | http_403 | http_404 | http_429 | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 77,
+        "end_line": 90
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1565,
+        "end_line": 1577
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 908,
+        "end_line": 938
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2562,
+        "end_line": 2591
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4423,
+        "end_line": 4460
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 622,
+        "end_line": 690
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1565,
+        "end_line": 1577
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。必须先有可用旧缓存；error同时覆盖无可选peer。updating允许其他请求使用正在更新的旧项；响应Cache-Control的stale扩展也有单独判断。off在merge中覆盖其他同列位，不代表清除缓存文件；本模块选项表没有http_502/http_504。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_methods",
+    "summary": "限定哪些HTTP方法的SCGI请求可以进入响应缓存流程。",
+    "syntax": "scgi_cache_methods GET | HEAD | POST ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1579,
+        "end_line": 1583
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 452,
+        "end_line": 457
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 826,
+        "end_line": 860
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 335,
+        "end_line": 354
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1579,
+        "end_line": 1583
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "GET HEAD；本层未设则先继承父层位图，再强制加入GET/HEAD。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。接受GET、HEAD、POST；merge无条件加入GET和HEAD，不能通过仅写POST去除它们。方法匹配只是缓存前置条件，后续key、bypass、响应头和no_cache仍决定读写。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_lock",
+    "summary": "对同一SCGI缓存键的新缓存填充启用共享锁等待。",
+    "syntax": "scgi_cache_lock on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 460
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 503,
+        "end_line": 539
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 257,
+        "end_line": 275
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1603,
+        "end_line": 1604
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。持锁请求回源填充，其他请求可等待缓存出现或锁释放；等待期限由lock_timeout限制，过旧持锁由lock_age允许追加回源。这是缓存填充协调，不是整个SCGI服务器的并发上限。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_lock_timeout",
+    "summary": "限定SCGI请求等待同键缓存填充锁的时间。",
+    "syntax": "scgi_cache_lock_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 460
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 503,
+        "end_line": 539
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 973,
+        "end_line": 977
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 296,
+        "end_line": 314
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1606,
+        "end_line": 1607
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "5s（5000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。到期请求可继续回源，但共享缓存路径以SCARCE禁止该次填充结果入缓存；与上游连接、读取超时无关，也不是取消持锁请求。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_lock_age",
+    "summary": "设置同一SCGI缓存键的填充锁可以保持多久后放行额外回源。",
+    "syntax": "scgi_cache_lock_age time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 894,
+        "end_line": 899
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_file_cache.c",
+        "start_line": 405,
+        "end_line": 460
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 278,
+        "end_line": 293
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1609,
+        "end_line": 1610
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "5s（5000ms）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。比较共享节点lock_time与当前时间；达到条件可让另一请求接手/补充填充，不是对象的新鲜期，也不强制终止原始回源连接。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_revalidate",
+    "summary": "允许用条件SCGI请求验证已过期的缓存内容。",
+    "syntax": "scgi_cache_revalidate on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 458,
+        "end_line": 467
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 669,
+        "end_line": 673
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1670,
+        "end_line": 1676
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1748,
+        "end_line": 1795
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5994,
+        "end_line": 6043
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2598,
+        "end_line": 2659
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 605,
+        "end_line": 619
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1612,
+        "end_line": 1613
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。SCGI专用params_cache把缓存Last-Modified/ETag变量编码为HTTP_IF_MODIFIED_SINCE和HTTP_IF_NONE_MATCH；默认值只补缺失参数，用户显式参数可以覆盖。304响应走共享重验证更新分支，不是无条件重新下载正文。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_cache_background_update",
+    "summary": "允许在返回旧SCGI缓存的同时启动后台子请求更新该缓存。",
+    "syntax": "scgi_cache_background_update on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 908,
+        "end_line": 938
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1118,
+        "end_line": 1137
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 199,
+        "end_line": 216
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1615,
+        "end_line": 1616
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "需要NGX_HTTP_CACHE构建支持。需已有过期缓存且允许updating旧缓存条件；共享代码还防止在后台更新请求内再次递归启动同类更新。不是独立定时刷新任务，无请求不由本指令定时回源。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_temp_path",
+    "summary": "设置SCGI响应临时文件的目录及可选分级目录。",
+    "syntax": "scgi_temp_path path [level1 [level2 [level3]]];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_file.c",
+      "start_line": 361,
+      "end_line": 417
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 472,
+        "end_line": 474
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1528,
+        "end_line": 1534
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4244,
+        "end_line": 4321
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1447,
+        "end_line": 1478
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "最多三个层级，实际数字范围由通用路径解析器校验；这是响应侧临时目录，不是客户端请求体目录。缓存use_temp_path=off会改用缓存路径；跨文件系统持久化可能需要复制。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_max_temp_file_size",
+    "summary": "限制普通SCGI缓冲响应写入临时文件的最大大小。",
+    "syntax": "scgi_max_temp_file_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1430,
+        "end_line": 1433
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1488,
+        "end_line": 1509
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 272,
+        "end_line": 281
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 939,
+        "end_line": 968
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1488,
+        "end_line": 1509
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1024m（1024×1024×1024字节）。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "0禁用普通响应的临时文件缓冲；非0须至少为max(buffer_size,单个buffers大小)。cache或store使事件管道cacheable，绕过这项普通临时文件上限，因此不能将0理解为绝不写磁盘。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_temp_file_write_size",
+    "summary": "限制普通SCGI响应一次批量写入临时文件的数据量。",
+    "syntax": "scgi_temp_file_write_size size;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1198,
+      "end_line": 1225
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1430,
+        "end_line": 1433
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1467,
+        "end_line": 1485
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 3242,
+        "end_line": 3272
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/event/ngx_event_pipe.c",
+        "start_line": 784,
+        "end_line": 825
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1427,
+        "end_line": 1444
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1430,
+        "end_line": 1485
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "两倍max(scgi_buffer_size,单个scgi_buffers大小)。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "至少为max(buffer_size,单个buffers大小)，默认取其两倍；事件管道按链上的缓冲选择写入批次，cacheable分支不执行普通分支的此批量阈值检查。它与临时文件总上限是不同字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_next_upstream",
+    "summary": "设定SCGI请求在上游失败时尝试下一个peer的条件。",
+    "syntax": "scgi_next_upstream error | timeout | invalid_header | http_500 | http_503 | http_403 | http_404 | http_429 | non_idempotent | off ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 77,
+        "end_line": 90
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1517,
+        "end_line": 1526
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 985,
+        "end_line": 1005
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 971,
+        "end_line": 1062
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1517,
+        "end_line": 1526
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "error timeout。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数表包含error/timeout/invalid_header、500/503/403/404/429及non_idempotent/off，不支持http_502/http_504。已经发出的POST/LOCK/PATCH默认不重试，显式non_idempotent可放宽，但已发送的非缓冲正文仍不能重放；向客户端发出响应后不能靠本项修复中途失败。off在merge中覆盖其他位。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_next_upstream_tries",
+    "summary": "为SCGI请求的上游尝试次数增加配置上限。",
+    "syntax": "scgi_next_upstream_tries number;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1167,
+      "end_line": 1194
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 1254,
+        "end_line": 1262
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1082,
+        "end_line": 1096
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1376,
+        "end_line": 1377
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "非0会把peer初始tries收紧，最终仍受可用服务器数量、next_upstream条件及正文是否可重放限制；0仅取消这一额外上限，不代表无限重试。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_next_upstream_timeout",
+    "summary": "限制SCGI请求可以继续切换上游的累计时间窗口。",
+    "syntax": "scgi_next_upstream_timeout time;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1287
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 805,
+        "end_line": 819
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2534,
+        "end_line": 2560
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4415,
+        "end_line": 4426
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1065,
+        "end_line": 1079
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1406,
+        "end_line": 1407
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "0。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "共享upstream记录peer.start_time，在失败判定时比较已用时间；0取消该额外门槛。它不是独立到点中断当前成功请求的总时限，也不替代connect/send/read三个事件超时。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_param",
+    "summary": "把文本或变量表达式编译为SCGI netstring中的NUL分隔参数。",
+    "syntax": "scgi_param parameter value [if_not_empty];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http_upstream.c",
+      "start_line": 6586,
+      "end_line": 6626
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 651,
+        "end_line": 703
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 795,
+        "end_line": 870
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 947,
+        "end_line": 981
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1655,
+        "end_line": 1695
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1698,
+        "end_line": 1900
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "conf/scgi_params",
+        "start_line": 1,
+        "end_line": 17
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1120,
+        "end_line": 1159
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅本层没有scgi_param（params_source为NULL）时继承父层整个参数集合；不会逐键叠加本层和父层。",
+      "source_ids": [
+        "implementation-3"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "参数值在请求期求值，if_not_empty仅在结果为空时省略。模块先自动编码CONTENT_LENGTH，再编码配置参数和自动请求头，最后加逗号并附正文；SCGI=1和其他CGI变量来自显式参数或include scgi_params，模块不自动添加。HTTP_*键进入抑制哈希，显式空值可阻止同名自动头；不是FastCGI PARAMS记录，也不沿用其65535字节检查。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_pass_header",
+    "summary": "允许原本被SCGI隐藏列表过滤的响应头传给客户端。",
+    "syntax": "scgi_pass_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 445,
+        "end_line": 453
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1628,
+        "end_line": 1637
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1114,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6667,
+        "end_line": 6735
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 1200,
+        "end_line": 1212
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "它从隐藏哈希移除指定名称，不生成头，也不改变上游头的缓存/内部重定向语义。实际输出还由共享头处理器决定；不能概括为关闭所有头过滤。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_hide_header",
+    "summary": "把指定SCGI响应头加入下游输出隐藏集合。",
+    "syntax": "scgi_hide_header field;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1093,
+      "end_line": 1125
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 445,
+        "end_line": 453
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1628,
+        "end_line": 1637
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1114,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 6667,
+        "end_line": 6735
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2906,
+        "end_line": 2934
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 803,
+        "end_line": 821
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "unverified",
+      "text": "完整默认行为未核定；不以文档空default推断有效值。",
+      "source_ids": []
+    },
+    "inheritance": {
+      "status": "unverified",
+      "text": "完整父子层合并规则尚未核实，不推断逐键叠加或覆盖。",
+      "source_ids": []
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "默认集合精确为Status和X-Accel-Expires/Redirect/Limit-Rate/Buffering/Charset，而非通配所有X-Accel-*。隐藏仅控制向客户端复制，不取消缓存或内部跳转等语义；后者需scgi_ignore_headers。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "distribution-processing"
+      ]
+    },
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_scgi_module",
+    "name": "scgi_ignore_headers",
+    "summary": "禁止指定SCGI响应头驱动共享upstream的特殊处理。",
+    "syntax": "scgi_ignore_headers field ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1389,
+      "end_line": 1431
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 414,
+        "end_line": 442
+      },
+      {
+        "id": "upstream-binding",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 499,
+        "end_line": 549
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1114,
+        "end_line": 1123
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 460,
+        "end_line": 471
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 2825,
+        "end_line": 2832
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4789,
+        "end_line": 4810
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4828,
+        "end_line": 4853
+      },
+      {
+        "id": "implementation-5",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 4966,
+        "end_line": 4991
+      },
+      {
+        "id": "implementation-6",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5016,
+        "end_line": 5068
+      },
+      {
+        "id": "implementation-7",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5092,
+        "end_line": 5163
+      },
+      {
+        "id": "implementation-8",
+        "component": "nginx",
+        "file": "src/http/ngx_http_upstream.c",
+        "start_line": 5251,
+        "end_line": 5268
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_scgi_module.xml",
+        "start_line": 840,
+        "end_line": 895
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      },
+      {
+        "id": "merge-default",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_scgi_module.c",
+        "start_line": 1512,
+        "end_line": 1514
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "仅NGX_CONF_BITMASK_SET标志，无忽略头处理位。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层对应配置未设置时采用父层值；父层也未设置时使用merge中列出的默认值或派生值，不把create中的UNSET当成有效值。",
+      "source_ids": [
+        "merge-default"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只接受固定mask中的X-Accel-Redirect/Expires/Limit-Rate/Buffering/Charset、Expires、Cache-Control、Set-Cookie、Vary。影响缓存、内部跳转、下行限速、缓冲或字符集；忽略语义不等于隐藏字段，也不表示任意HTTP头均可配置。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "upstream-binding",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "implementation-5",
+          "implementation-6",
+          "implementation-7",
+          "implementation-8",
+          "official-doc",
+          "merge-default"
+        ]
+      }
+    ],
+    "phase": "configuration",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "已隔离回放固定发行补丁并核对所引注册、回调、模块归属与实现片段；无变化仅限本条明示事实，不推广为整个SCGI请求链不受补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "upstream-binding",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "implementation-5",
+        "implementation-6",
+        "implementation-7",
+        "implementation-8",
+        "distribution-processing",
+        "merge-default"
+      ]
+    },
+    "related": []
+  }
+]

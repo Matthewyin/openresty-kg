@@ -1,0 +1,1901 @@
+[
+  {
+    "component": "nginx",
+    "module": "ngx_http_addition_filter_module",
+    "name": "add_before_body",
+    "summary": "在符合条件的主响应正文之前插入指定URI子请求产生的内容，由addition头/体过滤器协作处理。",
+    "syntax": "add_before_body uri;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 75,
+        "end_line": 88
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 96,
+        "end_line": 209
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 214,
+        "end_line": 254
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_addition_module.xml",
+        "start_line": 44,
+        "end_line": 58
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空字符串；不添加该位置的子请求内容。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应URI；显式空字符串取消该位置继承的添加。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只对状态200的主请求且响应MIME匹配addition_types建立处理上下文；header_only不插入正文，不是所有状态或子请求都递归添加。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "参数是保存的URI字符串，不在此配置回调中编译变量表达式；子请求内容由URI的实际处理配置决定，并非直接读取任意磁盘文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_addition_module.xml#L44-L58",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_addition_filter_module",
+    "name": "add_after_body",
+    "summary": "在符合条件的主响应正文之后插入指定URI子请求产生的内容，由addition头/体过滤器协作处理。",
+    "syntax": "add_after_body uri;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1066,
+      "end_line": 1089
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 75,
+        "end_line": 88
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 96,
+        "end_line": 209
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 214,
+        "end_line": 254
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_addition_module.xml",
+        "start_line": 61,
+        "end_line": 75
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "空字符串；不添加该位置的子请求内容。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层对应URI；显式空字符串取消该位置继承的添加。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "只对状态200的主请求且响应MIME匹配addition_types建立处理上下文；header_only不插入正文，不是所有状态或子请求都递归添加。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "参数是保存的URI字符串，不在此配置回调中编译变量表达式；子请求内容由URI的实际处理配置决定，并非直接读取任意磁盘文件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_addition_module.xml#L61-L75",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_addition_filter_module",
+    "name": "addition_types",
+    "summary": "选择addition过滤器允许处理的响应MIME类型；须同时配置前置或后置子请求URI才会添加内容。",
+    "syntax": "addition_types mime-type ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http.c",
+      "start_line": 2030,
+      "end_line": 2103
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 75,
+        "end_line": 88
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 96,
+        "end_line": 209
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_addition_filter_module.c",
+        "start_line": 214,
+        "end_line": 254
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/ngx_http.c",
+        "start_line": 79,
+        "end_line": 82
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http.c",
+        "start_line": 2107,
+        "end_line": 2168
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_addition_module.xml",
+        "start_line": 78,
+        "end_line": 92
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "text/html。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有类型集合时继承父层；显式集合独立构建，保留注册指定的text/html基础类型，不拼接父层额外类型。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "*匹配所有MIME类型，但不取消主请求、状态200与非header_only等添加条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_addition_module.xml#L78-L92",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_headers_filter_module",
+    "name": "add_header",
+    "summary": "为符合状态条件的主响应计算并添加指定响应头；值可包含变量，部分标准头采用专门更新逻辑。",
+    "syntax": "add_header name value [always];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_headers_filter_module.c",
+      "start_line": 775,
+      "end_line": 852
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 145,
+        "end_line": 158
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 166,
+        "end_line": 244
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 641,
+        "end_line": 703
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 78,
+        "end_line": 98
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 537,
+        "end_line": 637
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_headers_module.xml",
+        "start_line": 46,
+        "end_line": 75
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无本模块额外添加的响应头。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只有本层完全未配置add_header时才整体继承父层列表；本层新增任意一条不会自动保留父层其他add_header。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "不带always时仅在200、201、204、206、301、302、303、304、307、308状态处理；always只放开状态筛选，不取消主请求条件。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "普通响应头的空值不追加；Cache-Control、Link、Last-Modified、ETag有专门处理，不能把所有同名头理解为简单覆盖或把空值一概理解为删除。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_headers_module.xml#L46-L75",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_headers_filter_module",
+    "name": "add_trailer",
+    "summary": "在响应最后一段正文到达时计算并向响应尾部字段列表追加指定字段，值可包含变量。",
+    "syntax": "add_trailer name value [always];",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_headers_filter_module.c",
+      "start_line": 775,
+      "end_line": 852
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 145,
+        "end_line": 158
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 166,
+        "end_line": 244
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 641,
+        "end_line": 703
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 248,
+        "end_line": 321
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_headers_module.xml",
+        "start_line": 78,
+        "end_line": 107
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无本模块额外添加的尾部字段。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "只有本层没有add_trailer列表时整体继承父层；与add_header的列表独立继承。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "受状态资格或always、expect_trailers及last_buf控制；header_only直接跳过，空值不追加。always不意味着任何响应都能实际携带尾部字段。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "尾部字段不是普通响应头；此处证据证明加入trailers列表，不承诺所有传输协议或客户端均能显示。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_headers_module.xml#L78-L107",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_headers_filter_module",
+    "name": "expires",
+    "summary": "生成或调整主响应的Expires和Cache-Control，使缓存期限依当前时间、修改时间或每日时点计算。",
+    "syntax": "expires [modified] time; expires epoch | max | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_headers_filter_module.c",
+      "start_line": 707,
+      "end_line": 771
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 145,
+        "end_line": 158
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 166,
+        "end_line": 244
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 641,
+        "end_line": 703
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_headers_filter_module.c",
+        "start_line": 325,
+        "end_line": 533
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_headers_module.xml",
+        "start_line": 110,
+        "end_line": 196
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off；本模块不修改这两个缓存头。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时整体继承父层expires模式、时间及动态表达式；无可继承值时off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "仅处理200、201、204、206、301、302、303、304、307、308状态；负缓存期设置no-cache，非负期设置max-age，不等同禁止存储或开启Nginx服务端缓存。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "modified以Last-Modified为基础，没有可用修改时间则用当前时间；@日内时点不可与modified组合。动态值在运行时无效或off会跳过修改，而不是让整条请求自动失败。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_headers_module.xml#L110-L196",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_sub_filter_module",
+    "name": "sub_filter",
+    "summary": "按配置的字符串/替换值对响应正文执行忽略大小写的字符串替换；两侧均可使用变量。",
+    "syntax": "sub_filter string replacement;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_sub_filter_module.c",
+      "start_line": 793,
+      "end_line": 858
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 150,
+        "end_line": 163
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 171,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 890,
+        "end_line": 948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 1013,
+        "end_line": 1022
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 285,
+        "end_line": 489
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 611,
+        "end_line": 789
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_sub_module.xml",
+        "start_line": 48,
+        "end_line": 66
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "没有替换规则。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "仅当本层未配置任何sub_filter时整体继承父层规则；本层规则不追加父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "这是字符串匹配而非正则或HTML解析；仅对配置的响应MIME类型工作，已知空正文不启动处理。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "固定配置拒绝空查找字符串，每层规则最多255条；动态查找值为空时跳过该匹配。替换值在该模式首次命中时计算并缓存，不是每次命中重新求值。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_sub_module.xml#L48-L66",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_sub_filter_module",
+    "name": "sub_filter_types",
+    "summary": "选择正文字符串替换处理的响应MIME类型，配合sub_filter规则使用。",
+    "syntax": "sub_filter_types mime-type ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/ngx_http.c",
+      "start_line": 2030,
+      "end_line": 2103
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 150,
+        "end_line": 163
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 171,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 890,
+        "end_line": 948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 1013,
+        "end_line": 1022
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http.c",
+        "start_line": 79,
+        "end_line": 82
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/ngx_http.c",
+        "start_line": 2107,
+        "end_line": 2168
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_sub_module.xml",
+        "start_line": 106,
+        "end_line": 119
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "text/html。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置类型集合时继承父层；本层集合独立构建，包含注册指定的text/html基础类型，不自动追加父层其他类型。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "*匹配所有MIME，但没有替换规则或已知正文长度为0时仍不进入替换。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_sub_module.xml#L106-L119",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_sub_filter_module",
+    "name": "sub_filter_once",
+    "summary": "决定每个查找字符串在一次响应处理过程中只替换一次，还是继续寻找后续匹配。",
+    "syntax": "sub_filter_once on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 150,
+        "end_line": 163
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 171,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 890,
+        "end_line": 948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 1013,
+        "end_line": 1022
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 450,
+        "end_line": 489
+      },
+      {
+        "id": "implementation-4",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 611,
+        "end_line": 744
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_sub_module.xml",
+        "start_line": 91,
+        "end_line": 103
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；无继承值时on。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "on限制的是每个匹配模式各一次，不是整个响应只替换一次，也不是每块输入缓冲各一次；off继续查找，不递归重新处理已输出的替换内容。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "implementation-4",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "body_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "implementation-4",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_sub_module.xml#L91-L103",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_sub_filter_module",
+    "name": "sub_filter_last_modified",
+    "summary": "控制正文替换时是否保留原响应的Last-Modified；在主响应启用替换过滤时应用。",
+    "syntax": "sub_filter_last_modified on | off;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1026,
+      "end_line": 1062
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 150,
+        "end_line": 163
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 171,
+        "end_line": 281
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 890,
+        "end_line": 948
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_sub_filter_module.c",
+        "start_line": 1013,
+        "end_line": 1022
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_sub_module.xml",
+        "start_line": 69,
+        "end_line": 88
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未设置时继承父层；无继承值时off。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "off清除Last-Modified和ETag；on保留修改时间但弱化ETag，两者都清除原Content-Length。它不重新计算修改时间或内容摘要。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": "header_filter",
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_sub_module.xml#L69-L88",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_browser_module",
+    "name": "modern_browser",
+    "summary": "按User-Agent内置浏览器标记和最低版本判断modern分类，也可将未列出的浏览器归入modern。",
+    "syntax": "modern_browser browser version; modern_browser unlisted;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_browser_module.c",
+      "start_line": 538,
+      "end_line": 626
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 124,
+        "end_line": 137
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 215,
+        "end_line": 252
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 256,
+        "end_line": 380
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 418,
+        "end_line": 524
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 140,
+        "end_line": 212
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_browser_module.xml",
+        "start_line": 118,
+        "end_line": 150
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无modern版本列表，未列出浏览器不默认归为modern。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层既未设置版本列表也未设置unlisted时，整体继承父层modern列表和unlisted标志；否则使用本层配置。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "browser只接受msie、gecko、opera、safari、konqueror这些内置名字；这是User-Agent字符串/版本比较，不是对客户端实际能力的探测。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "缺少User-Agent时按unlisted标志归类；命中现代列表的浏览器会直接根据版本返回分类，后面的ancient子串检查不会再覆盖该结果。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_browser_module.xml#L118-L150",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_browser_module",
+    "name": "ancient_browser",
+    "summary": "设置User-Agent内用于ancient分类的子串，或启用netscape4特殊识别。",
+    "syntax": "ancient_browser string ...;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_browser_module.c",
+      "start_line": 630,
+      "end_line": 662
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 124,
+        "end_line": 137
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 215,
+        "end_line": 252
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 256,
+        "end_line": 380
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 418,
+        "end_line": 524
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_browser_module.xml",
+        "start_line": 87,
+        "end_line": 101
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "无自定义ancient子串且netscape4未启用；无modern匹配时仍可能默认归ancient。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层没有ancient子串列表且未开启netscape4时整体继承父层这两项；本层定义后不拼接父层列表。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "普通子串用区分大小写的搜索；netscape4特殊匹配Mozilla/后版本首位1至4，不是把任意参数当正则。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      },
+      {
+        "status": "verified",
+        "text": "在modern列表已经匹配并返回分类时不会执行ancient检查；配置此项不等于阻止这些请求访问。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_browser_module.xml#L87-L101",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_browser_module",
+    "name": "modern_browser_value",
+    "summary": "设置请求被归入对应浏览器类别时$modern_browser变量返回的字符串。",
+    "syntax": "modern_browser_value string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_browser_module.c",
+      "start_line": 666,
+      "end_line": 687
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 124,
+        "end_line": 137
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 215,
+        "end_line": 252
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 256,
+        "end_line": 380
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 418,
+        "end_line": 524
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 403,
+        "end_line": 408
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_browser_module.xml",
+        "start_line": 153,
+        "end_line": 164
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1（仅在命中对应类别时返回；另一类别返回空字符串）。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未定义值时继承父层；仍未定义时使用内置字符串1。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值在配置回调中按字面字符串保存，不作为复杂值编译，因此不能将其中的$变量当作运行时表达式展开；此指令不改变浏览器分类规则。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_browser_module.xml#L153-L164",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  },
+  {
+    "component": "nginx",
+    "module": "ngx_http_browser_module",
+    "name": "ancient_browser_value",
+    "summary": "设置请求被归入对应浏览器类别时$ancient_browser变量返回的字符串。",
+    "syntax": "ancient_browser_value string;",
+    "callback_definition": {
+      "component": "nginx",
+      "file": "src/http/modules/ngx_http_browser_module.c",
+      "start_line": 691,
+      "end_line": 712
+    },
+    "evidence": [
+      {
+        "id": "module-owner",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 124,
+        "end_line": 137
+      },
+      {
+        "id": "implementation-0",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 215,
+        "end_line": 252
+      },
+      {
+        "id": "implementation-1",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 256,
+        "end_line": 380
+      },
+      {
+        "id": "implementation-2",
+        "component": "nginx",
+        "file": "src/http/modules/ngx_http_browser_module.c",
+        "start_line": 418,
+        "end_line": 524
+      },
+      {
+        "id": "implementation-3",
+        "component": "nginx",
+        "file": "src/http/ngx_http_variables.c",
+        "start_line": 403,
+        "end_line": 408
+      },
+      {
+        "id": "official-doc",
+        "component": "nginx-docs",
+        "file": "xml/en/docs/http/ngx_http_browser_module.xml",
+        "start_line": 104,
+        "end_line": 115
+      },
+      {
+        "id": "distribution-processing",
+        "component": "openresty",
+        "file": "util/mirror-tarballs",
+        "start_line": 25,
+        "end_line": 424
+      }
+    ],
+    "defaults": {
+      "status": "verified",
+      "text": "1（仅在命中对应类别时返回；另一类别返回空字符串）。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "inheritance": {
+      "status": "verified",
+      "text": "本层未定义值时继承父层；仍未定义时使用内置字符串1。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc"
+      ]
+    },
+    "limitations": [
+      {
+        "status": "verified",
+        "text": "值在配置回调中按字面字符串保存，不作为复杂值编译，因此不能将其中的$变量当作运行时表达式展开；此指令不改变浏览器分类规则。",
+        "source_ids": [
+          "registration",
+          "configuration-definition",
+          "module-owner",
+          "implementation-0",
+          "implementation-1",
+          "implementation-2",
+          "implementation-3",
+          "official-doc"
+        ]
+      }
+    ],
+    "phase": null,
+    "patch_status": {
+      "status": "verified_unaffected",
+      "note": "固定发行补丁回放后核对本条所引注册、配置回调与实现片段；结论只限所列事实，不推断整个过滤器链无补丁影响。",
+      "source_ids": [
+        "registration",
+        "configuration-definition",
+        "module-owner",
+        "implementation-0",
+        "implementation-1",
+        "implementation-2",
+        "implementation-3",
+        "official-doc",
+        "distribution-processing"
+      ]
+    },
+    "documentation": [
+      {
+        "title": "固定版本官方指令说明",
+        "url": "https://github.com/nginx/nginx.org/blob/e8b581903e9d41252720053311cea687a5671674/xml/en/docs/http/ngx_http_browser_module.xml#L104-L115",
+        "status": "verified"
+      }
+    ],
+    "related": []
+  }
+]

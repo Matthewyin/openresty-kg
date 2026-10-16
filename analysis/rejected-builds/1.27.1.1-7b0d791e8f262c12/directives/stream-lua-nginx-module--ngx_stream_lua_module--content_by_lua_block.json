@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_block",
+  "name": "content_by_lua_block",
+  "module": "ngx_stream_lua_module",
+  "component": "stream-lua-nginx-module",
+  "contexts": [
+    "stream.server"
+  ],
+  "contexts_verified": true,
+  "syntax": null,
+  "summary": null,
+  "defaults": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "registration_only",
+  "verification_notes": [
+    "仅核实注册信息；配置回调定义、功能与限制尚未完成研究。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_stream_lua_content_by_lua_block",
+    "source_ids": [
+      "registration"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "stream-lua-nginx-module",
+      "version": "0.0.15",
+      "revision": "69f0cd762112a6e0cddb07f2b5192e9a65034a93",
+      "file": "src/ngx_stream_lua_module.c",
+      "start_line": 253,
+      "end_line": 258,
+      "code": "    { ngx_string(\"content_by_lua_block\"),\n      NGX_STREAM_SRV_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,\n      ngx_stream_lua_content_by_lua_block,\n      NGX_STREAM_SRV_CONF_OFFSET,\n      0,\n      (void *) ngx_stream_lua_content_handler_inline },",
+      "url": "https://github.com/openresty/stream-lua-nginx-module/blob/69f0cd762112a6e0cddb07f2b5192e9a65034a93/src/ngx_stream_lua_module.c#L253-L258",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": []
+  },
+  "phases": [],
+  "mechanism": null,
+  "related": []
+}

@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "release_id": "1.27.1.1-7b0d791e8f262c12",
+  "openresty_version": "1.27.1.1",
+  "id": "lua-nginx-module--ngx_http_lua_module--lua_socket_connect_timeout",
+  "name": "lua_socket_connect_timeout",
+  "module": "ngx_http_lua_module",
+  "component": "lua-nginx-module",
+  "contexts": [
+    "http",
+    "http.server",
+    "http.location",
+    "http.if.location"
+  ],
+  "contexts_verified": true,
+  "syntax": "lua_socket_connect_timeout time;",
+  "summary": "设置 Lua TCP 或 Unix-domain cosocket 的默认连接超时。",
+  "defaults": {
+    "status": "verified",
+    "text": "60s",
+    "source_ids": [
+      "evidence-0"
+    ]
+  },
+  "inheritance": {
+    "status": "unverified",
+    "text": null,
+    "source_ids": []
+  },
+  "limitations": [
+    {
+      "text": "Lua socket 的 settimeout 或 settimeouts 可以覆盖这个默认值。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    },
+    {
+      "text": "此项不等于 HTTP 反向代理 proxy_connect_timeout，也不是所有请求的整体超时。",
+      "status": "verified",
+      "source_ids": [
+        "evidence-0"
+      ]
+    }
+  ],
+  "availability": {
+    "compile_guards": [],
+    "dependencies": [],
+    "deprecated": null,
+    "status": "unverified"
+  },
+  "verification": "basic_verified",
+  "verification_notes": [
+    "配置注册、回调定义及所列证据已核对；未运行 OpenResty。",
+    "源码存在不代表实际环境启用相应模块。"
+  ],
+  "configuration_entry": {
+    "symbol": "ngx_conf_set_msec_slot",
+    "source_ids": [
+      "registration",
+      "configuration-definition"
+    ]
+  },
+  "sources": [
+    {
+      "id": "registration",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "src/ngx_http_lua_module.c",
+      "start_line": 514,
+      "end_line": 520,
+      "code": "    { ngx_string(\"lua_socket_connect_timeout\"),\n      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF\n          |NGX_HTTP_LIF_CONF|NGX_CONF_TAKE1,\n      ngx_conf_set_msec_slot,\n      NGX_HTTP_LOC_CONF_OFFSET,\n      offsetof(ngx_http_lua_loc_conf_t, connect_timeout),\n      NULL },",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/src/ngx_http_lua_module.c#L514-L520",
+      "kind": "upstream"
+    },
+    {
+      "id": "configuration-definition",
+      "component": "nginx",
+      "version": "1.27.1",
+      "revision": "e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928",
+      "file": "src/core/ngx_conf_file.c",
+      "start_line": 1260,
+      "end_line": 1299,
+      "code": "ngx_conf_set_msec_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    char  *p = conf;\n\n    ngx_msec_t       *msp;\n    ngx_str_t        *value;\n    ngx_conf_post_t  *post;\n\n\n    msp = (ngx_msec_t *) (p + cmd->offset);\n    if (*msp != NGX_CONF_UNSET_MSEC) {\n        return \"is duplicate\";\n    }\n\n    value = cf->args->elts;\n\n    *msp = ngx_parse_time(&value[1], 0);\n    if (*msp == (ngx_msec_t) NGX_ERROR) {\n        return \"invalid value\";\n    }\n\n    if (cmd->post) {\n        post = cmd->post;\n        return post->post_handler(cf, post, msp);\n    }\n\n    return NGX_CONF_OK;\n}\n\n\nchar *\nngx_conf_set_sec_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)\n{\n    char  *p = conf;\n\n    time_t           *sp;\n    ngx_str_t        *value;\n    ngx_conf_post_t  *post;\n\n",
+      "url": "null/blob/e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928/src/core/ngx_conf_file.c#L1260-L1299",
+      "kind": "upstream"
+    },
+    {
+      "id": "evidence-0",
+      "component": "lua-nginx-module",
+      "version": "0.10.27",
+      "revision": "ea09d92adf835e30cab8d79343c7b8266e888128",
+      "file": "README.markdown",
+      "start_line": 3175,
+      "end_line": 3190,
+      "code": "lua_socket_connect_timeout\n--------------------------\n\n**syntax:** *lua_socket_connect_timeout &lt;time&gt;*\n\n**default:** *lua_socket_connect_timeout 60s*\n\n**context:** *http, server, location*\n\nThis directive controls the default timeout value used in TCP/unix-domain socket object's [connect](#tcpsockconnect) method and can be overridden by the [settimeout](#tcpsocksettimeout) or [settimeouts](#tcpsocksettimeouts) methods.\n\nThe `<time>` argument can be an integer, with an optional time unit, like `s` (second), `ms` (millisecond), `m` (minute). The default time unit is `s`, i.e., \"second\". The default setting is `60s`.\n\nThis directive was first introduced in the `v0.5.0rc1` release.\n\n[Back to TOC](#directives)",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L3175-L3190",
+      "kind": "upstream"
+    },
+    {
+      "id": "distribution-version",
+      "component": "openresty",
+      "version": "1.27.1.1",
+      "revision": "8c37412c31621225e7aa7e825b5b50106c9c71c4",
+      "file": "util/mirror-tarballs",
+      "start_line": 621,
+      "end_line": 625,
+      "code": "ver=0.10.27\n$root/util/get-tarball \"https://github.com/openresty/lua-nginx-module/archive/v$ver.tar.gz\" -O lua-nginx-module-$ver.tar.gz || exit 1\ntar -xzf lua-nginx-module-$ver.tar.gz || exit 1\nmv lua-nginx-module-$ver ngx_lua-$ver || exit 1\n",
+      "url": "https://github.com/openresty/openresty/blob/8c37412c31621225e7aa7e825b5b50106c9c71c4/util/mirror-tarballs#L621-L625",
+      "kind": "upstream"
+    }
+  ],
+  "documentation": [
+    {
+      "title": "lua-nginx-module 锁定版本文档",
+      "url": "https://github.com/openresty/lua-nginx-module/blob/ea09d92adf835e30cab8d79343c7b8266e888128/README.markdown#L3175-L3190",
+      "status": "verified"
+    }
+  ],
+  "patch_status": {
+    "status": "verified_unaffected",
+    "note": "发行版脚本获取此模块对应 tag，未对其源码执行补丁；模块启用条件仍需按环境核实。",
+    "source_ids": [
+      "distribution-version"
+    ]
+  },
+  "phases": [],
+  "mechanism": null,
+  "related": [
+    "lua_socket_read_timeout",
+    "lua_socket_send_timeout"
+  ]
+}

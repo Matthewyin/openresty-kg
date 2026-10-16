@@ -1,0 +1,15 @@
+# P21 memc完整11项基础内容
+
+## R39动态目标调用证据（2026-10-13，主执行）
+
+只给memc_pass追加固定handler.c180–206并绑定本条limitations[0]/patch_status，闭合复杂目标求值、port0/no_resolve及空值/查找失败500的实际调用。主逐行读取该段，正文与其他10对象保持；无新增Nginx来源，不重复原补丁回放。新JSON SHA256 64551fde252454f0be5a110be82b67a68c1fa08d48696a22a96f1d6116061858，交独立差异复核。
+
+2026-10-13主准备。仅新增HTTP_MEMC_BASIC.json及本文，正式知识未增加本组。固定memc b889a6fc3e18b784b454e1bc74e5d0b3513a07ce，HEAD和干净状态已核；读module.c完整、handler调度/目标/允许列表、util.c完整、request存储值选择、response真实编译C的相关函数、config及README指令部分。未运行Ragel生成器或memcached服务。
+
+实际注册优先于README上下文：pass仅location/if，flags_to_last_modified及ignore_client_abort同样是location/if。两个upstream旧指令回调直接NGX_CONF_ERROR，不按忽略选项描述。变量pass只按已配置upstream名称和port0查找，不进行动态DNS；静态pass与complex_target继承并非同一路径，因此完整继承保留未知。
+
+cmds_allowed为小写支持集，新声明重建列表，不是追加；无声明允许全部已实现命令，未知请求400、被禁请求403。POST/PUT默认add/set，存储值优先memc_value再请求体。next_upstream同时受HTTP方法重放检查，POST已发出后不能仅靠error/timeout自动重试；simple响应某些解析错误映射502/NGX_OK，不等同INVALID_HEADER。
+
+默认值及普通继承来自create/merge；timeout三项使用共享upstream，标verified_affected并引用发行upstream_timeout_fields。buffer_size区分get首行和其他完整响应；flags不是自动时间生成或304保证；ignore_client_abort不承诺异步任务必达。
+
+实际临时回放34patch/142hunk/47最终SHA通过，108处显式来源真实EOF通过，20处Nginx引用16保持、4处变化正对应三timeout消费片段。共享patch完整原文已读，初始化从配置复制及各定时器请求字段准确。隔离build在670基线得到681基础/336仅注册，release1.27.1.1-30437d1c0a09dde8，11身份完整覆盖owner差集、来源及basic状态通过；current前后不变，临时目录finally清理。候审不计正式覆盖。
