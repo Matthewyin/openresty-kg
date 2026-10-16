@@ -1,0 +1,574 @@
+# B15 字段证据记录
+
+范围：drizzle、memc、ngx_postgres、rds-csv、rds-json、redis、redis2、xss 第三方模块，共 74 条。各模块使用自己的固定 revision（见各片段所属组件）；涉及补丁的条目按已有补丁来源核对。
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_get
+
+- 语法（`xss_get on | off;`）：verified；source_ids：registration, configuration-definition, flag-slot
+  - 判据：注册为 NGX_CONF_FLAG；自定义 setter ngx_http_xss_get 置 requires_filter 后原样调用 ngx_conf_set_flag_slot，flag-slot 片段只接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：header, body, merge
+  - 判据：ngx_http_xss_header_filter 以 xlcf->get_enabled 为首要门槛（r!=r->main 即跳过、方法非 GET 即跳过），通过后取查询串回调并安装 ctx；ngx_http_xss_body_filter 在首块前写入 `回调名(`、末块后写入 `);`，即把原响应体包在回调调用中。片段内 xlcf 由 ngx_http_get_module_loc_conf 取得，merge 片段给出默认值 0。
+- 新增片段：flag-slot（nginx:src/core/ngx_conf_file.c:1026-1065）
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_callback_arg
+
+- 语法（`xss_callback_arg name;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_str_slot，取 value[1] 存入 callback_arg 字符串，与 `name` 一致。
+- 功能：verified；source_ids：header, body, merge
+  - 判据：header 片段以 ngx_http_arg(r, xlcf->callback_arg.data, ..., &callback) 按配置值作参数名从请求查询串取值，取到的值经反转义后存入 ctx->callback；body 片段用 ctx->callback 输出 `回调(`。可见配置值只用作参数名，被写入响应的是查询串的取值。
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_input_types
+
+- 语法（`xss_input_types mime-type ...;`）：verified；source_ids：registration, types-slot
+  - 判据：注册为 NGX_CONF_1MORE + ngx_http_types_slot；types-slot 片段逐项登记 MIME 类型，单个 `*` 时把集合置为 -1（匹配全部），故语法需补 `*`。
+- 功能：verified；source_ids：header, merge, types-merge, test-content-type
+  - 判据：header 片段调用 ngx_http_test_content_type(r, &xlcf->input_types)，不匹配即不进入转换；test-content-type 片段只读取 r->headers_out.content_type，没有读取请求头；merge 片段经 ngx_http_merge_types 把 input_types_keys 建成 input_types 哈希。
+- 新增片段：test-content-type（nginx:src/http/ngx_http_core_module.c:1553-1591）
+- 修正（语法）：`xss_input_types mime-type ... | *;`；理由：ngx_http_types_slot 对单个 `*` 单独处理（置为 -1 表示匹配全部类型），原语法未列出。
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_check_status
+
+- 语法（`xss_check_status on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：header, merge
+  - 判据：header 片段在 xlcf->check_status 为真时，状态不是 NGX_HTTP_OK(200) 也不是 NGX_HTTP_CREATED(201) 即跳过；为 0 时不进入该判断，其后的回调参数、Content-Type 等条件仍照常检查。merge 片段默认值为 1。
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_override_status
+
+- 语法（`xss_override_status on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：header, merge
+  - 判据：header 片段中该改写位于所有跳过条件之后：xlcf->override_status 为真且状态 >= NGX_HTTP_SPECIAL_RESPONSE 时置为 NGX_HTTP_OK；被前面条件跳过的响应已经直接返回，不会走到此处。
+
+## xss-nginx-module--ngx_http_xss_filter_module--xss_output_type
+
+- 语法（`xss_output_type mime-type;`）：verified；source_ids：registration, configuration-definition, string-slot
+  - 判据：注册为 NGX_CONF_1MORE + ngx_conf_set_str_slot；string-slot 只取 value[1]（多余参数被忽略），语法写单个 mime-type 不与之矛盾。
+- 功能：verified；source_ids：header, body, merge, default-type
+  - 判据：header 片段在通过全部过滤条件、创建 ctx 之后把 r->headers_out.content_type 设为 xlcf->output_type；该赋值在输入类型筛选之后，筛选逻辑只读 input_types；片段内没有对正文做 MIME 校验。merge/default-type 给出默认值。
+
+## memc-nginx-module--ngx_http_memc_module--memc_cmds_allowed
+
+- 语法（`memc_cmds_allowed command ...;`）：verified；source_ids：registration, configuration-definition, supported-commands
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_memc_cmds_allowed 逐个参数调用 ngx_http_memc_parse_cmd，未知命令即配置报错；supported-commands 片段给出可接受的命令名（set/add/replace/append/prepend/get/incr/decr/stats/version/delete/flush_all），`command ...` 为这些名称的占位。
+- 功能：verified；source_ids：configuration-definition, handler-check, allowed-check, create-merge
+  - 判据：setter 把解析出的命令存入 mlcf->cmds_allowed；handler-check 片段取 mlcf 后调用 ngx_http_memc_in_cmds_allowed，allowed-check 片段显示列表非空时仅放行列表内命令（不在列表则返回 NGX_HTTP_FORBIDDEN），未配置时全部放行；merge 使子级未配置时继承父级。
+- 新增片段：handler-check（memc-nginx-module:src/ngx_http_memc_handler.c:137-148）
+
+## memc-nginx-module--ngx_http_memc_module--memc_pass
+
+- 语法（`memc_pass address|upstream|expression;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_memc_pass 取 value[1]：含变量则编译为复合值（expression），否则交给 ngx_http_upstream_add 登记为 upstream（地址或 upstream 名称），与 `address|upstream|expression` 一致。
+- 功能：verified；source_ids：configuration-definition, method-selection, dispatch, upstream-binding
+  - 判据：setter 设置 clcf->handler=ngx_http_memc_handler 并记录上游；handler 按 $memc_cmd 或请求方法选定命令，dispatch 片段为各命令装配 create_request/process_header（memcached 文本命令），并经 upstream-binding 片段 `u->conf = &mlcf->upstream` 使用该位置配置。
+
+## memc-nginx-module--ngx_http_memc_module--memc_connect_timeout
+
+- 语法（`memc_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, init-call, upstream-timeout-fields, connect-wait, create-merge
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；init-call 把 ngx_http_upstream_init 作为请求体读完后的回调，补丁在其中令 u->connect_timeout = u->conf->connect_timeout，并在连接返回 NGX_AGAIN 时对 c->write 以 u->connect_timeout 加定时器（connect-wait 为补丁前的同一位置）。
+- 新增片段：mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）；init-call（memc-nginx-module:src/ngx_http_memc_handler.c:379-379）
+
+## memc-nginx-module--ngx_http_memc_module--memc_send_timeout
+
+- 语法（`memc_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, init-call, upstream-timeout-fields, send-wait, dispatch, storage-value
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；补丁在 ngx_http_upstream_init 令 u->send_timeout = u->conf->send_timeout，ngx_http_upstream_send_request 在写未就绪（NGX_AGAIN）时对 c->write 加 u->send_timeout 定时器；dispatch/storage-value 片段表明待发送的是 memc 命令及存储命令的数据。
+- 新增片段：mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）；init-call（memc-nginx-module:src/ngx_http_memc_handler.c:379-379）；dispatch（memc-nginx-module:src/ngx_http_memc_handler.c:236-292）
+
+## memc-nginx-module--ngx_http_memc_module--memc_read_timeout
+
+- 语法（`memc_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, init-call, upstream-timeout-fields, header-wait, body-wait, create-merge
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；补丁令 u->read_timeout = u->conf->read_timeout，请求发送完毕后对 c->read 以 u->read_timeout 加定时器（等待响应），create-merge 设 buffering=0，非缓冲读取路径同样以 u->read_timeout 加定时器。
+- 新增片段：mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）；init-call（memc-nginx-module:src/ngx_http_memc_handler.c:379-379）
+
+## memc-nginx-module--ngx_http_memc_module--memc_buffer_size
+
+- 语法（`memc_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，参数为大小值，与 `size` 一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, buffer-allocation, header-limit, simple-response, get-response
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；buffer-allocation 片段以 u->conf->buffer_size 分配 u->buffer；simple-response 片段对该缓冲 u->buffer.pos..last 解析存储/delete/incr 等命令的完整响应，get-response 片段在 u->buffer 内查找首个 LF 取得 get 首行，header-limit 片段在缓冲写满仍未解析完时报“upstream sent too big header”。
+- 新增片段：mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）
+
+## memc-nginx-module--ngx_http_memc_module--memc_next_upstream
+
+- 语法（`memc_next_upstream error|timeout|invalid_response|not_found|off ...;`）：verified；source_ids：registration, configuration-definition, retry-mask
+  - 判据：注册为 NGX_CONF_1MORE + ngx_conf_set_bitmask_slot；retry-mask 片段的取值表为 error/timeout/invalid_response/not_found/off，与语法一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, retry-mask, get-missing, simple-error, header-retry, status-retry, next-errors-table, retry-guard
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；retry-mask 把 not_found 映射为 NGX_HTTP_UPSTREAM_FT_HTTP_404，get-missing 片段在 get 返回 END 时置 404，ngx_http_upstream_test_next 以 next-errors-table 把 404 对应到该掩码，并要求 u->conf->next_upstream 含该位；retry-guard 对其余失败类型同样检查 u->conf->next_upstream & ft_type。
+- 新增片段：next-errors-table（nginx:src/http/ngx_http_upstream.c:440-449）；mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）
+
+## memc-nginx-module--ngx_http_memc_module--memc_upstream_max_fails
+
+- 语法（`memc_upstream_max_fails number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，但 ngx_http_memc_upstream_max_fails_unsupported 不读取 cf->args，故参数值无任何解析；依裁定 4 将占位符改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, unsupported-handler
+  - 判据：该指令的处理函数只输出“not supported”（提示改用 upstream 块内 server 的 max_fails 参数）并返回 NGX_CONF_ERROR，配置载入失败，不写入任何配置字段。
+- 新增片段：unsupported-handler（memc-nginx-module:src/ngx_http_memc_module.c:325-334）
+- 修正（语法）：`memc_upstream_max_fails value;`；理由：处理函数 ngx_http_memc_upstream_max_fails_unsupported 不解析参数值，直接报不支持并返回 NGX_CONF_ERROR，原文 number 暗示值被解析。
+
+## memc-nginx-module--ngx_http_memc_module--memc_upstream_fail_timeout
+
+- 语法（`memc_upstream_fail_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，但 ngx_http_memc_upstream_fail_timeout_unsupported 不读取 cf->args，故参数值无任何解析；依裁定 4 将占位符改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, unsupported-handler
+  - 判据：该指令的处理函数只输出“not supported”（提示改用 server 的 fail_timeout 参数）并返回 NGX_CONF_ERROR，配置载入失败，不写入任何配置字段。
+- 新增片段：unsupported-handler（memc-nginx-module:src/ngx_http_memc_module.c:338-347）
+- 修正（语法）：`memc_upstream_fail_timeout value;`；理由：处理函数 ngx_http_memc_upstream_fail_timeout_unsupported 不解析参数值，直接报不支持并返回 NGX_CONF_ERROR，原文 time 暗示值被解析。
+
+## memc-nginx-module--ngx_http_memc_module--memc_flags_to_last_modified
+
+- 语法（`memc_flags_to_last_modified on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：flags-time, create-merge
+  - 判据：flags-time 片段中 ngx_http_memc_process_get_cmd_header 在解析 `VALUE key flags` 行取得 flags 后，以 ngx_http_get_module_loc_conf 读取本模块配置，conf->flags_to_last_modified 为真时执行 r->headers_out.last_modified_time = ngx_atotm(flags)；create-merge 给出默认值 0。
+
+## memc-nginx-module--ngx_http_memc_module--memc_ignore_client_abort
+
+- 语法（`memc_ignore_client_abort on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：mlcf-get, upstream-binding, abort-check-install, abort-finalize, abort-check, create-merge
+  - 判据：handler 片段取得 mlcf，upstream-binding 片段 `u->conf = &mlcf->upstream`；abort-check-install 片段在 !u->conf->ignore_client_abort（且无存储、非 post_action）时安装 ngx_http_upstream_rd/wr_check_broken_connection，abort-finalize 片段中该检查在 c->error 时以 NGX_HTTP_CLIENT_CLOSED_REQUEST 结束请求（非可缓存响应）；abort-check 为 kqueue 路径的同类处理，create-merge 默认值 0。
+- 新增片段：mlcf-get（memc-nginx-module:src/ngx_http_memc_handler.c:137-137）；abort-finalize（nginx:src/http/ngx_http_upstream.c:1338-1356）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json
+
+- 语法（`rds_json on|off;`）：verified；source_ids：registration, configuration-definition, flag-slot
+  - 判据：注册为 NGX_CONF_FLAG；ngx_http_rds_json 置 requires_filters 后原样调用 ngx_conf_set_flag_slot，flag-slot 只接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：header-gate, filter-install, mime, rds-mime-value, field-types, create-merge
+  - 判据：header-gate 片段取本模块 loc conf：conf->enabled 为假即跳过；启用后还要求响应 Content-Type 与 rds-mime-value 的 RDS 流类型相符（mime 片段），符合时改写 Content-Type、建立 ctx 并推迟发送响应头；filter-install 片段把 header/body 过滤器接入链；field-types 片段把 RDS 字段按类型输出为 JSON 值。create-merge 默认值为 0。
+- 新增片段：flag-slot（nginx:src/core/ngx_conf_file.c:1026-1065）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_root
+
+- 语法（`rds_json_root key;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；自定义 setter 取 value[1]，空串报错，按 JSON 字符串转义后加引号存入配置，与 `key` 一致。
+- 功能：verified；source_ids：result-start, result-end, root-output, create-merge
+  - 判据：result-start 片段在列元数据结束后取 loc conf，conf->root.len 非零时调用 ngx_http_rds_json_output_props（root-output 片段输出 `{` 与 root 键 `:`）再输出 `[`；result-end 片段在行结束时输出 `]}` 闭合对象，否则只输出 `]`。故有列结果集数组被包在以该键为名的顶层对象中。
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_success_property
+
+- 语法（`rds_json_success_property key;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；自定义 setter 取 value[1]，空串报错，按 JSON 字符串转义后加引号存入配置，与 `key` 一致。
+- 功能：verified；source_ids：props-call, result-properties, header-dispatch, metadata-conf, metadata-success, ret-conf, ret-success, ret-success-output, create-merge
+  - 判据：有列结果集：props-call 片段取 loc conf 并在 root 非空时调用 output_props，result-properties 片段先写 `{`、再写 `键:true,`；零列元信息：header-dispatch 片段调用 output_header，metadata-success 片段按 std_errcode 是否为 0 写 `:true/:false`；rds_json_ret：ret-success/ret-success-output 按错误码是否为 0 写 true/false。create-merge 在设有 success 而无 root 时把 root 默认为 "data"。
+- 新增片段：props-call（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:197-207）；metadata-conf（rds-json-nginx-module:src/ngx_http_rds_json_output.c:133-133）；ret-conf（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:27-27）；header-dispatch（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:54-96）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_user_property
+
+- 语法（`rds_json_user_property key value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2；ngx_http_rds_json_user_property 取 value[1] 为键（空串报错，转义后加引号），value[2] 经 ngx_http_compile_complex_value 编译为复合值，与 `key value` 一致。
+- 功能：verified；source_ids：configuration-definition, props-call, result-properties, header-dispatch, metadata-conf, metadata-properties, ret-conf, ret-properties, ret-prop-output, string-escape, create-merge
+  - 判据：setter 把属性加入 jlcf->user_props，值为复合值（可含变量）；各输出路径对每项调用 ngx_http_complex_value 求值，经 JSON 转义后以 `"键":"值"` 写入对象：有列结果集的 output_props（props-call 取 conf）、零列元信息的 output_header（header-dispatch 调用）和 rds_json_ret 处理函数（ret-prop-output）。create-merge 在无 root 时把 root 默认为 "data"。
+- 新增片段：props-call（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:197-207）；metadata-conf（rds-json-nginx-module:src/ngx_http_rds_json_output.c:133-133）；ret-conf（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:27-27）；header-dispatch（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:54-96）；ret-prop-output（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:154-171）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_errcode_key
+
+- 语法（`rds_json_errcode_key key;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；自定义 setter 取 value[1]，空串报错，按 JSON 字符串转义后加引号存入配置，与 `key` 一致。
+- 功能：verified；source_ids：header-dispatch, metadata-conf, metadata-error, ret-conf, ret-error, create-merge
+  - 判据：header-dispatch 片段表明 col_count 为 0 时才调用 output_header；该函数取 loc conf 后以 conf->errcode_key 作错误码属性名（metadata-error 片段）；rds_json_ret 处理函数同样用 conf->errcode_key（ret-error 片段）。create-merge 默认键为 "errcode"。
+- 新增片段：metadata-conf（rds-json-nginx-module:src/ngx_http_rds_json_output.c:133-133）；ret-conf（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:27-27）；header-dispatch（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:54-96）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_errstr_key
+
+- 语法（`rds_json_errstr_key key;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；自定义 setter 取 value[1]，空串报错，按 JSON 字符串转义后加引号存入配置，与 `key` 一致。
+- 功能：verified；source_ids：header-dispatch, metadata-conf, metadata-error, metadata-output, ret-conf, ret-error, create-merge
+  - 判据：零列元信息仅在 header.errstr 非空时以 conf->errstr_key 写出错误描述（metadata-error/metadata-output 片段）；rds_json_ret 处理函数在 errstr 非空时同样用 conf->errstr_key（ret-error 片段）。create-merge 默认键为 "errstr"。
+- 新增片段：metadata-conf（rds-json-nginx-module:src/ngx_http_rds_json_output.c:133-133）；ret-conf（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:27-27）；header-dispatch（rds-json-nginx-module:src/ngx_http_rds_json_processor.c:54-96）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_format
+
+- 语法（`rds_json_format normal|compact;`）：verified；source_ids：registration, configuration-definition, format-values
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_enum_slot；format-values 片段取值表只有 normal、compact，与语法一致。
+- 功能：verified；source_ids：format-selection, column-array, row-format, row-output, create-merge
+  - 判据：format-selection 片段（conf 取自 loc conf）在 format 为 compact 时输出列名数组（column-array），row-format 片段按 format 写字段：normal 为 `{"列名":值,...}`，compact 为 `[值,...]`，其余 format 值返回 NGX_ERROR。create-merge 默认 normal。
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_content_type
+
+- 语法（`rds_json_content_type type;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_str_slot，取 value[1]，与 `type` 一致。
+- 功能：verified；source_ids：filter-conf, output-type, ret-conf, ret-output, create-merge
+  - 判据：header 过滤器在通过启用与类型检查后令 r->headers_out.content_type = conf->content_type（filter-conf 取 conf，output-type 为赋值）；rds_json_ret 处理函数发送响应头前同样赋值（ret-conf/ret-output）。create-merge 默认 application/json。
+- 新增片段：filter-conf（rds-json-nginx-module:src/ngx_http_rds_json_filter_module.c:215-215）；ret-conf（rds-json-nginx-module:src/ngx_http_rds_json_handler.c:27-27）
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_ret
+
+- 语法（`rds_json_ret error_code description;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_2MORE；setter 读取 value[1]（须为纯数字错误码）与 value[2]（编译为复合值，空串即无描述），多余参数不读取，与 `error_code description` 一致。
+- 功能：verified；source_ids：configuration-definition, ret-handler
+  - 判据：setter 保存错误码与描述并令 clcf->handler=ngx_http_rds_json_ret_handler；ret-handler 片段（内含取 loc conf）直接拼出 `{"errcode":码[,"errstr":"描述"]...}`、置 Content-Type 与状态 200 并调用 ngx_http_output_filter，不经 RDS 过滤。
+
+## rds-json-nginx-module--ngx_http_rds_json_filter_module--rds_json_buffer_size
+
+- 语法（`rds_json_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：output-memory, create-merge
+  - 判据：output-memory 片段的 ngx_http_rds_json_get_buf 取 loc conf，以 ngx_create_temp_buf(r->pool, conf->buf_size) 创建输出缓冲并以 buf_size 作为 avail_out；过滤输出经 request_mem/submit_mem 写入该缓冲。create-merge 默认 ngx_pagesize。
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv
+
+- 语法（`rds_csv on|off;`）：verified；source_ids：registration, configuration-definition, flag-slot
+  - 判据：注册为 NGX_CONF_FLAG；ngx_http_rds_csv 置 requires_filter 后原样调用 ngx_conf_set_flag_slot，flag-slot 只接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：filter-gate, filter-install, body-dispatch, mime, rds-mime-value, create-merge
+  - 判据：filter-gate 片段取 loc conf：conf->enabled 为假即跳过，类型须为 RDS 流（mime 片段）；filter-install 把 header/body 过滤器接入；body-dispatch 片段取 ctx，按 header/col/row/field 状态把 RDS 数据交给各 process_* 并输出缓冲链，无 ctx（未启用）时直接放行。create-merge 默认 0。
+- 新增片段：flag-slot（nginx:src/core/ngx_conf_file.c:1026-1065）
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv_row_terminator
+
+- 语法（`rds_csv_row_terminator "\\n"|"\\r\\n";`）：verified；source_ids：registration, configuration-definition, quote-escape
+  - 判据：注册为 NGX_CONF_TAKE1；setter 只接受单个 LF 或 CR LF 字节，其余报错；quote-escape 片段表明配置文件双引号内的 `\n`、`\r` 转为对应控制字符，故 `"\n"|"\r\n"` 与源码一致。
+- 功能：verified；source_ids：field-names, field-output, metadata-rows, create-merge
+  - 判据：输出函数取 loc conf 后，在字段名行、每个数据行与零列元信息行末尾复制 conf->row_term（field-names 286 行、field-output 450 行、metadata-rows）。create-merge 默认 "\r\n"。
+- 新增片段：field-output（rds-csv-nginx-module:src/ngx_http_rds_csv_output.c:301-461）；quote-escape（nginx:src/core/ngx_conf_file.c:771-801）
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv_field_separator
+
+- 语法（`rds_csv_field_separator ","|";"|"\\t";`）：verified；source_ids：registration, configuration-definition, quote-escape
+  - 判据：注册为 NGX_CONF_TAKE1；setter 要求长度为 1 且为 `,`、`;`、TAB 之一，否则报错；quote-escape 片段表明双引号内 `\t` 转为 TAB，与语法一致。
+- 功能：verified；source_ids：field-output, escaping, create-merge
+  - 判据：field-output 片段取 loc conf 后令 sep = conf->field_sep，在列之间写入 sep，并把 sep 传给 ngx_http_rds_csv_escape_csv_str；escaping 片段显示值含 sep、双引号、CR 或 LF 时需加引号。create-merge 默认逗号。
+- 新增片段：quote-escape（nginx:src/core/ngx_conf_file.c:771-801）
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv_field_name_header
+
+- 语法（`rds_csv_field_name_header on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：columns, field-names, no-column-output, create-merge
+  - 判据：columns 片段在列元数据结束后取 loc conf，仅当 conf->field_name_header 为真才调用 output_field_names（field-names 片段输出列名与 row_term）；create-merge 默认值 1。零列元信息另按该开关决定是否输出固定的 errcode,errstr,… 标题行（no-column-output）。
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv_content_type
+
+- 语法（`rds_csv_content_type type;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_str_slot，取 value[1]，与 `type` 一致。
+- 功能：verified；source_ids：input-filter-gate, content-type, create-merge
+  - 判据：header 过滤器（input-filter-gate 取 conf）在通过启用与类型检查后：值为 text/csv 时写成 `text/csv; header=presence|absence`，否则原样令 r->headers_out.content_type = conf->content_type（content-type 片段）。create-merge 默认 text/csv。
+
+## rds-csv-nginx-module--ngx_http_rds_csv_filter_module--rds_csv_buffer_size
+
+- 语法（`rds_csv_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：output-memory, create-merge
+  - 判据：output-memory 片段的 get_buf 取 loc conf，以 ngx_create_temp_buf(r->pool, conf->buf_size) 创建输出缓冲并设 avail_out=conf->buf_size。create-merge 默认 ngx_pagesize。
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_server
+
+- 语法（`drizzle_server address [dbname=name] [user=name] [password=value] [protocol=drizzle|mysql] [charset=name];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_upstream_drizzle_server 以 value[1] 为地址（ngx_parse_url），从第 2 个参数起逐项解析 dbname=、user=、password=、protocol=（长度 5 的 mysql、长度 7 的 drizzle，其余长度报错）、charset=，未识别参数报错，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, implementation-2, protocol-use, set-names-assign, implementation-3
+  - 判据：setter 把各选项存入 ds；implementation-1 片段在初始化时把 user/password/dbname/protocol/set_names_query 复制到每个 peer；implementation-2 与 protocol-use 片段在建立连接时把 dbname、user、password 写入 libdrizzle 连接并在 protocol 为 mysql 时加 DRIZZLE_CON_MYSQL；get_peer 的 set-names-assign 片段令 dp->enable_charset=(peer->set_names_query->len>0)、dp->set_names_query=peer->set_names_query；implementation-3 片段在新连接上以 dp->set_names_query 发送 `set names` 查询。
+- 新增片段：protocol-use（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:658-666）；set-names-assign（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:602-603）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_keepalive
+
+- 语法（`drizzle_keepalive max=num [mode=single|multi] [overflow=ignore|reject];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_upstream_drizzle_keepalive 逐项解析 max=（非负整数）、mode=（single/multi，长度 6 与 5，其余报错）、overflow=（reject/ignore）；未识别参数报错。源码不强制出现 max=（缺省 max_cached 为 0）。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：setter 写入 dscf->max_cached、single、overflow；get_peer 片段在 max_cached 非零时按 single 走单队列取连接（keepalive 片段取队首）或 multi 按 sockaddr 匹配取连接，并在 overflow 为 reject 且 active_conns >= max_cached 时拒绝请求、handler 片段以 503 结束。
+- 修正（功能）：`配置数据库连接缓存容量、选取模式和容量溢出策略。`；理由：“每worker”只是进程模型的推断：片段仅显示缓存队列、max_cached 等存放在 upstream 的 srv 配置结构中，没有片段证明按 worker 划分。
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_query
+
+- 语法（`drizzle_query [method ...] sql;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_drizzle_query 取最后一个参数为 SQL，空串报错；仅 1 个参数为默认查询，否则前面的参数须是 ngx_drizzle_http_methods 表内的方法名（GET/HEAD/POST/PUT/DELETE/MKCOL/COPY/MOVE/OPTIONS/PROPFIND/PROPPATCH/LOCK/UNLOCK，PATCH 仅 nginx_version>=8041），`method ...` 即这些名称的占位。
+- 功能：verified；source_ids：configuration-definition, init-peer-conf, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：setter 按是否含变量把 SQL 存为复合值（cv）或静态串（sv），并以方法位掩码登记；init_peer 片段取 dlcf 后，若 dlcf->methods_set 含 r->method 则选方法专用查询，否则用默认查询，复合值经 ngx_http_complex_value 求值，结果作为 dp->query 发送；handler 片段在无默认查询且方法未登记时按 405/500 返回。
+- 新增片段：init-peer-conf（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:426-432）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_dbname
+
+- 语法（`drizzle_dbname value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_http_drizzle_set_complex_value_slot，取 value[1] 编译为复合值，与 `value` 一致。
+- 功能：verified；source_ids：configuration-definition, init-peer-conf, implementation-0, implementation-1, server-dbname-parse, peer-copy
+  - 判据：init_peer 片段取 dlcf 后，dlcf->dbname 存在时在请求时经 ngx_http_complex_value 求值，非空则存入 dp->dbname；建立新连接时（implementation-1）dp->dbname.len 非零则用它，否则用 peer->dbname；server-dbname-parse 片段显示 drizzle_server 的 dbname= 写入 ds->dbname，peer-copy 片段在初始化时复制到 peers->peer[n].dbname（即服务器级 dbname）。
+- 新增片段：init-peer-conf（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:426-432）；server-dbname-parse（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:148-166）；peer-copy（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:354-364）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_pass
+
+- 语法（`drizzle_pass upstream;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_drizzle_pass 取 value[1]：含变量则编译为复合值，否则交给 ngx_http_upstream_add 登记。语法的 `upstream` 为主要用法，变量形式未列出但不矛盾。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1
+  - 判据：setter 令 clcf->handler=ngx_http_drizzle_handler 并记录目标；handler 片段取 dlcf，先检查查询配置，创建 upstream，变量目标经 ngx_http_upstream_drizzle_add 求出 upstream，随后 u->conf=&dlcf->upstream 并装配 drizzle 的 process_header/input_filter 等回调后调用 ngx_http_upstream_dbd_init。
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_connect_timeout
+
+- 语法（`drizzle_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：drz-handler, implementation-4, merge-default
+  - 判据：drz-handler 片段取 dlcf 并令 u->conf = &dlcf->upstream；ngx_http_upstream_dbd_connect 在 ngx_event_connect_peer 返回 NGX_AGAIN 时对 c->write 以 u->conf->connect_timeout 加定时器（implementation-4）；merge-default 给出默认 60000ms。
+- 新增片段：drz-handler（drizzle-nginx-module:src/ngx_http_drizzle_handler.c:44-210）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_send_query_timeout
+
+- 语法（`drizzle_send_query_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：drz-handler, implementation-4, merge-default
+  - 判据：drz-handler 片段取 dlcf 并令 u->conf = &dlcf->upstream；send_query 在 libdrizzle 返回 IO_WAIT 且状态尚非 state_db_send_query 时置状态并对 c->write 以 u->conf->send_timeout 加定时器（implementation-4 即 processor 180-228），故只在首次进入该等待时设置。
+- 新增片段：drz-handler（drizzle-nginx-module:src/ngx_http_drizzle_handler.c:44-210）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_cols_timeout
+
+- 语法（`drizzle_recv_cols_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：init-peer-conf, implementation-4, merge-default
+  - 判据：init_peer 片段令 dp->loc_conf=dlcf；recv_cols 在 drizzle_column_read 返回 IO_WAIT 且状态尚非 state_db_recv_cols 时置状态并对 c->read 以 dp->loc_conf->recv_cols_timeout 加定时器，即仅首次进入等待时设置。
+- 新增片段：init-peer-conf（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:426-432）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_recv_rows_timeout
+
+- 语法（`drizzle_recv_rows_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：init-peer-conf, implementation-4, implementation-5, merge-default
+  - 判据：init_peer 片段令 dp->loc_conf=dlcf；recv_rows 读行遇 IO_WAIT 时进入 io_wait 标签，状态尚非 state_db_recv_rows 才置状态并对 c->read 以 dp->loc_conf->recv_rows_timeout 加定时器（implementation-5 为该处）。
+- 新增片段：init-peer-conf（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:426-432）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_module_header
+
+- 语法（`drizzle_module_header on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG + ngx_conf_set_flag_slot，on/off 与语法一致。
+- 功能：verified；source_ids：implementation-0, implementation-1, merge-default
+  - 判据：implementation-1 片段在输出响应头时取 dlcf，dlcf->enable_module_header 为真才调用 ngx_http_drizzle_set_header 写入 implementation-0 定义的 X-Resty-DBD-Module 头（值为 ngx_drizzle 加版本串）；merge-default 默认为 1。
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_buffer_size
+
+- 语法（`drizzle_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：buf-conf, init-peer-conf, implementation-0, implementation-1, merge-default
+  - 判据：get_buf 片段（buf-conf 为 conf = dp->loc_conf，dp->loc_conf 由 init_peer 赋为 dlcf）以 ngx_create_temp_buf(r->pool, conf->buf_size) 创建输出缓冲并设 avail_out；submit_mem 对大块数据以 max(postponed_len, buf_size) 分配。merge-default 默认 ngx_pagesize。
+- 新增片段：buf-conf（drizzle-nginx-module:src/ngx_http_drizzle_output.c:583-583）；init-peer-conf（drizzle-nginx-module:src/ngx_http_drizzle_upstream.c:426-432）
+
+## drizzle-nginx-module--ngx_http_drizzle_module--drizzle_status
+
+- 语法（`drizzle_status;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_NOARGS，ngx_http_drizzle_enable_status 不读取参数，与 `drizzle_status;` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2
+  - 判据：setter 令 clcf->handler=ngx_http_drizzle_status_handler；该处理函数遍历 upstream，对含 drizzle 服务器的 upstream 输出 active connections、连接池容量、overflow 与缓存连接队列统计，worker 进程下先输出本进程 pid。
+
+## redis-nginx-module--ngx_http_redis_module--redis_pass
+
+- 语法（`redis_pass address|upstream|expression;`）：verified；source_ids：registration, configuration-definition, variable-pass
+  - 判据：注册为 NGX_CONF_TAKE1；原 setter 把 value[1] 交给 ngx_http_upstream_add（地址或 upstream 名），variable-pass 补丁在其含变量时改为编译为复合值并在请求时由 ngx_http_redis_upstream_add 按名查找 upstream，与 `address|upstream|expression` 一致。
+- 功能：verified；source_ids：configuration-definition, handler, upstream-binding, conf-assign, redis-rlcf-patch, request, reply-status, reply-value, value-filter
+  - 判据：setter 令 clcf->handler=ngx_http_redis_handler 并取 $redis_key/$redis_db/$redis_auth 变量索引；handler 仅允许 GET/HEAD，补丁后取 rlcf 并令 u->conf=&rlcf->upstream、装配 create_request/process_header 与输入过滤器；request 片段拼出 `[auth …]、select <db|0>、get <key>` 三条命令；reply-status/reply-value 解析 +OK 应答与 `$长度` 头并置 200（键不存在置 404），value-filter 把后续键值字节作为响应正文输出并校验结尾 CRLF。
+- 新增片段：conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）；value-filter（redis-nginx-module:ngx_http_redis_module.c:629-754）
+
+## redis-nginx-module--ngx_http_redis_module--redis_bind
+
+- 语法（`redis_bind address|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册（nginx_version>=8022）为 NGX_CONF_TAKE1 + ngx_http_upstream_bind_set_slot；该 setter 对单参数 `off` 置 NULL，否则把参数编译为复合值并作为地址，与 `address|off` 一致（注册为 TAKE1，故不接受 transparent 第二参数）。
+- 功能：verified；source_ids：create-merge, loc-structure, configuration-definition, unset-pointer
+  - 判据：bind_set_slot 要求 *plocal 仍为 NGX_CONF_UNSET_PTR 否则返回 "is duplicate"；pcalloc 使 local 初值为 NULL。检索：在该组件锁定 revision 全目录依次执行 `git -C repos/redis-nginx-module grep -n "upstream\.local" 411fef36e130129b670fa7f2672bcad6ab2cbdd3` 与 `git -C repos/redis-nginx-module grep -n "NGX_CONF_UNSET_PTR" 411fef36e130129b670fa7f2672bcad6ab2cbdd3`；全部命中：ngx_http_redis_module.c:78（注册项 offsetof(…, upstream.local)），仅此一处；另 `NGX_CONF_UNSET_PTR` 命中 :824、:825（hide_headers/pass_headers，与 local 无关）。upstream.local 仅出现在注册项 offsetof，没有任何赋值或 merge 处理，故该指令一经配置即被拒绝。
+
+## redis-nginx-module--ngx_http_redis_module--redis_connect_timeout
+
+- 语法（`redis_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：redis-rlcf-patch, conf-assign, init-call, upstream-timeout-fields, connect-wait, create-merge
+  - 判据：补丁后的 handler 在 ngx_http_upstream_create 之后以 ngx_http_get_module_loc_conf 取 rlcf（redis-rlcf-patch），conf-assign 片段 `u->conf = &rlcf->upstream`；init-call 片段直接调用 ngx_http_upstream_init，补丁令 u->connect_timeout = u->conf->connect_timeout 并在连接返回 NGX_AGAIN 时对 c->write 以 u->connect_timeout 加定时器（connect-wait 为补丁前同一处）；create-merge 默认 60000ms。
+- 新增片段：conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）；init-call（redis-nginx-module:ngx_http_redis_module.c:261-261）
+
+## redis-nginx-module--ngx_http_redis_module--redis_send_timeout
+
+- 语法（`redis_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：redis-rlcf-patch, conf-assign, init-call, upstream-timeout-fields, send-wait, request-send
+  - 判据：补丁后的 handler 在 ngx_http_upstream_create 之后以 ngx_http_get_module_loc_conf 取 rlcf（redis-rlcf-patch），conf-assign 片段 `u->conf = &rlcf->upstream`；补丁令 u->send_timeout = u->conf->send_timeout，ngx_http_upstream_send_request 在写未就绪（NGX_AGAIN）时对 c->write 以 u->send_timeout 加定时器；request-send 片段为发送的 auth/select/get 请求缓冲。
+- 新增片段：conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）；init-call（redis-nginx-module:ngx_http_redis_module.c:261-261）
+
+## redis-nginx-module--ngx_http_redis_module--redis_buffer_size
+
+- 语法（`redis_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：redis-rlcf-patch, conf-assign, buffer-allocation, header-limit, reply-header, value-filter, create-merge
+  - 判据：补丁后的 handler 在 ngx_http_upstream_create 之后以 ngx_http_get_module_loc_conf 取 rlcf（redis-rlcf-patch），conf-assign 片段 `u->conf = &rlcf->upstream`；buffer-allocation 片段以 u->conf->buffer_size 分配 u->buffer；reply-header 片段从 u->buffer 中逐行读取 +OK（认证/选库）与 `$长度` 行，header-limit 片段在缓冲写满仍未解析完头部时报“upstream sent too big header”。
+- 新增片段：conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）
+
+## redis-nginx-module--ngx_http_redis_module--redis_read_timeout
+
+- 语法（`redis_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：redis-rlcf-patch, conf-assign, init-call, upstream-timeout-fields, header-wait, body-wait, create-merge
+  - 判据：补丁后的 handler 在 ngx_http_upstream_create 之后以 ngx_http_get_module_loc_conf 取 rlcf（redis-rlcf-patch），conf-assign 片段 `u->conf = &rlcf->upstream`；补丁令 u->read_timeout = u->conf->read_timeout，请求发送完毕后对 c->read 以 u->read_timeout 加定时器（等待应答）；create-merge 设 buffering=0，非缓冲读取路径同样以 u->read_timeout 加定时器（等待后续键值正文）。
+- 新增片段：conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）；init-call（redis-nginx-module:ngx_http_redis_module.c:261-261）
+
+## redis-nginx-module--ngx_http_redis_module--redis_next_upstream
+
+- 语法（`redis_next_upstream error|timeout|invalid_response|not_found|off ...;`）：verified；source_ids：registration, configuration-definition, retry-mask
+  - 判据：注册为 NGX_CONF_1MORE + ngx_conf_set_bitmask_slot；retry-mask 片段的取值表为 error/timeout/invalid_response/not_found/off，与语法一致。
+- 功能：verified；source_ids：redis-rlcf-patch, conf-assign, retry-mask, reply-status, invalid-header, header-retry, status-retry, next-errors-table, retry-guard
+  - 判据：补丁后的 handler 在 ngx_http_upstream_create 之后以 ngx_http_get_module_loc_conf 取 rlcf（redis-rlcf-patch），conf-assign 片段 `u->conf = &rlcf->upstream`；retry-mask 把 not_found 映射为 FT_HTTP_404，reply-status 片段在 get 应答为 `$-1` 时置 404，ngx_http_upstream_test_next 经 next-errors-table 把 404 对应该掩码并要求 u->conf->next_upstream 含该位；invalid-header 片段返回 NGX_HTTP_UPSTREAM_INVALID_HEADER，retry-guard 对 error/timeout/invalid_response 同样检查 u->conf->next_upstream。
+- 新增片段：next-errors-table（nginx:src/http/ngx_http_upstream.c:440-449）；conf-assign（redis-nginx-module:ngx_http_redis_module.c:231-231）；redis-rlcf-patch（openresty:patches/ngx_http_redis-0.3.9-variables_in_redis_pass.patch:20-79）
+
+## redis-nginx-module--ngx_http_redis_module--redis_gzip_flag
+
+- 语法（`redis_gzip_flag number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_num_slot，参数为整数，与 `number` 一致。
+- 功能：verified；source_ids：rlcf-process, gzip-header, encoding-compat, copy-headers, content-encoding-entry, hide-list, create-merge
+  - 判据：ngx_http_redis_process_header 取 rlcf 后，在解析到 `$长度` 的有值应答时，若 rlcf->gzip_flag 非零即向 u->headers_in.headers 推入 Content-Encoding: gzip（encoding-compat 补丁去掉了对 headers_in.content_encoding 的赋值）；ngx_http_upstream_process_headers 遍历该列表并按头部表（Content-Encoding 复制到 headers_out.content_encoding）复制，模块自带隐藏列表为空（hide-list）。create-merge 默认 0。
+- 新增片段：rlcf-process（redis-nginx-module:ngx_http_redis_module.c:500-500）；copy-headers（nginx:src/http/ngx_http_upstream.c:2891-2934）；content-encoding-entry（nginx:src/http/ngx_http_upstream.c:317-320）；hide-list（redis-nginx-module:ngx_http_redis_module.c:158-161）
+
+## ngx_postgres--ngx_postgres_module--postgres_server
+
+- 语法（`postgres_server address [dbname=name] [user=name] [password=value];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_postgres_conf_server 以 value[1] 为地址（默认端口 5432，ngx_parse_url），从第 2 个参数起只接受 dbname=、user=、password=，其余参数报错，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1
+  - 判据：setter 把 dbname/user/password 存入 pgs 并令 uscf->peer.init_upstream=ngx_postgres_upstream_init；implementation-0 片段在初始化时把这些字段复制到各 peer；implementation-1 片段在建连时把 peer 的 host、port、dbname、user、password 写入 PQconnectStart 的连接串。
+
+## ngx_postgres--ngx_postgres_module--postgres_keepalive
+
+- 语法（`postgres_keepalive off | max=count [mode=single|multi] [overflow=ignore|reject];`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE；setter 在仅一个参数 `off` 时置 max_cached=0，否则逐项解析 max=（整数）、mode=（取值表 multi/single）、overflow=（取值表 ignore/reject），未识别参数报错，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5, merge-default
+  - 判据：setter 写入 pgscf->max_cached、single、reject；初始化片段在 max_cached 非零时建立缓存池；get_peer 片段按 single 取队首、按 multi 以 sockaddr 匹配复用缓存连接，缓存池满且 reject 为真时以 503 拒绝；free_peer 片段把空闲连接存回缓存，池满则淘汰最旧项。merge-default 默认 max_cached=10、single=1。
+- 新增片段：syntax-values（ngx_postgres:src/ngx_postgres_module.c:196-205）
+- 修正（功能）：`控制PostgreSQL连接缓存容量、复用匹配方式及溢出策略。`；理由：“每worker”是进程模型的推断：片段只显示缓存队列保存在 upstream 的 srv 配置结构中，没有片段证明按 worker 划分。
+
+## ngx_postgres--ngx_postgres_module--postgres_pass
+
+- 语法（`postgres_pass upstream;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_postgres_conf_pass 取 value[1]：含变量则编译为复合值，否则交给 ngx_http_upstream_add。语法的 `upstream` 为主要用法，变量形式未列出但不矛盾。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2
+  - 判据：setter 令 clcf->handler=ngx_postgres_handler；handler 片段取 pglcf，变量目标经 ngx_postgres_find_upstream（implementation-2）按名查找已配置的 upstream，随后 u->conf=&pglcf->upstream 并调用 ngx_http_upstream_init。
+
+## ngx_postgres--ngx_postgres_module--postgres_query
+
+- 语法（`postgres_query [method ...] query;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_1MORE；setter 取最后一个参数为 SQL（空串报错），仅 1 个参数为默认查询，否则前面的参数须是 ngx_postgres_http_methods 表内方法名（GET/HEAD/POST/PUT/DELETE/MKCOL/COPY/MOVE/OPTIONS/PROPFIND/PROPPATCH/LOCK/UNLOCK，PATCH 仅 nginx_version>=8041），`method ...` 即这些名称的占位。
+- 功能：verified；source_ids：configuration-definition, implementation-1, init-conf, implementation-2
+  - 判据：setter 按是否含变量把 SQL 存为复合值（cv）或静态串（sv），并以方法位掩码登记；handler 片段在无默认查询且方法未登记时返回 405/500；init_upstream 片段取 pglcf 后按 query.methods_set 含 r->method 选方法专用查询，否则用默认查询，复合值经 ngx_http_complex_value 求值作为 pgdt->query。
+- 新增片段：syntax-values（ngx_postgres:src/ngx_postgres_module.c:176-194）；init-conf（ngx_postgres:src/ngx_postgres_upstream.c:159-163）
+
+## ngx_postgres--ngx_postgres_module--postgres_rewrite
+
+- 语法（`postgres_rewrite [method ...] no_changes|changes|no_rows|rows [=]status_code;`）：verified；source_ids：registration, configuration-definition, syntax-values, method-values
+  - 判据：注册为 NGX_CONF_2MORE；setter 取倒数第二个参数为条件（取值表 no_changes/changes/no_rows/rows），最后一个参数为状态（可带 `=` 前缀；须为整数，范围 NGX_HTTP_OK(200) 至 NGX_HTTP_INSUFFICIENT_STORAGE(507)，且排除 300–399 即 NGX_HTTP_SPECIAL_RESPONSE 至 NGX_HTTP_BAD_REQUEST 之前），其间的参数须是方法名；仅 2 个参数时为默认规则，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, process-conf, implementation-2, implementation-3
+  - 判据：setter 按条件登记规则（可有方法专用与默认规则）；process_response 片段取 pglcf 后记录 $postgres_rows、$postgres_affected 并依次调用各条件处理函数，implementation-1 片段按 var_affected 或 var_rows 是否为 0 判断条件，并优先取方法专用规则、否则默认规则的状态，非 NGX_DECLINED 即记入 pgctx->status，implementation-3 片段在最终结束请求时以该状态收尾。
+- 新增片段：syntax-values（ngx_postgres:src/ngx_postgres_module.c:214-219）；method-values（ngx_postgres:src/ngx_postgres_module.c:176-194）；process-conf（ngx_postgres:src/ngx_postgres_processor.c:386-386）
+
+## ngx_postgres--ngx_postgres_module--postgres_output
+
+- 语法（`postgres_output rds|text|value|binary_value|none;`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_TAKE1；setter 按取值表匹配 none/rds/text/value/binary_value（忽略大小写），其余报错，与语法五个取值一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, send-conf, implementation-1, process-conf, implementation-2, implementation-3, implementation-4, implementation-5, implementation-6
+  - 判据：setter 记录 output_handler 与 output_binary；process_response 片段取 pglcf 后在 output_handler 非空时调用，none 对应 NULL 即不生成正文；rds/text/value 片段分别输出 RDS 流、以换行连接各字段的文本与单个值，binary_value 令 send_query 片段改用二进制结果格式的 PQsendQueryParams。
+- 新增片段：syntax-values（ngx_postgres:src/ngx_postgres_module.c:222-229）；send-conf（ngx_postgres:src/ngx_postgres_processor.c:241-241）；process-conf（ngx_postgres:src/ngx_postgres_processor.c:386-386）
+
+## ngx_postgres--ngx_postgres_module--postgres_set
+
+- 语法（`postgres_set $variable row column [optional|required];`）：verified；source_ids：registration, configuration-definition, syntax-values
+  - 判据：注册为 NGX_CONF_TAKE34；setter 要求 value[1] 以 `$` 开头，value[2] 为行号（整数），value[3] 为列号或列名，可选的 value[4] 须为 optional 或 required，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, process-conf, implementation-2, implementation-3
+  - 判据：setter 登记变量并令其 get_handler 为 ngx_postgres_variable_get_custom；process_response 片段取 pglcf 后对每个登记项调用 ngx_postgres_variable_set_custom 按行列从结果集取值存入 pgctx->variables（required 且为空时置 500），implementation-3 片段为按行列取值与变量读取。
+- 新增片段：syntax-values（ngx_postgres:src/ngx_postgres_module.c:208-212）；process-conf（ngx_postgres:src/ngx_postgres_processor.c:386-386）
+
+## ngx_postgres--ngx_postgres_module--postgres_escape
+
+- 语法（`postgres_escape $escaped [[=]value];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；setter 取最后一个参数为值（`=` 前缀置 empty 标志），1 个参数时目标变量即该参数本身，否则 value[1] 须以 `$` 开头，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, implementation-2, implementation-3
+  - 判据：setter 把值编译进 rewrite 模块的脚本码，并追加 ngx_postgres_escape_string 与变量赋值码；执行时 escape_string 对非空值分配 2*len+2 字节、写入前后单引号并以 PQescapeString 转义（空串或变量未找到时为 NULL，`=` 前缀的空串为 ''），结果由 ngx_http_script_set_var_code 赋给目标变量，随 rewrite 处理函数运行。
+
+## ngx_postgres--ngx_postgres_module--postgres_connect_timeout
+
+- 语法（`postgres_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：pg-handler-conf, implementation-0, implementation-1, patch-upstream_timeout_fields, implementation-8, implementation-3, implementation-10, merge-default
+  - 判据：handler 取 pglcf（pg-handler-conf）并令 u->conf=&pglcf->upstream，随后调用 ngx_http_upstream_init；补丁令 u->connect_timeout=u->conf->connect_timeout，连接返回 NGX_AGAIN 时对 c->write 以 u->connect_timeout 加定时器（implementation-8 为补丁前同处）；implementation-3 片段以 PQconnectStart + PQsetnonblocking 发起非阻塞连接，implementation-10 片段在连接完成后删除该写定时器。merge-default 默认 10000ms。
+- 新增片段：pg-handler-conf（ngx_postgres:src/ngx_postgres_handler.c:67-67）
+
+## ngx_postgres--ngx_postgres_module--postgres_result_timeout
+
+- 语法（`postgres_result_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：pg-handler-conf, implementation-0, implementation-1, implementation-3, merge-default
+  - 判据：handler 取 pglcf 并令 u->conf=&pglcf->upstream（implementation-0）；send_query 片段在 PQsendQuery 成功后对 pgxc->read 以 r->upstream->conf->read_timeout 加定时器（“set result timeout”），get_ack 片段在结果读完后删除该读定时器，故覆盖结果与结束确认两个阶段。merge-default 默认 30000ms。
+- 新增片段：pg-handler-conf（ngx_postgres:src/ngx_postgres_handler.c:67-67）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_query
+
+- 语法（`redis2_query command [argument ...];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_redis2_query 把每个参数（含第一个，即命令名）编译为复合值并追加为 rlcf->queries 的一项，与 `command [argument ...]` 一致。
+- 功能：verified；source_ids：configuration-definition, query-selection, query-encoding, reply-count, create-merge
+  - 判据：setter 每条指令追加一个参数数组到 rlcf->queries；create_request 片段在 queries 非空时令 ctx->query_count=queries->nelts 并调用 ngx_http_redis2_build_query，后者对各参数求值并按 `*参数个数\r\n` 加每个参数 `$长度\r\n内容\r\n` 编码，所有 query 依次写入同一缓冲（即流水线）；reply-count 片段按 ctx->query_count 逐个读取回复。
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_raw_query
+
+- 语法（`redis2_raw_query query;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_http_redis2_set_complex_value_slot，取 value[1] 编译为复合值，与 `query` 一致。
+- 功能：verified；source_ids：configuration-definition, query-selection, reply-count, create-merge
+  - 判据：setter 存入 rlcf->complex_query；create_request 片段在无 queries 且无 literal_query 时对其求值（空则报错）并整段作为请求，complex_query_count 为空时令 ctx->query_count=1；reply-count 片段按 query_count 读取回复，故读完一个回复即结束。
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_raw_queries
+
+- 语法（`redis2_raw_queries N queries;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2；ngx_http_redis2_raw_queries 把 value[1]（N）与 value[2]（命令文本）分别编译为复合值，与 `N queries` 一致。
+- 功能：verified；source_ids：configuration-definition, query-selection, reply-count, create-merge
+  - 判据：setter 存入 complex_query_count 与 complex_query；create_request 片段对二者求值，N 须为非零整数否则报错，并令 ctx->query_count=N，命令文本原样作为请求缓冲；reply-count 片段按 query_count 读取该数量的回复。
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_literal_raw_query
+
+- 语法（`redis2_literal_raw_query query;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_str_slot，取 value[1]，与 `query` 一致。
+- 功能：verified；source_ids：configuration-definition, query-selection, reply-count, create-merge
+  - 判据：setter 把文本存入 rlcf->literal_query（不经复合值编译）；create_request 片段在 queries 为空且 literal_query.len 非零时令 ctx->query_count=1，直接以该文本作为请求缓冲（无变量求值）；reply-count 片段读完一个回复即结束。
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_pass
+
+- 语法（`redis2_pass address|upstream|expression;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_redis2_pass 取 value[1]：含变量则编译为复合值，否则交给 ngx_http_upstream_add，与 `address|upstream|expression` 一致。
+- 功能：verified；source_ids：configuration-definition, handler, upstream-binding, query-selection, response-header, reply-output
+  - 判据：setter 令 clcf->handler=ngx_http_redis2_handler 并记录目标；handler 片段取 rlcf，变量目标经 dynamic-upstream 按名查找 upstream，u->conf=&rlcf->upstream 并装配 create_request/process_header 等回调后读请求体并进入 ngx_http_upstream_init；create_request 发送已配置的请求，reply-output 片段把回复数据作为响应输出缓冲链。
+- 新增片段：reply-output（redis2-nginx-module:src/ngx_http_redis2_reply.c:632-728）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_bind
+
+- 语法（`redis2_bind address|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_http_upstream_bind_set_slot；该 setter 对单参数 `off` 置 NULL，否则把参数编译为复合值并作为地址，与 `address|off` 一致（TAKE1，不接受 transparent 第二参数）。
+- 功能：verified；source_ids：create-merge, loc-structure, configuration-definition, unset-pointer
+  - 判据：bind_set_slot 要求 *plocal 仍为 NGX_CONF_UNSET_PTR 否则返回 "is duplicate"；pcalloc 使 local 初值为 NULL。检索：在该组件锁定 revision 全目录依次执行 `git -C repos/redis2-nginx-module grep -n "upstream\.local" c989c829a2877132cb100f901e320921250e068d` 与 `git -C repos/redis2-nginx-module grep -n "NGX_CONF_UNSET_PTR" c989c829a2877132cb100f901e320921250e068d`；全部命中：src/ngx_http_redis2_module.c:74（注册项 offsetof(…, upstream.local)），仅此一处；`NGX_CONF_UNSET_PTR` 在该 revision 全目录无命中。upstream.local 仅出现在注册项 offsetof，没有任何赋值或 merge 处理，故该指令一经配置即被拒绝。
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_connect_timeout
+
+- 语法（`redis2_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：rlcf-get, upstream-binding, init-call, upstream-timeout-fields, connect-wait, create-merge
+  - 判据：handler 片段取 rlcf（rlcf-get），upstream-binding 片段 `u->conf = &rlcf->upstream`；init-call 片段把 ngx_http_upstream_init 作为读完请求体后的回调，补丁令 u->connect_timeout=u->conf->connect_timeout 并在连接返回 NGX_AGAIN 时对 c->write 以 u->connect_timeout 加定时器（connect-wait 为补丁前同处）；create-merge 默认 60000ms。
+- 新增片段：rlcf-get（redis2-nginx-module:src/ngx_http_redis2_handler.c:41-41）；init-call（redis2-nginx-module:src/ngx_http_redis2_handler.c:97-97）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_send_timeout
+
+- 语法（`redis2_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：rlcf-get, upstream-binding, init-call, upstream-timeout-fields, send-wait, create-request
+  - 判据：handler 片段取 rlcf（rlcf-get），upstream-binding 片段 `u->conf = &rlcf->upstream`；补丁令 u->send_timeout=u->conf->send_timeout，ngx_http_upstream_send_request 在写未就绪时对 c->write 以 u->send_timeout 加定时器；create-request 片段（ngx_http_redis2_create_request）为被发送的请求缓冲。
+- 新增片段：rlcf-get（redis2-nginx-module:src/ngx_http_redis2_handler.c:41-41）；init-call（redis2-nginx-module:src/ngx_http_redis2_handler.c:97-97）；create-request（redis2-nginx-module:src/ngx_http_redis2_handler.c:108-216）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_buffer_size
+
+- 语法（`redis2_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：rlcf-get, upstream-binding, buffer-allocation, response-header, reply-stream
+  - 判据：handler 片段取 rlcf（rlcf-get），upstream-binding 片段 `u->conf = &rlcf->upstream`；buffer-allocation 片段以 u->conf->buffer_size 分配 u->buffer；process_header 与 process_reply 片段均从 u->buffer 读取并解析 Redis 回复。
+- 新增片段：rlcf-get（redis2-nginx-module:src/ngx_http_redis2_handler.c:41-41）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_read_timeout
+
+- 语法（`redis2_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1 + ngx_conf_set_msec_slot，参数为时间值，与 `time` 一致。
+- 功能：verified；source_ids：rlcf-get, upstream-binding, init-call, upstream-timeout-fields, header-wait, body-wait, create-merge
+  - 判据：handler 片段取 rlcf（rlcf-get），upstream-binding 片段 `u->conf = &rlcf->upstream`；补丁令 u->read_timeout=u->conf->read_timeout，请求发送完毕后对 c->read 以 u->read_timeout 加定时器（等待响应）；create-merge 设 buffering=0，非缓冲读取路径同样以 u->read_timeout 加定时器。
+- 新增片段：rlcf-get（redis2-nginx-module:src/ngx_http_redis2_handler.c:41-41）；init-call（redis2-nginx-module:src/ngx_http_redis2_handler.c:97-97）
+
+## redis2-nginx-module--ngx_http_redis2_module--redis2_next_upstream
+
+- 语法（`redis2_next_upstream error|timeout|invalid_response|not_found|off ...;`）：verified；source_ids：registration, configuration-definition, retry-mask
+  - 判据：注册为 NGX_CONF_1MORE + ngx_conf_set_bitmask_slot；retry-mask 片段的取值表为 error/timeout/invalid_response/not_found/off，与语法一致。
+- 功能：verified；source_ids：rlcf-get, upstream-binding, retry-mask, response-header, header-retry, status-retry, retry-guard
+  - 判据：handler 片段取 rlcf（rlcf-get），upstream-binding 片段 `u->conf = &rlcf->upstream`；process_header 片段在首字符非 + - : $ * 时返回 NGX_HTTP_UPSTREAM_INVALID_HEADER，header-retry/retry-guard 片段按 u->conf->next_upstream 与失败类型的掩码判断是否 ngx_http_upstream_next 切换服务器。
+- 新增片段：rlcf-get（redis2-nginx-module:src/ngx_http_redis2_handler.c:41-41）

@@ -1,0 +1,2342 @@
+{
+ "batch": "B14",
+ "entries": [
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "arguments",
+     "runtime"
+    ],
+    "note": "注册为 NGX_CONF_ANY（任意个参数）；command-compiler 从下标 1 起保存全部原始参数；ngx_http_echo_eval_cmd_args 在参数首部把无变量、非空且以 - 开头的项当选项（-- 结束选项区，单独的 - 视为普通字符串），exec_echo 只识别选项为 n，故 [-n] [--] [string ...] 与源码一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "command-compiler",
+     "arguments",
+     "runtime",
+     "ext340-echo-consumer"
+    ],
+    "note": "echo 经 helper 把 clcf->handler 设为 ngx_http_echo_handler（content 阶段）；run_cmds 对 echo_opcode_echo 调用 exec_echo：参数用空格缓冲连接，除非选项为 n 否则追加换行缓冲；含变量的参数在 eval 中经 ngx_http_script_run 求值。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_request_body",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "command-compiler",
+     "runtime",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_request_body 调用 exec_echo_request_body：只遍历 r->request_body->bufs，复制非特殊缓冲区（保留文件相关字段）并送出；request_body 为空时直接返回 NGX_OK，函数内不调用读取请求体的接口（echo 锁定 revision 8376edc2 在 src/ 下 git grep -n read_client_request_body 仅命中 src/ngx_http_echo_request_info.c:29，即 echo_read_request_body；另有 README.markdown:1726 命中，属文档）。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_sleep",
+   "evidence": [
+    {
+     "id": "sleep-ctx-init",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_util.c",
+     "start_line": 20,
+     "end_line": 35
+    },
+    {
+     "id": "sleep-event-handler",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_sleep.c",
+     "start_line": 112,
+     "end_line": 157
+    },
+    {
+     "id": "wev-handler",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_handler.c",
+     "start_line": 29,
+     "end_line": 100
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "runtime",
+     "duration-parser"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；exec_echo_sleep 取首个计算后参数，用 ngx_atofp(...,3) 解析（秒，最多三位小数，得到毫秒），失败返回 400，与“seconds”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "sleep-ctx-init",
+     "sleep-event-handler",
+     "wev-handler",
+     "ext340-echo-consumer"
+    ],
+    "note": "exec_echo_sleep 用 ngx_add_timer 在 ctx->sleep 上设毫秒定时器并返回 NGX_AGAIN（不调用阻塞休眠；echo 锁定 revision 8376edc2 在 src/ 下 git grep -n ngx_msleep 仅命中 src/ngx_http_echo_sleep.c:181，即 echo_blocking_sleep；另有 README.markdown:629 命中，属文档）；create_ctx 把 ctx->sleep.handler 设为 sleep_event_handler，到期后经 post_sleep → ngx_http_echo_wev_handler 令 next_handler_cmd 前进并继续 run_cmds。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_flush",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "flush-core",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_flush 调用 exec_echo_flush，即 ngx_http_send_special(r, NGX_HTTP_FLUSH)；该函数只构造 b->flush=1 的空缓冲并送入输出过滤链，不含业务文本。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_blocking_sleep",
+   "evidence": [
+    {
+     "id": "msleep-def",
+     "component": "nginx",
+     "file": "src/os/unix/ngx_time.h",
+     "start_line": 60,
+     "end_line": 64
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "runtime",
+     "duration-parser"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；exec_echo_blocking_sleep 用 ngx_atofp(...,3) 解析首个参数（秒，最多三位小数），与“seconds”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "msleep-def",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_blocking_sleep 调用 exec_echo_blocking_sleep，直接调用 ngx_msleep(delay)；Unix 下该宏为 usleep(ms*1000)，是阻塞式休眠而非 echo_sleep 的定时器。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "按秒参数暂停当前 worker 进程的执行；这是阻塞式等待（直接调用 ngx_msleep），而不是请求级定时器。",
+     "reason": "原文“等待结束前该 worker 不能正常推进其他请求”是由阻塞休眠推断的运行结论，片段只证明直接调用 ngx_msleep(usleep)，故收窄到源码可证明的范围。"
+    }
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_reset_timer",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "elapsed-variable",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_reset_timer 调用 exec_echo_reset_timer，把 ctx->timer_begin 设为当前 ngx_timeofday()；$echo_timer_elapsed 的求值函数以 ctx->timer_begin 为起点计算差值。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_before_body",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "arguments",
+     "echo-output"
+    ],
+    "note": "注册为 NGX_CONF_ANY；参数经 helper 原样保存，filter 中同样调用 ngx_http_echo_eval_cmd_args（-- 结束选项区）与 exec_echo（选项为 n 时不追加换行），与 [-n] [--] [string ...] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "command-compiler",
+     "filter-install",
+     "runtime",
+     "filter-dispatch",
+     "echo-output",
+     "ext340-echo-consumer"
+    ],
+    "note": "指令把命令存入 before_body_cmds，helper 置 requires_filter，filter_init 装入头/体过滤器；body_filter 在第一次收到正文前执行 before_body_cmds，exec_echo 以 in_filter=1 把文本交给下一个体过滤器。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_after_body",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "arguments",
+     "echo-output"
+    ],
+    "note": "注册为 NGX_CONF_ANY；参数经 helper 原样保存，filter 中同样调用 ngx_http_echo_eval_cmd_args（-- 结束选项区）与 exec_echo（选项为 n 时不追加换行），与 [-n] [--] [string ...] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "command-compiler",
+     "filter-install",
+     "runtime",
+     "filter-dispatch",
+     "echo-output",
+     "ext340-echo-consumer"
+    ],
+    "note": "指令把命令存入 after_body_cmds，helper 置 requires_filter，filter_init 装入头/体过滤器；body_filter 在收到 last_buf 后先放行原正文，再执行 after_body_cmds，exec_echo 以 in_filter=1 追加文本并补上结束缓冲。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_location_async",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "runtime"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；exec_echo_location_async 取 computed_args[0] 为 uri，存在第二个参数时作为 query string，与 uri [query_string] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "subrequest-core",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对该 opcode 调用 exec_echo_location_async：ngx_http_subrequest(...,flags=0) 发起子请求（未带 CLONE 标志，核心把 sr->method 设为 GET），返回 NGX_OK 使 run_cmds 继续执行下一条命令，不等待子请求。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_location",
+   "evidence": [
+    {
+     "id": "wev-handler",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_handler.c",
+     "start_line": 29,
+     "end_line": 100
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "runtime"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；exec_echo_location 取 computed_args[0] 为 uri，存在第二个参数时作为 query string，与 uri [query_string] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "subrequest-core",
+     "continuation",
+     "wev-handler",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对该 opcode 直接 return exec_echo_location（返回 NGX_AGAIN，子请求以 GET 发起）；子请求结束时 post_subrequest 把父请求 ctx 标记为 done 并设 wev_handler，wev_handler 令 next_handler_cmd 前进后继续 run_cmds。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest_async",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "subrequest-options"
+    ],
+    "note": "注册为 NGX_CONF_2MORE；parse_subrequest_spec 以 args[0] 为方法、args[1] 为 uri，其后只接受 -q/-b/-f 且每项后必须跟一个值（否则报错），与 method uri [-q ...] [-b ...] [-f ...] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "subrequest-options",
+     "subrequest-core",
+     "ext340-echo-consumer"
+    ],
+    "note": "parse_subrequest_spec 解析方法、-q 查询串，-b 字符串体或 -f 文件体；exec_echo_subrequest_async 用 ngx_http_subrequest 发起并在 adjust 中设置方法与请求体，返回 NGX_OK 使 run_cmds 继续后续命令。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_subrequest",
+   "evidence": [
+    {
+     "id": "wev-handler",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_handler.c",
+     "start_line": 29,
+     "end_line": 100
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "subrequest-options"
+    ],
+    "note": "注册为 NGX_CONF_2MORE；parse_subrequest_spec 以 args[0] 为方法、args[1] 为 uri，其后只接受 -q/-b/-f 且每项后必须跟一个值（否则报错），与 method uri [-q ...] [-b ...] [-f ...] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "subrequest-options",
+     "subrequest-core",
+     "continuation",
+     "wev-handler",
+     "ext340-echo-consumer"
+    ],
+    "note": "parse_subrequest_spec 解析方法、查询串与请求体；run_cmds 对该 opcode 直接 return exec_echo_subrequest（返回 NGX_AGAIN）；子请求结束时 post_subrequest 标记父请求 done，wev_handler 使命令序列前进并继续 run_cmds。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_duplicate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "runtime",
+     "count-parser"
+    ],
+    "note": "注册为 NGX_CONF_2MORE；exec_echo_duplicate 只使用计算后参数 [0]（count，经 ngx_http_echo_atosz 解析为非负整数，非法值返回 500）与 [1]（字符串），与 count string 一致；多出的参数不被读取。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "count-parser",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_duplicate 调用 exec_echo_duplicate：分配 count*len 的缓冲，循环拷贝字符串 count 次后送出，函数内没有追加换行缓冲。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_read_request_body",
+   "evidence": [
+    {
+     "id": "sr-body-adjust",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_subrequest.c",
+     "start_line": 400,
+     "end_line": 450
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "read-dispatch",
+     "body-read-core",
+     "sr-body-adjust",
+     "ext340-echo-consumer"
+    ],
+    "note": "dispatch 对该 opcode 调用 exec_echo_read_request_body，即 ngx_http_read_client_request_body（本身不写输出）；该函数在 r!=r->main 或 request_body 已存在时直接调用回调；echo 子请求在 adjust_subrequest 中把解析出的请求体赋给 sr->request_body。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_foreach_split",
+   "evidence": [
+    {
+     "id": "arguments-opts",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_util.c",
+     "start_line": 38,
+     "end_line": 104
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "arguments-opts",
+     "runtime"
+    ],
+    "note": "注册为 NGX_CONF_2MORE；eval_cmd_args 在参数首部遇到 -- 即跳过并结束选项区，exec_echo_foreach_split 以计算后参数 [0] 为分隔串、[1] 为被切分字符串（不足 2 个报错，错误信息也提示以 - 开头的分隔串要先写 --），与 [--] delimiter string 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "iteration-value",
+     "ext340-echo-consumer"
+    ],
+    "note": "exec_echo_foreach_split 把字符串按分隔串切成 choices 并记录当前命令下标；echo_end 递增 next_choice 并把 next_handler_cmd 回到记录的下标重新执行循环体；$echo_it 的求值函数返回当前 choice。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_end",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对 echo_opcode_echo_end 调用 exec_echo_end：无对应 foreach 时报错；否则 next_choice++，还有项就把 next_handler_cmd 设回循环起点，全部完成则清空 ctx->foreach 并让后续命令继续。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_abort_parent",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration"
+    ],
+    "note": "注册为 NGX_CONF_NOARGS，不接受参数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "opcode-enum",
+     "disabled-implementation",
+     "ext340-echo-consumer"
+    ],
+    "note": "注册函数传入 echo_opcode_echo_abort_parent，但 run_cmds 的 switch 没有该 opcode 的分支，落入 default 记录 unknown opcode 并返回 500；ngx_http_echo_exec_abort_parent 的有效代码在 #if 0 中，且无调用点于分派器。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_exec",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "command-compiler",
+     "runtime"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；exec_exec 取计算后参数 [0] 为 uri，存在第二个参数时作为 query string（以 @ 开头的命名 location 则忽略它并警告），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "internal-redirect",
+     "named-location",
+     "ext340-echo-consumer"
+    ],
+    "note": "run_cmds 对该 opcode 直接 return exec_exec：uri 以 @ 开头调用 ngx_http_named_location，否则 ngx_http_internal_redirect，均为服务器内部跳转，没有构造外部重定向响应。"
+   }
+  },
+  {
+   "id": "echo-nginx-module--ngx_http_echo_module--echo_status",
+   "evidence": [
+    {
+     "id": "helper-handler",
+     "component": "echo-nginx-module",
+     "file": "src/ngx_http_echo_module.c",
+     "start_line": 311,
+     "end_line": 337
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且处理函数为 ngx_conf_set_num_slot，配置值解析为整数，与 status_code 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "merge",
+     "runtime",
+     "helper-handler",
+     "number-parser"
+    ],
+    "note": "指令用 ngx_conf_set_num_slot 写入 elcf->status（默认合并为 200），send_header_if_needed 发送响应头前把它赋给 r->headers_out.status；该指令不走 helper，而 helper 才会设置 clcf->handler，故单独使用不安装 echo 内容处理器。"
+   }
+  },
+  {
+   "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_headers",
+   "evidence": [
+    {
+     "id": "syntax-options",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 665,
+     "end_line": 757
+    },
+    {
+     "id": "syntax-header-form",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_util.c",
+     "start_line": 37,
+     "end_line": 95
+    },
+    {
+     "id": "sum-directive-tail",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 798,
+     "end_line": 813
+    },
+    {
+     "id": "sum-post-config",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_filter_module.c",
+     "start_line": 226,
+     "end_line": 239
+    },
+    {
+     "id": "sum-filter-install",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_filter_module.c",
+     "start_line": 114,
+     "end_line": 153
+    },
+    {
+     "id": "sum-checks",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 562,
+     "end_line": 608
+    },
+    {
+     "id": "sum-exec",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 109,
+     "end_line": 149
+    },
+    {
+     "id": "sum-set-helper",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 160,
+     "end_line": 291
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "syntax-options",
+     "syntax-header-form"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；parse_directive 对每个参数：不以 - 开头的按 header 解析（键到 \":\" 或空白为止，其后为值），-t、-s 各取下一个参数，-a 仅在指令名为 more_set_headers 时接受，其余选项报错，与 [-t types] [-s statuses] [-a] header ... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "sum-directive-tail",
+     "sum-post-config",
+     "sum-filter-install",
+     "sum-checks",
+     "sum-exec",
+     "sum-set-helper"
+    ],
+    "note": "指令末尾置 is_input=0 与 requires_filter=1，post_config 据此调用 filter_init 装入 header filter；filter 对 is_input=0 的命令调 exec_cmd：先按响应 Content-Type（-t）与状态码（-s）筛选，再对每个头求值后调用设置函数，generic 路径对已有同名头改值、不存在则新建（带 -a 时直接追加）。"
+   }
+  },
+  {
+   "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_headers",
+   "evidence": [
+    {
+     "id": "sum-directive-tail",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 798,
+     "end_line": 813
+    },
+    {
+     "id": "sum-post-config",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_filter_module.c",
+     "start_line": 226,
+     "end_line": 239
+    },
+    {
+     "id": "sum-checks",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 562,
+     "end_line": 608
+    },
+    {
+     "id": "sum-builtin-clear",
+     "component": "headers-more-nginx-module",
+     "file": "src/ngx_http_headers_more_headers_out.c",
+     "start_line": 294,
+     "end_line": 329
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "option-parser",
+     "clear-parser"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；与 more_set_headers 共用 parse_directive：-t、-s 各取下一个参数且可重复出现，-a 对 more_clear_headers 报错（不接受），其余参数按 header 名解析（clear 操作码把值长度置 0），与 [-t types]... [-s statuses]... name ... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "sum-directive-tail",
+     "sum-post-config",
+     "filter-install",
+     "sum-checks",
+     "runtime",
+     "output-match",
+     "sum-builtin-clear",
+     "clear-parser"
+    ],
+    "note": "指令末尾置 is_input=0 与 requires_filter=1，post_config 据此调用 filter_init；exec_cmd 先后检查 -t 类型与 -s 状态（两者都设置时都须通过），值被固定为空后，generic 路径把匹配头的 hash 置 0、内建头路径同样把 value 清空并置 hash 为 0。"
+   }
+  },
+  {
+   "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_set_input_headers",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "input-options",
+     "parse-header"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；input 版 parse_directive 只接受 -t（取下一个参数）与 -r（无参数标志），不以 - 开头的参数按 \"Name: value\" 解析，其余选项报错，与 [-r] [-t types]... \"Name: value\" ... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "header-update",
+     "input-type-match",
+     "parse-header",
+     "input-options",
+     "rewrite-tail"
+    ],
+    "note": "指令置 is_input=1 与 requires_handler=1，post_config 把 handler 挂到 rewrite 阶段并移到阶段末尾；handler 对 input 命令调 exec_input_cmd：按请求 Content-Type 筛选，值作为复合值求值后写入 headers_in，已有同名头被改写，不存在时新建，设置 -r（replace）则直接返回而不新建。"
+   }
+  },
+  {
+   "id": "headers-more-nginx-module--ngx_http_headers_more_filter_module--more_clear_input_headers",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "input-options",
+     "parse-header"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；与 more_set_input_headers 共用 input 版 parse_directive，除 -t 外源码还接受 -r 标志（对清除无作用），其余参数按头名解析，故补列 -r。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "runtime",
+     "header-update",
+     "input-type-match",
+     "parse-header",
+     "input-options",
+     "rewrite-tail"
+    ],
+    "note": "指令置 is_input=1 与 requires_handler=1，post_config 把 handler 挂到 rewrite 阶段并移到阶段末尾；exec_input_cmd 按请求 Content-Type 筛选，clear 使值为空，header-update 在值为空时删除匹配头；末尾为 * 的名字在 parse_header 中标为 wildcard，并按前缀匹配删除。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "more_clear_input_headers [-r] [-t types]... name ...;",
+     "reason": "input 版 parse_directive 对两条指令共用，源码同样接受 -r 标志（仅对 more_set_input_headers 有意义，对清除无作用），原语法漏列该选项。"
+    }
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_buffer",
+   "evidence": [
+    {
+     "id": "field-decl",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_filter_module.h",
+     "start_line": 50,
+     "end_line": 60
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_size_slot 解析大小，与 size 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "create-merge",
+     "field-decl"
+    ],
+    "note": "指令经 ngx_conf_set_size_slot 写入 slcf->buf_size，create/merge 提供默认（页大小）；检索：在 srcache-nginx-module 锁定 revision be22ac0d 的全目录执行 git grep -n buf_size，排除 header_buf_size 与 ngx_buf_size 宏后全部命中为 src/ngx_http_srcache_filter_module.c:67（命令注册 offsetof）、:271（create）、:305（merge）与 src/ngx_http_srcache_filter_module.h:55（字段声明）共 4 处，没有读取该字段的运行时代码"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_fetch",
+   "evidence": [
+    {
+     "id": "fetch-restore-parse",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 305,
+     "end_line": 398
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE23；ngx_http_srcache_conf_set_request 取 value[1] 为方法（未知方法报错）、value[2] 为 uri，存在第 3 个参数（value[3]）时作为 args，与 method uri [args] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "phase-binding",
+     "access-end",
+     "fetch-request",
+     "fetch-completion",
+     "fetch-response",
+     "fetch-restore-parse",
+     "cached-body-output"
+    ],
+    "note": "指令写入 slcf->fetch 并置 module_used，post_config 据此把 access handler 挂入 ACCESS 阶段，handler 首次运行时把自己移到阶段末尾；handler 在 conf->fetch 非空时发起子请求，子请求头/体过滤器在状态为 200 时解析缓存的状态行、响应头并保存正文，完成后 handler 发送缓存的头与正文。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store",
+   "evidence": [
+    {
+     "id": "post-config",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_filter_module.c",
+     "start_line": 515,
+     "end_line": 562
+    },
+    {
+     "id": "filter-install",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 663,
+     "end_line": 672
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE23；ngx_http_srcache_conf_set_request 取 value[1] 为方法（未知方法报错）、value[2] 为 uri，存在第 3 个参数（value[3]）时作为 args，与 method uri [args] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "post-config",
+     "filter-install",
+     "store-guards",
+     "serialized-header",
+     "serialized-header-output",
+     "header-body-chain",
+     "body-store",
+     "store-subrequest"
+    ],
+    "note": "指令写入 slcf->store 并置 module_used，post_config 调 filter_init 装入头/体过滤器；头过滤器通过各项检查后把状态行与响应头序列化进 ctx->body_to_cache，体过滤器把正文追加其后，到 last_buf 时以 body_to_cache 为请求体发起 store 子请求。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_max_size",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    },
+    {
+     "id": "slcf-get-body",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 403,
+     "end_line": 403
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_size_slot 解析大小，与 size 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "early-size-check",
+     "slcf-get-body",
+     "body-size-check",
+     "header-length"
+    ],
+    "note": "size 经 size slot 写入 slcf->store_max_size；头过滤器在 Content-Length+15 超限时跳过存储，体过滤器累计 ctx->response_length（序列化头长度已在 store_response_header 中计入）并在超过该值时置 store_response=0。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_fetch_skip",
+   "evidence": [
+    {
+     "id": "access-conf",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_fetch.c",
+     "start_line": 39,
+     "end_line": 44
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_http_set_complex_value_slot 编译复合值，与 expression 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "access-conf",
+     "fetch-skip"
+    ],
+    "note": "复合值写入 slcf->fetch_skip；access handler 取到 conf 后对它求值，结果非空且不是单字符 0 时记录日志、不发起 fetch 并返回 NGX_DECLINED。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_skip",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    },
+    {
+     "id": "slcf-get-body",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 403,
+     "end_line": 403
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_http_set_complex_value_slot 编译复合值，与 expression 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "header-skip",
+     "slcf-get-body",
+     "body-skip"
+    ],
+    "note": "复合值写入 slcf->store_skip；头过滤器与体过滤器取到 slcf 后对它求值，结果非空且不是单字符 0 时置 ctx->store_skip 或 store_response=0，不再存储。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_statuses",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；ngx_http_srcache_store_statuses 逐个参数用 ngx_atoi 解析为非负整数（非法值报错）并排序，重复指令报 is duplicate，与 status ... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "status-check",
+     "status-sort"
+    ],
+    "note": "状态码数组写入 slcf->store_statuses；头过滤器在其非空时用 cmp_int 排序后的数组比对 r->headers_out.status，不匹配则跳过存储；未设置时只接受 200/301/302/307/308。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_methods",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "method-mask"
+    ],
+    "note": "注册为 NGX_CONF_1MORE，用 ngx_conf_set_bitmask_slot 与取值表（GET、HEAD、POST、PUT、DELETE）解析，与 GET|HEAD|POST|PUT|DELETE ... 一致（merge 中另固定并入 GET 与 HEAD）。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "create-merge",
+     "method-check",
+     "store-method"
+    ],
+    "note": "位掩码写入 slcf->cache_methods（merge 后始终含 GET、HEAD）；access handler 用 r->method & conf->cache_methods 判定，不在其中则不进行 fetch/store；头过滤器的 store 判定使用 cache_methods 去掉 HEAD 后的掩码。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_request_cache_control",
+   "evidence": [
+    {
+     "id": "access-conf",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_fetch.c",
+     "start_line": 39,
+     "end_line": 44
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "access-conf",
+     "request-control",
+     "request-control-parser"
+    ],
+    "note": "flag 写入 slcf->req_cache_control；开启时 access handler 调用 request_no_cache 检查请求头 Cache-Control/Pragma 的 no-cache，命中则不 fetch，并按 no-store 决定是否仍建立 ctx 让 store 有机会运行。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_private",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "response-check",
+     "response-control"
+    ],
+    "note": "flag 写入 slcf->store_private；头过滤器在 resp_cache_control 开启时调用 response_no_cache(r, slcf, ctx)，该函数在 !conf->store_private 且响应 Cache-Control 含 private 时返回 NGX_OK（跳过存储），该项开启则不因此跳过。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_no_store",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "response-check",
+     "response-control"
+    ],
+    "note": "flag 写入 slcf->store_no_store；头过滤器在 resp_cache_control 开启时调用 response_no_cache(r, slcf, ctx)，该函数在 !conf->store_no_store 且响应 Cache-Control 含 no-store 时返回 NGX_OK（跳过存储），该项开启则不因此跳过。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_no_cache",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "response-check",
+     "response-control"
+    ],
+    "note": "flag 写入 slcf->store_no_cache；头过滤器在 resp_cache_control 开启时调用 response_no_cache(r, slcf, ctx)，该函数在 !conf->store_no_cache 且响应 Cache-Control 含 no-cache 时返回 NGX_OK（跳过存储），该项开启则不因此跳过。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_response_cache_control",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "response-check",
+     "response-control"
+    ],
+    "note": "flag 写入 slcf->resp_cache_control（默认 1）；头过滤器仅在其为真时调用 response_no_cache，该函数按响应 Cache-Control（private/no-store/no-cache、max-age）与 Expires 决定跳过存储并写入 ctx->valid_sec。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_hide_header",
+   "evidence": [
+    {
+     "id": "header-conf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_util.c",
+     "start_line": 880,
+     "end_line": 882
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_str_array_slot，每次出现追加一个头名，与 header 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "create-merge",
+     "default-hidden",
+     "hide-build",
+     "header-conf-get",
+     "header-serialization",
+     "header-output"
+    ],
+    "note": "头名写入 slcf->hide_headers；merge 调用 hide_headers_hash 把默认隐藏头与配置的头建成 hash；store_response_header 取到 conf 后，计算长度与写出时均跳过 hash 中命中的头。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_pass_header",
+   "evidence": [
+    {
+     "id": "header-conf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_util.c",
+     "start_line": 880,
+     "end_line": 882
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_str_array_slot，每次出现追加一个头名，与 header 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "create-merge",
+     "default-hidden",
+     "hide-build",
+     "header-conf-get",
+     "header-output"
+    ],
+    "note": "头名写入 slcf->pass_headers；hide_headers_hash 在建 hash 前把与 pass 同名的隐藏项的 key.data 置 NULL（并恢复 Content-Type/Last-Modified 输出），store_response_header 取到 conf 后只跳过 hash 中命中的头。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_store_ranges",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "range-store"
+    ],
+    "note": "flag 写入 slcf->store_ranges；体过滤器在响应状态为 206 而头过滤时记录的状态为 200 时，若 !store_ranges 则放弃存储，否则把已序列化状态行改为 206 并继续累积。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_ignore_content_encoding",
+   "evidence": [
+    {
+     "id": "slcf-get",
+     "component": "srcache-nginx-module",
+     "file": "src/ngx_http_srcache_store.c",
+     "start_line": 135,
+     "end_line": 137
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on|off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "slcf-get",
+     "encoding-check"
+    ],
+    "note": "flag 写入 slcf->ignore_content_encoding；头过滤器仅在 !ignore_content_encoding 且 Content-Encoding 非空时跳过存储，开启则不受该条件阻止。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_header_buffer_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_size_slot 解析大小，与 size 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "header-parser",
+     "parse-failure"
+    ],
+    "note": "size 写入 slcf->header_buf_size；process_status_line 取父请求 conf 后用它创建 ctx->header_buf，process_header 每解析完一行即重置缓冲，超出时报 header buffer overflown。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_max_expire",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_sec_slot（秒/时间单位解析），与 time 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "expiry-variable"
+    ],
+    "note": "time 写入 slcf->max_expire；$srcache_expire 的求值函数取到 conf 后，在 max_expire>0 且计算出的 expire 超过它时取 max_expire。"
+   }
+  },
+  {
+   "id": "srcache-nginx-module--ngx_http_srcache_filter_module--srcache_default_expire",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1 且用 ngx_conf_set_sec_slot（秒/时间单位解析），与 time 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "expiry-variable",
+     "response-check",
+     "response-control"
+    ],
+    "note": "time 写入 slcf->default_expire（默认 60）；$srcache_expire 的求值函数在 ctx->valid_sec 为 0 时用它作为 expire，valid_sec 由 response_no_cache 根据响应 Cache-Control/Expires 写入。"
+   }
+  },
+  {
+   "id": "ngx_devel_kit--ndk_http_module--upstream_list",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "weight-parser"
+    ],
+    "note": "注册为 NGX_CONF_2MORE：args[1] 为列表名，其后每个参数为条目；weight-parser 接受“数字:值”（冒号前为权重，无数字前缀时权重为 1，纯数字或冒号缺失则报错），与 name [weight:]value ... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "weight-parser",
+     "lookup"
+    ],
+    "note": "处理函数把列表名与条目写入 ndk_http_main_conf 的 upstreams 数组，按各条目权重把同一条目指针重复放入 bucket 数组（elts/nelts），重名则报错；ndk_get_upstream_list 按名查找，供其他模块读取。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数把输入值的字节交给 ngx_encode_base64（标准字母表 A-Za-z0-9+/，带 = 填充）写入结果。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "shared-1",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_decode_base64（标准字母表）解码输入，遇非法字符或长度非法返回错误，成功时结果为原始字节。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base64url",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数把输入值的字节交给 ngx_encode_base64url（字母表末两位为 -_，不加 = 填充）写入结果。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base64url",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_decode_base64url（字母表末两位为 -_）解码输入，遇非法字符或长度非法返回错误，成功时结果为原始字节。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_hex",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数要求输入长度为偶数，逐两位经 ngx_hextoi 转为字节（大小写十六进制均可），失败返回错误。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_hex",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_hex_dump 把每个输入字节写成两位十六进制，字符表为小写 0-9a-f。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha1",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "ndk-compile"
+    ],
+    "note": "注册为 NGX_CONF_TAKE3，处理函数 ndk_set_var_multi_value 取 args[1] 为目标变量，其后两个参数作为过滤器的两个输入值（filter->size=2），与 $target key value 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数以第一个值为密钥、第二个值为被签名内容，调用 OpenSSL HMAC（EVP_sha1）并把原始摘要字节作为结果。指令经 ndk_set_var_multi_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_multi_value_code 以两个输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hmac_sha256",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "ndk-compile"
+    ],
+    "note": "注册为 NGX_CONF_TAKE3，处理函数 ndk_set_var_multi_value 取 args[1] 为目标变量，其后两个参数作为过滤器的两个输入值（filter->size=2），与 $target key value 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数以第一个值为密钥、第二个值为被签名内容，调用 OpenSSL HMAC（EVP_sha256）并把原始摘要字节作为结果。指令经 ndk_set_var_multi_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_multi_value_code 以两个输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_md5",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数对输入字节做 MD5，再经 ngx_hex_dump（小写）输出 32 个十六进制字符。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_sha1",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "shared-0",
+     "shared-1",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数对输入字节做 SHA-1，再经 ngx_hex_dump（小写）输出 40 个十六进制字符。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_unescape_uri",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_unescape_uri_patched（类型 0）解码 %XX，并把 + 转为空格。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_escape_uri",
+   "evidence": [
+    {
+     "id": "escape-type",
+     "component": "nginx",
+     "file": "src/core/ngx_string.h",
+     "start_line": 197,
+     "end_line": 203
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "escape-type",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_escape_uri_patched(NGX_ESCAPE_URI=0，对应其中 uri 位图表)，把位图命中的字节写成大写十六进制 %XX。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_sql_str",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数在输入非空时输出单引号包围的字符串；字节 \\0、\\b、\\n、\\r、\\t、0x1A 被整体替换为反斜杠加 0/b/n/r/t/Z，字节 \\、'、\"、$ 则在原字符前加反斜杠；输入为空或不存在时输出 ''。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "给输入加单引号；NUL、退格、换行、回车、制表符、0x1A 分别写成 \\0、\\b、\\n、\\r、\\t、\\Z，\\、'、\"、$ 前加反斜杠；输入为空时输出 ''。",
+     "reason": "原文“MySQL风格”是对用途的归类，源码只实现上述字节转义规则（前六个是整体替换为两个字符，后四个是在原字符前加反斜杠），故改为源码可证明的描述。"
+    }
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_pgsql_str",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数在输入非空时先按 quote_sql_str 规则转义并加单引号，再加 E 前缀；结果不是合法 UTF-8 时把高位字节改写为反斜杠加三位八进制；输入为空或不存在时输出 ''。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "把输入按 set_quote_sql_str 的规则转义并加单引号，再加 E 前缀（形如 E'...'）；结果不是合法 UTF-8 时高位字节改写为 \\\\ 加三位八进制；输入为空时输出 ''。",
+     "reason": "原文“PostgreSQL风格转义字符串字面量”是用途描述，源码实现的是 E 前缀加 quote_sql_str 转义及非法 UTF-8 的八进制改写，故改为源码可证明的描述。"
+    }
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_quote_json_str",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数在输入非空时输出双引号包围的字符串，并转义 \\r、\\n、\\\\、\"、\\f、\\b、\\t，其余小于 32 的控制字符写成 \\u00xx；输入为空或不存在时输出 null。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_if_empty",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2；ngx_http_set_if_empty 以 value[1]（目标）与 value[2]（备选值）构造两值过滤器（size=2），与 $target default_value 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "configuration-definition",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_set_misc_set_if_empty 登记为 NDK 多值过滤器；该函数在目标值 not_found 或长度为 0 时返回备选值，否则返回原值，结果由 ndk_set_var_multi_value_code 写回目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_hashed_upstream",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE3；ngx_http_set_hashed_upstream 取 value[1] 为目标变量、value[2] 为列表名、value[3] 为键，与 $target list_name key 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "configuration-definition",
+     "shared-1",
+     "shared-0",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数登记 ngx_http_set_misc_set_hashed_upstream 过滤器；该函数取 NDK 上游列表，对键做 ngx_hash_key_lc 并取模得下标，选出列表中对应字符串；NDK 列表按权重把条目重复放入，结果经 NDK 过滤器写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_misc_base32_padding",
+   "evidence": [
+    {
+     "id": "encode-conf",
+     "component": "set-misc-nginx-module",
+     "file": "src/ngx_http_set_base32.c",
+     "start_line": 23,
+     "end_line": 55
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on | off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "deprecated-warning",
+     "module-conf",
+     "encode-conf",
+     "implementation"
+    ],
+    "note": "与 set_base32_padding 写入同一字段 base32_padding（默认 1，另附弃用提示）；encode_base32 取 conf 后把该值作为 padding 传入，为真时在末尾补 =。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_base32_padding",
+   "evidence": [
+    {
+     "id": "encode-conf",
+     "component": "set-misc-nginx-module",
+     "file": "src/ngx_http_set_base32.c",
+     "start_line": 23,
+     "end_line": 55
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG 且用 ngx_conf_set_flag_slot，仅接受 on/off，与 on | off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "module-conf",
+     "encode-conf",
+     "implementation"
+    ],
+    "note": "指令写入 base32_padding（默认 1）；encode_base32 取 conf 后把该值作为 padding 传入，为真时在末尾补 =。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_base32_alphabet",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；处理函数要求参数恰为 32 字节，再调用 ngx_conf_set_str_slot，与 alphabet 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "module-conf",
+     "implementation"
+    ],
+    "note": "字母表写入 base32_alphabet（默认 0123456789abcdefghijklmnopqrstuv）；merge 用它建立 basis32 解码表；encode_base32 用字母表取字符，decode_base32 用 basis32 查表。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_encode_base32",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数取 conf 后以 base32_alphabet 与 base32_padding 调用 encode_base32 输出文本。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_decode_base32",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数取 conf 后用 basis32 调用 decode_base32，非法字符或长度非法时输出空值，成功时还原为字节。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_local_today",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，处理函数 ndk_set_var_value 在只给 1 个参数时以目标变量为输入值（该函数不读取输入），与 $target 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数取 ngx_time() 的缓存时间加上 gmtoff（分钟）偏移，格式化为 %04d-%02d-%02d。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_gmt_time",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2，ndk_set_var_value 在 3 个参数时以第二个参数（format）为输入值，与 $target format 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数取 ngx_time()，用 ngx_libc_gmtime 转 GMT，再以第二个参数（格式）调用 strftime，结果长度为 0 时报错。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_formatted_local_time",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2，ndk_set_var_value 在 3 个参数时以第二个参数（format）为输入值，与 $target format 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数取 ngx_time()，用 ngx_libc_localtime 转本地时区，再以第二个参数（格式）调用 strftime，结果长度为 0 时报错。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_random",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "ndk-compile"
+    ],
+    "note": "注册为 NGX_CONF_TAKE3，处理函数 ndk_set_var_multi_value 取 args[1] 为目标变量，其后两个参数作为过滤器的两个输入值（filter->size=2），与 $target from to 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数用 ngx_atoi 解析两个端点（必要时交换），以 rand() % (to-from+1) + from 取值并写成十进制文本。指令经 ndk_set_var_multi_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_multi_value_code 以两个输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_alphanum",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。（省略 length 时输入值取目标变量当前值。）"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数把输入值解析为 1 至 64 的长度，从 /dev/urandom 读相同字节数，并映射到 a-zA-Z0-9 字母表。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_secure_random_lcalpha",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。（省略 length 时输入值取目标变量当前值。）"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "filter-bindings",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "函数把输入值解析为 1 至 64 的长度，从 /dev/urandom 读相同字节数，并用 entropy % 26 + a 映射为小写字母。指令经 ndk_set_var_value 编译进 rewrite 脚本，rewrite 阶段由 ndk_set_var_value_code 以输入值调用该过滤函数，并把结果写入目标变量。"
+   }
+  },
+  {
+   "id": "set-misc-nginx-module--ngx_http_set_misc_module--set_rotate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE3；ngx_http_set_rotate 以 value[1] 起的三个值（目标、from、to）构造 size=3 的多值过滤器，与 $target from to 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation",
+     "configuration-definition",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数登记 ngx_http_set_misc_set_rotate；该函数以目标当前值（为空或非法时用 conf->current，初始为 from-1）加 1，大于 to 或小于 from 时回到 from，并写回 conf->current 与目标变量。"
+   }
+  },
+  {
+   "id": "array-var-nginx-module--ngx_http_array_var_module--array_split",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_2MORE；ngx_http_array_split 接受 separator subject、separator subject max_items、separator subject to=$target、separator subject max_items to=$target 四种形式（第 3 项以 to= 开头视为目标，否则为 max_items；多于 4 项报错），与 array_split separator subject [max_items] [to=$target] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "split-runtime",
+     "split-search",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_array_var_split 登记为 NDK 多值过滤器；该函数按分隔串切分字符串（分隔串为空时逐字节切分，可受 max_items 限制），把 ngx_array_t 指针作为变量值（长度为 sizeof(ngx_array_t)）写入目标，供其他 array_* 指令读取。"
+   }
+  },
+  {
+   "id": "array-var-nginx-module--ngx_http_array_var_module--array_map",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE23；ngx_http_array_map 接受 template $array（原地更新）或 template $array to=$target（第 3 项必须以 to= 开头），与 array_map template $array [to=$target] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "map-runtime",
+     "array-it",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_array_var_map 登记为 NDK 过滤器并注册 $array_it；该函数对每个数组元素先设置 $array_it，再对模板求值得到新元素，写入原数组或新数组并作为变量值。"
+   }
+  },
+  {
+   "id": "array-var-nginx-module--ngx_http_array_var_module--array_map_op",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE23；ngx_http_array_map_op 接受 directive $array（原地更新）或 directive $array to=$target（第 3 项必须以 to= 开头，否则报 unexpected argument），与 array_map_op directive $array [to=$target] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "map-op-runtime",
+     "function-lookup",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数以 ngx_http_array_var_map_op 为 NDK 多值过滤器；该函数用 function-lookup 在 HTTP 模块命令中找到 set 处理函数为 ndk_set_var_value 且名字匹配的指令，取其过滤函数，对每个数组元素调用并收集结果。"
+   }
+  },
+  {
+   "id": "array-var-nginx-module--ngx_http_array_var_module--array_join",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE23；ngx_http_array_join 接受 separator $array 或 separator $array to=$target（第 3 项必须以 to= 开头，否则报 unexpected argument），与 array_join separator $array [to=$target] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "join-runtime",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_array_var_join 登记为 NDK 多值过滤器；该函数检查数组变量长度为 sizeof(ngx_array_t)，把各元素依次复制并在元素间插入分隔符，结果作为普通字符串变量值。"
+   }
+  },
+  {
+   "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；conf_handler 在 1 个参数时以变量名（去掉 $）作字段名，2 个参数时以第二个参数作字段名，与 $variable [argument] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "body-read-phase",
+     "value-runtime",
+     "body-parser",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_set_form_input 登记为 NDK 过滤器并置 used；rewrite 阶段 handler 对 POST/PUT 且 Content-Type 为 application/x-www-form-urlencoded 的请求读取请求体；过滤函数在读取完成后从请求体中查找首个以字段名加 = 开头的参数并返回其值。"
+   }
+  },
+  {
+   "id": "form-input-nginx-module--ngx_http_form_input_module--set_form_input_multi",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；conf_handler 在 1 个参数时以变量名（去掉 $）作字段名，2 个参数时以第二个参数作字段名，与 $variable [argument] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "body-read-phase",
+     "value-runtime",
+     "body-parser",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数在指令名为 set_form_input_multi 时登记 ngx_http_set_form_input_multi；rewrite 阶段 handler 对 POST/PUT 的 urlencoded 请求读取请求体；过滤函数在读取完成后收集全部同名字段值进 ngx_array_t，并以 sizeof(ngx_array_t) 长度的变量值返回。"
+   }
+  },
+  {
+   "id": "iconv-nginx-module--ngx_http_iconv_module--set_iconv",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE4（仅 location 上下文）；处理函数要求第 3 个参数以 from= 开头、第 4 个以 to= 开头（不区分大小写），与 set_iconv $destination source from=... to=... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "value-conversion",
+     "conversion",
+     "ndk-values",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "处理函数把 ngx_http_set_iconv_handler 登记为 3 值 NDK 过滤器（源值、from、to）；该函数在 rewrite 阶段调用 ngx_http_do_iconv 转换，并把各输出缓冲拼成结果写入目标变量。"
+   }
+  },
+  {
+   "id": "iconv-nginx-module--ngx_http_iconv_module--iconv_buffer_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1（仅 location）且用 ngx_conf_set_size_slot，与 size 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "merge",
+     "header-use",
+     "variable-use",
+     "conversion"
+    ],
+    "note": "指令写入 ilcf->buf_size（merge 默认页大小，且要求不小于 2 字节）；头过滤器与 set_iconv 处理函数都把 iconv_buf_size 设为它，ngx_http_do_iconv 按该大小分配每个输出临时缓冲。"
+   }
+  },
+  {
+   "id": "iconv-nginx-module--ngx_http_iconv_module--iconv_filter",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2（仅 location）；处理函数要求第 1 个参数以 from= 开头、第 2 个以 to= 开头（不区分大小写），与 from=... to=... 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "merge",
+     "filters",
+     "chain-and-tail",
+     "conversion"
+    ],
+    "note": "处理函数置 enabled=1 与 filter_used 并保存 from/to；post_config 装入头/体过滤器；体过滤器取 loc conf 后把内存缓冲合并并以 from/to 调用 ngx_http_do_iconv，非内存缓冲报错。"
+   }
+  },
+  {
+   "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--encrypted_session_key",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "lengths"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；处理函数要求参数长度恰为 key_length(256/8=32) 字节，与 key 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "lengths",
+     "merge",
+     "encode-use",
+     "decode-use"
+    ],
+    "note": "处理函数把 32 字节参数存入 conf->key（merge 无默认值）；encode/decode 取 loc conf 后无 key 则报错，否则把 conf->key 与固定 key 长度传给 AES 加解密函数。"
+   }
+  },
+  {
+   "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--encrypted_session_iv",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "lengths"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；处理函数要求参数不长于 iv_length(EVP_MAX_IV_LENGTH)，与 iv 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "merge",
+     "encode-use",
+     "decode-use",
+     "cipher-init"
+    ],
+    "note": "处理函数分配 iv_length 字节并清零后拷入参数（短值末尾补零）存入 conf->iv（merge 默认 deadbeefdeadbeef）；encode/decode 把 conf->iv 传给 EVP_EncryptInit/EVP_DecryptInit。"
+   }
+  },
+  {
+   "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--encrypted_session_expires",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；处理函数用 ngx_parse_time(&value[1], 1) 解析为秒，非法值报错，与 time 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "merge",
+     "encode-use",
+     "encrypt-time",
+     "decrypt-time"
+    ],
+    "note": "处理函数写入 conf->expires（merge 默认 86400 秒）；encode 把它传给加密函数，加密时 expires 非 0 则嵌入 now+expires（0 表示不过期），解密时以内嵌时间与 time(NULL) 比较，过期则失败。"
+   }
+  },
+  {
+   "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_encrypt_session",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "filter-bindings",
+     "encode-runtime",
+     "encrypt-format",
+     "merge",
+     "ndk-runtime",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "指令登记 ngx_http_set_encode_encrypted_session 为 NDK 过滤器；该函数取 conf 的 key/iv/expires 调用 aes_mac_encrypt，输出为 MD5 摘要加 AES-256-CBC 密文（明文为输入值加 8 字节过期时间），失败时结果为空；由 ndk_set_var_value_code 写入目标变量。"
+   }
+  },
+  {
+   "id": "encrypted-session-nginx-module--ngx_http_encrypted_session_module--set_decrypt_session",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12，处理函数 ndk_set_var_value 在只给 1 个参数时把目标变量自身当作输入值（nelts==2），给 2 个参数时第二个为输入值，与 $target [value] 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "filter-bindings",
+     "decode-runtime",
+     "decrypt-format",
+     "merge",
+     "ndk-runtime",
+     "ndk-compile",
+     "rewrite-execution",
+     "rewrite-phases"
+    ],
+    "note": "指令登记 ngx_http_set_decode_encrypted_session 为 NDK 过滤器；该函数取 conf 的 key/iv 调用 aes_mac_decrypt：解密后重算 MD5 与前 16 字节比对，并检查内嵌过期时间（非 0 且不晚于当前时间则失败），成功时输出去掉过期时间的原始值，失败时结果为空。"
+   }
+  },
+  {
+   "id": "ngx_coolkit--ngx_coolkit_module--override_method",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；处理函数在 args[1] 为 off 时关闭覆盖，否则以最后一个参数为 source（复合值），其前的参数必须是方法表（GET、HEAD、POST、PUT、DELETE、MKCOL、COPY、MOVE、OPTIONS、PROPFIND、PROPPATCH、LOCK、UNLOCK、PATCH，不区分大小写）中的名字，没有方法参数时对全部方法生效，与两种写法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "指令编译 source 并记录筛选方法掩码；postconfiguration 把同一 handler 挂到 SERVER_REWRITE 与 REWRITE 两个阶段；handler 以原始方法判定是否在掩码内，求值 source，结果等于方法表中的名字时改写 r->method；override_method off 使 source 为空，handler 恢复原始方法。"
+   }
+  }
+ ]
+}
