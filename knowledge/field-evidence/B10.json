@@ -1,0 +1,2561 @@
+{
+ "batch": "B10",
+ "entries": [
+  {
+   "id": "nginx--ngx_stream_access_module--allow",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_access_rule 逐项判断 value[1]：all、unix:，其余经 ngx_ptocidr 解析地址或 CIDR，与 `allow address|CIDR|unix:|all;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "ngx_stream_access_rule 按 value[0] 首字母 allow 把规则（deny=0）追加到 ascf 的 rules/rules6/rules_un；ngx_stream_access_init 把处理函数挂入 ACCESS 阶段，处理函数按客户端地址族依次遍历规则，命中后 返回 NGX_OK 放行。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_access_module--deny",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_access_rule 逐项判断 value[1]：all、unix:，其余经 ngx_ptocidr 解析地址或 CIDR，与 `deny address|CIDR|unix:|all;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "ngx_stream_access_rule 按 value[0] 首字母 deny 把规则（deny=1）追加到 ascf 的 rules/rules6/rules_un；ngx_stream_access_init 把处理函数挂入 ACCESS 阶段，处理函数按客户端地址族依次遍历规则，命中后 经 ngx_stream_access_found 返回 NGX_STREAM_FORBIDDEN（并记录 access forbidden by rule）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--variables_hash_max_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 把 value[1] 解析为整数写入偏移字段，与 `variables_hash_max_size size;` 一致（size 为数值）。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "注册偏移指向 cmcf->variables_hash_max_size；init_main_conf 未设置时默认 1024；ngx_stream_variables_init_vars 把该值赋给 hash.max_size 后调用 ngx_hash_init，该函数据此限定尝试的最大桶数。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--variables_hash_bucket_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 写入整数，与 `variables_hash_bucket_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "注册偏移指向 cmcf->variables_hash_bucket_size；init_main_conf 默认 64 并按 cacheline 对齐；ngx_stream_variables_init_vars 赋给 hash.bucket_size 后调用 ngx_hash_init，用作每桶空间预算。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--server_names_hash_max_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 写入整数，与 `server_names_hash_max_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "注册偏移指向 cmcf->server_names_hash_max_size；init_main_conf 默认 512；ngx_stream_server_names 把它赋给 hash.max_size，并对精确名与通配名表调用 ngx_hash_init/ngx_hash_wildcard_init。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--server_names_hash_bucket_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 写入整数，与 `server_names_hash_bucket_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "注册偏移指向 cmcf->server_names_hash_bucket_size；init_main_conf 默认 cacheline 并对齐；ngx_stream_server_names 赋给 hash.bucket_size，精确名表与通配名表（wc_head/wc_tail）共用该 hash 配置。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--server",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS，ngx_stream_core_server 不读取 value 参数，直接解析块内指令，与 `server { ... }` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "server-create"
+    ],
+    "note": "ngx_stream_core_server 为块创建 srv_conf 上下文（逐模块 create_srv_conf）、把 cscf 压入 cmcf->servers、切换 cmd_type 为 NGX_STREAM_SRV_CONF 解析块内指令，并在块内没有 listen 时报错；函数位于 stream 核心模块，与 http/mail 的 server 实现无关。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--listen",
+   "evidence": [
+    {
+     "id": "listen-parse-url",
+     "component": "nginx",
+     "file": "src/core/ngx_inet.c",
+     "start_line": 683,
+     "end_line": 701
+    },
+    {
+     "id": "listen-parse-hostport",
+     "component": "nginx",
+     "file": "src/core/ngx_inet.c",
+     "start_line": 828,
+     "end_line": 868
+    },
+    {
+     "id": "listen-parse-portonly",
+     "component": "nginx",
+     "file": "src/core/ngx_inet.c",
+     "start_line": 872,
+     "end_line": 900
+    },
+    {
+     "id": "listen-add-call",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_core_module.c",
+     "start_line": 1255,
+     "end_line": 1273
+    },
+    {
+     "id": "listen-add-address",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream.c",
+     "start_line": 602,
+     "end_line": 608
+    },
+    {
+     "id": "listen-add-listen",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream.c",
+     "start_line": 389,
+     "end_line": 438
+    },
+    {
+     "id": "listen-init-listening",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream.c",
+     "start_line": 916,
+     "end_line": 925
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "listen-options",
+     "udp-limits"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_1MORE；ngx_stream_core_listen 以 value[1] 经 ngx_parse_url 解析地址，value[2..] 逐项匹配 default_server、udp、bind、setfib=、fastopen=、backlog= 等参数，无法识别者在函数末尾报 invalid parameter，与 `listen address [parameters];` 一致（参数集合由 `[parameters]` 泛指）。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "listen-options",
+     "runtime-stream-listen-addresses",
+     "runtime-stream-listen-handler",
+     "runtime-listen-socket-options",
+     "listen-parse-url",
+     "listen-parse-hostport",
+     "listen-parse-portonly",
+     "listen-add-call",
+     "listen-add-address",
+     "listen-add-listen",
+     "listen-init-listening"
+    ],
+    "note": "ngx_parse_url 对 `unix:` 前缀走 Unix-domain 解析，其余按 host:port 或仅端口解析；lsopt.type 默认 SOCK_STREAM，参数为 udp 时置 SOCK_DGRAM；ngx_stream_core_listen 调用 ngx_stream_add_listen，ngx_stream_add_address 把 lsopt 复制进 addr->opt，ngx_stream_add_listening 把 opt.type 写入 ls->type，打开监听套接字时 ngx_socket(…, ls[i].type, 0) 使用该类型。；ngx_stream_add_listen 按端口、type、地址族分组后把 lsopt 交给 ngx_stream_add_address（438），ngx_stream_init_listening 以 addr = port->addrs.elts（924）取得其中的 opt 后建立监听。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--server_name",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_1MORE；ngx_stream_core_server_name 遍历 value[1..]，每项作为一个名称（支持 *.、.、~ 正则、$hostname），与 `server_name name ...;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 把每个名称压入 cscf->server_names（精确/通配名转小写，`~` 开头在 NGX_PCRE 下编译正则，否则报 requires PCRE）；ngx_stream_server_names 把非正则名加入 server_names_hash 与通配哈希；ngx_stream_find_virtual_server 先查哈希再按顺序执行正则。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--error_log",
+   "evidence": [
+    {
+     "id": "syntax-log-target",
+     "component": "nginx",
+     "file": "src/core/ngx_log.c",
+     "start_line": 576,
+     "end_line": 590
+    },
+    {
+     "id": "syntax-log-syslog",
+     "component": "nginx",
+     "file": "src/core/ngx_log.c",
+     "start_line": 638,
+     "end_line": 662
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "log-config",
+     "syntax-log-target",
+     "syntax-log-syslog"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_1MORE；ngx_stream_core_error_log 委托 ngx_log_set_log：value[1] 依次识别 stderr、memory:（仅 NGX_DEBUG 构建，否则报错）、syslog:，其余作为文件名，随后 ngx_log_set_levels 从 value[2] 起解析级别名；原语法只列 file，已按裁定 2 补齐。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "error-log-entry",
+     "error-log-merge",
+     "log-config",
+     "runtime-stream-error-log-select",
+     "runtime-connection-log-select"
+    ],
+    "note": "ngx_stream_core_error_log 把目的地与级别存入 cscf->error_log（merge 时 server 继承 stream 层或使用 cycle 新日志）；ngx_stream_init_connection 用 cscf->error_log 设置连接日志。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "error_log file | stderr | syslog:parameter ... | memory:size [level];",
+     "reason": "ngx_log_set_log 对 value[1] 依次识别 stderr（576）、memory:（585，仅 NGX_DEBUG 构建，否则报错）、syslog:（644），其余作为文件名；原语法只列 file。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--resolver",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "resolver-local-patch",
+     "resolver-ipv6-patch"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；ngx_stream_core_resolver 把 value[1..] 整体交给 ngx_resolver_create，后者逐项识别 valid=、ipv4=、ipv6=（on/off）以及补丁新增的 local=（on、off 或路径），其余作为 DNS 服务器地址，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2"
+    ],
+    "note": "setter 把 ngx_resolver_create 的结果存入 cscf->resolver（merge 时 server 继承）；ngx_stream_proxy_handler 在目标需要解析时以 cscf->resolver 调用 ngx_resolve_start，并设 ctx->timeout 后 ngx_resolve_name 发起解析。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--resolver_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 把 value[1] 解析为毫秒时间，与 `resolver_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 cscf->resolver_timeout（merge 默认 30000ms）；ngx_stream_proxy_handler 解析目标时取 cscf 并令 ctx->timeout = cscf->resolver_timeout。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--proxy_protocol_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `proxy_protocol_timeout timeout;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2"
+    ],
+    "note": "setter 写入 cscf->proxy_protocol_timeout（merge 默认 30000ms）；ngx_stream_proxy_protocol_handler 在 recv 返回 EAGAIN 且无定时器时 ngx_add_timer(rev, cscf->proxy_protocol_timeout)，rev->timedout 时按超时结束会话。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--tcp_nodelay",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `tcp_nodelay on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 cscf->tcp_nodelay（merge 默认 1）；content 阶段对 SOCK_STREAM 客户端连接在 cscf->tcp_nodelay 为真时调用 ngx_tcp_nodelay，ngx_stream_proxy_init_upstream 对上游 SOCK_STREAM 连接同样判断。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--preread_buffer_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析为字节数，与 `preread_buffer_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 cscf->preread_buffer_size（merge 默认 16384）；ngx_stream_core_preread_phase 在 c->buffer 为空时以该值 ngx_create_temp_buf 创建缓冲区。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_core_module--preread_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `preread_timeout timeout;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 cscf->preread_timeout（merge 默认 30000ms）；ngx_stream_core_preread_phase 在返回 NGX_AGAIN 且无定时器时 ngx_add_timer(c->read, cscf->preread_timeout)，c->read->timedout 时结束预读。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_geo_module--geo",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE12；ngx_stream_geo_block 中 value[1] 必须以 `$` 开头，三参数时 value[1] 为地址变量、value[2] 为结果变量，两参数时地址取连接地址（geo->index=-1），与 `geo [$address] $variable { ... }` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "块内 ngx_stream_geo 把 CIDR/范围登记进基数树或范围表并绑定结果变量；取值函数用 ngx_stream_geo_addr（有 $address 变量则取其值，否则取 s->connection->sockaddr）在 radix 树/范围表中查找并返回登记值，不涉及地理数据库。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_geoip_module--geoip_country",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE12；ngx_stream_geoip_country 以 value[1] 为文件打开，nelts==3 时 value[2] 只接受 utf8，其余报 invalid parameter，与 `geoip_country file [utf8];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 把 GeoIP_open 结果存入 gcf->country；变量 geoip_country_code/code3/name 的取值函数用 gcf = main_conf(geoip)，以 s->connection->sockaddr 换算的客户端地址查询 gcf->country，找不到时 not_found。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_geoip_module--geoip_org",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE12；ngx_stream_geoip_org 以 value[1] 为文件打开，nelts==3 时 value[2] 只接受 utf8，与 `geoip_org file [utf8];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 把 GeoIP_open 结果存入 gcf->org（仅接受 ISP/ORG/DOMAIN/ASNUM 类型库）；geoip_org 变量取值函数用 gcf->org 与客户端地址调用 GeoIP_name_by_ipnum。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_geoip_module--geoip_city",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE12；ngx_stream_geoip_city 以 value[1] 为文件打开，nelts==3 时 value[2] 只接受 utf8，与 `geoip_city file [utf8];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2"
+    ],
+    "note": "setter 把 GeoIP_open 结果存入 gcf->city（仅接受 CITY_EDITION 类型库）；变量表登记 geoip_city_country_code/region/city/postal_code/latitude/longitude 等，其取值函数通过 gcf->city 与客户端地址调用 GeoIP_record_by_ipnum 读取记录字段。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_limit_conn_module--limit_conn_zone",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE2；ngx_stream_limit_conn_zone 以 value[1] 为 key（复合值），value[2] 起识别 zone=name:size，缺少 zone 时报错，与 `limit_conn_zone key zone=name:size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 登记共享内存区并设 init 回调；init_zone 在共享内存中建立红黑树；ngx_stream_limit_conn_handler 用 ctx->key 求值、按键在树中查找并增减连接计数。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_limit_conn_module--limit_conn",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2；ngx_stream_limit_conn 的 value[1] 为共享区名，value[2] 经 ngx_atoi 解析为 1..65535 的连接数，与 `limit_conn zone number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-3"
+    ],
+    "note": "setter 把 (shm_zone, conn) 压入 lccf->limits；ngx_stream_limit_conn_init 把处理函数挂入 NGX_STREAM_PREACCESS_PHASE；处理函数对每个限制按键计数，当前连接数达到上限时释放已占计数并返回 NGX_STREAM_SERVICE_UNAVAILABLE（dry_run 除外）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_limit_conn_module--limit_conn_log_level",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_enum_slot 对照 ngx_stream_limit_conn_log_levels 取值表（info、notice、warn、error），与 `limit_conn_log_level info|notice|warn|error;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 lccf->log_level（merge 默认 NGX_LOG_ERR）；处理函数在计数达到上限时以 ngx_log_error(lccf->log_level, …, \"limiting connections…\") 记录日志。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_limit_conn_module--limit_conn_dry_run",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `limit_conn_dry_run on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 写入 lccf->dry_run（merge 默认 0）；处理函数在槽位分配失败或计数达到上限时，若 lccf->dry_run 则设 s->limit_conn_status=REJECTED_DRY_RUN 并返回 NGX_DECLINED，否则设 REJECTED 并返回 503。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_log_module--log_format",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_2MORE；ngx_stream_log_set_format 以 value[1] 为格式名，ngx_stream_log_compile_format 从 args[2] 起识别可选 escape=default|json|none（其他值报错），其余各项为格式字符串，与 `log_format name [escape=default|json|none] string ...;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 把格式登记到 lmcf->formats 并编译为 ops；escape= 选择的 escape 模式决定 op 使用默认、JSON 或不转义的变量写入函数；格式只供 stream 日志处理函数使用。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_log_module--access_log",
+   "evidence": [
+    {
+     "id": "syntax-log-target",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_log_module.c",
+     "start_line": 1017,
+     "end_line": 1031
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "log-format",
+     "syntax-log-target"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_1MORE；ngx_stream_log_set_log 中 value[1] 为 off 时只允许单参数，否则 value[1] 为路径或 syslog: 目标，value[2] 必须是已定义的格式名，value[3..] 识别 buffer=、flush=、gzip、if=，其他报 invalid parameter；原语法未列 syslog: 目标，已补齐。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "log-handler",
+     "log-merge",
+     "log-off",
+     "log-format"
+    ],
+    "note": "setter 把每条日志（目标、格式、过滤条件）压入 lscf->logs，可重复配置；off 设 lscf->off=1；merge 在本层无 logs/off 时继承上层；ngx_stream_log_handler 在 off 或无 logs 时直接返回，否则遍历每条日志写入。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "access_log path|syslog:parameter ... format [parameters];\naccess_log off;",
+     "reason": "ngx_stream_log_set_log 对 value[1] 识别 off、syslog:（1017，交 ngx_syslog_process_conf），其余作为文件路径（可含变量）；原语法只列 path，且 format 在非 off 形式下为必填（缺省报 log format is not specified）。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_log_module--open_log_file_cache",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1234；ngx_stream_log_open_file_cache 遍历参数识别 max=、inactive=、min_uses=、valid=、off，没有 max 时报错，与 `open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time];` 及 `open_log_file_cache off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-5"
+    ],
+    "note": "setter 以 max/inactive 调用 ngx_open_file_cache_init 并保存 valid、min_uses；ngx_stream_log_script_write（仅对含变量的文件名使用）把 lscf->open_file_cache_valid/min_uses 填入 of 并调用 ngx_open_cached_file。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_map_module--map",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE2；ngx_stream_map_block 把 value[1] 编译为复合值输入，value[2] 必须以 `$` 开头作为结果变量，与 `map string $variable { ... }` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 登记变量并以 ngx_stream_map_variable 为 get_handler；取值时才对 map->value 求值、在 map 哈希/通配/正则中查找，未命中取 default，输出值若为复合值再求值。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_map_module--map_hash_max_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 写入整数，与 `map_hash_max_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 mcf->hash_max_size；ngx_stream_map_block 未设时默认 2048，并在 map 块结束时把它赋给 hash.max_size 调用 ngx_hash_init。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_map_module--map_hash_bucket_size",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1，ngx_conf_set_num_slot 写入整数，与 `map_hash_bucket_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 mcf->hash_bucket_size；ngx_stream_map_block 对其按 cacheline 对齐并赋给 hash.bucket_size，调用 ngx_hash_init。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_pass_module--pass",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1；ngx_stream_pass 取 value[1] 作为地址（含变量则编译为复合值，否则 ngx_parse_url），与 `pass address;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "content-dispatch"
+    ],
+    "note": "setter 设 cscf->handler = ngx_stream_pass_handler；处理函数求值地址后在 ngx_cycle->listening 中用 ngx_stream_pass_match 找到匹配的 TCP 监听，换设 c->listening 并调用 c->listening->handler(c) 交给该入口处理，不创建上游连接；UDP 或带预读数据时拒绝。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_pass",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1；ngx_stream_proxy_pass 取 value[1] 编译为复合值，含变量则保存为 upstream_value，否则按 ngx_url_t 经 ngx_stream_upstream_add 登记，与 `proxy_pass address;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "proxy-config",
+     "variable-route",
+     "runtime-peer-transport"
+    ],
+    "note": "setter 设 cscf->handler = ngx_stream_proxy_handler 并保存 upstream 或 upstream_value；handler 对变量目标先 ngx_stream_proxy_eval 求值，再在 upstream 组中匹配或交 resolver 解析；连接类型沿用客户端连接的 SOCK_STREAM/SOCK_DGRAM（u->peer.type = c->type）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_bind",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；ngx_stream_proxy_bind 识别 value[1]=off 与可选 value[2]=transparent（依赖 NGX_HAVE_TRANSPARENT_PROXY），其余作为地址（可含变量），与 `proxy_bind address [transparent]|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "proxy-handler"
+    ],
+    "note": "setter 填 pscf->local；handler 取 pscf 后调用 ngx_stream_proxy_set_local，把 local 地址（变量则求值解析）写入 u->peer.local；ngx_event_connect_peer 在发起连接前对 pc->local 调用 bind。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_socket_keepalive",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_socket_keepalive on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-handler"
+    ],
+    "note": "setter 写入 pscf->socket_keepalive；handler 取 pscf 后 `if (pscf->socket_keepalive) u->peer.so_keepalive = 1`；ngx_event_connect_peer 据 so_keepalive 对新建 socket 设置 SO_KEEPALIVE。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_connect_timeout",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `proxy_connect_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "timeout-merge",
+     "timeout-patch",
+     "proxy-handler",
+     "lua-override"
+    ],
+    "note": "setter 写入 pscf->connect_timeout（merge 默认 60000ms）；发行补丁在 handler 中令 pctx->connect_timeout = pscf->connect_timeout，并把 ngx_stream_proxy_connect 的 ngx_add_timer(pc->write, …) 改用 ctx->connect_timeout；该定时器仅覆盖连接建立阶段，成功后不再用作会话总时长。限制：启用 stream-lua balancer 时，ngx_stream_lua_ffi_balancer_set_timeouts 可按会话改写 pctx 中的该超时值（lua-override 片段），指令值只是会话初值。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_timeout",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    },
+    {
+     "id": "proxy-timedout",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1426,
+     "end_line": 1492
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `proxy_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "timeout-merge",
+     "timeout-patch",
+     "proxy-handler",
+     "proxy-timedout",
+     "lua-override"
+    ],
+    "note": "setter 写入 pscf->timeout（merge 默认 10 分钟）；补丁令 pctx->timeout = pscf->timeout，并在每次 ngx_stream_proxy_process/process_connection 处理后以 ngx_add_timer(c->write, ctx->timeout) 重新武装定时器；定时器到期（ev->timedout 且非 delayed）时报 connection timed out 并结束会话，因此限制的是两次连续读写之间的间隔而非总时长。限制：启用 stream-lua balancer 时，ngx_stream_lua_ffi_balancer_set_timeouts 可按会话改写 pctx 中的该超时值（lua-override 片段），指令值只是会话初值。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_buffer_size",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    },
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析为字节数，与 `proxy_buffer_size size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-handler",
+     "proxy-init-pscf"
+    ],
+    "note": "setter 写入 pscf->buffer_size（merge 默认 16384）；handler 以它分配并设置 downstream_buf，init_upstream 在无上游缓冲时以它分配 upstream_buf，即客户端方向与上游方向各一块。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_downstream_buffer",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    },
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析为字节数，与 `proxy_downstream_buffer size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "buffer-registration",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "proxy-handler",
+     "proxy-init-pscf"
+    ],
+    "note": "注册项与 proxy_buffer_size 同写 buffer_size 字段，并带 ngx_conf_deprecated_t 提示替代指令；buffer-registration 片段含三项注册，handler 与 init_upstream 以该字段分配两个方向缓冲区。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_upstream_buffer",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    },
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析为字节数，与 `proxy_upstream_buffer size;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "buffer-registration",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "proxy-handler",
+     "proxy-init-pscf"
+    ],
+    "note": "注册项与 proxy_buffer_size 同写 buffer_size 字段，并带 ngx_conf_deprecated_t 提示替代指令；buffer-registration 片段含三项注册，handler 与 init_upstream 以该字段分配两个方向缓冲区。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_upload_rate",
+   "evidence": [
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    },
+    {
+     "id": "proxy-process-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1625,
+     "end_line": 1650
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_stream_set_complex_value_size_slot 把 value[1] 编译为复合值，不含变量时立即 ngx_parse_size 解析为字节数、含变量时留待连接时求值，与 `proxy_upload_rate rate;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3",
+     "proxy-init-pscf",
+     "proxy-process-pscf"
+    ],
+    "note": "setter 写入 pscf->upload_rate；init_upstream 取 pscf 后 u->upload_rate = ngx_stream_complex_value_size(...)；ngx_stream_proxy_process 在客户端方向（!from_upstream）令 limit_rate = u->upload_rate，并按 limit_rate*(已用秒数+1) 减去已接收字节算出额度，额度不足则延迟读事件。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_download_rate",
+   "evidence": [
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    },
+    {
+     "id": "proxy-process-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1625,
+     "end_line": 1650
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_stream_set_complex_value_size_slot 把 value[1] 编译为复合值，不含变量时立即 ngx_parse_size 解析为字节数、含变量时留待连接时求值，与 `proxy_download_rate rate;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3",
+     "proxy-init-pscf",
+     "proxy-process-pscf"
+    ],
+    "note": "setter 写入 pscf->download_rate；init_upstream 取 pscf 后 u->download_rate = ngx_stream_complex_value_size(...)；ngx_stream_proxy_process 在上游方向（from_upstream）令 limit_rate = u->download_rate，同样按每秒字节额度限速读上游数据。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_requests",
+   "evidence": [
+    {
+     "id": "proxy-tf-head",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1808,
+     "end_line": 1830
+    },
+    {
+     "id": "proxy-process-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1625,
+     "end_line": 1650
+    },
+    {
+     "id": "proxy-packets-inc",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1745,
+     "end_line": 1746
+    },
+    {
+     "id": "udp-lookup",
+     "component": "nginx",
+     "file": "src/event/ngx_event_udp.c",
+     "start_line": 153,
+     "end_line": 156
+    },
+    {
+     "id": "udp-new",
+     "component": "nginx",
+     "file": "src/event/ngx_event_udp.c",
+     "start_line": 196,
+     "end_line": 209
+    },
+    {
+     "id": "udp-handler",
+     "component": "nginx",
+     "file": "src/event/ngx_event_udp.c",
+     "start_line": 331,
+     "end_line": 339
+    },
+    {
+     "id": "udp-delete",
+     "component": "nginx",
+     "file": "src/event/ngx_event_udp.c",
+     "start_line": 493,
+     "end_line": 505
+    },
+    {
+     "id": "udp-lookup-body",
+     "component": "nginx",
+     "file": "src/event/ngx_event_udp.c",
+     "start_line": 509,
+     "end_line": 540
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析为整数，与 `proxy_requests number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "proxy-tf-head",
+     "proxy-process-pscf",
+     "proxy-packets-inc",
+     "udp-lookup",
+     "udp-new",
+     "udp-handler",
+     "udp-delete",
+     "udp-lookup-body"
+    ],
+    "note": "setter 写入 pscf->requests（默认 0）；process 对客户端方向把 &u->requests 作为计数器逐包递增；test_finalize 对 SOCK_DGRAM 在 pscf->requests 非零且 u->requests 达到该值时调用 ngx_delete_udp_connection，把该 UDP 连接从监听红黑树删除；之后的数据报因 ngx_lookup_udp_connection 找不到而走新建连接并调用 ls->handler 的路径。；ngx_lookup_udp_connection 从 ls->rbtree.root 起查找（534），与 ngx_delete_udp_connection 操作同一棵 ls->rbtree。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_responses",
+   "evidence": [
+    {
+     "id": "proxy-tf-head",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1808,
+     "end_line": 1830
+    },
+    {
+     "id": "proxy-process-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1625,
+     "end_line": 1650
+    },
+    {
+     "id": "proxy-packets-inc",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1745,
+     "end_line": 1746
+    },
+    {
+     "id": "proxy-timedout",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1426,
+     "end_line": 1492
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析为整数，与 `proxy_responses number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-tf-head",
+     "proxy-process-pscf",
+     "proxy-packets-inc",
+     "proxy-timedout"
+    ],
+    "note": "setter 写入 pscf->responses（默认 NGX_MAX_INT32_VALUE）；process 对上游方向把 &u->responses 作为计数器逐包递增；test_finalize 与超时分支以 u->responses 与 pscf->responses * u->requests 比较，未收齐则不结束会话，收齐则成功结束。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_next_upstream",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_next_upstream on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 pscf->next_upstream（merge 默认 1）；ngx_stream_proxy_connect 在 ngx_event_connect_peer 返回 NGX_DECLINED 时调用 ngx_stream_proxy_next_upstream，其中 `!pscf->next_upstream` 为真则 ngx_stream_proxy_finalize(…, NGX_STREAM_BAD_GATEWAY)，否则关闭当前连接并再次 ngx_stream_proxy_connect。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_next_upstream_tries",
+   "evidence": [
+    {
+     "id": "proxy-handler",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 406,
+     "end_line": 461
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析为整数，与 `proxy_next_upstream_tries number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-handler"
+    ],
+    "note": "setter 写入 pscf->next_upstream_tries（默认 0）；handler 在 uscf->peer.init 之后 `if (pscf->next_upstream_tries && u->peer.tries > pscf->next_upstream_tries) u->peer.tries = …`，解析路径同样处理；next_upstream 在 u->peer.tries==0 时结束。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_next_upstream_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `proxy_next_upstream_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2"
+    ],
+    "note": "setter 写入 pscf->next_upstream_timeout（默认 0）；handler 以 ngx_current_msec 设置 u->peer.start_time；next_upstream 中 timeout 非零且 ngx_current_msec - u->peer.start_time >= timeout 时返回 502，不再尝试下一上游。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_protocol",
+   "evidence": [
+    {
+     "id": "proxy-connect-head",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 709,
+     "end_line": 715
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_protocol on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3",
+     "proxy-connect-head"
+    ],
+    "note": "setter 写入 pscf->proxy_protocol；ngx_stream_proxy_connect 取 pscf 后 u->proxy_protocol = pscf->proxy_protocol；init_upstream 在 u->proxy_protocol 为真时以客户端连接 c 调用 ngx_proxy_protocol_write 生成头并排在上游发送链最前，TLS 场景由 send_proxy_protocol 先发。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_half_close",
+   "evidence": [
+    {
+     "id": "proxy-process-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1625,
+     "end_line": 1650
+    },
+    {
+     "id": "proxy-tf-head",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1808,
+     "end_line": 1830
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_half_close on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-process-pscf",
+     "proxy-tf-head"
+    ],
+    "note": "setter 写入 pscf->half_close；process 在 SOCK_STREAM 的 src 读到 EOF 且 half_close 时对 dst 执行 shutdown(NGX_WRITE_SHUTDOWN)；test_finalize 在 half_close 下仅当两端读方向均 EOF 且无缓冲数据时才结束，否则 NGX_DECLINED。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl",
+   "evidence": [
+    {
+     "id": "proxy-init-pscf",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 800,
+     "end_line": 806
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_ssl on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "proxy-init-pscf"
+    ],
+    "note": "setter 写入 pscf->ssl_enable；merge 在 ssl_enable 为真时调用 ngx_stream_proxy_set_ssl 建立 SSL 上下文；init_upstream 对 SOCK_STREAM 且 pscf->ssl_enable 的上游连接调用 ngx_stream_proxy_ssl_init_connection 进行握手。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_session_reuse",
+   "evidence": [
+    {
+     "id": "proxy-ssl-init",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1056,
+     "end_line": 1110
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_ssl_session_reuse on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "proxy-ssl-init",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 pscf->ssl_session_reuse（merge 默认 1）；ssl_init_connection 取 pscf 后在其为真时设置 save_session 回调并调用 u->peer.set_session；save_session 回调调用 u->peer.save_session；set_ssl 还把该值传给 ngx_ssl_client_session_cache。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_protocols",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_1MORE，ngx_conf_set_bitmask_slot 对照 ngx_stream_proxy_ssl_protocols 取值表（SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2、TLSv1.3），与语法列举一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2",
+     "merge"
+    ],
+    "note": "setter 写入 pscf->ssl_protocols；ngx_stream_proxy_set_ssl 以 `ngx_ssl_create(pscf->ssl, pscf->ssl_protocols, NULL)` 创建上下文，ngx_ssl_create 据此设置 SSL_OP_NO_* 选项。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 开启时，设置Stream上游TLS上下文允许的协议版本掩码。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_ciphers",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `proxy_ssl_ciphers ciphers;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "merge"
+    ],
+    "note": "setter 写入 pscf->ssl_ciphers（默认 DEFAULT）；ngx_stream_proxy_set_ssl 调用 ngx_ssl_ciphers(cf, pscf->ssl, &pscf->ssl_ciphers, 0)，后者对该字符串执行 SSL_CTX_set_cipher_list。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 开启时，将配置的密码列表传给Stream上游SSL上下文的SSL_CTX_set_cipher_list。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_name",
+   "evidence": [
+    {
+     "id": "proxy-ssl-name",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1177,
+     "end_line": 1230
+    },
+    {
+     "id": "proxy-ssl-handshake",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1115,
+     "end_line": 1160
+    },
+    {
+     "id": "proxy-ssl-init",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1056,
+     "end_line": 1110
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_stream_set_complex_value_slot 把 value[1] 编译为复合值，与 `proxy_ssl_name name;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "proxy-ssl-name",
+     "proxy-ssl-handshake",
+     "proxy-ssl-init"
+    ],
+    "note": "setter 写入 pscf->ssl_name；ngx_stream_proxy_ssl_name 优先用 pscf->ssl_name 求值（否则用 uscf->host）得到 u->ssl_name，在 ssl_server_name 开启时用它调用 SSL_set_tlsext_host_name 发送 SNI；ssl_handshake 在 ssl_verify 下以 ngx_ssl_check_host(pc, &u->ssl_name) 核验证书名称。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_server_name",
+   "evidence": [
+    {
+     "id": "proxy-ssl-init",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1056,
+     "end_line": 1110
+    },
+    {
+     "id": "proxy-ssl-name",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1177,
+     "end_line": 1230
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_ssl_server_name on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "proxy-ssl-init",
+     "proxy-ssl-name"
+    ],
+    "note": "setter 写入 pscf->ssl_server_name（merge 默认 0）；ssl_init_connection 在 ssl_server_name 或 ssl_verify 为真时调用 ngx_stream_proxy_ssl_name，该函数只有 pscf->ssl_server_name 为真才继续调用 SSL_set_tlsext_host_name 发送 SNI（并排除 IP 字面量）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_verify",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `proxy_ssl_verify on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 pscf->ssl_verify（默认 0）；ssl_handshake 在其为真时检查 SSL_get_verify_result 与 ngx_ssl_check_host，失败则 next_upstream；set_ssl 在其为真时加载 trusted_certificate 与 crl。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_verify_depth",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析为整数，与 `proxy_ssl_verify_depth number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "merge"
+    ],
+    "note": "setter 写入 pscf->ssl_verify_depth（默认 1）；ngx_stream_proxy_set_ssl 在 ssl_verify 为真时把它传给 ngx_ssl_trusted_certificate，后者用于 SSL_CTX_set_verify_depth。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 与 proxy_ssl_verify 均开启时，设置Stream上游证书链验证允许的深度参数。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。该项另受 proxy_ssl_verify 条件限制（2316）。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_trusted_certificate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `proxy_ssl_trusted_certificate file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "merge"
+    ],
+    "note": "setter 写入 pscf->ssl_trusted_certificate；ngx_stream_proxy_set_ssl 在 ssl_verify 为真时要求其非空，并以它调用 ngx_ssl_trusted_certificate 加载 CA 文件作为验证信任源。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 与 proxy_ssl_verify 均开启时，用SSL_CTX_load_verify_locations加载受信CA文件（该文件为空时配置报错）。",
+     "reason": "“证书验证使用的可信CA”依赖 OpenSSL 对证书存储的使用，源码只体现加载调用；ngx_stream_proxy_set_ssl 仅在 ssl_enable 时被调用（2197），加载又受 ssl_verify 限制（2316）。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_crl",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `proxy_ssl_crl file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "merge"
+    ],
+    "note": "setter 写入 pscf->ssl_crl；ngx_stream_proxy_set_ssl 在 ssl_verify 为真时调用 ngx_ssl_crl(cf, pscf->ssl, &pscf->ssl_crl)，后者加载 PEM 吊销列表并启用 CRL 检查。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 与 proxy_ssl_verify 均开启时，指定Stream上游证书验证使用的PEM格式证书吊销列表文件。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。该项另受 proxy_ssl_verify 条件限制（2316）。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_certificate",
+   "evidence": [
+    {
+     "id": "proxy-ssl-init",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1056,
+     "end_line": 1110
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_stream_set_complex_value_zero_slot 把 value[1] 编译为以零结尾的复合值（ccv.zero=1），与 `proxy_ssl_certificate file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge",
+     "proxy-ssl-init"
+    ],
+    "note": "setter 写入 pscf->ssl_certificate；ngx_stream_proxy_set_ssl 对静态值调用 ngx_ssl_certificate 装载，含变量时保留口令并在连接时由 ngx_stream_proxy_ssl_certificate 求值后以 ngx_ssl_connection_certificate 装载，作为连接上游时的客户端证书。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。ngx_stream_proxy_ssl_init_connection 在 1076-1085 对含变量的证书调用 ngx_stream_proxy_ssl_certificate。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 开启时，配置Stream连接上游时用于客户端认证的证书。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_certificate_key",
+   "evidence": [
+    {
+     "id": "proxy-ssl-init",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_proxy_module.c",
+     "start_line": 1056,
+     "end_line": 1110
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_stream_set_complex_value_zero_slot 把 value[1] 编译为以零结尾的复合值（ccv.zero=1），与 `proxy_ssl_certificate_key file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge",
+     "proxy-ssl-init"
+    ],
+    "note": "setter 写入 pscf->ssl_certificate_key；ngx_stream_proxy_set_ssl 对静态值调用 ngx_ssl_certificate 装载，含变量时保留口令并在连接时由 ngx_stream_proxy_ssl_certificate 求值后以 ngx_ssl_connection_certificate 装载，作为连接上游时的客户端私钥。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。ngx_stream_proxy_ssl_init_connection 在 1076-1085 对含变量的证书调用 ngx_stream_proxy_ssl_certificate。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 开启时，配置Stream上游TLS客户端认证证书对应的私钥。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_password_file",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_proxy_ssl_password_file 重复出现报 is duplicate，取 value[1] 调用 ngx_ssl_read_password_file，与 `proxy_ssl_password_file file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "merge"
+    ],
+    "note": "setter 在配置期调用 ngx_ssl_read_password_file 读取文件并存入 pscf->ssl_passwords（逐行口令列表）；ngx_stream_proxy_set_ssl 在装载静态证书与私钥时以 pscf->ssl_passwords 调用 ngx_ssl_certificate，含变量时用 ngx_ssl_preserve_passwords 保留该列表供连接时使用。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_proxy_module--proxy_ssl_conf_command",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 保存 name/value 对，与 `proxy_ssl_conf_command name value;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3",
+     "merge"
+    ],
+    "note": "setter 追加键值到 pscf->ssl_conf_commands；ngx_stream_proxy_set_ssl 调用 ngx_ssl_conf_commands(cf, pscf->ssl, pscf->ssl_conf_commands)，后者经 SSL_CONF_CTX 逐项应用到 SSL 上下文。；merge 在 ssl_enable 为真时以合并后的 conf 调用 ngx_stream_proxy_set_ssl(cf, conf)（2197）。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 proxy_ssl 开启时，将一组OpenSSL配置命令应用到Stream上游TLS上下文。",
+     "reason": "ngx_stream_proxy_set_ssl 仅在 proxy_ssl 开启（ssl_enable）时被 merge 调用（2197），原文字未写该前置条件。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_realip_module--set_real_ip_from",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1；ngx_stream_realip_from 识别 unix:，否则经 ngx_ptocidr 解析 CIDR，失败再解析为主机名（ngx_inet_resolve_host），与 `set_real_ip_from address|CIDR|unix:;` 一致（address 含主机名）。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 把可信来源压入 rscf->from；ngx_stream_realip_handler 在 rscf->from 非空、c->proxy_protocol 非空且客户端地址经 ngx_cidr_match 命中时，用 proxy_protocol 的 src_addr/src_port 解析出地址，ngx_stream_realip_set_addr 改写 c->sockaddr 与 c->addr_text。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_return_module--return",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1；ngx_stream_return 把 value[1] 编译为复合值，与 `return value;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "content-dispatch"
+    ],
+    "note": "setter 设 cscf->handler = ngx_stream_return_handler 并保存复合值；处理函数求值文本后经 ngx_stream_top_filter 发送，发送完成（!c->buffered）后 ngx_stream_finalize_session(s, NGX_STREAM_OK)；文本为空时直接结束。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_set_module--set",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_SRV_CONF|NGX_CONF_TAKE2；ngx_stream_set 要求 args[1] 以 `$` 开头作为变量，args[2] 编译为复合值，与 `set $variable value;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "set-handler",
+     "set-phase",
+     "set-create"
+    ],
+    "note": "setter 把 (变量索引, 复合值) 按声明顺序压入 scf->commands；ngx_stream_set_init 把处理函数挂入 NGX_STREAM_PREACCESS_PHASE；处理函数按序对每项求值并写入 s->variables[index]（或调用 set_handler）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_split_clients_module--split_clients",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE2；ngx_conf_split_clients_block 把 value[1] 编译为复合值，value[2] 须以 `$` 开头，块内 percent value 与 `*` 项由 ngx_stream_split_clients 解析，与 `split_clients string $variable { percent value; ... * value; }` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "块内百分比被累加换算为 32 位阈值；取值函数对输入字符串求值后 ngx_murmur_hash2，依次与各段阈值比较，落入的段（或 `*`）值作为变量值。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_handshake_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 解析为毫秒，与 `ssl_handshake_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "merge-default",
+     "patch-ssl_cert_cb_yield"
+    ],
+    "note": "setter 写入 sscf->handshake_timeout（merge 默认 60000ms）；ngx_stream_ssl_init_connection 在 ngx_ssl_handshake 返回 NGX_AGAIN 时取 sscf 并 ngx_add_timer(c->read, sscf->handshake_timeout)；cert_cb_yield 补丁新增的 WANT_X509_LOOKUP 分支同样返回 NGX_AGAIN，因此仍走此定时器。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_certificate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 可重复追加，与 `ssl_certificate file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 追加到 sscf->certificates；merge 中含变量时 ngx_stream_ssl_compile_certificates 编译并安装 SSL_CTX_set_cert_cb 回调（连接时求值装载），静态值则调用 ngx_ssl_certificates 装载证书链。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_certificate_key",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 可重复追加，与 `ssl_certificate_key file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2"
+    ],
+    "note": "setter 追加到 sscf->certificate_keys；merge 要求其数量不少于 certificates，并与证书一起传给 ngx_ssl_certificates（静态）或由证书回调按变量求值后装载。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_password_file",
+   "evidence": [
+    {
+     "id": "ssl-merge-certs",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_ssl_module.c",
+     "start_line": 921,
+     "end_line": 931
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_ssl_password_file 取 value[1] 调用 ngx_ssl_read_password_file，与 `ssl_password_file file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-1",
+     "ssl-merge-certs"
+    ],
+    "note": "setter 在配置期读取文件为 conf->passwords（每行一个候选口令）；merge 装载静态证书时以 `ngx_ssl_certificates(cf, &conf->ssl, certificates, certificate_keys, conf->passwords)` 把口令列表传给私钥加载。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_dhparam",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_dhparam file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 conf->dhparam；merge 调用 ngx_ssl_dhparam(cf, &conf->ssl, &conf->dhparam)，后者读取文件并 SSL_CTX_set_tmp_dh。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "加载PEM格式DH参数文件，并经SSL_CTX_set_tmp_dh（或新版接口SSL_CTX_set0_tmp_dh_pkey）设置到Stream TLS上下文；文件名为空时不加载。",
+     "reason": "源码只体现读取 PEM DH 参数并设置到 SSL 上下文，“用于DHE密钥交换”是 OpenSSL 对该参数的使用方式，nginx 源码未体现。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_ecdh_curve",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_ecdh_curve curve;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 conf->ecdh_curve；merge 调用 ngx_ssl_ecdh_curve(cf, &conf->ssl, &conf->ecdh_curve)，后者按曲线名设置 SSL_CTX 的曲线。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "设置Stream TLS上下文的ECDH曲线或曲线列表：SSL库支持曲线列表时，auto只启用SSL_OP_SINGLE_ECDH_USE而不额外设置曲线，其他值经SSL_CTX_set1_curves_list设置；不支持时按单个曲线名设置（auto取prime256v1）。",
+     "reason": "“ECDHE”是 OpenSSL 语义，源码只有 ECDH 注释与 SSL_OP_SINGLE_ECDH_USE；并补足 auto 与旧库单曲线分支的源码可见行为。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_protocols",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_1MORE，ngx_conf_set_bitmask_slot 对照 ngx_stream_ssl_protocols 取值表（SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2、TLSv1.3），与语法列举一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-4"
+    ],
+    "note": "setter 写入 conf->protocols（merge 有默认掩码）；merge 以 `ngx_ssl_create(&conf->ssl, conf->protocols, NULL)` 创建上下文，ngx_ssl_create 依掩码设置 SSL_OP_NO_*。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_ciphers",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_ciphers ciphers;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 conf->ciphers；merge 调用 ngx_ssl_ciphers(cf, &conf->ssl, &conf->ciphers, …)，后者对该字符串 SSL_CTX_set_cipher_list。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_verify_client",
+   "evidence": [
+    {
+     "id": "ssl-handler-head",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_ssl_module.c",
+     "start_line": 339,
+     "end_line": 366
+    },
+    {
+     "id": "ssl-init-phase",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_ssl_module.c",
+     "start_line": 1299,
+     "end_line": 1318
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_enum_slot 对照 ngx_stream_ssl_verify 取值表（off、on、optional、optional_no_ca），与 `ssl_verify_client on|off|optional|optional_no_ca;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2",
+     "ssl-handler-head",
+     "ssl-init-phase"
+    ],
+    "note": "setter 写入 sscf->verify；ngx_stream_ssl_handler 在 verify 非零时检查 SSL_get_verify_result，失败（optional_no_ca 容忍特定错误）返回 NGX_ERROR 结束会话，verify==1 时还要求客户端必须出示证书。；handler 头部 354 行取 sscf，ngx_stream_ssl_init 把 ngx_stream_ssl_handler 挂入 NGX_STREAM_SSL_PHASE（1312-1317）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_verify_depth",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 解析为整数，与 `ssl_verify_depth number;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 写入 conf->verify_depth；merge 在 verify 非零时把它传给 ngx_ssl_client_certificate 与 ngx_ssl_trusted_certificate，两者以 SSL_CTX_set_verify_depth 设置链检查深度。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_client_certificate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_client_certificate file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 conf->client_certificate；merge 在 verify 非零时调用 ngx_ssl_client_certificate，后者加载该文件为验证 CA 并设置客户端 CA 名称列表。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "指定验证客户端证书所用的CA文件（SSL_CTX_load_verify_locations），并用该文件设置SSL上下文的客户端CA名称列表（SSL_CTX_set_client_CA_list）；仅在 ssl_verify_client 不为 off 时装载。",
+     "reason": "源码只体现调用 SSL_CTX_load_verify_locations 与 SSL_CTX_set_client_CA_list，未体现该列表发给客户端的协议行为；且装载受 conf->verify 非 0 的条件限制（merge 933-960）。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_trusted_certificate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_trusted_certificate file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 conf->trusted_certificate；merge 在 verify 非零时调用 ngx_ssl_trusted_certificate 加载该 CA 文件；与 ngx_ssl_client_certificate 不同，该函数不设置发给客户端的 CA 名称列表。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "用SSL_CTX_load_verify_locations加载受信CA文件，并设置验证回调与验证深度；仅在 ssl_verify_client 不为 off 时装载。",
+     "reason": "“用于客户端证书验证、不公告名称”依赖 OpenSSL 对证书存储的使用与协议行为，源码只体现上述调用，且受 conf->verify 非 0 的条件限制。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_prefer_server_ciphers",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `ssl_prefer_server_ciphers on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 conf->prefer_server_ciphers；merge 把它作为 ngx_ssl_ciphers 的第四参数，后者为真时设置 SSL_OP_CIPHER_SERVER_PREFERENCE。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_session_cache",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE12；ngx_stream_ssl_session_cache 遍历参数，识别 off、none、builtin、builtin:size 与 shared:name:size，其余报 invalid session cache，与 `off|none|[builtin[:size]] [shared:name:size]` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2",
+     "patch-ssl_sess_cb_yield"
+    ],
+    "note": "setter 写入 builtin_session_cache 与共享区 shm_zone（带 ngx_ssl_session_cache_init）；merge 以二者及 session_timeout 调用 ngx_ssl_session_cache 配置会话缓存。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_session_tickets",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `ssl_session_tickets on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "setter 写入 conf->session_tickets（merge 默认 1）；merge 在其为 0 时对 SSL_CTX 设置 SSL_OP_NO_TICKET。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_session_ticket_key",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 可重复追加，与 `ssl_session_ticket_key file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 追加到 conf->session_ticket_keys；merge 调用 ngx_ssl_session_ticket_keys 读取各文件并设置票据加解密回调，多个密钥用于轮换。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_session_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_sec_slot 解析为秒，与 `ssl_session_timeout time;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 写入 conf->session_timeout；merge 把它传给 ngx_ssl_session_cache，后者以其调用 SSL_CTX_set_timeout，并在票据回调中用于会话有效期。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_crl",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存字符串，与 `ssl_crl file;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 conf->crl；merge 在 verify 非零时调用 ngx_ssl_crl(cf, &conf->ssl, &conf->crl)，后者加载 PEM 吊销列表并启用 CRL 检查。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_conf_command",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 保存 name/value 对，与 `ssl_conf_command name value;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 追加到 conf->conf_commands；merge 调用 ngx_ssl_conf_commands(cf, &conf->ssl, conf->conf_commands)，后者经 SSL_CONF_CTX 逐项应用到服务端 SSL 上下文。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_reject_handshake",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `ssl_reject_handshake on|off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 写入 sscf->reject_handshake；merge 使该 server 即便无证书也创建 SSL 上下文；ngx_stream_ssl_servername 在选定 server 后若其 reject_handshake 为真则设 handshake_rejected 并返回 SSL_TLSEXT_ERR_ALERT_FATAL（unrecognized_name）。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_module--ssl_alpn",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_1MORE；ngx_stream_ssl_alpn 逐项取 value[1..]（每项不超过 255 字节）拼为 ALPN 列表，与 `ssl_alpn protocol ...;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 把协议列表存入 sscf->alpn；merge 在 alpn 非空时 SSL_CTX_set_alpn_select_cb 安装 ngx_stream_ssl_alpn_select，后者用 SSL_select_next_proto 在服务端列表与客户端声明之间协商，失败返回致命告警。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_ssl_preread_module--ssl_preread",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_set_flag_slot 仅接受 on/off，与 `ssl_preread on | off;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-3",
+     "preread-patch"
+    ],
+    "note": "setter 写入 sscf->enabled；ngx_stream_ssl_preread_handler 在 !sscf->enabled 时直接返回，否则解析 ClientHello 提取 TLS 版本、server_name（SNI）与 ALPN 并保存；init 把处理函数挂入预读阶段，不终止 TLS；发行补丁 stream_ssl_preread_no_skip 只把 196-198 行的兜底 return 改为 `rc == NGX_OK ? NGX_DECLINED : rc`；成功路径在 192-194 先返回 servername 函数结果，补丁不改变成功分支。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_module--upstream",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE1；ngx_stream_upstream 取 value[1] 作为组名并解析块，与 `upstream name { ... }` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "setter 经 ngx_stream_upstream_add 创建命名上游组并解析块内 server 等指令；init_upstream 把各 server 的地址构建为 peers；proxy_pass 通过同一组名引用。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_module--server",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_UPS_CONF|NGX_CONF_1MORE；ngx_stream_upstream_server 以 value[1] 为地址（须含端口），value[2..] 识别 weight=、max_conns=、max_fails=、fail_timeout=、backup、down，是否允许由所选负载均衡方法的 flags 决定，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "setter 把地址与 weight、max_conns、max_fails、fail_timeout、backup、down 存入 uscf->servers；round_robin 初始化据此建立 primary/backup peers，权重参与选择，max_conns/max_fails/fail_timeout 用于连接上限与失败暂避，down 的 server 被跳过。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_hash_module--hash",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_UPS_CONF|NGX_CONF_TAKE12；ngx_stream_upstream_hash 把 value[1] 编译为复合值，可选 value[2] 只接受 consistent，与 `hash key [consistent];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3"
+    ],
+    "note": "setter 保存 key 并把 init_upstream 设为 init_hash 或（consistent）init_chash；get_hash_peer 以 key 求值得到的哈希值对 total_weight 取模并按权重在 peers 中定位，consistent 方式按每个 peer 的权重生成一致性哈希点并据 key 定位。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "按文本与变量组成的键为Stream连接选择上游，支持普通哈希和consistent一致性哈希；该方法的 flags 不含 backup，server 的 backup 参数不适用。",
+     "reason": "ngx_stream_upstream_hash 设置的 uscf->flags 不含 NGX_STREAM_UPSTREAM_BACKUP（hash.c 665-670），不具备 backup 能力。"
+    }
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_least_conn_module--least_conn",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_UPS_CONF|NGX_CONF_NOARGS，ngx_stream_upstream_least_conn 不读取参数，与 `least_conn;` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-2"
+    ],
+    "note": "setter 把 init_upstream 设为 least_conn 初始化；get_least_conn_peer 以 conns*best->weight 与 best->conns*peer->weight 比较选活动连接占比最小者，相同时按权重轮转式选择。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_random_module--random",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_UPS_CONF|NGX_CONF_NOARGS|NGX_CONF_TAKE12（0..2 个参数）；ngx_stream_upstream_random 对 value[1] 只接受 two、value[2] 只接受 least_conn，与 `random [two [least_conn]];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-2"
+    ],
+    "note": "setter 把 init_upstream 设为 init_random，value[1]==two 时置 rcf->two；get_random_peer 按权重随机选取，two 模式下选两个不同候选并以 conns*weight 交叉比较取活动连接占比较小者。"
+   }
+  },
+  {
+   "id": "nginx--ngx_stream_upstream_zone_module--zone",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_STREAM_UPS_CONF|NGX_CONF_TAKE12；ngx_stream_upstream_zone 以 value[1] 为区名，可选 value[2] 经 ngx_parse_size 解析为大小（不小于 8 页），与 `zone name [size];` 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-1"
+    ],
+    "note": "setter 经 ngx_shared_memory_add 登记共享内存并设 init 回调 ngx_stream_upstream_init_zone；init_zone 把 peers 及其 conns、fails 等运行状态复制/建立在该共享区，供各 worker 共用。"
+   }
+  }
+ ]
+}
