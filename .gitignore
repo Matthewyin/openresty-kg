@@ -31,3 +31,6 @@ analysis/ui-backup/
 .DS_Store
 .v2c/
 .video_agent/
+
+# 子 agent 编排工作区（台账、任务说明、审核包）
+.superpowers/
