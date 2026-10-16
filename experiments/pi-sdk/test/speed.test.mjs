@@ -133,7 +133,15 @@ test('限制与运行时只引用已有字段，保留子项状态和值，证�
   assert.throws(() => validateModelReport({ facts: [{ entryId, field: 'summary', text: '伪造正文' }] }, bundle), /字段/);
   assert.throws(() => validateModelReport({ facts: [{ entryId, field: 'summary' }], citations: [] }, bundle), /契约/);
   const report = makeReport(validateModelReport({ facts: [{ entryId, field: 'summary' }] }, bundle), bundle);
-  assert.equal(report.modelSelection.resolvedFacts[0].status, 'unverified'); assert.deepEqual(report.modelSelection.citations, []);
+  // summary 的状态与出处取自发布的字段证据；全部条目完成逐字段登记后应为 verified，宿主补齐的引文恰为证据所列源码原文。
+  const summaryEvidence = bundle.details.get(entryId).summary_evidence;
+  assert.equal(report.modelSelection.resolvedFacts[0].status, summaryEvidence.status);
+  assert.equal(report.modelSelection.resolvedFacts[0].status, 'verified');
+  assert.deepEqual([...new Set(report.modelSelection.citations.map(item => item.sourceId))].sort(), [...summaryEvidence.source_ids].sort());
+  for (const citation of report.modelSelection.citations) {
+    const source = bundle.details.get(entryId).sources.find(item => item.id === citation.sourceId);
+    assert.equal(citation.entryId, entryId); assert.equal(citation.field, 'summary'); assert.equal(citation.quote, source.code);
+  }
 }));
 
 test('旧 v1 会话不删除用户记录，transformContext 剔除旧全文但保留问题与已选身份', () => usingSpike(async spike => {

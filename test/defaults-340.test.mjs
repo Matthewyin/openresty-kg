@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
@@ -50,6 +50,36 @@ function fixedSource(evidence, component, position) {
 }
 const ordered = sources => [...sources].sort((a, b) => a.id.localeCompare(b.id));
 
+// 340 专项基线早于字段证据；字段证据覆盖只允许追加来源、写入 syntax/summary 证据对象并应用经审核的修正。
+// 先按覆盖文件逐项核对这些改动，再把它们撤回，剩余内容仍须与 340 基线逐字段一致。
+const overlays = new Map(readdirSync(resolve(root, config.field_evidence_dir)).filter(name => name.endsWith('.json')).sort()
+  .flatMap(name => json(`${config.field_evidence_dir}/${name}`).entries.map(entry => [entry.id, entry])));
+const UNVERIFIED_FIELD = { status: 'unverified', source_ids: [], note: null };
+
+function stripFieldEvidence(actual, entry) {
+  const stripped = structuredClone(actual);
+  const overlay = overlays.get(entry.id);
+  for (const field of ['syntax', 'summary']) {
+    const evidence = overlay?.[`${field}_evidence`];
+    const correction = overlay?.corrections?.[field];
+    if (correction) {
+      // 修正必须原样发布，并在证据对象中保留被替换的原文以供回溯。
+      assert.equal(actual[field], correction.text, `${entry.id}/${field}: 修正未发布`);
+      assert.deepEqual(actual[`${field}_evidence`], { ...evidence, correction: { previous_text: actual[`${field}_evidence`].correction?.previous_text, reason: correction.reason } },
+        `${entry.id}/${field}: 字段证据与覆盖不符`);
+      stripped[field] = actual[`${field}_evidence`].correction.previous_text;
+    } else {
+      assert.deepEqual(actual[`${field}_evidence`], evidence ?? UNVERIFIED_FIELD, `${entry.id}/${field}: 字段证据与覆盖不符`);
+    }
+    delete stripped[`${field}_evidence`];
+  }
+  // 覆盖新增的来源按声明顺序追加在末尾，且每段都必须是锁定 revision 的原文。
+  const extra = (overlay?.evidence ?? []).map(item => fixedSource(item, entry.component, null));
+  assert.deepEqual(actual.sources.slice(actual.sources.length - extra.length), extra, `${entry.id}: 字段证据来源不符`);
+  stripped.sources = actual.sources.slice(0, actual.sources.length - extra.length);
+  return stripped;
+}
+
 function checkIndex(actual) {
   assert.equal(actual.references_path, `releases/${actual.release_id}/references.json`);
   assert.deepEqual(actual.directives.map(e => e.id), baseline.directives.map(e => e.id));
@@ -60,9 +90,10 @@ function checkIndex(actual) {
   assert.deepEqual({ ...actual, release_id: baseline.release_id, references_path: baseline.references_path, directives: baseline.directives }, baseline);
 }
 
-function checkDetail(actual, entry) {
-  assert.equal(actual.release_id, index.release_id);
-  assert.doesNotThrow(() => validateDetail(actual, entry, index), `${entry.id}: 发布结构无效`);
+function checkDetail(published, entry) {
+  assert.equal(published.release_id, index.release_id);
+  assert.doesNotThrow(() => validateDetail(published, entry, index), `${entry.id}: 发布结构无效`);
+  const actual = stripFieldEvidence(published, entry);
   const before = beforeById.get(entry.id);
   const target = targets.get(entry.id);
   const stable = structuredClone(actual);
@@ -164,6 +195,9 @@ test('补证保护拒绝事实漂移、错误证据、重复引用及旧发布�
     d => { d.summary += '误改'; }, d => { d.availability.status = 'verified'; },
     d => { d.patch_status.note += '误改'; }, d => d.patch_status.source_ids.push('extra'),
     d => { d.release_id = 'stale-release'; },
+    d => { d.syntax += '误改'; }, d => { d.syntax_evidence.note += '误改'; },
+    d => { d.summary_evidence.status = 'unverified'; }, d => d.summary_evidence.source_ids.push('extra'),
+    d => { d.sources.at(-1).code += '误改'; }, d => { delete d.syntax_evidence; },
   ]) {
     const wrong = structuredClone(actual); mutate(wrong);
     assert.throws(() => checkDetail(wrong, entry), assert.AssertionError);
