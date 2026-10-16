@@ -38,8 +38,8 @@
 - 语法（`lock_file file;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，str setter 取 value[1] 作为文件名。
 - 功能：verified；source_ids：implementation-0, summary-shmtx-atomic, summary-shmtx-file, summary-accept-mutex-create
-  - 判据：ccf->lock_file 经 init_conf 拼上 .accept 得到 cycle->lock_file，传给 ngx_shmtx_create；有原子操作时（NGX_HAVE_ATOMIC_OPS）不使用该名称，否则才以它打开文件锁。
-- 新增片段：summary-shmtx-atomic（src/core/ngx_shmtx.c:12-25）；summary-shmtx-file（src/core/ngx_shmtx.c:199-232）；summary-accept-mutex-create（src/event/ngx_event.c:583-588）
+  - 判据：ccf->lock_file 经 init_conf 拼上 .accept 得到 cycle->lock_file，传给 ngx_shmtx_create；有原子操作时（NGX_HAVE_ATOMIC_OPS）不使用该名称，否则才以它打开文件锁。原子版 ngx_shmtx_create 全文在 src/core/ngx_shmtx.c:12-43：`git -C repos/nginx show e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928:src/core/ngx_shmtx.c | sed -n '18,43p' | grep -n -w name` 只命中第 19 行形参 name，函数体 `sed -n '21,42p' | grep -n -w name` 命中 0。
+- 新增片段：summary-shmtx-atomic（src/core/ngx_shmtx.c:12-43，裁定回查由 12-25 扩至函数结束）；summary-shmtx-file（src/core/ngx_shmtx.c:199-232）；summary-accept-mutex-create（src/event/ngx_event.c:583-588）
 
 ## nginx--ngx_core_module--worker_processes
 
@@ -60,15 +60,17 @@
 
 - 语法（`user user [group];`）：verified；source_ids：registration, implementation-0
   - 判据：注册为 NGX_CONF_TAKE12；ngx_set_user 取 value[1] 为用户，nelts==2 时组名取同名，否则取 value[2]。
-- 功能：verified；source_ids：implementation-0, implementation-1, runtime-patch
-  - 判据：解析出的 uid/gid 在 worker 初始化（geteuid()==0）时 setgid/setuid；补丁令特权代理进程不降权，故仅作用于普通 worker。
+- 功能：verified；source_ids：implementation-0, implementation-1, runtime-patch, summary-ccf-get
+  - 判据：解析出的 uid/gid 在 worker 初始化（geteuid()==0）时 setgid/setuid；补丁令特权代理进程不降权，故仅作用于普通 worker。此处 ccf 在 ngx_worker_process_init 第 768 行由 ngx_get_conf 取得；runtime-patch 里的 ngx_get_conf 属于特权代理函数，不是这一处 ccf。
+- 新增片段：summary-ccf-get（src/os/unix/ngx_process_cycle.c:768-768）
 
 ## nginx--ngx_core_module--worker_priority
 
 - 语法（`worker_priority number;`）：verified；source_ids：registration, implementation-0
   - 判据：注册为 NGX_CONF_TAKE1；ngx_set_priority 接受可带 +/- 前缀的整数。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：ccf->priority 在 worker（worker >= 0）初始化时传给 setpriority(PRIO_PROCESS)。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-ccf-get
+  - 判据：ccf->priority 在 worker（worker >= 0）初始化时传给 setpriority(PRIO_PROCESS)。ccf 在同函数第 768 行由 ngx_get_conf 取得后，第 770 行才读取 ccf->priority。
+- 新增片段：summary-ccf-get（src/os/unix/ngx_process_cycle.c:768-768）
 
 ## nginx--ngx_core_module--worker_cpu_affinity
 
@@ -88,9 +90,9 @@
 
 - 语法（`worker_rlimit_core size;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，off setter 经 ngx_parse_offset 解析大小。
-- 功能：verified；source_ids：implementation-0, summary-worker-init
-  - 判据：ccf->rlimit_core 在 ngx_worker_process_init 中设为 setrlimit(RLIMIT_CORE) 的软、硬限制。
-- 新增片段：summary-worker-init（src/os/unix/ngx_process_cycle.c:752-761）
+- 功能：verified；source_ids：implementation-0, summary-worker-init, summary-ccf-get
+  - 判据：ccf->rlimit_core 在 ngx_worker_process_init 中设为 setrlimit(RLIMIT_CORE) 的软、硬限制。ccf 在同函数第 768 行由 ngx_get_conf 取得后才读取该字段。
+- 新增片段：summary-worker-init（src/os/unix/ngx_process_cycle.c:752-761）；summary-ccf-get（src/os/unix/ngx_process_cycle.c:768-768）
 
 ## nginx--ngx_core_module--worker_shutdown_timeout
 
@@ -104,9 +106,9 @@
 
 - 语法（`working_directory directory;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，str setter 取 value[1]。
-- 功能：verified；source_ids：implementation-0, summary-worker-init
-  - 判据：ccf->working_directory 非空时在 ngx_worker_process_init 中 chdir；失败则 exit(2)。
-- 新增片段：summary-worker-init（src/os/unix/ngx_process_cycle.c:752-761）
+- 功能：verified；source_ids：implementation-0, summary-worker-init, summary-ccf-get
+  - 判据：ccf->working_directory 非空时在 ngx_worker_process_init 中 chdir；失败则 exit(2)。ccf 在同函数第 768 行由 ngx_get_conf 取得后才读取该字段。
+- 新增片段：summary-worker-init（src/os/unix/ngx_process_cycle.c:752-761）；summary-ccf-get（src/os/unix/ngx_process_cycle.c:768-768）
 
 ## nginx--ngx_core_module--env
 
@@ -157,46 +159,49 @@
 
 - 语法（`devpoll_changes number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：dpcf->changes 决定 change_list 容量；写满或 NGX_CLOSE_EVENT 时整批 write(/dev/poll)。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-dpcf-get
+  - 判据：dpcf->changes 决定 change_list 容量；写满或 NGX_CLOSE_EVENT 时整批 write(/dev/poll)。dpcf 在 ngx_devpoll_init 第 123 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-dpcf-get（src/event/modules/ngx_devpoll_module.c:123-123）
 
 ## nginx--ngx_devpoll_module--devpoll_events
 
 - 语法（`devpoll_events number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：dpcf->events 决定 event_list 容量并赋给 nevents，作为 DP_POLL 的 dp_nfds。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-dpcf-get
+  - 判据：dpcf->events 决定 event_list 容量并赋给 nevents，作为 DP_POLL 的 dp_nfds。dpcf 在 ngx_devpoll_init 第 123 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-dpcf-get（src/event/modules/ngx_devpoll_module.c:123-123）
 
 ## nginx--ngx_epoll_module--epoll_events
 
 - 语法（`epoll_events number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：epcf->events 决定 event_list 容量和 nevents，传给 epoll_wait 的 maxevents。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-epcf-get
+  - 判据：epcf->events 决定 event_list 容量和 nevents，传给 epoll_wait 的 maxevents。epcf 在 ngx_epoll_init 第 327 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-epcf-get（src/event/modules/ngx_epoll_module.c:327-327）
 
 ## nginx--ngx_epoll_module--worker_aio_requests
 
 - 语法（`worker_aio_requests number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, d340-aio-gate, summary-platform-linux, summary-file-aio-gate
-  - 判据：epcf->aio_requests 在 NGX_HAVE_FILE_AIO 下由 ngx_epoll_aio_init 传给 io_setup；epoll 模块与 Linux AIO 的构建条件见平台片段。
-- 新增片段：summary-platform-linux（auto/os/linux:52-56）；summary-file-aio-gate（auto/unix:583-603）
+- 功能：verified；source_ids：implementation-0, d340-aio-gate, summary-platform-linux, summary-file-aio-gate, summary-epcf-get
+  - 判据：epcf->aio_requests 在 NGX_HAVE_FILE_AIO 下由 ngx_epoll_aio_init 传给 io_setup；epoll 模块与 Linux AIO 的构建条件见平台片段。epcf 在 ngx_epoll_init 第 327 行由 ngx_event_get_conf 取得，并在第 345 行传给 ngx_epoll_aio_init。
+- 新增片段：summary-platform-linux（auto/os/linux:52-56）；summary-file-aio-gate（auto/unix:583-603）；summary-epcf-get（src/event/modules/ngx_epoll_module.c:327-327）
 
 ## nginx--ngx_eventport_module--eventport_events
 
 - 语法（`eventport_events number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, implementation-1, summary-platform-solaris
-  - 判据：epcf->events 决定 event_list 容量和 nevents，传给 port_getn；auto/os/solaris 仅在探测到 event ports 时编入该模块，覆盖 Solaris 限定。
-- 新增片段：summary-platform-solaris（auto/os/solaris:49-61）
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-platform-solaris, summary-epcf-get
+  - 判据：epcf->events 决定 event_list 容量和 nevents，传给 port_getn；auto/os/solaris 仅在探测到 event ports 时编入该模块，覆盖 Solaris 限定。epcf 在 ngx_eventport_init 第 218 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-platform-solaris（auto/os/solaris:49-61）；summary-epcf-get（src/event/modules/ngx_eventport_module.c:218-218）
 
 ## nginx--ngx_iocp_module--iocp_threads
 
 - 语法（`iocp_threads number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
 - 功能：verified；source_ids：implementation-0, summary-platform-win32
-  - 判据：cf->threads 直接作为 CreateIoCompletionPort 的 NumberOfConcurrentThreads；IOCP 模块由 auto/os/win32 编入，覆盖 Windows 限定。
-- 新增片段：summary-platform-win32（auto/os/win32:34-39）
+  - 判据：cf->threads 直接作为 CreateIoCompletionPort 的 NumberOfConcurrentThreads；IOCP 模块由 auto/os/win32 编入，覆盖 Windows 限定。否定陈述检索：`git -C repos/nginx grep -n -w threads e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928`，范围是该锁定 revision 全目录，命中 48 处：auto/configure:62，auto/lib/openssl/make:67，auto/lib/openssl/makefile.msvc:9，auto/options:217，auto/options:453，auto/summary:11，auto/threads:10，docs/xml/nginx/changes.xml:5611、5616、6037、6041、6216、6221、17283、20534、21982、22894、23324、24725，src/core/ngx_connection.h:66，src/core/ngx_thread_pool.c:38、156、183、430、439、470、480、482、484、486、507、509，src/core/ngx_times.c:16，src/event/modules/ngx_iocp_module.c:34、117、361、374，src/event/modules/ngx_iocp_module.h:13，src/event/ngx_event.h:121，src/http/modules/ngx_http_userid_filter_module.c:577，src/http/ngx_http_copy_filter_module.c:334、347，src/http/ngx_http_core_module.c:4741、4793，src/http/ngx_http_upstream.c:3991、4004，src/os/unix/ngx_linux_sendfile_chain.c:216，src/os/win32/ngx_process_cycle.c:701。其中 iocp 字段只出现在 ngx_iocp_module.c:34（注册偏移）、117（CreateIoCompletionPort 的 cf->threads）、361（置 UNSET）、374（init 为 0）与 ngx_iocp_module.h:13；ngx_event.h:121 只是注释。其余命中属于 thread pool、aio threads、构建选项或文档，不读取 iocp 的 cf->threads。`git -C repos/nginx grep -n CreateThread e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928` 全目录命中 src/event/ngx_event_connectex.c:71、76、80 与 src/os/win32/ngx_thread.c:19、28。ngx_iocp_new_thread 定义在 connectex.c:63，调用点 53（参数 1）与 159（参数 0），均不读取 cf->threads。
+- 新增片段：summary-platform-win32（auto/os/win32:34-39）。裁定回查未再新增片段，只在 note 写明全目录检索。
 
 ## nginx--ngx_iocp_module--post_acceptex
 
@@ -217,15 +222,17 @@
 
 - 语法（`kqueue_changes number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0
-  - 判据：kcf->changes 决定 change_list 容量，变更列表在 process_events 中经 kevent 一次提交。
+- 功能：verified；source_ids：implementation-0, summary-kcf-get
+  - 判据：kcf->changes 决定 change_list 容量，变更列表在 process_events 中经 kevent 一次提交。kcf 在 ngx_kqueue_init 第 125 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-kcf-get（src/event/modules/ngx_kqueue_module.c:125-125）
 
 ## nginx--ngx_kqueue_module--kqueue_events
 
 - 语法（`kqueue_events number;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，num setter 解析整数。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：kcf->events 决定 event_list 容量和 nevents，传给 kevent 的 nevents。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-kcf-get
+  - 判据：kcf->events 决定 event_list 容量和 nevents，传给 kevent 的 nevents。kcf 在 ngx_kqueue_init 第 125 行由 ngx_event_get_conf 取得后才读取该字段。
+- 新增片段：summary-kcf-get（src/event/modules/ngx_kqueue_module.c:125-125）
 
 ## nginx--ngx_events_module--events
 
@@ -267,15 +274,17 @@
 
 - 语法（`accept_mutex_delay time;`）：verified；source_ids：registration, configuration-definition
   - 判据：注册为 NGX_CONF_TAKE1，msec setter 解析时间。
-- 功能：verified；source_ids：mutex-wait, accept-retry, event-defaults
-  - 判据：ecf->accept_mutex_delay 赋给 ngx_accept_mutex_delay，未取得锁时限制 timer 上限；EMFILE/ENFILE 且无锁时作为 ngx_add_timer 超时；默认 500ms。
+- 功能：verified；source_ids：mutex-wait, accept-retry, event-defaults, summary-mutex-assign, summary-accept-ecf
+  - 判据：ecf->accept_mutex_delay 赋给 ngx_accept_mutex_delay，未取得锁时限制 timer 上限；EMFILE/ENFILE 且无锁时作为 ngx_add_timer 超时；默认 500ms。该赋值在 ngx_event.c 第 652 行，其前第 647 行 ngx_event_get_conf 取得 ecf；accept 路径的 ecf 在 ngx_event_accept.c 第 45 行另取。
+- 新增片段：summary-mutex-assign（src/event/ngx_event.c:646-652）；summary-accept-ecf（src/event/ngx_event_accept.c:45-45）
 
 ## nginx--ngx_event_core_module--debug_connection
 
 - 语法（`debug_connection address | CIDR | unix:;`）：verified；source_ids：registration, configuration-definition, implementation-0
   - 判据：注册为 NGX_CONF_TAKE1；ngx_event_debug_connection 依次处理 unix:、CIDR（ngx_ptocidr）与主机名解析。
-- 功能：verified；source_ids：implementation-0, implementation-1
-  - 判据：命中的 CIDR/地址写入 ecf->debug_connection；连接接收时 ngx_debug_accepted_connection 匹配后设 NGX_LOG_DEBUG_CONNECTION|ALL；未 --with-debug 则忽略。
+- 功能：verified；source_ids：implementation-0, implementation-1, summary-accept-ecf, summary-debug-call
+  - 判据：命中的 CIDR/地址写入 ecf->debug_connection；连接接收时 ngx_debug_accepted_connection 匹配后设 NGX_LOG_DEBUG_CONNECTION|ALL；未 --with-debug 则忽略。调用方 ngx_event_accept 第 45 行取得 ecf，第 289 行调用 ngx_debug_accepted_connection(ecf, c)。
+- 新增片段：summary-accept-ecf（src/event/ngx_event_accept.c:45-45）；summary-debug-call（src/event/ngx_event_accept.c:289-289）
 
 ## nginx--ngx_openssl_module--ssl_engine
 

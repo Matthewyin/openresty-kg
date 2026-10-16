@@ -20,7 +20,7 @@
      "merge-values",
      "limit-handler"
     ],
-    "note": "LOG 统计 handler 首行判断 !ctx->enable || !vtscf->enable（本指令写入 enable）；ctx->enable 在 init_main_conf 初值 0、zone 解析时置 1；merge 默认 enable=1；limit-handler 只检查 limit/bypass_limit 而不读 enable，印证“不是统一总开关”。"
+    "note": "LOG 统计 handler 首行判断 !ctx->enable || !vtscf->enable（本指令写入 enable）；ctx->enable 在 init_main_conf 初值 0、zone 解析时置 1；merge 默认 enable=1。检索命令 git -C repos/nginx-module-vts grep -n -E 'vtscf->enable|->enable' 52fe11e44c47a49b052be89e36dfa17d81bf52a5 -- src，范围是该锁定 revision 的 src 全目录。全部命中 15 处：局部 vtscf->enable 只在 module.c:293 被读取（LOG 阶段统计 handler）；display.c:125、display.c:428、limit.c:26、set.c:40、module.c:1065、module.c:1183、module.c:1220 读主配置 ctx->enable；module.c:599 写入 ctx->enable=1，module.c:909 为注释，module.c:923 写入 UNSET，module.c:975 默认 0；module.c:1001 为注释中的 conf->enable，module.c:1027 写入 UNSET，module.c:1124 合并 conf->enable 与 prev->enable（默认 1）。display.c、limit.c、set.c 只读主配置 ctx->enable，不读局部 vtscf->enable，故不是所有 VTS 处理器的统一总开关。"
    }
   },
   {
@@ -209,6 +209,15 @@
   },
   {
    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_limit_check_duplicate",
+   "evidence": [
+    {
+     "id": "main-loc-conf",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 944,
+     "end_line": 944
+    }
+   ],
    "syntax_evidence": {
     "status": "verified",
     "source_ids": [
@@ -223,9 +232,10 @@
      "main-limit-unique",
      "local-limit-unique",
      "limit-unique",
-     "merge-values"
+     "merge-values",
+     "main-loc-conf"
     ],
-    "note": "本指令写入 limit_check_duplicate：init_main_conf 对 ctx->limit_traffics 与 limit_filter_traffics 去重，merge_loc_conf 对局部两类列表去重；limit_traffic_unique 以 key 与 variable 拼接的 crc32 比较。"
+    "note": "本指令写入 limit_check_duplicate：init_main_conf 对 ctx->limit_traffics 与 limit_filter_traffics 去重，merge_loc_conf 对局部两类列表去重；limit_traffic_unique 以 key 与 variable 拼接的 crc32 比较。取配置行在 init_main_conf 内：vtscf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_vhost_traffic_status_module)（main-loc-conf，module.c:944），其后才读取 vtscf->limit_check_duplicate。"
    }
   },
   {
@@ -350,6 +360,13 @@
      "file": "src/ngx_http_vhost_traffic_status_shm.c",
      "start_line": 258,
      "end_line": 268
+    },
+    {
+     "id": "shm-main-conf",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 178,
+     "end_line": 178
     }
    ],
    "syntax_evidence": {
@@ -368,9 +385,10 @@
      "status-code-output",
      "status-code-json-output",
      "status-slot",
-     "status-counters"
+     "status-counters",
+     "shm-main-conf"
     ],
-    "note": "解析函数填充 ctx->measure_status_codes（all 时 100–599）；shm_add_node 据此分配计数器并计算槽位；JSON 与 Prometheus 输出逐码读取计数。"
+    "note": "解析函数填充 ctx->measure_status_codes（all 时 100–599）；shm_add_node 据此分配计数器并计算槽位；JSON 与 Prometheus 输出逐码读取计数。取配置行在 shm_add_node 开头：ctx = ngx_http_get_module_main_conf(r, ngx_http_vhost_traffic_status_module)（shm-main-conf，shm.c:178），status-slot 与 status-counters 共用该 ctx。"
    }
   },
   {
@@ -418,7 +436,7 @@
      "arg-count",
      "argument-table"
     ],
-    "note": "注册标志 NOARGS|TAKE1，放行 0 或 1 个参数；display 函数全程不读取 cf->args，仅设置 clcf->handler，故参数被忽略。"
+    "note": "注册标志 NOARGS|TAKE1，放行 0 或 1 个参数；ngx_http_vhost_traffic_status_display（display-binding，display.c:1040-1048）全程不读取 cf->args，只设置 clcf->handler，故占位符改为 [value]。"
    },
    "summary_evidence": {
     "status": "verified",
@@ -428,6 +446,12 @@
      "control-commands"
     ],
     "note": "本指令把当前层 ngx_http_core_loc_conf 的 handler 设为 display_handler；该 handler 对 URI 以 /control 结尾的请求走控制处理，其余走默认展示，控制命令为 status/delete/reset。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "vhost_traffic_status_display [value];",
+     "reason": "处理函数 ngx_http_vhost_traffic_status_display（display-binding，src/ngx_http_vhost_traffic_status_display.c:1040-1048）不读取 cf->args，只把 clcf->handler 设为 display_handler 后返回；可选参数被忽略，占位符由 [ignored_argument] 改为 [value]。"
+    }
    }
   },
   {
@@ -453,6 +477,15 @@
   },
   {
    "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_jsonp",
+   "evidence": [
+    {
+     "id": "jsonp-loc-conf",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_display.c",
+     "start_line": 424,
+     "end_line": 424
+    }
+   ],
    "syntax_evidence": {
     "status": "verified",
     "source_ids": [
@@ -465,9 +498,10 @@
     "status": "verified",
     "source_ids": [
      "jsonp-output",
-     "merge-values"
+     "merge-values",
+     "jsonp-loc-conf"
     ],
-    "note": "本指令写入 loc->jsonp（默认回调名常量）；仅 JSONP 分支以 %V( 输出该名称并包裹数据，格式选择仍由 URI 的 /format/ 或 loc->format 决定（同一函数先赋值 format）。"
+    "note": "本指令写入 loc->jsonp（默认回调名常量）；仅 JSONP 分支以 %V( 输出该名称并包裹数据，格式选择仍由 URI 的 /format/ 或 loc->format 决定（同一函数先赋值 format）。取配置行在 display_handler_default 开头：vtscf = ngx_http_get_module_loc_conf(r, ngx_http_vhost_traffic_status_module)（jsonp-loc-conf，display.c:424），其后 jsonp-output 才读取 vtscf->jsonp 与 vtscf->format。"
    }
   },
   {
@@ -539,6 +573,13 @@
      "file": "src/ngx_http_vhost_traffic_status_display_json.c",
      "start_line": 513,
      "end_line": 527
+    },
+    {
+     "id": "average-loc-conf",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+     "start_line": 486,
+     "end_line": 486
     }
    ],
    "syntax_evidence": {
@@ -558,9 +599,10 @@
      "average-runtime",
      "average-consumer",
      "merge-values",
-     "module-constants"
+     "module-constants",
+     "average-loc-conf"
     ],
-    "note": "解析函数写入 average_method/average_period，merge 默认 AMM 与 60 秒；JSON/Prometheus 输出对请求耗时队列和上游响应耗时队列调用 time_queue_average，按方法与周期计算 AMM/WMA。"
+    "note": "解析函数写入 average_method/average_period，merge 默认 AMM 与 60 秒；JSON/Prometheus 输出对请求耗时队列和上游响应耗时队列调用 time_queue_average，按方法与周期计算 AMM/WMA。取配置行在 display_set_upstream_node 开头：vtscf = ngx_http_get_module_loc_conf(r, ngx_http_vhost_traffic_status_module)（average-loc-conf，display_json.c:486），其后才读取 vtscf->average_method 与 vtscf->average_period。"
    }
   },
   {
@@ -680,6 +722,13 @@
      "file": "src/ngx_http_vhost_traffic_status_node.c",
      "start_line": 479,
      "end_line": 503
+    },
+    {
+     "id": "shm-loc-conf",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 180,
+     "end_line": 180
     }
    ],
    "syntax_evidence": {
@@ -698,9 +747,10 @@
      "node-update",
      "node-callers",
      "node-set",
-     "merge-values"
+     "merge-values",
+     "shm-loc-conf"
     ],
-    "note": "本指令写入 loc->ignore_status，新建节点（shm_add_node）与已有节点（node_set）都把它复制到 vtsn->ignore_status；node_update 先取 state->status（重试尝试）或响应状态，更新 last_seen 后用 ignore_status 宏按类别判断并提前返回。"
+    "note": "本指令写入 loc->ignore_status，新建节点（shm_add_node）与已有节点（node_set）都把它复制到 vtsn->ignore_status；node_update 先取 state->status（重试尝试）或响应状态，更新 last_seen 后用 ignore_status 宏按类别判断并提前返回。新建路径的取配置行在 shm_add_node 开头：vtscf = ngx_http_get_module_loc_conf(r, ngx_http_vhost_traffic_status_module)（shm-loc-conf，shm.c:180），其后才把 vtscf->ignore_status 复制到新节点；已有节点路径 node-set 已含取配置行。"
    }
   }
  ]
