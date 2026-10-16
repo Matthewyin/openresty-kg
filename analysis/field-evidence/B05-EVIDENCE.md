@@ -1,0 +1,527 @@
+# B05 字段证据记录
+
+范围：nginx ngx_http_scgi_module（44 条）与 ngx_http_grpc_module（28 条），共 72 条。固定 revision：nginx release-1.27.1（e06bdbd4…）；涉及发行补丁（upstream_timeout_fields、no_error_pages、upstream_pipelining）的条目已把对应补丁来源列入功能 source_ids。
+
+说明：scgi_*、grpc_* 的多数行为落在 ngx_http_upstream.c / ngx_event_pipe.c 等共享代码，本记录均从各自模块的注册、setter、handler（u->conf=&…->upstream、回调绑定）追到共享逻辑，未借用 proxy 或彼此的结论。grpc 模块没有响应缓存、store、临时文件缓冲等功能（handler 中不设置 u->caches/create_key/pipe，hardcode 的 buffering=0），故其说明只涉及非缓冲转发路径。官方文档仅作交叉印证，以锁定源码为准。
+
+## nginx--ngx_http_grpc_module--grpc_pass
+
+- 语法（`grpc_pass address;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_grpc_pass 取 value[1] 作地址，可带 grpc:// 或 grpcs:// 前缀（无前缀按 grpc 处理），含变量时编译为 grpc_lengths，与 `grpc_pass address;` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-7, implementation-8, implementation-9
+  - 判据：ngx_http_grpc_pass 设置 clcf->handler=ngx_http_grpc_handler 并解析地址（grpcs:// 置 glcf->ssl=1，无 SSL 构建则报错）；content 阶段在 clcf->handler 存在时设 r->content_handler 并调用；handler 按 glcf->ssl 把 u->schema 设为 grpcs:// 或 grpc://，并以 u->create_request 等回调经 ngx_http_upstream_init 回源；连接前导 ngx_http_grpc_connection_start 与请求头块构造为 HTTP/2 帧。
+
+## nginx--ngx_http_grpc_module--grpc_bind
+
+- 语法（`grpc_bind address [transparent ] | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_upstream_bind_set_slot 在 2 个参数且第 2 个为 off 时关闭，否则 value[1] 为地址（可含变量），第 3 个参数只接受 transparent，与 `address [transparent] | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：grpc_bind 把值写入 upstream.local，handler 使 u->conf=&glcf->upstream；ngx_http_upstream_init_request 调用 ngx_http_upstream_set_local 把 local 装入 u->peer.local（含 transparent）；ngx_event_connect_peer 在 pc->local 非空时先 bind 到该地址（transparent 时先设透明选项）。
+
+## nginx--ngx_http_grpc_module--grpc_socket_keepalive
+
+- 语法（`grpc_socket_keepalive on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-binding
+  - 判据：upstream.socket_keepalive 经 u->conf 在 ngx_http_upstream_init_request 中置 u->peer.so_keepalive=1；ngx_event_connect_peer 在 pc->so_keepalive 时对新建套接字 setsockopt(SO_KEEPALIVE)。
+
+## nginx--ngx_http_grpc_module--grpc_connect_timeout
+
+- 语法（`grpc_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-timeout-fields, upstream-binding
+  - 判据：发行补丁在 ngx_http_upstream_init 把 u->connect_timeout 置为 u->conf->connect_timeout（值来自 upstream.connect_timeout）；ngx_http_upstream_connect 在连接返回 NGX_AGAIN 时、ngx_http_upstream_ssl_init_connection 在握手返回 NGX_AGAIN 时，都以该值 ngx_add_timer(c->write)。
+
+## nginx--ngx_http_grpc_module--grpc_send_timeout
+
+- 语法（`grpc_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, send-timeout-handler, upstream-timeout-fields, upstream-binding
+  - 判据：补丁在 ngx_http_upstream_init 把 u->send_timeout 置为 conf 值；ngx_http_upstream_send_request 每次写返回 NGX_AGAIN 且不可写时以该值重设写定时器，写成功则删除；写事件超时由 send_request_handler 以 NGX_HTTP_UPSTREAM_FT_TIMEOUT 进入 next_upstream，故为相邻写入之间的等待。
+- 新增片段：send-timeout-handler（src/http/ngx_http_upstream.c:2312-2325）
+
+## nginx--ngx_http_grpc_module--grpc_intercept_errors
+
+- 语法（`grpc_intercept_errors on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, no-error-pages, upstream-binding
+  - 判据：upstream.intercept_errors 经 u->conf 使用：grpc 解析 :status 写入 u->headers_in.status_n；ngx_http_upstream_process_header 在状态 >=300 时调用 ngx_http_upstream_intercept_errors，仅当 intercept_errors 为真且当前位置有匹配状态的 error_page（发行补丁使 error_pages 可显式置空）时以该状态结束请求，交由 error_page 处理。
+
+## nginx--ngx_http_grpc_module--grpc_buffer_size
+
+- 语法（`grpc_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, implementation-2, implementation-3, implementation-4, merge-default, upstream-binding
+  - 判据：upstream.buffer_size 经 u->conf 使用：ngx_http_upstream_process_header 首次按其分配 u->buffer；grpc 的 process_header 以 b=&u->buffer 解析 HTTP/2 帧（含头帧），缓冲写满仍未解析完则报告头过大；非缓冲转发时 u->buffer 内已读数据交给 input_filter；merge 默认 ngx_pagesize。
+
+## nginx--ngx_http_grpc_module--grpc_read_timeout
+
+- 语法（`grpc_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-2, upstream-timeout-fields, upstream-binding
+  - 判据：补丁在 ngx_http_upstream_init 把 u->read_timeout 置为 conf 值；请求发完后 ngx_http_upstream_send_request 以该值 ngx_add_timer(c->read)，非缓冲转发时 ngx_http_upstream_process_non_buffered_request 在读事件未就绪时重设同一定时器，故为读取相邻操作之间的等待。
+
+## nginx--ngx_http_grpc_module--grpc_next_upstream
+
+- 语法（`grpc_next_upstream error | timeout | invalid_header | http_500 | http_502 | http_503 | http_504 | http_403 | http_404 | http_429 | non_idempotent | off ...;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 逐个参数查 ngx_http_grpc_next_upstream_masks，表内含 error、timeout、invalid_header、non_idempotent、http_500/502/503/504/403/404/429、off，与语法列出的取值一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-4, implementation-5, merge-default, upstream-binding
+  - 判据：bitmask 写入 upstream.next_upstream；ngx_http_upstream_next 与 ngx_http_upstream_test_next 都按 (next_upstream & ft_type)==ft_type 判断是否换后端（POST/LOCK/PATCH 且已发送请求时额外要求 non_idempotent），不满足、请求已发送且 request_body_no_buffering（grpc 恒置 1）或超过 next_upstream_timeout 时终止；merge 默认 error|timeout，含 off 时清为 off。
+
+## nginx--ngx_http_grpc_module--grpc_next_upstream_tries
+
+- 语法（`grpc_next_upstream_tries number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_num_slot，与 `number` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, upstream-binding
+  - 判据：upstream.next_upstream_tries 非 0 且小于 peer 数量计算出的 u->peer.tries 时，ngx_http_upstream_init_request 与解析完成回调把 u->peer.tries 压到该值；ngx_http_upstream_next 在 tries 为 0 时终止，因此只会收紧而不会放大尝试次数。
+
+## nginx--ngx_http_grpc_module--grpc_next_upstream_timeout
+
+- 语法（`grpc_next_upstream_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：ngx_http_upstream_init_request 置 u->peer.start_time；ngx_http_upstream_test_next 与 ngx_http_upstream_next 在 timeout 非 0 且 ngx_current_msec-start_time>=timeout 时不再切换后端。
+
+## nginx--ngx_http_grpc_module--grpc_set_header
+
+- 语法（`grpc_set_header field value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 取 value[1] 为键、value[2] 为值，与 `field value` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, upstream-binding, summary-loc-conf
+  - 判据：keyval 写入 headers_source；merge 时 ngx_http_grpc_init_headers 把用户项与 ngx_http_grpc_headers 默认项（Content-Length、TE 等）合并并编译为脚本，Host 项置 host_set；create_request 先写 :authority（未设 Host 时），再按脚本逐项编码为 HTTP/2 头，值为空的项被跳过，pass_request_headers 开启时转发其余客户端头（头名命中 headers.hash 者跳过）。create_request 开头 glcf=ngx_http_get_module_loc_conf(r, ngx_http_grpc_module)（summary-loc-conf），上述 glcf->headers、host_set、pass_request_headers 即本模块配置。
+- 新增片段：summary-loc-conf（src/http/modules/ngx_http_grpc_module.c:727-729）
+
+## nginx--ngx_http_grpc_module--grpc_pass_header
+
+- 语法（`grpc_pass_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 追加单个头名，与 `field` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, implementation-4, upstream-binding
+  - 判据：str_array 写入 upstream.pass_headers；merge 调 ngx_http_upstream_hide_headers_hash，先按 ngx_http_grpc_hide_headers（Date、Server、X-Accel-* 等）与 hide_header 建隐藏集，再把 pass_headers 中同名项的键置空；ngx_http_upstream_process_headers 复制响应头时跳过隐藏哈希命中者，故被 pass 的头得以输出。
+
+## nginx--ngx_http_grpc_module--grpc_hide_header
+
+- 语法（`grpc_hide_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 追加单个头名，与 `field` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, implementation-4, upstream-binding
+  - 判据：str_array 写入 upstream.hide_headers；merge 调 ngx_http_upstream_hide_headers_hash，把默认隐藏表与用户 hide_header 合并（已存在不重复）建成 hide_headers_hash；ngx_http_upstream_process_headers 复制响应头时跳过隐藏哈希命中者。
+
+## nginx--ngx_http_grpc_module--grpc_ignore_headers
+
+- 语法（`grpc_ignore_headers field ...;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 只接受 ngx_http_upstream_ignore_headers_masks 的 9 个取值（X-Accel-Redirect、X-Accel-Expires、X-Accel-Limit-Rate、X-Accel-Buffering、X-Accel-Charset、Expires、Cache-Control、Set-Cookie、Vary）；修正后语法逐项列出。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-4, implementation-5, ign-set-cookie, ign-cache-control, ign-expires, ign-xa-expires, ign-vary, cache-gate, grpc-loc-create, upstream-binding
+  - 判据：bitmask 写入 upstream.ignore_headers；grpc 解析响应头后按 headers_in_hash 调用 hh->handler，process_headers 对 X-Accel-Redirect 检测 IGN_XA_REDIRECT，handler 对 X-Accel-Limit-Rate（设 r->limit_rate）、X-Accel-Charset（设 override_charset）检测对应位，置位则不处理。grpc 的 handler 没有 u->caches/create_key，create_loc_conf 经 pcalloc 且未设 cache，ngx_http_upstream_init_request 仅在 u->conf->cache 为真时调用缓存逻辑，故 r->cache 恒为空：Cache-Control、Expires、X-Accel-Expires、Vary 的处理函数在检测 ignore 位后遇 r->cache==NULL 即返回，Set-Cookie 仅在非 ignore 时置 u->cacheable=0，grpc 无缓存，无可观察效果；其余均无后续动作；X-Accel-Buffering 仅在 conf->change_buffering 为真时改写 u->buffering，grpc 未置该字段（create_loc_conf 全文无此赋值），亦无动作。
+- 修正（语法）：`grpc_ignore_headers X-Accel-Redirect | X-Accel-Expires | X-Accel-Limit-Rate | X-Accel-Buffering | X-Accel-Charset | Expires | Cache-Control | Set-Cookie | Vary ...;`；理由：原文占位符 field 未列出 ngx_http_upstream_ignore_headers_masks（upstream.c:460-471）接受的 9 个取值。
+- 修正（功能）：禁止指定gRPC响应头触发共享upstream的特殊处理；gRPC不启用缓存且不允许改写缓冲方式，实际有后续动作的只有X-Accel-Redirect、X-Accel-Limit-Rate、X-Accel-Charset，Cache-Control、Expires、X-Accel-Expires、Vary、X-Accel-Buffering在gRPC下无后续动作，Set-Cookie无可观察效果。；理由：grpc handler 不设置 u->caches/create_key，loc_conf 无 cache 配置，ngx_http_upstream_init_request 仅在 u->conf->cache 为真时进入缓存，r->cache 恒为空；change_buffering 未置位，X-Accel-Buffering 不改写 u->buffering。
+- 新增片段：ign-set-cookie（src/http/ngx_http_upstream.c:4789-4810）；ign-cache-control（src/http/ngx_http_upstream.c:4828-4853）；ign-expires（src/http/ngx_http_upstream.c:4966-4991）；ign-xa-expires（src/http/ngx_http_upstream.c:5016-5068）；ign-vary（src/http/ngx_http_upstream.c:5251-5268）；cache-gate（src/http/ngx_http_upstream.c:567-579）；grpc-loc-create（src/http/modules/ngx_http_grpc_module.c:4338-4413）
+
+## nginx--ngx_http_grpc_module--grpc_ssl_session_reuse
+
+- 语法（`grpc_ssl_session_reuse on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：upstream.ssl_session_reuse 在 ngx_http_grpc_set_ssl 中传给 ngx_ssl_client_session_cache（为假则不启用缓存）；握手初始化时为真则挂 save_session 并调用 peer.set_session 取旧会话，保存回调写回会话，故新连接可恢复 TLS 会话。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_protocols
+
+- 语法（`grpc_ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_grpc_ssl_protocols 表取 SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2、TLSv1.3，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：bitmask 写入 glcf->ssl_protocols；ngx_http_grpc_set_ssl 把它传给 ngx_ssl_create，后者据位图设置 SSL_CTX 的允许协议。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_ciphers
+
+- 语法（`grpc_ssl_ciphers ciphers;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_str_slot，与 `ciphers` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, ssl-setup-binding, upstream-binding
+  - 判据：glcf->ssl_ciphers 由 ngx_http_grpc_set_ssl 传入 ngx_ssl_ciphers，后者调用 SSL_CTX_set_cipher_list；merge 默认 "DEFAULT"。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_name
+
+- 语法（`grpc_ssl_name name;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_set_complex_value_slot 把参数编译为复合值（可含变量），与 `name` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, ssl-setup-binding, upstream-binding
+  - 判据：ssl_name 写入 upstream.ssl_name；ngx_http_upstream_ssl_name 在 ssl_server_name 或 ssl_verify 开启时求值该复合值，缺省回落到 u->ssl_name（来自上游组主机名或解析结果），去掉端口后作为 u->ssl_name；ssl_server_name 开启时用 SSL_set_tlsext_host_name 发送，ssl_verify 开启时握手后用 ngx_ssl_check_host 对证书校验。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_server_name
+
+- 语法（`grpc_ssl_server_name on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, ssl-setup-binding, upstream-binding
+  - 判据：upstream.ssl_server_name 为真才进入 ngx_http_upstream_ssl_name 后段：对非空且不是 IP 字面量的名称调用 SSL_set_tlsext_host_name 发送 SNI；为假则直接 goto done，不发送。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_verify
+
+- 语法（`grpc_ssl_verify on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：ssl_verify 为真时 ngx_http_grpc_set_ssl 要求有 trusted_certificate 并加载（含 CRL）；握手后 ngx_http_upstream_ssl_handshake 检查 SSL_get_verify_result 为 X509_V_OK，并用 ngx_ssl_check_host 比对 u->ssl_name，任一失败按错误换后端。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_verify_depth
+
+- 语法（`grpc_ssl_verify_depth number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_num_slot，与 `number` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, ssl-setup-binding, upstream-binding
+  - 判据：glcf->ssl_verify_depth 在 ssl_verify 开启时由 ngx_http_grpc_set_ssl 传入 ngx_ssl_trusted_certificate，后者以该 depth 调用 SSL_CTX_set_verify_depth 限制链验证深度；merge 默认 1。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_trusted_certificate
+
+- 语法（`grpc_ssl_trusted_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_str_slot，与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, ssl-setup-binding, upstream-binding
+  - 判据：ssl_verify 开启时 ngx_http_grpc_set_ssl 校验该文件非空并传入 ngx_ssl_trusted_certificate，后者以 SSL_CTX_load_verify_locations 加载 CA 文件；未开启 ssl_verify 时本设置不被加载。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_crl
+
+- 语法（`grpc_ssl_crl file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_str_slot，与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, ssl-setup-binding, upstream-binding
+  - 判据：ssl_verify 开启时 ngx_http_grpc_set_ssl 调 ngx_ssl_crl(…&glcf->ssl_crl)；ngx_ssl_crl 在文件非空时加载 PEM 吊销列表并启用 CRL 检查标志。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_certificate
+
+- 语法（`grpc_ssl_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_set_complex_value_zero_slot 把参数编译为复合值，与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, ssl-setup-binding, upstream-binding
+  - 判据：ssl_certificate 写入 upstream.ssl_certificate；ngx_http_grpc_set_ssl 对不含变量的证书与私钥调用 ngx_ssl_certificate 加载，含变量时保留口令并在每个连接握手前经 ngx_http_upstream_ssl_certificate 用 ngx_ssl_connection_certificate 装载，因此作为客户端证书发送给后端。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_certificate_key
+
+- 语法（`grpc_ssl_certificate_key file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_set_complex_value_zero_slot 编译为复合值，与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：ngx_http_grpc_set_ssl 在证书存在而私钥未配置时报错，否则与证书一并传给 ngx_ssl_certificate（静态）或在连接时由 ngx_http_upstream_ssl_certificate 求值加载；ngx_ssl_load_certificate_key 读取私钥文件并结合口令列表解密。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_password_file
+
+- 语法（`grpc_ssl_password_file file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_grpc_ssl_password_file 取 value[1]，重复设置报 is duplicate，与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：setter 调用 ngx_ssl_read_password_file 读取文件每行为候选口令存入 upstream.ssl_passwords；ngx_http_grpc_set_ssl 把它传给 ngx_ssl_certificate（含变量时经 ngx_ssl_preserve_passwords 保留），ngx_ssl_load_certificate_key 逐个尝试解密私钥。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_grpc_module--grpc_ssl_conf_command
+
+- 语法（`grpc_ssl_conf_command name value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 取键与值，与 `name value` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-1, implementation-2, implementation-3, ssl-setup-binding, upstream-binding
+  - 判据：keyval 追加到 glcf->ssl_conf_commands；ngx_http_grpc_set_ssl 把它传给 ngx_ssl_conf_commands，后者对每项调用 SSL_CONF_cmd 作用于该 SSL_CTX（平台不支持 SSL_CONF_FLAG_FILE 时 post 检查报错）。grpc handler 令 u->conf=&glcf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_scgi_module--scgi_pass
+
+- 语法（`scgi_pass address;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_scgi_pass 取 value[1]，含变量时编译为 scgi_lengths/scgi_values，否则交 ngx_http_upstream_add 登记，与 `scgi_pass address;` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-5, implementation-7, implementation-8
+  - 判据：ngx_http_scgi_pass 设置 clcf->handler=ngx_http_scgi_handler 并把地址登记为上游（含变量则运行期编译）；content 阶段在 clcf->handler 存在时设 r->content_handler 并调用它；handler 中 ngx_http_scgi_eval 把变量地址解析写入 u->resolved，ngx_http_upstream_init_request 按 u->resolved 或上游组选 peer。
+
+## nginx--ngx_http_scgi_module--scgi_store
+
+- 语法（`scgi_store on | off | string;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_scgi_store 对 value[1] 依次处理 off、on，其余作为含变量的脚本路径，与 `on | off | string` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, summary-store-pipe, upstream-binding, summary-init-store
+  - 判据：setter 置 upstream.store=1，字符串形式编译为 store_lengths/store_values，且与 scgi_cache 互斥（merge 中任一为真则另一置 0）；init_request 取 u->store=conf->store，缓冲响应走事件管道时 p->cacheable 含 u->store、临时文件置 persistent；响应结束且状态 200、读完并与 Content-Length 相符时调用 ngx_http_upstream_store，路径来自 store_lengths（on 时用 URI 映射），以 ngx_ext_rename_file 落为持久文件，不涉及 cache_key。scgi handler 令 u->conf=&scf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+- 新增片段：summary-store-pipe（src/http/ngx_http_upstream.c:3242-3256）；summary-init-store（src/http/ngx_http_upstream.c:610-613）
+
+## nginx--ngx_http_scgi_module--scgi_store_access
+
+- 语法（`scgi_store_access users:permissions ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE123；ngx_conf_set_access_slot 逐参数接受 user:/group:/all: 前缀加 r 或 rw，1–3 个参数，与 `users:permissions ...` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：upstream.store_access 在 ngx_http_upstream_store 中同时赋给 ext.access（文件）与 ext.path_access（路径目录），ngx_ext_rename_file 据此改文件权限并用 ngx_dir_access(path_access) 创建路径；merge 默认 0600。scgi handler 令 u->conf=&scf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_scgi_module--scgi_buffering
+
+- 语法（`scgi_buffering on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-2, implementation-3, implementation-4, implementation-5, upstream-binding
+  - 判据：handler 令 u->buffering=upstream.buffering，并同时配置 pipe 的 input_filter（ngx_event_pipe_copy_input_filter）与非缓冲的 ngx_http_upstream_non_buffered_filter；ngx_http_upstream_send_response 在 !u->buffering 时走非缓冲分支（input_filter_init 用 ngx_http_scgi_input_filter_init、读写事件处理非缓冲），否则初始化 pipe 并走事件管道缓冲；X-Accel-Buffering 头可在未 ignore 时改写 u->buffering。scgi handler 令 u->conf=&scf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_scgi_module--scgi_request_buffering
+
+- 语法（`scgi_request_buffering on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, body-no-buffering-1, body-no-buffering-2, upstream-pipelining, upstream-binding, summary-loc-conf
+  - 判据：handler 仅当 request_buffering 关、pass_request_body 开且请求非 chunked 时置 r->request_body_no_buffering=1；ngx_http_read_client_request_body 在该标志下读到首批数据即调用 post_handler（ngx_http_upstream_init），不等整个请求体；开启（默认）时仅在读完后才调用 post_handler。create_request 在该标志下直接把 SCGI 头缓冲作为 request_bufs 链头，其后正文继续流式发送。发行补丁让 send_request_handler 以 request_body_sent 判断是否继续发送。scgi handler 令 u->conf=&scf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。create_request 开头 scf=ngx_http_get_module_loc_conf(r, ngx_http_scgi_module)，params 取 scf->params_cache 或 scf->params（summary-loc-conf），其后读取的 scf->upstream.* 与 params 即本模块配置。
+- 新增片段：body-no-buffering-1（src/http/ngx_http_request_body.c:195-221）；body-no-buffering-2（src/http/ngx_http_request_body.c:440-462）；summary-loc-conf（src/http/modules/ngx_http_scgi_module.c:667-673）
+
+## nginx--ngx_http_scgi_module--scgi_ignore_client_abort
+
+- 语法（`scgi_ignore_client_abort on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-binding
+  - 判据：upstream.ignore_client_abort 经 u->conf 在 ngx_http_upstream_init_request 判断：为假且未 store、非 post_action 时安装 rd/wr_check_broken_connection；客户端断开时 ngx_http_upstream_rd_check_broken_connection 在非 cacheable 且上游连接存在时终止上游请求（NGX_HTTP_CLIENT_CLOSED_REQUEST）；为真则不安装检查，上游交互继续。scgi handler 令 u->conf=&scf->upstream（upstream-binding），运行期读取的 u->conf->… 即本指令写入的值。
+
+## nginx--ngx_http_scgi_module--scgi_bind
+
+- 语法（`scgi_bind address [transparent] | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_upstream_bind_set_slot 在 2 个参数且第 2 个为 off 时关闭，否则 value[1] 为地址（可含变量），第 3 个参数只接受 transparent，与 `address [transparent] | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：scgi_bind 值写入 upstream.local，handler 令 u->conf=&scf->upstream；ngx_http_upstream_init_request 调 ngx_http_upstream_set_local 装入 u->peer.local（含 transparent）；ngx_event_connect_peer 在 pc->local 非空时先 bind 到该地址（transparent 时先设透明选项）。
+
+## nginx--ngx_http_scgi_module--scgi_socket_keepalive
+
+- 语法（`scgi_socket_keepalive on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-binding
+  - 判据：upstream.socket_keepalive 经 u->conf 在 ngx_http_upstream_init_request 置 u->peer.so_keepalive=1；ngx_event_connect_peer 在 pc->so_keepalive 时对新建套接字 setsockopt(SO_KEEPALIVE)。
+
+## nginx--ngx_http_scgi_module--scgi_connect_timeout
+
+- 语法（`scgi_connect_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, upstream-timeout-fields, upstream-binding
+  - 判据：发行补丁在 ngx_http_upstream_init 把 u->connect_timeout 置为 u->conf->connect_timeout（值来自 upstream.connect_timeout）；ngx_http_upstream_connect 在连接返回 NGX_AGAIN 时以该值 ngx_add_timer(c->write)，即限制连接建立等待。
+
+## nginx--ngx_http_scgi_module--scgi_send_timeout
+
+- 语法（`scgi_send_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-timeout-fields, upstream-pipelining, upstream-binding
+  - 判据：补丁在 ngx_http_upstream_init 把 u->send_timeout 置为 conf 值；ngx_http_upstream_send_request 每次写返回 NGX_AGAIN 且不可写时以该值重设写定时器，写成功则删除；写事件超时在 send_request_handler 以 NGX_HTTP_UPSTREAM_FT_TIMEOUT 进入 next_upstream，故为相邻写入之间的等待。
+
+## nginx--ngx_http_scgi_module--scgi_buffer_size
+
+- 语法（`scgi_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, merge-default, upstream-binding
+  - 判据：upstream.buffer_size 经 u->conf 使用：ngx_http_upstream_process_header 首次按其分配 u->buffer；scgi 的 process_status_line 与 process_header 在该缓冲内解析状态行与响应头，满了仍未解析完则报告头过大；merge 默认 ngx_pagesize，并与 scgi_buffers 的大小一起决定 busy/temp 缓冲下限。
+
+## nginx--ngx_http_scgi_module--scgi_pass_request_headers
+
+- 语法（`scgi_pass_request_headers on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, merge-default, upstream-binding, summary-loc-conf
+  - 判据：create_request 仅在 upstream.pass_request_headers 为真时遍历 r->headers_in：先累加长度，再把每个未被 scgi_param 同名覆盖（params->hash 命中者跳过）的请求头写成 HTTP_<大写名> 的 NUL 分隔参数；为假则不写任何 HTTP_ 头参数（CONTENT_LENGTH 与 scgi_param 仍写）。create_request 开头 scf=ngx_http_get_module_loc_conf(r, ngx_http_scgi_module)，params 取 scf->params_cache 或 scf->params（summary-loc-conf），其后读取的 scf->upstream.* 与 params 即本模块配置。
+- 新增片段：summary-loc-conf（src/http/modules/ngx_http_scgi_module.c:667-673）
+
+## nginx--ngx_http_scgi_module--scgi_pass_request_body
+
+- 语法（`scgi_pass_request_body on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, merge-default, upstream-binding, summary-loc-conf
+  - 判据：create_request 末尾：request_body_no_buffering 时只放 SCGI 头缓冲（正文流式追加）；否则仅当 upstream.pass_request_body 为真时把 r->upstream->request_bufs 的原正文缓冲复制接在头 netstring 之后，为假则 request_bufs 只含头缓冲。create_request 开头 scf=ngx_http_get_module_loc_conf(r, ngx_http_scgi_module)，params 取 scf->params_cache 或 scf->params（summary-loc-conf），其后读取的 scf->upstream.* 与 params 即本模块配置。
+- 新增片段：summary-loc-conf（src/http/modules/ngx_http_scgi_module.c:667-673）
+
+## nginx--ngx_http_scgi_module--scgi_intercept_errors
+
+- 语法（`scgi_intercept_errors on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, no-error-pages, upstream-binding
+  - 判据：scgi 解析 Status 头得到 u->headers_in.status_n；ngx_http_upstream_process_header 在状态 >=300 时调用 ngx_http_upstream_intercept_errors，仅当 intercept_errors 为真且当前位置有匹配状态的 error_page（发行补丁使 error_pages 可显式置空）时以该状态结束请求，交由 error_page 处理。
+
+## nginx--ngx_http_scgi_module--scgi_read_timeout
+
+- 语法（`scgi_read_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-2, implementation-3, implementation-4, upstream-timeout-fields, upstream-binding
+  - 判据：补丁在 ngx_http_upstream_init 把 u->read_timeout 置为 conf 值；请求发完后 ngx_http_upstream_send_request 以该值 ngx_add_timer(c->read)，缓冲响应由 ngx_event_pipe 在读事件未就绪时以 p->read_timeout 重设，非缓冲转发时 ngx_http_upstream_process_non_buffered_request 同理，故为读取相邻操作之间的等待。
+
+## nginx--ngx_http_scgi_module--scgi_buffers
+
+- 语法（`scgi_buffers number size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2，ngx_conf_set_bufs_slot 取个数与大小，与 `number size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, merge-default, upstream-binding
+  - 判据：upstream.bufs 经 ngx_http_upstream_send_response 赋给 p->bufs；ngx_event_pipe_read_upstream 在 p->allocated < p->bufs.num 时以 p->bufs.size 分配新缓冲，故每个缓冲响应的事件管道最多持有该数量、该大小的缓冲；merge 默认 8 个页大小，且要求至少 2 个。
+
+## nginx--ngx_http_scgi_module--scgi_busy_buffers_size
+
+- 语法（`scgi_busy_buffers_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：merge 把配置值（缺省 2*max(buffer_size,bufs.size)）存入 upstream.busy_buffers_size 并校验范围；send_response 把它赋给 p->busy_size；ngx_event_pipe_write_to_downstream 累计仍在发送的忙缓冲大小 bsize，达到 busy_size 即置 flush 先向下游发送，不再追加新缓冲，从而限制发送中的忙缓冲总量。
+
+## nginx--ngx_http_scgi_module--scgi_force_ranges
+
+- 语法（`scgi_force_ranges on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, upstream-binding
+  - 判据：upstream.force_ranges 为真时 ngx_http_upstream_process_headers 置 r->allow_ranges=1、single_range=1（缓存命中时 single_range=0），ngx_http_upstream_copy_allow_ranges 直接返回不再按上游 Accept-Ranges 处理，使该响应具备字节范围处理资格。
+
+## nginx--ngx_http_scgi_module--scgi_limit_rate
+
+- 语法（`scgi_limit_rate rate;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_set_complex_value_size_slot 把参数编译为复合值（可含变量）并按 size 解析，与 `rate` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, upstream-binding
+  - 判据：upstream.limit_rate 复合值在 ngx_http_upstream_send_response 中经 ngx_http_complex_value_size 求值赋给 p->limit_rate；ngx_event_pipe_read_upstream 在 limit_rate 非 0 时按 limit_rate*已过秒数-已读长度 计算额度，额度用尽则延迟上游读取（单位为字节每秒）；仅缓冲（事件管道）路径使用。
+
+## nginx--ngx_http_scgi_module--scgi_cache
+
+- 语法（`scgi_cache zone | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_scgi_cache 对 off 置 cache=0，否则把参数编译为复合值，不含变量时登记共享内存区，与 `zone | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, upstream-binding
+  - 判据：handler 设置 u->caches 与 u->create_key；setter 把区域名存为 cache_zone 或复合值 cache_value，off 置 0；ngx_http_upstream_init_request 在 u->conf->cache 为真时调 ngx_http_upstream_cache，经 ngx_http_upstream_cache_get 取 cache_zone，或求值 cache_value（空或 off 则放弃缓存、未找到区域报错）；merge 要求区域已由 scgi_cache_path 声明，且与 scgi_store 互斥。
+
+## nginx--ngx_http_scgi_module--scgi_cache_key
+
+- 语法（`scgi_cache_key string;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_scgi_cache_key 把 value[1] 编译为复合值，重复设置报 is duplicate，与 `string` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding, summary-cache-call
+  - 判据：cache_key 复合值由 handler 设置的 u->create_key=ngx_http_scgi_create_key 求值：ngx_http_upstream_cache 调用 u->create_key(r) 把键压入 r->cache->keys，随后调用 ngx_http_file_cache_create_key(r) 对键计算散列并决定缓存文件；merge 在启用缓存而无键时仅告警。
+- 新增片段：summary-cache-call（src/http/ngx_http_upstream.c:850-860）
+
+## nginx--ngx_http_scgi_module--scgi_cache_path
+
+- 语法（`scgi_cache_path path [levels=levels] [use_temp_path=on|off] keys_zone=name:size [inactive=time] [max_size=size] [min_free=size] [manager_files=number] [manager_sleep=time] [manager_threshold=time] [loader_files=number] [loader_sleep=time] [loader_threshold=time];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_HTTP_MAIN_CONF|NGX_CONF_2MORE，自定义 ngx_http_file_cache_set_slot 从 value[1] 取路径，其后逐项识别 levels=、use_temp_path=on|off、keys_zone=name:size、inactive=、max_size=、min_free=、loader_files/sleep/threshold=、manager_files/sleep/threshold=，缺 keys_zone 报错，与语法逐项一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-2, implementation-3, implementation-4, implementation-5, implementation-6, cache-inactive, cache-manager-limits, cache-loader-limits, upstream-binding
+  - 判据：ngx_http_file_cache_set_slot 把解析结果写入 ngx_http_file_cache_t 并建 keys_zone 共享内存，scgi 主配置的 caches 数组（M:1253-1273 建立）收集这些缓存，供 scgi_cache 按区域名选取；ngx_http_file_cache_name 按 levels 生成层级文件名；节点 expire=now+inactive，manager 按 max_size/min_free 触发淘汰并以 manager_files/sleep/threshold 限批，冷启动时 loader 遍历目录并以 loader_files/sleep/threshold 限批；use_temp_path=off 时 send_response 把临时文件路径置于缓存目录。
+- 新增片段：cache-inactive（src/http/ngx_http_file_cache.c:973-978）；cache-manager-limits（src/http/ngx_http_file_cache.c:1944-1960）；cache-loader-limits（src/http/ngx_http_file_cache.c:2170-2188）
+
+## nginx--ngx_http_scgi_module--scgi_cache_bypass
+
+- 语法（`scgi_cache_bypass string ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_set_predicate_slot 把每个参数编译为复合值，与 `string ...` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：cache_bypass 谓词数组由 ngx_http_upstream_cache 经 ngx_http_test_predicates 求值：任一值非空且非 "0" 返回 NGX_DECLINED，则 cache_status 置 BYPASS 并跳过缓存读取，请求直接回源；响应阶段如满足 no_cache 谓词则仍可重建缓存。
+
+## nginx--ngx_http_scgi_module--scgi_no_cache
+
+- 语法（`scgi_no_cache string ...;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_set_predicate_slot 把每个参数编译为复合值，与 `string ...` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, upstream-binding
+  - 判据：no_cache 谓词在缓冲响应路径 ngx_http_upstream_send_response 经 ngx_http_test_predicates 求值：任一值非空且非 "0" 返回 NGX_DECLINED，随即 u->cacheable=0，响应不写入缓存。
+
+## nginx--ngx_http_scgi_module--scgi_cache_valid
+
+- 语法（`scgi_cache_valid [code ...] time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_1MORE；ngx_http_file_cache_valid_set_slot 末参数为时间，其前为状态码或 any（100–599），仅给时间时默认 200、301、302，与 `[code ...] time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5, implementation-6, upstream-binding
+  - 判据：cache_valid 数组由 ngx_http_upstream_send_response 在 r->cache->valid_sec 仍为 0（X-Accel-Expires、Expires、Cache-Control 等响应头处理未设置有效期，或被 ignore_headers 忽略）时，经 ngx_http_file_cache_valid 按状态码（匹配或 any）取时间写入 valid_sec；取到 0 则 u->cacheable=0，故只是响应头未给有效期时的备用值。
+
+## nginx--ngx_http_scgi_module--scgi_cache_min_uses
+
+- 语法（`scgi_cache_min_uses number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_num_slot，与 `number` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-2, cache-open-scarce, implementation-3, merge-default, upstream-binding
+  - 判据：upstream.cache_min_uses 由 ngx_http_upstream_cache 赋给 c->min_uses；ngx_http_file_cache_exists 每次访问递增 fcn->uses，节点尚未存在且 uses<min_uses 时返回 NGX_AGAIN，ngx_http_file_cache_open 把 NGX_AGAIN 转为 NGX_HTTP_CACHE_SCARCE，ngx_http_upstream_cache 对 SCARCE 置 u->cacheable=0，该次响应不写缓存；uses 达到 min_uses 后才允许创建。
+- 新增片段：cache-open-scarce（src/http/ngx_http_file_cache.c:297-310）
+
+## nginx--ngx_http_scgi_module--scgi_cache_max_range_offset
+
+- 语法（`scgi_cache_max_range_offset number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_off_slot 解析偏移量，与 `number` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, upstream-binding
+  - 判据：upstream.cache_max_range_offset 由 ngx_http_upstream_cache 末尾经 ngx_http_upstream_cache_check_range 判断：请求带 Range 且该值非最大值时，值为 0、后缀范围或起始偏移 >= 该值即返回 DECLINED，则 u->cacheable=0，该范围请求不参与缓存；merge 默认无限制。
+
+## nginx--ngx_http_scgi_module--scgi_cache_use_stale
+
+- 语法（`scgi_cache_use_stale error | timeout | invalid_header | updating | http_500 | http_503 | http_403 | http_404 | http_429 | off ...;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 查 ngx_http_scgi_next_upstream_masks；修正后语法列出表内全部 11 个取值。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, upstream-binding
+  - 判据：bitmask 写入 upstream.cache_use_stale，merge 含 error 时追加 NOLIVE、含 off 时清为 off；ngx_http_upstream_next 与 ngx_http_upstream_test_next 在缓存已过期（EXPIRED）且 cache_use_stale 含对应失败类型时改发旧缓存；ngx_http_upstream_cache 在 STALE/UPDATING 状态且含 updating 时直接返回旧缓存。
+- 修正（语法）：`scgi_cache_use_stale error | timeout | invalid_header | non_idempotent | updating | http_500 | http_503 | http_403 | http_404 | http_429 | off ...;`；理由：同一取值表含 non_idempotent（scgi.c:81），setter 可接受；原文漏列。
+
+## nginx--ngx_http_scgi_module--scgi_cache_methods
+
+- 语法（`scgi_cache_methods GET | HEAD | POST ...;`）：verified；source_ids：registration, configuration-definition, implementation-1
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 按 ngx_http_upstream_cache_method_mask 取 GET、HEAD、POST，与语法一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：bitmask 写入 upstream.cache_methods；merge 强制并入 GET|HEAD；ngx_http_upstream_cache 在 !(r->method & cache_methods) 时返回 NGX_DECLINED，请求不进入缓存流程。
+
+## nginx--ngx_http_scgi_module--scgi_cache_lock
+
+- 语法（`scgi_cache_lock on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, merge-default, upstream-binding
+  - 判据：upstream.cache_lock 由 ngx_http_upstream_cache 赋给 c->lock；ngx_http_file_cache_lock 在 c->lock 为假时返回 DECLINED，否则只允许首个请求置 node->updating 去填充，其余请求 waiting 并等待（NGX_AGAIN）直至超时或填充完成。
+
+## nginx--ngx_http_scgi_module--scgi_cache_lock_timeout
+
+- 语法（`scgi_cache_lock_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, merge-default, upstream-binding
+  - 判据：upstream.cache_lock_timeout 由 ngx_http_upstream_cache 赋给 c->lock_timeout；ngx_http_file_cache_lock 据此设置 wait_time，等待到期（lock_wait_handler）后不再等待而放行，为 0 时直接 SCARCE；SCARCE 使 u->cacheable=0。
+
+## nginx--ngx_http_scgi_module--scgi_cache_lock_age
+
+- 语法（`scgi_cache_lock_age time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, upstream-binding
+  - 判据：upstream.cache_lock_age 由 ngx_http_upstream_cache 赋给 c->lock_age；ngx_http_file_cache_lock 在持锁请求置 node->lock_time=now+lock_age，若 updating 已持续超过该时间（timer<=0），下一个请求重新持锁去回源，故为放行额外回源前锁的保持时间。
+
+## nginx--ngx_http_scgi_module--scgi_cache_revalidate
+
+- 语法（`scgi_cache_revalidate on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5, upstream-binding, summary-loc-conf
+  - 判据：cache_revalidate 为真且缓存过期时，$upstream_cache_last_modified/$upstream_cache_etag 有值，scgi 缓存参数表把它们作为 HTTP_IF_MODIFIED_SINCE、HTTP_IF_NONE_MATCH 写入 SCGI 请求（create_request 在 cacheable 时用 params_cache）；上游返回 304 且缓存状态为 EXPIRED 时，ngx_http_upstream_test_next 把缓存标为 REVALIDATED、改发缓存内容并更新头部。create_request 开头 scf=ngx_http_get_module_loc_conf(r, ngx_http_scgi_module)，params 取 scf->params_cache 或 scf->params（summary-loc-conf），其后读取的 scf->upstream.* 与 params 即本模块配置。
+- 新增片段：summary-loc-conf（src/http/modules/ngx_http_scgi_module.c:667-673）
+
+## nginx--ngx_http_scgi_module--scgi_cache_background_update
+
+- 语法（`scgi_cache_background_update on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG，标准 ngx_conf_set_flag_slot 解析 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, merge-default, upstream-binding
+  - 判据：cache_background_update 为真且缓存处于 STALE（且 cache_use_stale 含 updating 或 stale_updating）时，ngx_http_upstream_cache 调用 ngx_http_upstream_cache_background_update 以克隆的后台子请求（header_only）刷新缓存，当前请求直接用旧缓存应答。
+
+## nginx--ngx_http_scgi_module--scgi_temp_path
+
+- 语法（`scgi_temp_path path [level1 [level2 [level3]]];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1234，标准 ngx_conf_set_path_slot：首参为路径，其后至多 3 个层级数，与 `path [level1 [level2 [level3]]]` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, temp-file-write, temp-file-create, upstream-binding
+  - 判据：upstream.temp_path 在 ngx_http_upstream_send_response 赋给 p->temp_file->path；缓冲响应溢出时 ngx_write_chain_to_temp_file 调 ngx_create_temp_file，按 path->len 的层级目录与 ngx_create_hashed_filename 在该目录下生成临时文件；merge 未设置时回落到默认 NGX_HTTP_SCGI_TEMP_PATH 与 {1,2,0} 层级。
+- 新增片段：temp-file-write（src/core/ngx_file.c:108-119）；temp-file-create（src/core/ngx_file.c:141-200）
+
+## nginx--ngx_http_scgi_module--scgi_max_temp_file_size
+
+- 语法（`scgi_max_temp_file_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, upstream-binding
+  - 判据：merge 把配置值（默认 1GB）存入 upstream.max_temp_file_size 并校验；send_response 赋给 p->max_temp_file_size；ngx_event_pipe_read_upstream 在非 cacheable 时仅当 temp_file->offset < max_temp_file_size 才继续写临时文件，0 则不使用临时文件；cacheable（缓存或 store）不受此限。
+
+## nginx--ngx_http_scgi_module--scgi_temp_file_write_size
+
+- 语法（`scgi_temp_file_write_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_size_slot，与 `size` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, upstream-binding
+  - 判据：merge 把配置值（缺省 2*max(buffer_size,bufs.size)）存入 upstream.temp_file_write_size 并校验下限；send_response 赋给 p->temp_file_write_size；ngx_event_pipe_write_chain_to_temp_file 以它限制一次写入的数据量。
+
+## nginx--ngx_http_scgi_module--scgi_next_upstream
+
+- 语法（`scgi_next_upstream error | timeout | invalid_header | http_500 | http_503 | http_403 | http_404 | http_429 | non_idempotent | off ...;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 逐参数查 ngx_http_scgi_next_upstream_masks；修正后语法列出表内全部 11 个取值（updating 仅在 cache_use_stale 判断中有意义，next_upstream 判断不以其触发）。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, implementation-4, upstream-binding
+  - 判据：bitmask 写入 upstream.next_upstream；ngx_http_upstream_next 与 ngx_http_upstream_test_next 按 (next_upstream & ft_type)==ft_type 判断是否换 peer（POST/LOCK/PATCH 且已发送请求时额外要求 non_idempotent），不满足、请求已发送且为非缓冲请求体或超过 next_upstream_timeout 时终止；merge 默认 error|timeout，含 off 时清为 off。
+- 修正（语法）：`scgi_next_upstream error | timeout | invalid_header | http_500 | http_503 | http_403 | http_404 | http_429 | non_idempotent | updating | off ...;`；理由：取值表 ngx_http_scgi_next_upstream_masks 还含 updating（scgi.c:87），bitmask setter 可接受；原文漏列。
+
+## nginx--ngx_http_scgi_module--scgi_next_upstream_tries
+
+- 语法（`scgi_next_upstream_tries number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_num_slot，与 `number` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, upstream-binding
+  - 判据：upstream.next_upstream_tries 非 0 且小于 peer 数量计算出的 u->peer.tries 时，ngx_http_upstream_init_request 与解析完成回调把 u->peer.tries 压到该值；ngx_http_upstream_next 在 tries 为 0 时终止，因此只增加上限约束，不会放大尝试次数。
+
+## nginx--ngx_http_scgi_module--scgi_next_upstream_timeout
+
+- 语法（`scgi_next_upstream_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，标准 ngx_conf_set_msec_slot 解析时间值，与 `time` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, upstream-binding
+  - 判据：ngx_http_upstream_init_request 置 u->peer.start_time；ngx_http_upstream_test_next 与 ngx_http_upstream_next 在 timeout 非 0 且 ngx_current_msec-start_time>=timeout 时不再切换后端。
+
+## nginx--ngx_http_scgi_module--scgi_param
+
+- 语法（`scgi_param parameter value [if_not_empty];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE23；ngx_http_upstream_param_set_slot 取 value[1] 为键、value[2] 为值，第 4 个参数只接受 if_not_empty，与 `parameter value [if_not_empty]` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, upstream-binding
+  - 判据：param 项存入 params_source；merge 时 ngx_http_scgi_init_params 合并默认参数（cache 时用 params_cache）并把键值编译为长度与取值脚本；create_request 先输出 CONTENT_LENGTH，再按脚本把每项写为 key NUL value NUL（if_not_empty 且值空则跳过），整体外包 “长度:…,” 的 netstring。
+
+## nginx--ngx_http_scgi_module--scgi_pass_header
+
+- 语法（`scgi_pass_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 追加单个头名，与 `field` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, implementation-4, upstream-binding
+  - 判据：str_array 写入 upstream.pass_headers；merge 调 ngx_http_upstream_hide_headers_hash，先按 ngx_http_scgi_hide_headers（Status、X-Accel-* 等）与 hide_header 建隐藏集，再把 pass_headers 同名项的键置空；ngx_http_upstream_process_headers 复制响应头时跳过隐藏哈希命中者，故被 pass 的头得以输出。
+
+## nginx--ngx_http_scgi_module--scgi_hide_header
+
+- 语法（`scgi_hide_header field;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 追加单个头名，与 `field` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-3, implementation-4, upstream-binding
+  - 判据：str_array 写入 upstream.hide_headers；merge 调 ngx_http_upstream_hide_headers_hash，把默认隐藏表与用户 hide_header 合并建成 hide_headers_hash；ngx_http_upstream_process_headers 复制响应头时跳过隐藏哈希命中者。
+
+## nginx--ngx_http_scgi_module--scgi_ignore_headers
+
+- 语法（`scgi_ignore_headers field ...;`）：verified；source_ids：registration, configuration-definition, implementation-1
+  - 判据：注册为 NGX_CONF_1MORE，bitmask setter 只接受 ngx_http_upstream_ignore_headers_masks 的 9 个取值（X-Accel-Redirect、X-Accel-Expires、X-Accel-Limit-Rate、X-Accel-Buffering、X-Accel-Charset、Expires、Cache-Control、Set-Cookie、Vary）；修正后语法逐项列出。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5, implementation-6, implementation-7, implementation-8, upstream-binding
+  - 判据：bitmask 写入 upstream.ignore_headers；scgi 解析响应头后按 headers_in_hash 调用 hh->handler，handler 与 ngx_http_upstream_process_headers 对 X-Accel-Redirect、X-Accel-Limit-Rate/Buffering/Charset/Expires、Expires、Cache-Control、Set-Cookie、Vary 逐项检测 ignore_headers 对应位，置位则不做该头的特殊处理。
+- 修正（语法）：`scgi_ignore_headers X-Accel-Redirect | X-Accel-Expires | X-Accel-Limit-Rate | X-Accel-Buffering | X-Accel-Charset | Expires | Cache-Control | Set-Cookie | Vary ...;`；理由：原文占位符 field 未列出 ngx_http_upstream_ignore_headers_masks（upstream.c:460-471）接受的 9 个取值。
+
