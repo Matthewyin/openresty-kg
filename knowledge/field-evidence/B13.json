@@ -1,0 +1,1535 @@
+{
+ "batch": "B13",
+ "entries": [
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_load_resty_core",
+   "evidence": [
+    {
+     "id": "syntax-arg-count",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 413,
+     "end_line": 421
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "syntax-arg-count"
+    ],
+    "note": "注册为 NGX_CONF_FLAG，ngx_conf_handler 只检查参数个数为 2（含指令名）；处理函数不读 value[1]、不调用 ngx_conf_set_flag_slot，因此任意单个参数均被接受，语法改为通用占位符。检索（stream-lua v0.0.15，范围 src/）：git grep -n load_resty_core，全部命中：directive.c:181/185（处理函数，函数体仅 ngx_conf_log_error 与 return，见 configuration-definition）、directive.h:48（声明）、module.c:96/98（注册，offset=0）；无任何读取该指令值的命中。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "df340-lua-s-lua_load_resty_core-mandatory-require"
+    ],
+    "note": "处理函数只记录弃用告警、不保存指令值（注册 offset 为 0；检索 git grep -n load_resty_core 于 src/ 的全部命中仅有函数定义、声明与注册 5 处，无读取点）；ngx_stream_lua_init_vm 无条件 require(\"resty.core\")，失败返回 NGX_DECLINED，故指令不再控制加载。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "lua_load_resty_core value;",
+     "reason": "注册为 NGX_CONF_FLAG，nginx 只检查参数个数为 1；处理函数不读取参数，不校验 on/off。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_running_timers",
+   "evidence": [
+    {
+     "id": "summary-running-dec",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_util.c",
+     "start_line": 725,
+     "end_line": 745
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "merge-default",
+     "summary-running-dec"
+    ],
+    "note": "指令写入 lmcf->max_running_timers（默认 256）；timer 到期处理时 running_timers >= 该值即失败，开始运行时 ++、fake request 清理时 --，计数在 lmcf（进程内），故为每 worker 同时运行数上限。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_max_pending_timers",
+   "evidence": [
+    {
+     "id": "summary-pending-inc",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_timer.c",
+     "start_line": 359,
+     "end_line": 365
+    },
+    {
+     "id": "summary-pending-dec",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_timer.c",
+     "start_line": 593,
+     "end_line": 598
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "merge-default",
+     "summary-pending-inc",
+     "summary-pending-dec"
+    ],
+    "note": "指令写入 lmcf->max_pending_timers（默认 1024）；创建 timer 时 pending_timers >= 该值返回 \"too many pending timers\"，创建 ++、到期 --，计数在进程内 lmcf，故为每 worker 等待 timer 上限。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_shared_dict",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2；自定义函数取 value[1] 为 name（空串报错）、value[2] 经 ngx_parse_size 为 size（<=8191 报错），与“name size”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "函数用 name/size 调用 ngx_stream_lua_shared_memory_add 登记 ngx_shared_memory_add 共享区（在 stream 主配置 lmcf 的 shdict_zones），init 回调建立红黑树与 LRU；ngx_stream_lua_inject_shdict_api 把这些 zone 暴露为 ngx.shared.<name>，仅限 stream 主配置内的 Lua VM。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_sa_restart",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG（恰好 1 个参数），ngx_conf_set_flag_slot 仅接受 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "merge-default"
+    ],
+    "note": "set_sa_restart 为真时（默认 1，且需 NGX_STREAM_LUA_HAVE_SA_RESTART）worker 初始化调用 ngx_stream_lua_set_sa_restart，对 NGX_STREAM_LUA_SA_RESTART_SIGS 中各信号置 SA_RESTART。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_capture_error_log",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；函数取 value[1] 经 ngx_parse_size 得 size（小于 NGX_MAX_ERROR_STR 报错），与“size”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "patch-intercept_error_log"
+    ],
+    "note": "函数按 size 分配 ringbuf 并把 cycle->intercept_error_log_handler 设为 capture 处理函数；该钩子字段与 HAVE_INTERCEPT_ERROR_LOG_PATCH 由发行补丁提供，ngx_log_error_core 在补丁中调用它，处理函数把日志写入环形缓冲区。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_cache_max_entries",
+   "evidence": [
+    {
+     "id": "summary-pcre-guard",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_regex.c",
+     "start_line": 21,
+     "end_line": 25
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "merge-default",
+     "summary-pcre-guard"
+    ],
+    "note": "指令写入 lmcf->regex_cache_max_entries（默认 1024，整个 regex 文件受 NGX_PCRE 包裹），ngx_stream_lua_ffi_max_regex_cache_size 返回该值。检索（stream-lua v0.0.15 固定 revision，范围 src/）：git grep -n regex_cache，全部命中：common.h:196-197（声明）、module.c:139/143（注册）、module.c:716/737/766-767（初值与默认）、regex.c:979/987（FFI 返回）、util.c:86/481/52（regex_cache_key 的定义/使用/声明，属另一标识符）；无任何比较或淘汰该上限的命中。文字仅陈述存值与 FFI 返回，不含否定陈述。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "保存Stream Lua正则缓存条目数上限（默认1024，需NGX_PCRE），并经FFI接口 ngx_stream_lua_ffi_max_regex_cache_size 返回该值。",
+     "reason": "原文称“供正则实现使用、每worker缓存容量”，本组件源码只有存值与FFI返回；删去消费关系的描述。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_regex_match_limit",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "merge-default"
+    ],
+    "note": "指令写入 lmcf->regex_match_limit（默认 0）；>0 时 PCRE2 路径 pcre2_set_match_limit、PCRE 路径设置 sd->match_limit（非 DFA 模式）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_cpath",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；函数把 value[1] 原样存入 lmcf->lua_cpath，与“lua-style-cpath”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "ngx_stream_lua_new_state 在 lua_cpath 非空时经 ngx_stream_lua_set_path 设置 package.cpath（展开 $prefix，;; 展开为默认值）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_package_path",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；函数把 value[1] 原样存入 lmcf->lua_path，与“lua-style-path”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "ngx_stream_lua_new_state 在 lua_path 非空时经 ngx_stream_lua_set_path 设置 package.path（展开 $prefix，;; 展开为默认值）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_code_cache",
+   "evidence": [
+    {
+     "id": "syntax-flag-slot",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 1026,
+     "end_line": 1062
+    },
+    {
+     "id": "summary-code-cache-table",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_cache.c",
+     "start_line": 42,
+     "end_line": 64
+    },
+    {
+     "id": "summary-get-vm",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_util.h",
+     "start_line": 385,
+     "end_line": 403
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "syntax-flag-slot"
+    ],
+    "note": "注册为 NGX_CONF_FLAG；自定义函数首先调用 ngx_conf_set_flag_slot（仅 on/off），再在 off 时告警，参数形态与 on | off 一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "summary-code-cache-table",
+     "summary-get-vm",
+     "merge-default"
+    ],
+    "note": "enable_code_cache 为 0（默认 1）且连接 fd 有效时，ngx_stream_lua_create_ctx 为该会话新建 VM 并重跑 init_by_lua，ctx->vm_state 指向该 VM（get_lua_vm 优先返回它）；代码缓存表存放在各 VM 的 registry 中，故关闭后不复用代码与 VM，开启则共用 lmcf->lua。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_log_errors",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG（恰好 1 个参数），ngx_conf_set_flag_slot 仅接受 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "closed-socket-log",
+     "merge-default"
+    ],
+    "note": "log_socket_errors（默认 1）为真时，读超时、写超时、证书校验失败/主机名不匹配、向已关闭 socket 发送这几处才额外 ngx_log_error；各处均读 llcf->log_socket_errors。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_block",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-2",
+     "implementation-4",
+     "implementation-5",
+     "implementation-6"
+    ],
+    "note": "块文本经 ngx_stream_lua_init_by_lua 存入 lmcf->init_src，handler 为 init_by_inline（luaL_loadbuffer 并执行）；ngx_stream_lua_init 创建全局 VM 后（若无 shared dict）调用 init_handler，有 shared dict 时在全部 zone 初始化后调用；code cache 关闭时每会话新 VM 也会重跑。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_init_by_lua 取 value[1] 作为脚本字符串存入 lmcf->init_src，与“<lua-script-str>”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-2",
+     "implementation-3",
+     "implementation-4"
+    ],
+    "note": "字符串存入 lmcf->init_src，handler 为 init_by_inline（luaL_loadbuffer 并执行）；ngx_stream_lua_init 创建全局 VM 后调用（有 shared dict 时延至 zone 初始化后），code cache 关闭时每会话新 VM 重跑。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_by_lua_file",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_init_by_lua 取 value[1] 为路径，经 ngx_stream_lua_rebase_path 存入 init_src，与“<path-to-lua-script-file>”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-2",
+     "implementation-3",
+     "implementation-4"
+    ],
+    "note": "路径存入 lmcf->init_src，handler 为 init_by_file（luaL_loadfile 并执行）；调用时机同 init_by_lua（创建全局 VM 后；有 shared dict 时延后；code cache 关闭时每会话重跑）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_block",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "module-owner",
+     "implementation-2",
+     "implementation-3",
+     "implementation-4",
+     "implementation-6"
+    ],
+    "note": "块文本存入 lmcf->init_worker_src，handler 为 init_worker_by_inline；模块的 init_process 钩子 ngx_stream_lua_init_worker 在 worker 初始化时创建 fake 会话并调用 init_worker_handler（缓存 helper 进程跳过）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_init_worker_by_lua 取 value[1] 为脚本字符串存入 init_worker_src，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "module-owner",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-4"
+    ],
+    "note": "字符串存入 lmcf->init_worker_src，handler 为 init_worker_by_inline（luaL_loadbuffer 并执行）；由模块 init_process 钩子在 worker 初始化时经 fake 会话调用（缓存 helper 进程跳过）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--init_worker_by_lua_file",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；函数取 value[1] 为路径并经 ngx_stream_lua_rebase_path 存入 init_worker_src，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "module-owner",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-4"
+    ],
+    "note": "路径存入 lmcf->init_worker_src，handler 为 init_worker_by_file（luaL_loadfile 并执行）；由模块 init_process 钩子在 worker 初始化时经 fake 会话调用。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_file",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_preread_by_lua 取 value[1] 为路径（可含变量，编译为 complex value），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "设置该指令即置 lmcf->requires_preread，ngx_stream_lua_init 把 ngx_stream_lua_preread_handler 加入 NGX_STREAM_PREREAD_PHASE；handler 调用 preread_handler_file，求值路径并 cache_loadfile 后执行 Lua。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_block",
+   "evidence": [
+    {
+     "id": "syntax-block-parse",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_directive.c",
+     "start_line": 776,
+     "end_line": 933
+    },
+    {
+     "id": "summary-preread-handler",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_prereadby.c",
+     "start_line": 24,
+     "end_line": 123
+    },
+    {
+     "id": "summary-preread-inline",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_prereadby.c",
+     "start_line": 126,
+     "end_line": 150
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "df340-lua-s-preread_by_lua_block-phase-setter",
+     "syntax-block-parse"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "df340-lua-s-preread_by_lua_block-phase-setter",
+     "df340-lua-s-preread_by_lua_block-phase-install",
+     "summary-preread-handler",
+     "summary-preread-inline"
+    ],
+    "note": "块文本经 handler 存入 lscf->preread_handler（cmd->post=handler_inline）并置 requires_preread；ngx_stream_lua_init 把 ngx_stream_lua_preread_handler 装入 PREREAD 阶段；该 handler 调用 lscf->preread_handler(r)，handler_inline 用 cache_loadbuffer 加载 preread_src 并 by_chunk 运行。文字删去源码未证明的“或 UDP 数据报”。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在 stream 的 preread 阶段执行 Lua，对连接进行预读阶段处理。",
+     "reason": "源码未证明数据报进入 preread 处理，“或 UDP 数据报”仅见 README，删去。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua",
+   "evidence": [
+    {
+     "id": "summary-content-phase",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_core_module.c",
+     "start_line": 441,
+     "end_line": 471
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_content_by_lua 取 value[1] 作为脚本字符串，与“<lua-script-str>”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "summary-content-phase"
+    ],
+    "note": "函数把 cscf->handler 设为 ngx_stream_lua_content_handler，nginx 内容阶段 ngx_stream_core_content_phase 调用 cscf->handler，其再调 content_handler_inline 执行脚本。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_block",
+   "evidence": [
+    {
+     "id": "summary-content-phase",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_core_module.c",
+     "start_line": 441,
+     "end_line": 471
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-2",
+     "implementation-3",
+     "implementation-4",
+     "summary-content-phase"
+    ],
+    "note": "块文本经 content_by_lua 存为脚本并注册 cscf->handler；内容阶段 ngx_stream_core_content_phase 调用它，其执行 content_handler_inline。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--content_by_lua_file",
+   "evidence": [
+    {
+     "id": "summary-content-phase",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_core_module.c",
+     "start_line": 441,
+     "end_line": 471
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_content_by_lua 取 value[1] 作为路径（可含变量，编译为 complex value），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "summary-content-phase"
+    ],
+    "note": "函数注册 cscf->handler 为 ngx_stream_lua_content_handler，内容阶段由 ngx_stream_core_content_phase 调用，其执行 content_handler_file（求值路径、cache_loadfile、运行 Lua）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_block",
+   "evidence": [
+    {
+     "id": "summary-log-session",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_handler.c",
+     "start_line": 301,
+     "end_line": 329
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-2",
+     "implementation-3",
+     "implementation-4",
+     "implementation-5",
+     "summary-log-session"
+    ],
+    "note": "块文本经 log_by_lua 存入 log_handler 并置 requires_log，ngx_stream_lua_init 把 log handler 加到 NGX_STREAM_LOG_PHASE 首位；ngx_stream_finalize_session 先执行 log 阶段全部 handler 再关闭连接，handler 运行 log_handler_inline。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--log_by_lua_file",
+   "evidence": [
+    {
+     "id": "summary-log-session",
+     "component": "nginx",
+     "file": "src/stream/ngx_stream_handler.c",
+     "start_line": 301,
+     "end_line": 329
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_log_by_lua 取 value[1] 为路径（可含变量），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "summary-log-session"
+    ],
+    "note": "函数置 log_handler 与 requires_log，log handler 加入 NGX_STREAM_LOG_PHASE；ngx_stream_finalize_session 在关闭连接前执行 log 阶段 handler，handler 运行 log_handler_file。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--preread_by_lua_no_postpone",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG（恰好 1 个参数），ngx_conf_set_flag_slot 仅接受 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "merge-default",
+     "df340-lua-s-preread_by_lua_no_postpone-consume"
+    ],
+    "note": "指令（on=1）写入 postponed_to_preread_phase_end；handler 仅在该值为 0 时把自身 phase handler 移到 preread 阶段末尾并置 1；ngx_stream_lua_init 在未设置时置 0，故 on 即不移动。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_block",
+   "evidence": [
+    {
+     "id": "summary-set-current-peer",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_balancer.c",
+     "start_line": 508,
+     "end_line": 588
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-2",
+     "implementation-3",
+     "implementation-4",
+     "implementation-5",
+     "summary-set-current-peer"
+    ],
+    "note": "块文本经 balancer_by_lua 存入 lscf->balancer 并把 upstream 的 init_upstream 设为 ngx_stream_lua_balancer_init；每次连接 init_peer 把 peer.get 设为 get_peer，get_peer 调用 balancer.handler 运行 Lua，Lua 设置了 peer 则采用，否则回落轮询。 bp->sockaddr 由 FFI 入口 ngx_stream_lua_ffi_balancer_set_current_peer 写入（summary-set-current-peer），get_peer 据此采用该 peer。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--balancer_by_lua_file",
+   "evidence": [
+    {
+     "id": "summary-set-current-peer",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_balancer.c",
+     "start_line": 508,
+     "end_line": 588
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_balancer_by_lua 取 value[1] 为路径（rebase_path），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "summary-set-current-peer"
+    ],
+    "note": "路径存入 lscf->balancer，init_upstream 设为 ngx_stream_lua_balancer_init；peer.get 为 get_peer，其调用 balancer_handler_file 运行 Lua，Lua 设置了 peer 则采用，否则回落轮询。 bp->sockaddr 由 FFI 入口 ngx_stream_lua_ffi_balancer_set_current_peer 写入（summary-set-current-peer），get_peer 据此采用该 peer。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_keepalive_timeout",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析为毫秒，与“time”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "merge-default"
+    ],
+    "note": "setkeepalive 未显式给出 timeout 时取 llcf->keepalive_timeout（默认 60000ms），连接归入池后据此 ngx_add_timer 作为空闲超时（0 表示不加）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_connect_timeout",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析为毫秒，与“time”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "socket 创建时 connect_timeout 未被单独设置则取 conf->connect_timeout（默认 60000ms）；connect 的 ngx_add_timer(c->write) 与 sslhandshake 等待的 ngx_add_timer(c->read) 都使用 u->connect_timeout。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_timeout",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析为毫秒，与“time”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "cosocket 的 send_timeout 未单独设置取 conf->send_timeout；send 写等待与 util.c 中 stream 下游输出等待都用 srv conf 的 send_timeout 加定时器（README 亦说明 stream 没有 send_timeout 指令而借用该指令）。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_send_lowat",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，并有 post 回调 ngx_stream_lua_lowat_check 校验，与“size”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-2",
+     "implementation-3",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "值存入 srv conf send_lowat（默认 0），cosocket 写与下游输出的 ngx_handle_write_event 均以该值为 lowat 参数。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_buffer_size",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_size_slot 解析大小，与“size”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "值存入 buffer_size（默认 ngx_pagesize）；TCP 接收路径分配接收缓冲块时用 u->conf->buffer_size 作为块容量（前缀较长时取较大者）。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_pool_size",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。 占位符 size 暗示可带单位，源码不接受，故改为 num。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "merge-default",
+     "socket-conf-assign"
+    ],
+    "note": "setkeepalive 未给 size 时取 llcf->pool_size（默认 30），并以它创建 peer key 对应的 socket 池；connect 选项仅在给了 backlog 且 pool_size==0 时取该默认值，否则不建池。socket 创建时 u->conf = llcf（socket-conf-assign）。"
+   },
+   "corrections": {
+    "syntax": {
+     "text": "lua_socket_pool_size num;",
+     "reason": "ngx_conf_set_num_slot 经 ngx_atoi 解析整数，不接受 k/m 等大小单位，占位符 size 易误导。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_socket_read_timeout",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_msec_slot 经 ngx_parse_time 解析为毫秒，与“time”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "socket 的 read_timeout 未单独设置取 conf->read_timeout（默认 60000ms），读等待 ngx_add_timer(rev, u->read_timeout)。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_check_client_abort",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_FLAG（恰好 1 个参数），ngx_conf_set_flag_slot 仅接受 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge-default"
+    ],
+    "note": "check_client_abort 开启（默认 0）时 content 处理与下游 raw socket 读路径把 read_event_handler 设为 ngx_stream_lua_rd_check_broken_connection，读到 EOF 时返回客户端中止，否则改用 block_reading。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_protocols",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0"
+    ],
+    "note": "注册为 NGX_CONF_1MORE，ngx_conf_set_bitmask_slot 按取值表逐词匹配；取值表含 SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2，并在 NGX_SSL_TLSv1_3 定义时含 TLSv1.3，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "ssl_protocols 掩码（默认含 SSLv3~TLSv1.2）在 ngx_stream_lua_set_ssl 传给 ngx_ssl_create，后者对未列出的协议设 SSL_OP_NO_*；cosocket 的 sslhandshake 以 NGX_SSL_CLIENT 标志在该 ssl 上建连接。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_ciphers",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1] 为字符串，与“ciphers”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-2",
+     "merge-default",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "ssl_ciphers（默认 \"DEFAULT\"）在 ngx_stream_lua_set_ssl 传给 SSL_CTX_set_cipher_list；cosocket 用该 lscf->ssl 以 CLIENT 标志建 SSL 连接。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_block",
+   "evidence": [
+    {
+     "id": "summary-handler-inline",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_ssl_client_helloby.c",
+     "start_line": 52,
+     "end_line": 71
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-3",
+     "implementation-4",
+     "summary-handler-inline"
+    ],
+    "note": "块文本经 ssl_client_hello_by_lua 存入 srv.ssl_client_hello_*；merge 时在该 server 的 stream ssl ctx 上 SSL_CTX_set_client_hello_cb 注册 ngx_stream_lua_ssl_client_hello_handler，其执行 ssl_client_hello_handler_inline。 ssl_client_hello_handler_inline 函数体 cache_loadbuffer 加载 ssl_client_hello_src 后 by_chunk 运行（summary-handler-inline）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_client_hello_by_lua_file",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_ssl_client_hello_by_lua 取 value[1] 为路径（rebase_path），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "路径存入 srv.ssl_client_hello_*；merge 时在该 server 的 stream ssl ctx 上 SSL_CTX_set_client_hello_cb 注册回调，回调执行 ssl_client_hello_handler_file。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_block",
+   "evidence": [
+    {
+     "id": "summary-cert-inline",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_ssl_certby.c",
+     "start_line": 69,
+     "end_line": 88
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_BLOCK|NGX_CONF_NOARGS（无参数的块指令）；块函数调用 ngx_stream_lua_conf_lua_block_parse 按花括号层级读取 Lua 文本，去掉末尾 } 后作为 value[1] 交给对应处理函数。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-4",
+     "implementation-5",
+     "summary-cert-inline"
+    ],
+    "note": "块文本经 ssl_cert_by_lua 存入 srv.ssl_cert_handler（handler_inline），merge 时 SSL_CTX_set_cert_cb 注册 ngx_stream_lua_ssl_cert_handler，其调用 srv.ssl_cert_handler，handler_inline 用 cache_loadbuffer 加载 ssl_cert_src 后 by_chunk 运行。文字删去未被源码证明的“完整”。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在Stream下游TLS握手的证书回调（SSL_CTX_set_cert_cb）执行Lua，执行配置中的Lua块。",
+     "reason": "“完整TLS握手”（会话复用不触发）取决于OpenSSL行为，源码片段未证明，删去“完整”。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--ssl_certificate_by_lua_file",
+   "evidence": [
+    {
+     "id": "summary-cert-file",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_ssl_certby.c",
+     "start_line": 49,
+     "end_line": 66
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_ssl_cert_by_lua 取 value[1] 为路径（rebase_path），与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-2",
+     "implementation-3",
+     "summary-cert-file"
+    ],
+    "note": "文件路径经 ssl_cert_by_lua 存入 srv.ssl_cert_src 与 handler_file，merge 时 SSL_CTX_set_cert_cb 注册 ngx_stream_lua_ssl_cert_handler，其调用 srv.ssl_cert_handler，handler_file 用 cache_loadfile 加载文件后 by_chunk 运行。文字删去未被源码证明的“完整”。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在Stream下游TLS握手的证书回调（SSL_CTX_set_cert_cb）执行Lua，加载外部Lua文件。",
+     "reason": "“完整TLS握手”（会话复用不触发）取决于OpenSSL行为，源码片段未证明，删去“完整”。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_verify_depth",
+   "evidence": [
+    {
+     "id": "summary-ssl-create-connection",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1628,
+     "end_line": 1638
+    },
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_num_slot 用 ngx_atoi 解析为整数，与语法一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "merge-default",
+     "summary-ssl-create-connection",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "lscf->ssl_verify_depth（默认 1）仅在 lua_ssl_trusted_certificate 非空时传给 ngx_ssl_trusted_certificate(depth)，后者 SSL_CTX_set_verify_depth；socket 创建时 u->conf = llcf，sslhandshake 用 ngx_ssl_create_connection(u->conf->ssl, …) 建连接，ssl_verify 路径 SSL_get_verify_result 判定。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   },
+   "corrections": {
+    "summary": {
+     "text": "在配置了 lua_ssl_trusted_certificate 时，设置Stream Lua cosocket验证远端证书的链深度（默认1）。",
+     "reason": "源码中该深度只在信任证书文件非空时才传入SSL ctx，原文未带此条件。"
+    }
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 把 value[1] 追加进字符串数组，与“file”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "证书数组在 ngx_stream_lua_set_ssl 传给 ngx_ssl_certificates，把证书链装入 lscf->ssl（缺私钥报错）；cosocket 以 CLIENT 标志用该 ssl 建连接。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_certificate_key",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_array_slot 把 value[1] 追加进字符串数组，与“file”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "implementation-4",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "私钥数组在 ngx_stream_lua_set_ssl 与证书一起传给 ngx_ssl_certificates，后者加载私钥与对应证书配对；cosocket 用该 ssl 作为客户端。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_trusted_certificate",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]，与“file”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "非空时 ngx_stream_lua_set_ssl 调用 ngx_ssl_trusted_certificate，后者 SSL_CTX_load_verify_locations 加载该文件；cosocket 的 ssl_verify 路径用 SSL_get_verify_result 判定。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_crl",
+   "evidence": [
+    {
+     "id": "socket-conf-assign",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 1060,
+     "end_line": 1062
+    },
+    {
+     "id": "socket-conf-get",
+     "component": "stream-lua-nginx-module",
+     "file": "src/ngx_stream_lua_socket_tcp.c",
+     "start_line": 905,
+     "end_line": 905
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1，ngx_conf_set_str_slot 取 value[1]，与“file”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "implementation-2",
+     "implementation-3",
+     "socket-conf-assign",
+     "socket-conf-get"
+    ],
+    "note": "ngx_stream_lua_set_ssl 调用 ngx_ssl_crl：非空时 X509_LOOKUP_load_file(..., X509_FILETYPE_PEM) 并置 X509_V_FLAG_CRL_CHECK|CRL_CHECK_ALL；cosocket 的 ssl_verify 路径使用该 store。 经 u->conf 读取的链路：socket 创建时 u->conf = llcf（socket-conf-assign），llcf 为 srv conf，其字段即本指令注册的 offset。 取配置：llcf = ngx_stream_lua_get_module_loc_conf(r, …)（socket-conf-get，connect 函数），与 u->conf = llcf（socket-conf-assign）两行缺一即缺环。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_ssl_conf_command",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1"
+    ],
+    "note": "注册为 NGX_CONF_TAKE2，ngx_conf_set_keyval_slot 把 value[1]/value[2] 作 key/value 追加进数组，并有 post 回调 ngx_stream_lua_ssl_conf_command_check，与“name value”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-3",
+     "implementation-4",
+     "implementation-7"
+    ],
+    "note": "命令数组在 ngx_stream_lua_set_ssl 创建 ssl ctx 之后传给 ngx_ssl_conf_commands，逐条 SSL_CONF_cmd 执行（nginx_version>=1019004、需 SSL_CONF_FLAG_FILE）。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_malloc_trim",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；ngx_stream_lua_malloc_trim 对 value[1] 做 ngx_atoi 得请求计数，与“request-count”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "implementation-0",
+     "implementation-1",
+     "df340-lua-s-lua_malloc_trim-consume"
+    ],
+    "note": "值存入 malloc_trim_cycle 且非 0 时置 requires_log；log handler 每次执行累加计数，达到周期即 malloc_trim(1)；平台无 malloc_trim 时仅告警并忽略。"
+   }
+  },
+  {
+   "id": "stream-lua-nginx-module--ngx_stream_lua_module--lua_add_variable",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "注册为 NGX_CONF_TAKE1；函数要求 value[1] 首字符为 $，与“$var”一致。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "configuration-definition",
+     "implementation-0",
+     "implementation-1",
+     "implementation-2"
+    ],
+    "note": "函数用 NGX_STREAM_VAR_CHANGEABLE|WEAK 调用 ngx_stream_add_variable 注册变量（无 get_handler 时设为 not_found）；ngx_stream_lua_ffi_var_set 仅在变量带 CHANGEABLE 时才允许写入。"
+   }
+  }
+ ]
+}

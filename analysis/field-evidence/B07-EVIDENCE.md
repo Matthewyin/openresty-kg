@@ -1,0 +1,419 @@
+# B07 字段证据记录
+
+范围：nginx ngx_http_ssl_module（28 条）、ngx_http_v2_module（15 条）、ngx_http_v3_module（8 条），共 51 条。固定 revision：nginx release-1.27.1；涉及 OpenResty 补丁的条目（ssl_certificate、ssl_certificate_key、ssl_session_cache、ssl_early_data）所引行均在补丁改动之外（补丁只在 ngx_ssl_handshake / ngx_ssl_try_early_data 的 sslerr 错误分支追加 yield 处理）。官方文档为现行版本，仅作交叉印证。
+
+说明：OpenSSL 内部行为与文件格式不作为 nginx 源码证据；摘要中此类陈述已在 corrections 中收窄，或仅取接口名可见的部分。编译/平台条件（`#if NGX_HTTP_V3`、`SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB`、`SSL_CONF_FLAG_FILE`、`NGX_HAVE_UDP_SEGMENT` 等）出现在功能说明中时，所引片段均覆盖。
+
+## nginx--ngx_http_ssl_module--ssl_certificate
+
+- 语法（`ssl_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_array_slot 把 value[1] 追加到 certificates 数组（可重复写多条），与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5, cert-chain-static
+  - 判据：值经 offsetof 存入 sscf->certificates；merge 阶段 ngx_http_ssl_compile_certificates 发现路径含变量时生成 certificate_values 并 SSL_CTX_set_cert_cb(ngx_http_ssl_certificate, conf)，握手回调中 sscf=arg 逐条 ngx_http_complex_value 求值后经 ngx_ssl_connection_certificate 装载；无变量则 ngx_ssl_certificates(conf->certificates) 静态装载：ngx_ssl_load_certificate 用 PEM_read_bio_X509_AUX 读证书、PEM_read_bio_X509 续读其余链，再 SSL_CTX_use_certificate/SSL_CTX_set0_chain。
+- 新增片段：cert-chain-static（src/event/ngx_event_openssl.c:482-551）
+
+## nginx--ngx_http_ssl_module--ssl_certificate_key
+
+- 语法（`ssl_certificate_key file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_array_slot 追加 value[1] 到 certificate_keys，与 `file` 一致（值同样可含变量，另可用 engine: 前缀，不改变参数个数）。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, implementation-5
+  - 判据：值经 offsetof 存入 sscf->certificate_keys；与证书逐条配对：静态路径 ngx_ssl_certificate 调 ngx_ssl_load_certificate_key（PEM_read_bio_PrivateKey）后 SSL_CTX_use_PrivateKey；含变量时 compile_certificates 生成 certificate_key_values，握手回调求值后 ngx_ssl_connection_certificate 调 SSL_use_PrivateKey 装载到连接。
+
+## nginx--ngx_http_ssl_module--ssl_password_file
+
+- 语法（`ssl_password_file file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_ssl_password_file 取 value[1] 调 ngx_ssl_read_password_file，已设置时报 "is duplicate"，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, cert-load-call, pw-iter, pw-key-call, pw-cb-call
+  - 判据：指令把 ngx_ssl_read_password_file 逐行读出的口令存入 sscf->passwords；静态路径 ssl_module 774-784 把 conf->passwords 传给 ngx_ssl_certificates，再逐条传给 ngx_ssl_certificate 并到 ngx_ssl_load_certificate_key：循环 PEM_read_bio_PrivateKey，失败则 tries 递减、BIO_reset 后换下一个口令；变量路径由 preserve_passwords 保留后经 sscf->passwords 传入握手回调。
+- 新增片段：cert-load-call（src/http/modules/ngx_http_ssl_module.c:774-784）；pw-iter（src/event/ngx_event_openssl.c:434-450）；pw-key-call（src/event/ngx_event_openssl.c:553-554）；pw-cb-call（src/http/ngx_http_request.c:1056-1058）
+
+## nginx--ngx_http_ssl_module--ssl_dhparam
+
+- 语法（`ssl_dhparam file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 dhparam，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1
+  - 判据：值经 offsetof 存入 sscf->dhparam，merge 后由 ssl_module 834 传给 ngx_ssl_dhparam：空值直接返回；否则 BIO_new_file 打开，PEM_read_bio_DHparams 读取并 SSL_CTX_set_tmp_dh（无该宏时为 PEM_read_bio_Parameters + SSL_CTX_set0_tmp_dh_pkey，片段含该 #ifdef 分支）。
+- 修正（功能）：加载PEM格式DH参数文件，并经SSL_CTX_set_tmp_dh（或新版接口SSL_CTX_set0_tmp_dh_pkey）设置到HTTP TLS上下文。
+  - 理由：源码只体现读取 PEM DH 参数并设置到 SSL 上下文，“用于DHE密钥交换”是 OpenSSL 对该参数的使用方式，nginx 源码未体现。
+
+## nginx--ngx_http_ssl_module--ssl_ecdh_curve
+
+- 语法（`ssl_ecdh_curve curve;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 ecdh_curve，与 `curve` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2
+  - 判据：值经 offsetof 存入 sscf->ecdh_curve，ssl_module 838 传给 ngx_ssl_ecdh_curve（#ifndef OPENSSL_NO_ECDH）：有 SSL_CTX_set1_curves_list 时先 SSL_CTX_set_options(SSL_OP_SINGLE_ECDH_USE)（有 SSL_CTRL_SET_ECDH_AUTO 时另调 SSL_CTX_set_ecdh_auto），auto 直接返回，否则以该值调 SSL_CTX_set1_curves_list；无该接口时 auto 映射为 prime256v1，按 OBJ_sn2nid 取单曲线 SSL_CTX_set_tmp_ecdh。
+- 修正（功能）：设置HTTP TLS上下文的ECDH曲线或曲线列表：SSL库支持曲线列表时，auto只启用SSL_OP_SINGLE_ECDH_USE而不额外设置曲线，其他值经SSL_CTX_set1_curves_list设置；不支持时按单个曲线名设置（auto取prime256v1）。
+  - 理由：“ECDHE”是 OpenSSL 语义，源码只有 ECDH 注释与 SSL_OP_SINGLE_ECDH_USE；并补足 auto 与旧库单曲线分支的源码可见行为。
+
+## nginx--ngx_http_ssl_module--ssl_protocols
+
+- 语法（`ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_1MORE；ngx_conf_set_bitmask_slot 逐个参数在 ngx_http_ssl_protocols 表中不分大小写匹配，表项恰为 SSLv2、SSLv3、TLSv1、TLSv1.1、TLSv1.2、TLSv1.3 六个，重复值仅告警，未知值报错；与语法列举完全一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2
+  - 判据：值按位或存入 sscf->protocols，merge 默认 TLSv1~1.3；ssl_module 716 把 conf->protocols 传给 ngx_ssl_create，后者对未置位的协议调用 SSL_CTX_set_options(SSL_OP_NO_xxx) 并设置最小/最大协议版本。
+
+## nginx--ngx_http_ssl_module--ssl_ciphers
+
+- 语法（`ssl_ciphers ciphers;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 ciphers，与 `ciphers` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2
+  - 判据：值经 offsetof 存入 sscf->ciphers，ssl_module 747 将 &conf->ciphers 传给 ngx_ssl_ciphers，后者把 ciphers->data 交给 SSL_CTX_set_cipher_list。
+
+## nginx--ngx_http_ssl_module--ssl_buffer_size
+
+- 语法（`ssl_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_size_slot 解析大小到 buffer_size，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4
+  - 判据：值经 offsetof 存入 sscf->buffer_size；ssl_module 786 赋给 conf->ssl.buffer_size，新连接 ngx_ssl_create_connection 复制为 sc->buffer_size（SNI 切换服务器时 request.c 950 重新赋值），ngx_ssl_send_chain 开启缓冲时按 c->ssl->buffer_size 创建缓冲并把多个 buf 拷入后再 SSL_write。
+
+## nginx--ngx_http_ssl_module--ssl_verify_client
+
+- 语法（`ssl_verify_client on|off|optional|optional_no_ca;`）：verified；source_ids：registration, configuration-definition, implementation-0
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_enum_slot 在 ngx_http_ssl_verify 表中不分大小写匹配，表项恰为 off、on、optional、optional_no_ca，与语法列举一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 sscf->verify（off=0,on=1,optional=2,optional_no_ca=3）；非 0 时 ssl_module 788-803 要求 client_certificate（verify!=3 除外）并调 ngx_ssl_client_certificate（SSL_CTX_set_verify(SSL_VERIFY_PEER)）；请求阶段 request.c 2074-2120 按 sscf->verify 检查 SSL_get_verify_result，verify==3 时容忍 ngx_ssl_verify_error_optional 所列错误，verify==1 时无证书返回 NGX_HTTPS_NO_CERT，并附加 OCSP 状态检查。
+
+## nginx--ngx_http_ssl_module--ssl_verify_depth
+
+- 语法（`ssl_verify_depth number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_num_slot 解析整数到 verify_depth，与 `number` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 sscf->verify_depth，ssl_module 796-807 作为 depth 传给 ngx_ssl_client_certificate / ngx_ssl_trusted_certificate，二者调用 SSL_CTX_set_verify_depth；SNI 切换服务器时 request.c 965 用 SSL_set_verify_depth 同步。
+
+## nginx--ngx_http_ssl_module--ssl_client_certificate
+
+- 语法（`ssl_client_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 client_certificate，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1
+  - 判据：值存入 sscf->client_certificate；仅当 conf->verify 非 0 时 ssl_module 796 传给 ngx_ssl_client_certificate：SSL_CTX_load_verify_locations 加载该文件，再 SSL_load_client_CA_file + SSL_CTX_set_client_CA_list 设置客户端 CA 名称列表。原文“PEM”“发给客户端的可接受 CA 名称列表”的格式与协议语义不由 nginx 源码体现，已收窄。
+- 修正（功能）：指定验证客户端证书所用的CA文件（SSL_CTX_load_verify_locations），并用该文件设置SSL上下文的客户端CA名称列表（SSL_CTX_set_client_CA_list）；仅在 ssl_verify_client 不为 off 时装载。
+  - 理由：源码只体现调用 SSL_CTX_load_verify_locations 与 SSL_CTX_set_client_CA_list，未判定文件为PEM格式，也未体现该列表发给客户端的协议行为；且装载受 conf->verify 非 0 的条件限制。
+
+## nginx--ngx_http_ssl_module--ssl_trusted_certificate
+
+- 语法（`ssl_trusted_certificate file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 trusted_certificate，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2
+  - 判据：值存入 sscf->trusted_certificate，ssl_module 805 无条件传给 ngx_ssl_trusted_certificate：SSL_CTX_set_verify 保留现有模式并设 ngx_ssl_verify_callback，SSL_CTX_set_verify_depth，非空时 SSL_CTX_load_verify_locations 加载该文件；OCSP 响应验证 ngx_ssl_ocsp_verify 以 SSL_CTX_get_cert_store(ctx->ssl_ctx) 取该上下文证书存储调用 OCSP_basic_verify。
+- 修正（功能）：用SSL_CTX_load_verify_locations加载受信CA文件，并设置验证回调与验证深度；OCSP响应验证时取该上下文的证书存储调用OCSP_basic_verify。
+  - 理由：“用于链验证”依赖 OpenSSL 对证书存储的使用，nginx 源码只体现上述调用。
+
+## nginx--ngx_http_ssl_module--ssl_prefer_server_ciphers
+
+- 语法（`ssl_prefer_server_ciphers on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG（恰好一个参数）；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1
+  - 判据：值存入 sscf->prefer_server_ciphers，ssl_module 747-748 作为参数传给 ngx_ssl_ciphers，后者为真时 SSL_CTX_set_options(SSL_OP_CIPHER_SERVER_PREFERENCE)。
+
+## nginx--ngx_http_ssl_module--ssl_session_cache
+
+- 语法（`ssl_session_cache off|none|[builtin[:size]] [shared:name:size];`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE12；ngx_http_ssl_session_cache 逐个参数识别 off、none、builtin、builtin:size、shared:name:size，其余报 invalid session cache，与语法一致（builtin 可省略 :size）。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1
+  - 判据：setter 把 off/none/builtin[:size] 写入 sscf->builtin_session_cache，shared:name:size 经 ngx_shared_memory_add 建立共享内存区写入 sscf->shm_zone（init=ngx_ssl_session_cache_init）；ssl_module 849 把二者传给 ngx_ssl_session_cache：off→SSL_SESS_CACHE_OFF，none→服务器模式但不存储，否则设置 SSL_CTX_sess_set_cache_size，并在有 shm_zone 时注册 new/get/remove 会话回调。
+
+## nginx--ngx_http_ssl_module--ssl_session_tickets
+
+- 语法（`ssl_session_tickets on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0
+  - 判据：值存入 sscf->session_tickets（merge 默认 1）；ssl_module 859-862 在 #ifdef SSL_OP_NO_TICKET 下当其为 0 时 SSL_CTX_set_options(SSL_OP_NO_TICKET)。
+
+## nginx--ngx_http_ssl_module--ssl_session_ticket_key
+
+- 语法（`ssl_session_ticket_key file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_array_slot 追加 value[1] 到 session_ticket_keys，可重复，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4
+  - 判据：值存入 sscf->session_ticket_keys，ssl_module 868 传给 ngx_ssl_session_ticket_keys（在 #ifdef SSL_CTRL_SET_TLSEXT_TICKET_KEY_CB 下）：逐个文件按 48 或 80 字节读入密钥数组并注册 ngx_ssl_ticket_key_callback；加密用 key[0]，解密按名称在全部密钥中查找，故多文件可轮换；否则（#else）仅记录 "ignored, not supported" 警告。
+
+## nginx--ngx_http_ssl_module--ssl_session_timeout
+
+- 语法（`ssl_session_timeout time;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_sec_slot 把时间解析为秒存入 session_timeout，与 `time` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2
+  - 判据：值存入 sscf->session_timeout（merge 默认 300），ssl_module 849-851 传给 ngx_ssl_session_cache，后者 SSL_CTX_set_timeout(ssl->ctx, timeout)；共享票据密钥轮换也以 SSL_CTX_get_timeout 计算过期。
+
+## nginx--ngx_http_ssl_module--ssl_crl
+
+- 语法（`ssl_crl file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 crl，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1
+  - 判据：值存入 sscf->crl，ssl_module 813 传给 ngx_ssl_crl：取 SSL_CTX_get_cert_store，X509_LOOKUP_load_file(..., X509_FILETYPE_PEM) 加载，并设置 X509_V_FLAG_CRL_CHECK|X509_V_FLAG_CRL_CHECK_ALL。
+
+## nginx--ngx_http_ssl_module--ssl_ocsp
+
+- 语法（`ssl_ocsp on|off|leaf;`）：verified；source_ids：registration, configuration-definition, implementation-0, syntax-arg-check
+  - 判据：注册为 NGX_CONF_FLAG：ngx_conf_handler 对 FLAG 只要求恰好 1 个参数（片段 syntax-arg-check），实际取值由 ngx_conf_set_enum_slot 在 ngx_http_ssl_ocsp 表中匹配，表项恰为 off、on、leaf，与 `on|off|leaf` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-3, implementation-4, implementation-5, implementation-6, ocsp-conf-assign, ocsp-next-conf
+  - 判据：值存入 sscf->ocsp（off=0,on=1,leaf=2）；conf->ocsp 非 0 时 ssl_module 826 作为 depth 传给 ngx_ssl_ocsp，后者 ocf->depth=depth 并 SSL_CTX_set_ex_data(ssl->ctx, ngx_ssl_ocsp_index, ocf)（片段 ocsp-conf-assign，stapling.c 775-823）；握手完成后 ngx_ssl_ocsp_validate 以 SSL_CTX_get_ex_data 取回 ocf、取得验证后的对端证书链，ngx_ssl_ocsp_validate_next 经 ocf=ocsp->conf（ocsp-next-conf）在 ocf->depth==2 时只检查第 1 个证书（叶证书），否则检查到根之前的全部证书；失败时 request.c 2110 经 ngx_ssl_ocsp_get_status 返回证书验证错误。
+- 新增片段：syntax-arg-check（src/core/ngx_conf_file.c:413-443）；ocsp-conf-assign（src/event/ngx_event_openssl_stapling.c:775-823）；ocsp-next-conf（src/event/ngx_event_openssl_stapling.c:982-983）
+
+## nginx--ngx_http_ssl_module--ssl_ocsp_responder
+
+- 语法（`ssl_ocsp_responder url;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 ocsp_responder，与 `url` 一致（ngx_ssl_ocsp 另要求以 http:// 开头）。
+- 功能：verified；source_ids：registration, implementation-0, implementation-2, implementation-3, implementation-4
+  - 判据：值存入 sscf->ocsp_responder，ssl_module 826 传给 ngx_ssl_ocsp：非空时解析 URL 写入 ocf->host/uri/port；validate_next 把 ocf->host 等拷到 ctx，ngx_ssl_ocsp_responder 在 ctx->host.len 非零时直接使用，仅为空才从证书 AIA 提取，故能覆盖证书内的响应器。
+
+## nginx--ngx_http_ssl_module--ssl_ocsp_cache
+
+- 语法（`ssl_ocsp_cache off|shared:name:size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_ssl_ocsp_cache 对 value[1] 判断 off，否则必须以 shared: 开头并解析 name:size（至少 8 页），其余报 invalid OCSP cache，与 `off|shared:name:size` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, ocsp-conf-assign, ocsp-conf-fetch, ocsp-next-conf
+  - 判据：setter 经 ngx_shared_memory_add 建共享区写入 sscf->ocsp_cache_zone（init=ngx_ssl_ocsp_cache_init）；ssl_module 826 传给 ngx_ssl_ocsp，ocf->shm_zone=shm_zone 并 SSL_CTX_set_ex_data(..., ngx_ssl_ocsp_index, ocf)（片段 ocsp-conf-assign，775-823）；validate_next 中 ctx->shm_zone=ocf->shm_zone（ngx_ssl_ocsp_validate 经 SSL_CTX_get_ex_data 取回 ocf 并 ocsp->conf=ocf、c->ssl->ocsp=ocsp，片段 ocsp-conf-fetch；validate_next 开头 ocsp=c->ssl->ocsp、ocf=ocsp->conf，片段 ocsp-next-conf），ngx_ssl_ocsp_cache_lookup/store 在共享内存红黑树中按证书键查找与存储状态与有效期。
+- 新增片段：ocsp-conf-assign（src/event/ngx_event_openssl_stapling.c:775-823）；ocsp-conf-fetch（src/event/ngx_event_openssl_stapling.c:868-894）；ocsp-next-conf（src/event/ngx_event_openssl_stapling.c:982-983）
+
+## nginx--ngx_http_ssl_module--ssl_stapling
+
+- 语法（`ssl_stapling on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-2, implementation-4, implementation-5
+  - 判据：值存入 sscf->stapling，为真时 ssl_module 876 调 ngx_ssl_stapling：为每个服务器证书建 staple，并 SSL_CTX_set_tlsext_status_cb(ngx_ssl_certificate_status_callback)；回调对当前证书取 staple，有有效响应则 SSL_set_tlsext_status_ocsp_resp，并 ngx_ssl_stapling_update 在线刷新。
+
+## nginx--ngx_http_ssl_module--ssl_stapling_file
+
+- 语法（`ssl_stapling_file file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 stapling_file，与 `file` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, staple-attach, staple-cb-reg, staple-cb
+  - 判据：值存入 sscf->stapling_file，ssl_module 876 随 stapling 传给 ngx_ssl_stapling；ngx_ssl_stapling_certificate 在 file->len 非零时调 ngx_ssl_stapling_file：d2i_OCSP_RESPONSE_bio 读取文件并存入 staple->staple，valid 设为 NGX_MAX_TIME_T_VALUE，且此路径不再取 issuer/responder；ngx_ssl_stapling_update 在 host.len==0 时不发请求。原文“DER格式”不由 nginx 源码判定，已收窄。staple 由 X509_set_ex_data 挂到证书（staple-attach），握手时 ngx_ssl_certificate_status_callback 以 X509_get_ex_data 取回，staple->staple.len 且 valid>=now 时 SSL_set_tlsext_status_ocsp_resp（staple-cb）。ngx_ssl_stapling 末尾以 SSL_CTX_set_tlsext_status_cb(ssl->ctx, ngx_ssl_certificate_status_callback) 注册该回调（staple-cb-reg）。
+- 新增片段：staple-attach（src/event/ngx_event_openssl_stapling.c:238-241）；staple-cb-reg（src/event/ngx_event_openssl_stapling.c:211-211）；staple-cb（src/event/ngx_event_openssl_stapling.c:580-613）
+- 修正（功能）：以本地文件中的OCSP响应作为HTTP服务器证书的staple。
+  - 理由：源码仅体现调用 d2i_OCSP_RESPONSE_bio 读取文件并将响应用作 staple，nginx 未自行判定文件格式，“DER格式”属 OpenSSL 接口约定。
+
+## nginx--ngx_http_ssl_module--ssl_stapling_responder
+
+- 语法（`ssl_stapling_responder url;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_str_slot 保存 value[1] 到 stapling_responder，与 `url` 一致（ngx_ssl_stapling_responder 另要求以 http:// 开头）。
+- 功能：verified；source_ids：registration, implementation-0, implementation-2, implementation-3, implementation-5, staple-attach, staple-cb-reg, staple-cb
+  - 判据：值存入 sscf->stapling_responder，ssl_module 876 传给 ngx_ssl_stapling；无 stapling_file 时 ngx_ssl_stapling_responder 在 responder->len 非零时解析该 URL 填入 staple->host/uri/port，仅为空才从证书 AIA 提取；ngx_ssl_stapling_update 据此发起在线 OCSP 请求。staple 由 X509_set_ex_data 挂到证书（staple-attach），状态回调取回 staple 后调用 ngx_ssl_stapling_update（staple-cb）。ngx_ssl_stapling 末尾以 SSL_CTX_set_tlsext_status_cb(ssl->ctx, ngx_ssl_certificate_status_callback) 注册该回调（staple-cb-reg）。
+- 新增片段：staple-attach（src/event/ngx_event_openssl_stapling.c:238-241）；staple-cb-reg（src/event/ngx_event_openssl_stapling.c:211-211）；staple-cb（src/event/ngx_event_openssl_stapling.c:580-613）
+
+## nginx--ngx_http_ssl_module--ssl_stapling_verify
+
+- 语法（`ssl_stapling_verify on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, implementation-4, staple-attach, staple-cb-reg, staple-cb
+  - 判据：值存入 sscf->stapling_verify，ssl_module 876-877 作为 verify 传给 ngx_ssl_stapling，staple->verify=verify；ngx_ssl_stapling_update 令 ctx->flags=(verify ? OCSP_TRUSTOTHER : OCSP_NOVERIFY)，ngx_ssl_ocsp_verify 以该 flags 调 OCSP_basic_verify(basic, chain, store, flags)。staple 由 X509_set_ex_data 挂到证书（staple-attach），状态回调取回 staple 后调用 ngx_ssl_stapling_update（staple-cb）。ngx_ssl_stapling 末尾以 SSL_CTX_set_tlsext_status_cb(ssl->ctx, ngx_ssl_certificate_status_callback) 注册该回调（staple-cb-reg）。
+- 新增片段：staple-attach（src/event/ngx_event_openssl_stapling.c:238-241）；staple-cb-reg（src/event/ngx_event_openssl_stapling.c:211-211）；staple-cb（src/event/ngx_event_openssl_stapling.c:580-613）
+
+## nginx--ngx_http_ssl_module--ssl_early_data
+
+- 语法（`ssl_early_data on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-3, implementation-4, implementation-5
+  - 判据：值存入 sscf->early_data，ssl_module 885 传给 ngx_ssl_early_data：为真时按宏分别 SSL_CTX_set_early_data_enabled（BoringSSL）或 SSL_CTX_set_max_early_data（OpenSSL），都不可用则警告并忽略；ngx_ssl_create_connection 在 SSL_CTX_get_max_early_data 非零时置 try_early_data，ngx_ssl_handshake 转入 ngx_ssl_try_early_data 调 SSL_read_early_data。所引 try_early_data 区段仅在错误分支被 OpenResty 补丁追加 yield 处理，与所引读取逻辑无关。原文“TLS1.3”限定不由 nginx 源码体现，已收窄。
+- 修正（功能）：控制HTTP TLS上下文是否接收early data：开启后按SSL库提供的接口启用，并在握手阶段尝试读取early data；SSL库不支持时忽略并记录警告。
+  - 理由：源码按 SSL_ERROR_EARLY_DATA_REJECTED / SSL_READ_EARLY_DATA_SUCCESS 宏分别调用 SSL_CTX_set_early_data_enabled / SSL_CTX_set_max_early_data，两者皆无时仅警告并忽略；未体现“TLS1.3”限定，且需补足不支持时的行为。
+
+## nginx--ngx_http_ssl_module--ssl_conf_command
+
+- 语法（`ssl_conf_command name value;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE2；ngx_conf_set_keyval_slot 把两个参数作为 key/value 追加到 conf_commands，post 检查在无 SSL_CONF_FLAG_FILE 时报不支持，与 `name value` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2, implementation-3
+  - 判据：键值对存入 sscf->conf_commands，ssl_module 889 传给 ngx_ssl_conf_commands：在 #ifdef SSL_CONF_FLAG_FILE 下逐条 SSL_CONF_cmd(cctx, key, value)，文件/目录类取值先补全路径，最后 SSL_CONF_CTX_finish；无该宏时报 "SSL_CONF_cmd() is not available"。
+
+## nginx--ngx_http_ssl_module--ssl_reject_handshake
+
+- 语法（`ssl_reject_handshake on|off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on|off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 sscf->reject_handshake；merge 阶段即使无证书也为其创建 SSL 上下文并（#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME）注册 ngx_http_ssl_servername；该回调按 SNI 选定 hc->conf_ctx（request.c 942）后，于 done 处取 sscf=ngx_http_get_module_srv_conf(hc->conf_ctx, ...)，reject_handshake 为真则置 handshake_rejected 并返回 SSL_AD_UNRECOGNIZED_NAME 致命告警。
+
+## nginx--ngx_http_v2_module--http2
+
+- 语法（`http2 on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 h2scf->enable（merge 默认 0）；request.c 493 在非 SSL 连接且 h2scf->enable（或 listen http2）时比对 HTTP/2 前言，匹配即 ngx_http_v2_init；request.c 840 在 TLS 握手后 h2scf->enable 为真时取 SSL_get0_alpn_selected，为 "h2" 则 ngx_http_v2_init；ALPN 选择回调（ssl_module 475-479）同样以 h2scf->enable 决定是否通告 h2。
+
+## nginx--ngx_http_v2_module--http2_recv_buffer_size
+
+- 语法（`http2_recv_buffer_size size;`）：verified；source_ids：registration, configuration-definition, implementation-0, implementation-2
+  - 判据：注册为 NGX_CONF_TAKE1（仅主配置）；ngx_conf_set_size_slot 解析大小到 recv_buffer_size，post 回调要求大于 NGX_HTTP_V2_STATE_BUFFER_SIZE，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2, implementation-3, implementation-4
+  - 判据：值存入 h2mcf->recv_buffer_size（默认 256k）；ngx_http_v2_init 首个连接按该大小在 ngx_cycle->pool 分配共享的 h2mcf->recv_buffer，读事件处理中 available=recv_buffer_size-STATE_BUFFER_SIZE，先拷入 state.buffer 残片再 c->recv 读入剩余空间。
+
+## nginx--ngx_http_v2_module--http2_pool_size
+
+- 语法（`http2_pool_size size;`）：verified；source_ids：registration, configuration-definition, implementation-1, implementation-2
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_size_slot 解析大小到 pool_size，post 回调要求不小于 NGX_MIN_POOL_SIZE 且为 NGX_POOL_ALIGNMENT 的倍数，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-3, implementation-4, implementation-5
+  - 判据：值存入 h2scf->pool_size（merge 默认 4096）；ngx_http_v2_init 以 ngx_create_pool(h2scf->pool_size, ...) 创建 h2c->pool，ngx_create_pool 将 size 作为首个内存块大小。
+
+## nginx--ngx_http_v2_module--http2_max_concurrent_streams
+
+- 语法（`http2_max_concurrent_streams number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_num_slot 解析整数到 concurrent_streams，与 `number` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2
+  - 判据：值存入 h2scf->concurrent_streams（merge 默认 128）；ngx_http_v2_send_settings 把它写入 SETTINGS 的 MAX_CONCURRENT_STREAMS，创建流时 h2c->processing >= concurrent_streams 则 REFUSED_STREAM，新建流数超 2 倍时同样拒绝。
+
+## nginx--ngx_http_v2_module--http2_max_concurrent_pushes
+
+- 语法（`http2_max_concurrent_pushes number;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `number` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，cmd->post 为 NULL，故仅输出 "the \"%V\" directive is obsolete, ignored" 警告并返回 NGX_CONF_OK，未向任何配置字段写入。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_max_concurrent_pushes value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `number` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_max_requests
+
+- 语法（`http2_max_requests number;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `number` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 指向 ngx_http_v2_max_requests_deprecated，仅输出 "obsolete, use keepalive_requests instead" 警告并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_max_requests value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `number` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_max_field_size
+
+- 语法（`http2_max_field_size size;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `size` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 指向 ngx_http_v2_max_field_size_deprecated，仅输出警告（提示改用 large_client_header_buffers）并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_max_field_size value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `size` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_max_header_size
+
+- 语法（`http2_max_header_size size;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `size` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 指向 ngx_http_v2_max_header_size_deprecated，仅输出警告（提示改用 large_client_header_buffers）并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_max_header_size value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `size` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_body_preread_size
+
+- 语法（`http2_body_preread_size size;`）：verified；source_ids：registration, configuration-definition, implementation-1, implementation-2
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_size_slot 解析大小到 preread_size，post 回调要求不超过 NGX_HTTP_V2_MAX_WINDOW，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-3, implementation-4
+  - 判据：值存入 h2scf->preread_size（merge 默认 65536）；请求正文数据在尚未开始读取正文时，按 h2scf->preread_size 创建 stream->preread 缓冲并拷入；ngx_http_v2_send_settings 把它写入 SETTINGS 的 INITIAL_WINDOW_SIZE。
+
+## nginx--ngx_http_v2_module--http2_streams_index_size
+
+- 语法（`http2_streams_index_size number;`）：verified；source_ids：registration, configuration-definition, implementation-1, implementation-2
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_num_slot 解析整数，post 回调要求为 2 的幂并将其改写为掩码（np-1），与 `number` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-2, implementation-3, implementation-5, index-alloc
+  - 判据：值经 post 回调转为掩码存入 h2scf->streams_index_mask（merge 默认 31）；ngx_http_v2_index_size(h2scf)=mask+1 决定 ngx_http_v2_init 中 streams_index 数组的元素数，ngx_http_v2_get_node_by_id 以 (sid>>1)&mask 选桶。
+- 新增片段：index-alloc（src/http/v2/ngx_http_v2.c:267-268）
+
+## nginx--ngx_http_v2_module--http2_recv_timeout
+
+- 语法（`http2_recv_timeout time;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `time` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 指向 ngx_http_v2_recv_timeout_deprecated，仅输出警告（提示改用 client_header_timeout）并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_recv_timeout value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `time` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_idle_timeout
+
+- 语法（`http2_idle_timeout time;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `time` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 指向 ngx_http_v2_idle_timeout_deprecated，仅输出警告（提示改用 keepalive_timeout）并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_idle_timeout value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `time` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_chunk_size
+
+- 语法（`http2_chunk_size size;`）：verified；source_ids：registration, configuration-definition, implementation-0, implementation-2
+  - 判据：注册为 NGX_CONF_TAKE1（http/server/location）；ngx_conf_set_size_slot 解析大小到 chunk_size，post 回调禁止为 0 并截断到 NGX_HTTP_V2_MAX_FRAME_SIZE，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 h2lcf->chunk_size（merge 默认 8k）；发送响应数据时 h2lcf=ngx_http_get_module_loc_conf(r, ngx_http_v2_module)，frame_size=min(chunk_size, h2c->frame_size)，再受 limit（限于连接与流的 send_window）约束后按 frame_size 切分。
+
+## nginx--ngx_http_v2_module--http2_push_preload
+
+- 语法（`http2_push_preload on | off;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_FLAG，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `on | off` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 为 NULL，仅输出 "directive is obsolete, ignored" 警告并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_push_preload value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_FLAG）约束，原占位符 `on | off` 无源码依据。
+
+## nginx--ngx_http_v2_module--http2_push
+
+- 语法（`http2_push uri | off;`）：verified；source_ids：registration, configuration-definition, obsolete-handler
+  - 判据：注册为 NGX_CONF_TAKE1，只约束参数个数为 1；处理函数 ngx_http_v2_obsolete（obsolete-handler）只输出警告并返回 NGX_CONF_OK，不解析参数值，故按裁定 4 把占位符 `uri | off` 改为 `value`。
+- 功能：verified；source_ids：registration, configuration-definition, implementation-0, obsolete-handler
+  - 判据：注册的 set 函数为 ngx_http_v2_obsolete，post 为 NULL，仅输出 "directive is obsolete, ignored" 警告并返回 OK，不写入任何配置字段。
+- 新增片段：obsolete-handler（src/http/v2/ngx_http_v2_module.c:480-498）
+- 修正（语法）：http2_push value;
+  - 理由：处理函数 ngx_http_v2_obsolete 不解析参数值，只有参数个数受注册标志（NGX_CONF_TAKE1）约束，原占位符 `uri | off` 无源码依据。
+
+## nginx--ngx_http_v3_module--http3
+
+- 语法（`http3 on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3
+  - 判据：值存入 h3scf->enable（merge 默认 1）；QUIC 监听的 ALPN 选择回调（ssl_module 448-471，#if NGX_HTTP_V3）在 enable 为真时通告 h3；请求头处理完成后 request.c 1019 检查 !h3c->hq && !h3scf->enable 则记录日志并以 NGX_HTTP_MISDIRECTED_REQUEST 结束请求。
+
+## nginx--ngx_http_v3_module--http3_hq
+
+- 语法（`http3_hq on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, implementation-3, hq-proto, hq-var
+  - 判据：值存入 h3scf->enable_hq（merge 默认 0）；ALPN 回调中 enable_hq 为真时通告 hq-interop（enable 同时为真则 h3 与 hq-interop 并列，仅 enable_hq 为真则只通告 hq-interop，与 http3 开关独立）；ngx_http_v3_init 对协商到 hq-interop 的连接置 h3c->hq=1，$http3 变量此时返回 "hq"；请求头处理处对 hq 连接检查 enable_hq。原文“QUIC互操作测试”“HTTP/0.9”不由所引片段体现，已收窄。
+- 新增片段：hq-proto（src/http/v3/ngx_http_v3.h:22-24）；hq-var（src/http/v3/ngx_http_v3_module.c:132-143）
+- 修正（功能）：启用hq-interop应用协议的ALPN协商，独立于http3开关；仅开启http3_hq（http3关闭）时QUIC连接直接按hq模式处理，两者都开启时协商到hq-interop的连接按hq模式处理，$http3变量取值为hq。
+  - 理由：源码体现的是 ALPN 名 "hq-interop" 的通告、ngx_http_v3_init 中 enable_hq 且 !enable 时直接置 hq=1、否则按 ALPN 结果置 hq，以及 $http3 变量返回 hq；未体现“QUIC互操作测试”用途与“HTTP/0.9”请求语法。
+
+## nginx--ngx_http_v3_module--http3_max_concurrent_streams
+
+- 语法（`http3_max_concurrent_streams number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_num_slot 解析整数到 max_concurrent_streams，与 `number` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-new, chain-quic-conn
+  - 判据：值存入 h3scf->max_concurrent_streams（merge 默认 128），merge 中 conf->quic.max_concurrent_streams_bidi = conf->max_concurrent_streams；ngx_http_v3_init_stream 以 ngx_quic_run(c, &h3scf->quic) 把该配置经 handle_datagram→handle_packet→new_connection 设为 qc->conf 并调 ngx_quic_init_transport_params，写入 tp->initial_max_streams_bidi。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-new（src/event/quic/ngx_event_quic.c:935-938）；chain-quic-conn（src/event/quic/ngx_event_quic.c:288-290）
+
+## nginx--ngx_http_v3_module--http3_stream_buffer_size
+
+- 语法（`http3_stream_buffer_size size;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_size_slot 解析大小到 quic.stream_buffer_size，与 `size` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-new, chain-quic-conn
+  - 判据：值存入 h3scf->quic.stream_buffer_size（merge 默认 65536）；经 ngx_quic_run 链设为 qc->conf 后，ngx_quic_init_transport_params 以其设置 initial_max_stream_data_*（及 initial_max_data=流数×该值），ngx_quic_stream_send_chain 用 flow=qs->acked+qc->conf->stream_buffer_size-qs->sent 限制未确认的发送量。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-new（src/event/quic/ngx_event_quic.c:935-938）；chain-quic-conn（src/event/quic/ngx_event_quic.c:288-290）
+
+## nginx--ngx_http_v3_module--quic_retry
+
+- 语法（`quic_retry on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-new, chain-quic-conn
+  - 判据：值存入 h3scf->quic.retry（merge 默认 0）；ngx_quic_run 把 &h3scf->quic 作为 conf 逐级传入 Initial 包处理：无令牌且 conf->retry 为真则 ngx_quic_send_retry，令牌无效（非 retried）且 conf->retry 则同样重试；握手完成（SSL_do_handshake 成功）后 ngx_quic_ssl 中 qc->conf->retry 为真则 ngx_quic_send_new_token。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-new（src/event/quic/ngx_event_quic.c:935-938）；chain-quic-conn（src/event/quic/ngx_event_quic.c:288-290）
+
+## nginx--ngx_http_v3_module--quic_gso
+
+- 语法（`quic_gso on | off;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_FLAG；ngx_conf_set_flag_slot 仅接受 on/off，与 `on | off` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-new, chain-quic-conn
+  - 判据：值存入 h3scf->quic.gso_enabled（merge 默认 0）；经 ngx_quic_run 链设为 qc->conf 后，ngx_quic_allow_segmentation（#if NGX_HAVE_UDP_SEGMENT && NGX_HAVE_MSGHDR_MSG_CONTROL）先检查 qc->conf->gso_enabled，再要求 path->validated、initial 与 handshake 级别帧队列为空、应用级帧总长超过 len*3（注释“at least ~3 full packets”），通过则 ngx_quic_create_segments，否则 ngx_quic_create_datagrams。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-new（src/event/quic/ngx_event_quic.c:935-938）；chain-quic-conn（src/event/quic/ngx_event_quic.c:288-290）
+- 修正（功能）：允许QUIC在平台支持UDP分段（NGX_HAVE_UDP_SEGMENT且NGX_HAVE_MSGHDR_MSG_CONTROL）、gso_enabled开启、路径已验证、initial与handshake级别无待发帧且应用级待发帧约超过3个满包时，改用分段批量路径（ngx_quic_create_segments）发送。
+  - 理由：源码中 ngx_quic_allow_segmentation 依次检查 gso_enabled、path->validated、initial/handshake 级别帧队列为空、应用级帧总量超过约 3 个满包；“卸载”“减少发送调用开销”为目的性推断，且原文缺少平台限定条件。
+
+## nginx--ngx_http_v3_module--quic_host_key
+
+- 语法（`quic_host_key file;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_http_quic_host_key 取 value[1] 为文件路径，已设置时报 "is duplicate"，整文件读入 host_key（空文件报错），与 `file` 一致。
+- 功能：verified；source_ids：configuration-definition, implementation-0, implementation-1, implementation-2, implementation-3, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-sr, chain-quic-retry
+  - 判据：setter 把文件内容存入 h3scf->quic.host_key；merge 中 ngx_quic_derive_key 以 host_key 派生 av_token_key 与 sr_token_key；ngx_quic_run 把 &h3scf->quic 作为 conf 传入包处理，ngx_quic_send_retry 用 conf->av_token_key 生成令牌，ngx_quic_send_stateless_reset 用 conf->sr_token_key 生成无状态重置令牌。未配置时 merge 以 RAND_bytes 生成 NGX_QUIC_DEFAULT_HOST_KEY_LEN 字节密钥（implementation-0）。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-sr（src/event/quic/ngx_event_quic.c:869-871）；chain-quic-retry（src/event/quic/ngx_event_quic.c:889-933）
+- 修正（功能）：从指令指定的文件读取QUIC主密钥材料（未配置时以RAND_bytes随机生成），用于派生地址验证令牌和无状态重置令牌所需的密钥。
+  - 理由：原文“从配置文件读取”易被理解为 nginx.conf，实为读取指令参数给出的文件；merge 中未配置时以 RAND_bytes 生成默认密钥。
+
+## nginx--ngx_http_v3_module--quic_active_connection_id_limit
+
+- 语法（`quic_active_connection_id_limit number;`）：verified；source_ids：registration, configuration-definition
+  - 判据：注册为 NGX_CONF_TAKE1；ngx_conf_set_num_slot 解析整数到 quic.active_connection_id_limit，与 `number` 一致。
+- 功能：verified；source_ids：registration, implementation-0, implementation-1, implementation-2, chain-v3-run, chain-quic-run, chain-quic-datagram, chain-quic-new, chain-quic-conn
+  - 判据：值存入 h3scf->quic.active_connection_id_limit（merge 默认 2）；经 ngx_quic_run 链设为 qc->conf，ngx_quic_init_transport_params 写入 tp->active_connection_id_limit（通告给对端）；收到 NEW_CONNECTION_ID 处理后若 qc->nclient_ids 超过 qc->tp.active_connection_id_limit 则以 CONNECTION_ID_LIMIT_ERROR 关闭连接。
+- 新增片段：chain-v3-run（src/http/v3/ngx_http_v3_request.c:71-76）；chain-quic-run（src/event/quic/ngx_event_quic.c:197-208）；chain-quic-datagram（src/event/quic/ngx_event_quic.c:693-697）；chain-quic-new（src/event/quic/ngx_event_quic.c:935-938）；chain-quic-conn（src/event/quic/ngx_event_quic.c:288-290）
