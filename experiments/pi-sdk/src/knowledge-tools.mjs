@@ -5,7 +5,7 @@ import { Type } from '@earendil-works/pi-ai';
 import { parseConfig, parseSingle } from '../../../src/core/parser.mjs';
 import { matchDirective } from '../../../src/core/matcher.mjs';
 import { summarizeConfig, needsOuterContext, needsAttention } from '../../../src/query/config-results.mjs';
-import { createKnowledgeClient, validateIndex, isSafeId } from '../../../src/query/knowledge.mjs';
+import { createKnowledgeClient, validateIndex, isSafeId, fieldEvidence } from '../../../src/query/knowledge.mjs';
 
 export const TOOL_NAMES = ['analyze_config', 'query_knowledge'];
 export const digest = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
@@ -74,6 +74,11 @@ export function analyze(snapshot, request) {
 
 export const FIELDS = ['summary', 'syntax', 'defaults', 'inheritance', 'limitations', 'runtime'];
 export function fieldInfo(detail, field) {
+  // 功能与语法的状态只来自 *_evidence；字符串正文本身不携带状态，缺失（历史发布）按未核实处理。
+  if (field === 'summary' || field === 'syntax') {
+    const { status, source_ids } = fieldEvidence(detail, field);
+    return { status, source_ids: [...source_ids] };
+  }
   const raw = detail[field];
   const facts = Array.isArray(raw) ? raw : raw ? [raw] : [];
   const status = Array.isArray(raw) ? (raw.length && raw.every(item => item.status === 'verified') ? 'verified' : 'unverified') : typeof raw === 'string' ? 'unverified' : raw?.status ?? 'unverified';

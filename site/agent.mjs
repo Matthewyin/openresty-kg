@@ -1,3 +1,5 @@
+import { FIELD_PENDING_LABEL, FIELD_PENDING_NOTE } from './src/query/knowledge.mjs';
+
 const $ = id => document.getElementById(id);
 const appBase = new URL('./', import.meta.url);
 const storageKey = `openresty-agent-session${appBase.pathname === '/' ? '' : `:${appBase.pathname}`}`;
@@ -170,12 +172,17 @@ function entryParts(entryId) {
 }
 function factBody(parent, value, fact, citations) {
   const status = value?.status ?? fact.status;
+  // 功能/语法未登记字段出处，但条目已基础核对：用中性“待补出处”，不与仅注册信息条目的“未核实”混用。
+  // 条目评级只决定这个措辞，绝不会让字段变成“已核实”。
+  const pending = ['summary', 'syntax'].includes(fact.field) && status === 'unverified' && ['basic_verified', 'deep_verified'].includes(fact.verification);
   // 状态徽标放在正文前，用户先看到“这条是否已核实”，再读内容。
-  node('span', labels[status] ?? '未核实', parent, `fact-status ${statusTone(status)}`);
+  node('span', pending ? FIELD_PENDING_LABEL : labels[status] ?? '未核实', parent, `fact-status ${pending ? 'neutral' : statusTone(status)}`);
   const text = typeof value === 'string' ? value : value?.text;
   node('p', typeof text === 'string' && text.trim() ? text : '该字段尚未记录正文，不代表不存在限制或行为。', parent, 'fact-text');
   if (value?.note) node('p', value.note, parent, 'verification-notes');
-  evidence(parent, value?.source_ids ?? fact.source_ids, fact, citations);
+  const ids = value?.source_ids ?? fact.source_ids;
+  if (pending && !ids?.length) node('p', FIELD_PENDING_NOTE, parent, 'verification-notes');
+  else evidence(parent, ids, fact, citations);
 }
 function showConfiguration(parent, request, title) {
   const preview = node('details', undefined, parent, 'resolved-input');

@@ -71,7 +71,7 @@ mock 是实验进程独立启动的本地 OpenAI-compatible HTTP SSE 服务，�
 
 串行单实例即可，无并行任务队列。请求或服务中断会丢弃未完成轮次，但保留最后完整检查点。`artifacts/trace.jsonl` 是测试生成的脱敏审查证据；`.state/` 是专用运行状态。
 
-`modelSelection.facts` 保持模型原始短引用；`resolvedFacts` 由宿主补齐 `{entryId,field,value,text,status,source_ids}`；`citations` 仅从所选字段的 source_ids 导出原文、固定 revision 和真实源码链接。字段支持 `summary|syntax|defaults|inheritance|limitations|runtime`。limitations 的 value 保留逐项状态与来源，runtime 的 value 保留完整步骤/交叉证据；没有字段级证据的字符串字段保持 unverified，不借任意 registration 充当证明。空数组/null 正文可以显示为缺内容，但单独选择它们不能完成回答。
+`modelSelection.facts` 保持模型原始短引用；`resolvedFacts` 由宿主补齐 `{entryId,field,value,text,status,source_ids}`；`citations` 仅从所选字段的 source_ids 导出原文、固定 revision 和真实源码链接。字段支持 `summary|syntax|defaults|inheritance|limitations|runtime`。limitations 的 value 保留逐项状态与来源，runtime 的 value 保留完整步骤/交叉证据；summary/syntax 的状态与 source_ids 读取自 `summary_evidence/syntax_evidence`（历史发布缺失时为 unverified），不借任意 registration 充当证明；`resolvedFacts[].verification` 为条目评级，仅供前端在未登记出处时区分“待补出处”（基础/深度核对）与“未核实”（仅注册信息），不改变 status。空数组/null 正文可以显示为缺内容，但单独选择它们不能完成回答。
 
 `metrics` 提供 `stages`（snapshotMs/parseMs/preloadMs/basicReportMs/cacheMs/sdkSetupMs/modelMs/validateHydrateMs/commitMs）、`totalMs`、`modelRoundTrips`、`sdkTurns`、`toolCalls`、`knowledgeFilesRead`、每次请求的 `rounds`，以及服务端实际返回时的 `usage`（否则 null）。总耗时与超时从请求启动计算，包含 host 工作。`inputBytes` 是实际 provider JSON 请求的累计 UTF-8 字节，`outputBytes` 是解码后模型内容（含工具调用）的累计 UTF-8 字节，`finalOutputBytes` 是最后模型原始文本（含模型自行添加的空白/围栏）的字节；都不冒充 tokens，也不计入宿主补全正文或 HTTP/SSE 包装。精确缓存命中保持本次计量为零，不沿用生成缓存时的计量。`live-check.mjs` 对两个指定追问检查未命中、真实请求和总耗时≤20秒；真实 GLM 测速由 main 执行，本实验 mock 回归不替代 live 验收。
 

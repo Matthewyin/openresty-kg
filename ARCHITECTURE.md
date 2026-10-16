@@ -57,7 +57,7 @@ Pi SDK和pi-ai依赖由 [实验包](experiments/pi-sdk/package.json) 及其锁�
 - 每次请求及恢复读取发布内容并计算摘要；同release的内容变化也会影响缓存。摘要相同时可复用已解析的快照对象和已校验详情，不能描述成“缓存后不再读盘”。
 - 模型仅能返回 `facts:[{entryId,field}]`，字段为 `summary`、`syntax`、`defaults`、`inheritance`、`limitations`、`runtime`；不接受额外事实正文或自填源码。无法回答可返回固定的`unsupported`状态，无候选可返回`no_candidates`。
 - 服务端补齐 `resolvedFacts.value/text/status/source_ids` 和 `citations`。引用必须来自该字段关联来源；不把条目任意源码当作字段证据。
-- `summary/syntax`字符串未提供字段级证据时仍为`unverified`，不因条目基础评级而改成已核实。限制逐项保留状态与来源；空限制列表不意味着没有限制；运行时只展示已有步骤和关联证据。
+- 功能与语法以详情中的`summary_evidence/syntax_evidence`为字段状态来源（覆盖层见`knowledge/field-evidence/`，构建时合并并校验）；历史发布没有这两个字段时按未核实处理。无字段证据但条目已基础核对时显示“待补出处”（说明“已随条目基础核对；尚未逐字段登记源码出处。”），仅注册信息的条目显示“未核实”；不得因条目评级改为“已核实”。限制逐项保留状态与来源；空限制列表不意味着没有限制；运行时只展示已有步骤和关联证据。
 - 展示由受控HTML页面使用文本节点完成，不执行模型HTML；SVG不是当前结果协议。结构化JSON是事实载体，网页是展示层。
 
 匹配与字段引用校验用于知识理解和追溯，不等于用户参数、现场版本或模块启用验证。这不是待补的网站有效性功能。

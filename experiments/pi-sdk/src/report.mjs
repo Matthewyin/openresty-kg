@@ -35,7 +35,8 @@ export function makeReport(value, bundle) {
   const resolvedFacts = (value?.facts ?? []).map(fact => {
     const detail = bundle.details.get(fact.entryId);
     const raw = detail[fact.field];
-    return { ...fact, value: raw, text: fieldText(raw), ...fieldInfo(detail, fact.field) };
+    // verification 是条目评级，前端据此区分“待补出处”（已基础核对）与“未核实”（仅注册信息）；只增字段，不改变 status 含义。
+    return { ...fact, value: raw, text: fieldText(raw), ...fieldInfo(detail, fact.field), verification: detail.verification };
   });
   const citations = resolvedFacts.flatMap(fact => fact.source_ids.map(sourceId => {
     const source = bundle.details.get(fact.entryId).sources.find(source => source.id === sourceId);

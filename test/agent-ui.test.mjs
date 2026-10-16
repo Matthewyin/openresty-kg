@@ -87,7 +87,7 @@ async function start({ api, stored = '', storedEntries = [], originalApp = false
     location: { href: `http://site.test${basePath}index.html`, search: '' }, URL, URLSearchParams, AbortController, AbortSignal, Event, CustomEvent, setTimeout, clearTimeout, queueMicrotask };
   Object.assign(sandbox, core, knowledge, source, results, { createKnowledgeClient: options => knowledge.createKnowledgeClient({ ...options, fetcher }) });
   const context = vm.createContext(sandbox);
-  vm.runInContext(agent.replaceAll('import.meta.url', JSON.stringify(`http://site.test${basePath}agent.mjs`)), context);
+  vm.runInContext(agent.replace(/^import .*;\n/gm, '').replaceAll('import.meta.url', JSON.stringify(`http://site.test${basePath}agent.mjs`)), context);
   if (originalApp) await vm.runInContext(read('site/app.mjs').replace(/^import .*;\n/gm, '').replaceAll('import.meta.url', JSON.stringify(`http://site.test${basePath}app.mjs`)), context);
   await tick();
   const click = id => nodes.get(id).dispatchEvent({ type: 'click', preventDefault() {} });
@@ -572,4 +572,28 @@ test('恢复前重新检测期间编辑输入使旧恢复失效，重复点击�
   assert.equal(ui.nodes.get('configuration').value, '检测期间编辑的新问题');
   assert.ok(!ui.requests.some(request => request.path.includes('/sessions/')));
   assert.equal(ui.nodes.get('agent-result').attributes['aria-busy'], 'false');
+});
+
+test('Agent 卡片区分功能/语法的已核实、待补出处与未核实', async () => {
+  const fact = (field, status, verification, source_ids = []) => ({ entryId, field, value: `${field}正文`, text: `${field}正文`, status, source_ids, verification });
+  const citation = { ...report().modelSelection.citations[0], field: 'syntax', sourceId: 'registration', quote: '注册原文' };
+  const render = async facts => {
+    const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ modelSelection: { resolvedFacts: facts, citations: [citation] } })) : undefined });
+    await ui.submit();
+    return ui.nodes.get('agent-result');
+  };
+  const badges = root => descendants(root).filter(node => node.tagName === 'span' && /fact-status/.test(node.className ?? ''));
+  const basic = await render([fact('summary', 'unverified', 'basic_verified'), fact('syntax', 'verified', 'basic_verified', ['registration'])]);
+  const text = basic.textContent;
+  assert.ok(text.includes(knowledge.FIELD_PENDING_LABEL) && text.includes(knowledge.FIELD_PENDING_NOTE));
+  assert.ok(text.includes('已核实') && text.includes('注册原文'));
+  // 待补出处使用中性样式，已核实使用 verified 样式；二者都不是警示色。
+  assert.deepEqual(badges(basic).map(node => node.textContent + ':' + node.className), [`${knowledge.FIELD_PENDING_LABEL}:fact-status neutral`, '已核实:fact-status verified']);
+  const registrationOnly = await render([fact('summary', 'unverified', 'registration_only')]);
+  assert.ok(registrationOnly.textContent.includes('未核实') && registrationOnly.textContent.includes('尚未记录该项字段级来源；不借用其他源码作为证明。'));
+  assert.ok(!registrationOnly.textContent.includes(knowledge.FIELD_PENDING_LABEL));
+  assert.match(badges(registrationOnly)[0].className, /pending/);
+  // 只有功能/语法才使用“待补出处”；其他字段未核实仍按原样显示。
+  const other = await render([{ ...fact('defaults', 'unverified', 'basic_verified'), value: { text: '默认', status: 'unverified', source_ids: [] } }]);
+  assert.ok(!other.textContent.includes(knowledge.FIELD_PENDING_LABEL));
 });

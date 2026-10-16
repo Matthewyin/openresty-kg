@@ -1,10 +1,10 @@
-import { readFile, writeFile, mkdir, cp, rename } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, cp, rename, readdir } from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { stripComments } from './inventory.mjs';
-import { validateIndex, validateDetail, validateReferences, deriveVerification } from '../src/query/knowledge.mjs';
+import { validateIndex, validateDetail, validateReferences, deriveVerification, validateFieldEvidence, EVIDENCE_FIELDS } from '../src/query/knowledge.mjs';
 import { validSource } from '../src/core/source.mjs';
 
 const CONTEXT_FLAGS = {
@@ -75,6 +75,54 @@ export function prepareKnowledgeFacts(curated, sources, component, componentPatc
   };
 }
 
+const OVERLAY_KEYS = ['id', 'evidence', 'syntax_evidence', 'summary_evidence', 'corrections'];
+const plainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const nonEmpty = value => typeof value === 'string' && value.trim().length > 0;
+
+// 读取字段证据覆盖目录。目录缺失或为空即无覆盖；只做结构与唯一性校验，
+// 条目是否存在、来源能否解析由构建主循环在得到最终 sources 后判定。
+export async function loadFieldEvidence(directory) {
+  let names;
+  try { names = (await readdir(directory)).filter(name => name.endsWith('.json')).sort(); }
+  catch (error) { if (error.code === 'ENOENT') return new Map(); throw error; }
+  const overlays = new Map();
+  for (const name of names) {
+    const file = JSON.parse(await readFile(join(directory, name), 'utf8'));
+    if (!plainObject(file) || Object.keys(file).sort().join() !== 'batch,entries' || !/^B\d{2}$/.test(file.batch) || name !== `${file.batch}.json`
+      || !Array.isArray(file.entries)) throw new Error(`${name}: 字段证据文件格式无效或批次与文件名不一致`);
+    for (const entry of file.entries) {
+      if (!plainObject(entry) || !nonEmpty(entry.id)) throw new Error(`${name}: 字段证据条目缺少 id`);
+      const unknown = Object.keys(entry).filter(key => !OVERLAY_KEYS.includes(key));
+      if (unknown.length) throw new Error(`${entry.id}: 字段证据含未知键 ${unknown.join('、')}`);
+      if (overlays.has(entry.id)) throw new Error(`${entry.id}: 字段证据 id 在多个位置重复`);
+      overlays.set(entry.id, { ...entry, batch: file.batch });
+    }
+  }
+  return overlays;
+}
+
+// 校验覆盖条目自身的结构；与 sources 相关的判据交给 validateFieldEvidence。
+function checkOverlayShape(overlay) {
+  const { id } = overlay;
+  if (overlay.evidence !== undefined && !Array.isArray(overlay.evidence)) throw new Error(`${id}: evidence 必须为数组`);
+  for (const field of EVIDENCE_FIELDS) {
+    const evidence = overlay[`${field}_evidence`];
+    if (evidence === undefined) continue;
+    if (!plainObject(evidence) || Object.keys(evidence).sort().join() !== 'note,source_ids,status' || !['verified', 'unverified'].includes(evidence.status)
+      || !Array.isArray(evidence.source_ids) || evidence.source_ids.some(item => typeof item !== 'string')
+      || !(evidence.note === null || typeof evidence.note === 'string')) throw new Error(`${id}: ${field}_evidence 结构无效`);
+    if (new Set(evidence.source_ids).size !== evidence.source_ids.length) throw new Error(`${id}: ${field}_evidence 的 source_ids 重复`);
+    if (evidence.status === 'unverified' && !nonEmpty(evidence.note)) throw new Error(`${id}: ${field} 未核实必须写明缺口说明`);
+  }
+  const corrections = overlay.corrections;
+  if (corrections === undefined) return;
+  if (!plainObject(corrections) || Object.keys(corrections).some(key => !EVIDENCE_FIELDS.includes(key))) throw new Error(`${id}: corrections 只允许 syntax 与 summary`);
+  for (const [field, correction] of Object.entries(corrections)) {
+    if (!plainObject(correction) || Object.keys(correction).sort().join() !== 'reason,text' || !nonEmpty(correction.text) || !nonEmpty(correction.reason)) throw new Error(`${id}: ${field} 修正必须提供非空 text 与 reason`);
+    if (overlay[`${field}_evidence`] === undefined) throw new Error(`${id}: ${field} 有修正时必须同时提供 ${field}_evidence`);
+  }
+}
+
 export function validatePublication(index, details, references) {
   validateIndex(index);
   if (!Array.isArray(details) || details.length !== index.directives.length) throw new Error('发布详情数量与索引不一致');
@@ -102,7 +150,7 @@ export function validatePublication(index, details, references) {
   return index;
 }
 
-export async function build(configPath) {
+export async function build(configPath, { check = false } = {}) {
   const root = dirname(resolve(configPath));
   const config = JSON.parse(await readFile(configPath, 'utf8'));
   const matrix = JSON.parse(await readFile(resolve(root, config.analysis_dir, 'components.json'), 'utf8'));
@@ -118,6 +166,8 @@ export async function build(configPath) {
     if (!Array.isArray(extensionKnowledge)) throw new Error('部门扩展知识输入必须为数组');
     knowledge.push(...extensionKnowledge.filter(item => extensionSources.some(source => source.component === item.component)));
   }
+  const overlays = await loadFieldEvidence(resolve(root, config.field_evidence_dir ?? 'knowledge/field-evidence'));
+  for (const overlay of overlays.values()) checkOverlayShape(overlay);
   const referenceKnowledge = config.references_file ? JSON.parse(await readFile(resolve(root, config.references_file), 'utf8')) : null;
   if (referenceKnowledge !== null && !Array.isArray(referenceKnowledge)) throw new Error('参考知识输入必须为数组');
   if (matrix.openresty_version !== config.openresty_version || catalog.openresty_version !== config.openresty_version) throw new Error('盘点版本与项目配置不一致');
@@ -198,6 +248,7 @@ export async function build(configPath) {
   }
   const prepared = [];
   const usedKnowledge = new Set();
+  const batchOf = new Map();
   for (const record of catalog.directives) {
     const id = [record.component, record.module, record.name].join('--');
     if (!safeId(id) || prepared.some(item => item.id === id)) throw new Error(`重复或无效知识标识: ${id}`);
@@ -240,13 +291,42 @@ export async function build(configPath) {
     try { facts = prepareKnowledgeFacts(factsInput, sources, record.component, components.get(record.component).patch_status, sourceIdentity.kind); }
     catch (error) { throw new Error(`${id}: ${error.message}`, { cause: error }); }
     const { patchKnown } = facts;
+    // 字段证据覆盖：追加来源、应用修正并生成字段证据；没有覆盖时写入未核实默认值。
+    const overlay = overlays.get(id);
+    if (overlay && !curated) throw new Error(`${id}: 字段证据只能覆盖有人工知识输入的条目`);
+    const fields = { syntax: curated?.syntax ?? null, summary: curated?.summary ?? null };
+    const fieldEvidence = { syntax: { status: 'unverified', source_ids: [], note: null }, summary: { status: 'unverified', source_ids: [], note: null } };
+    if (overlay) {
+      overlay.applied = true;
+      const added = new Set();
+      for (const item of overlay.evidence ?? []) {
+        if (!plainObject(item) || !safeId(item.id)) throw new Error(`${id}: 字段证据 evidence.id 无效`);
+        if (sources.some(source => source.id === item.id) || added.has(item.id)) throw new Error(`${id}: 字段证据来源 ID ${item.id} 与已有来源冲突`);
+        added.add(item.id);
+        sources.push(await snippet(item.component ?? record.component, item.file, item.start_line, item.end_line, item.id));
+      }
+      for (const field of EVIDENCE_FIELDS) {
+        const evidence = overlay[`${field}_evidence`];
+        if (evidence === undefined) continue;
+        fieldEvidence[field] = structuredClone(evidence);
+        const correction = overlay.corrections?.[field];
+        if (correction) {
+          if (!fields[field]) throw new Error(`${id}: ${field} 没有可修正的原文`);
+          fieldEvidence[field].correction = { previous_text: fields[field], reason: correction.reason };
+          fields[field] = correction.text;
+        }
+      }
+      try { validateFieldEvidence({ ...fields, sources, patch_status: facts.patch_status, syntax_evidence: fieldEvidence.syntax, summary_evidence: fieldEvidence.summary }); }
+      catch (error) { throw new Error(`${id}: ${error.message}`, { cause: error }); }
+    }
+    batchOf.set(id, overlay?.batch ?? null);
     const registrationNotes = (record.registration_defines ?? []).map(define =>
       `注册容器在 ${define.file}:${define.line} 临时定义 ${define.name}=${define.value}；这不是需要用户额外设置的独立编译开关。`);
     if (record.distribution_patch) registrationNotes.push(`注册原文来自发行补丁；回放目标 ${record.distribution_patch.target_file} 的 SHA256 为 ${record.distribution_patch.patched_sha256}，不将其行号冒充上游原始版本。`);
     prepared.push({
       id, name: record.name, module: record.module, component: record.component, contexts: [...new Set(contexts)], contexts_verified: Boolean(contextsVerified),
       source: sourceIdentity,
-      syntax: curated?.syntax ?? null, summary: curated?.summary ?? null,
+      syntax: fields.syntax, syntax_evidence: fieldEvidence.syntax, summary: fields.summary, summary_evidence: fieldEvidence.summary,
       defaults: facts.defaults, inheritance: facts.inheritance, limitations: facts.limitations,
       availability: curated?.availability === undefined ? { compile_guards: record.compile_guards, dependencies: [], deprecated: curated?.deprecated ?? null, status: 'unverified' }
         : { ...curated.availability, compile_guards: record.compile_guards },
@@ -259,6 +339,7 @@ export async function build(configPath) {
     });
     prepared.at(-1).verification = deriveVerification(prepared.at(-1));
   }
+  for (const overlay of overlays.values()) if (!overlay.applied) throw new Error(`${overlay.id}: 字段证据对应的条目不存在`);
   if (usedKnowledge.size !== knowledge.length) throw new Error('存在没有匹配到已核实模块注册表的知识输入');
   const preparedReferences = referenceKnowledge === null ? null : await Promise.all(referenceKnowledge.map(async reference => {
     if (!reference || !Array.isArray(reference.evidence) || !components.has(reference.component)) throw new Error('参考知识来源无效');
@@ -304,6 +385,23 @@ export async function build(configPath) {
       detail_path: `releases/${releaseId}/directives/${detail.id}.json`, verification: detail.verification, phases: detail.phases })) };
   const references = preparedReferences === null ? null : { schema_version: 2, release_id: releaseId, openresty_version: config.openresty_version, references: preparedReferences };
   validatePublication(index, details, references);
+  if (check) {
+    // 只自查：到此已完成读取、合并与全部校验，不写发布目录、覆盖率文件或站点。
+    const tally = () => ({ syntax_verified: 0, syntax_unverified: 0, summary_verified: 0, summary_unverified: 0, entries: 0 });
+    const total = tally(), batches = {};
+    for (const detail of details) {
+      const batch = batchOf.get(detail.id);
+      const targets = batch ? [total, batches[batch] ??= tally()] : [total];
+      for (const target of targets) {
+        target.entries += batch ? 1 : 0;
+        for (const field of EVIDENCE_FIELDS) target[`${field}_${detail[`${field}_evidence`].status}`]++;
+      }
+    }
+    const report = { release_id: releaseId, entries: details.length, covered_entries: [...batchOf.values()].filter(Boolean).length,
+      batches: Object.fromEntries(Object.entries(batches).sort(([a], [b]) => a.localeCompare(b))), total: { ...total, entries: details.length } };
+    console.log(json(report));
+    return report;
+  }
   await mkdir(join(releaseRoot, 'directives'), { recursive: true });
   for (const detail of details) await immutable(join(releaseRoot, 'directives', `${detail.id}.json`), detail);
   if (references) await immutable(join(releaseRoot, 'references.json'), references);
@@ -320,5 +418,5 @@ export async function build(configPath) {
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const position = process.argv.indexOf('--config');
   if (position < 0 || !process.argv[position + 1]) throw new Error('需要 --config 配置文件');
-  await build(resolve(process.argv[position + 1]));
+  await build(resolve(process.argv[position + 1]), { check: process.argv.includes('--check') });
 }

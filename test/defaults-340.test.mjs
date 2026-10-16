@@ -9,7 +9,10 @@ import { validateDetail, renderMarkdown } from '../src/query/knowledge.mjs';
 const root = resolve(import.meta.dirname, '..');
 const read = path => readFileSync(resolve(root, path));
 const json = path => JSON.parse(read(path));
-const hash = path => createHash('sha256').update(read(path)).digest('hex');
+// 340 项补证时冻结的 project.config.json 不含字段证据目录；其后新增的 field_evidence_dir 单行配置不属于该专项范围，
+// 按历史哈希校验时先剔除这一行，并由下面的专项保护保证除此之外没有任何差异。
+const FIELD_EVIDENCE_LINE = '  "field_evidence_dir": "knowledge/field-evidence",\n';
+const hash = path => createHash('sha256').update(path === 'project.config.json' ? read(path).toString().replace(FIELD_EVIDENCE_LINE, '') : read(path)).digest('hex');
 const manifest = json('analysis/DEFAULTS_340_MANIFEST.json');
 const frozenInputs = json('test/fixtures/defaults-340-inputs.json');
 const baselinePath = `dist/knowledge/releases/${manifest.baseline_release}/index.json`;
@@ -102,6 +105,14 @@ function checkDetail(actual, entry) {
   }
   assert.deepEqual(stable, before, `${entry.id}: 改动超出缺失字段`);
 }
+
+test('project.config.json 相对340专项冻结版只新增 field_evidence_dir', () => {
+  const current = read('project.config.json').toString();
+  assert.equal(current.split(FIELD_EVIDENCE_LINE).length, 2);
+  const { field_evidence_dir, ...rest } = JSON.parse(current);
+  assert.equal(field_evidence_dir, 'knowledge/field-evidence');
+  assert.deepEqual(JSON.parse(current.replace(FIELD_EVIDENCE_LINE, '')), rest);
+});
 
 test('固定清单精确覆盖340身份及537个缺失字段，历史快照未变', () => {
   assert.equal(hash('analysis/DEFAULTS_340_MANIFEST.json'), 'a685f1d87c9a3afc7812c8ca231cc137dba10db494b3d0f9b183d16c111cff90');

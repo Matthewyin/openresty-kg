@@ -21,6 +21,9 @@ export const PATCH_STATUS_LABELS = { verified_affected: '已核对补丁影响',
 export const RUNTIME_SCOPE_NOTE = '仅按固定源码与文档核对下述范围；未编译或运行 OpenResty，不代表现场请求已通过验证。';
 export const BASIC_SCOPE_NOTE = '基础核对覆盖功能说明、语法、上下文和配置入口，不表示默认值、继承及适用条件均已核实；以各字段状态和证据为准。';
 export const DEEP_SCOPE_NOTE = '深度核对仅覆盖下方明确列出的运行范围，不代表全部场景。';
+// 功能与语法字段的证据状态在详情中独立于条目评级：条目已基础核对但字段尚无逐项出处时，只能显示中性的“待补出处”。
+export const FIELD_PENDING_LABEL = '待补出处';
+export const FIELD_PENDING_NOTE = '已随条目基础核对；尚未逐字段登记源码出处。';
 export const NO_RUNTIME_NOTE = '本条未提供独立运行时链；配置组织类条目不据此判为未完成，具体范围见功能与配置入口。';
 export const AVAILABILITY_SCOPE_NOTE = '源码中的编译条件和依赖说明请按所列证据理解；未核实状态不等于不可用。现场版本、模块启用和运行兼容性未验证，与源码知识核对分开判断。';
 
@@ -57,6 +60,44 @@ export function validateRuntime(detail) {
     throw fail('invalid_detail', '已核实运行时缺少基础事实、步骤源码、独立文档或补丁核对证据');
   }
   return true;
+}
+
+// 字段证据只覆盖功能与语法；字段名与详情中的 `<field>_evidence` 一一对应。
+export const EVIDENCE_FIELDS = ['syntax', 'summary'];
+// 这些来源 ID 只证明注册、配置入口、归属或发行/构建信息，不能作为功能行为的实现依据。
+const NON_IMPLEMENTATION_SOURCE_IDS = ['registration', 'configuration-definition', 'module-owner', 'distribution-version', 'distribution-processing', 'module-build'];
+const unverifiedEvidence = () => ({ status: 'unverified', source_ids: [], note: null });
+// 历史发布没有字段证据，读取时统一视为“未逐字段核实”，不改写旧发布。
+export function fieldEvidence(detail, field) {
+  const value = detail?.[`${field}_evidence`];
+  return value === undefined ? unverifiedEvidence() : value;
+}
+
+// 判定单个来源是否为实现类源码：必须是 C/补丁类文件，且不是注册/配置入口/归属/构建类来源，更不能是文档。
+export function isImplementationSource(source) {
+  return /\.(?:c|h|cc|cpp|inc|patch)$/.test(source.file) && !/\.(?:xml|md|rst|txt)$/.test(source.file)
+    && !NON_IMPLEMENTATION_SOURCE_IDS.includes(source.id);
+}
+
+// 校验详情中的字段证据结构与 verified 判据。构建与读取共用本函数，避免两套规则。
+// 字段缺失视为历史发布而通过；存在时（含默认的未核实对象）必须结构完整。
+export function validateFieldEvidence(detail) {
+  for (const field of EVIDENCE_FIELDS) {
+    const evidence = detail[`${field}_evidence`];
+    if (evidence === undefined) continue;
+    const allowed = ['status', 'source_ids', 'note', 'correction'];
+    if (!object(evidence) || Object.keys(evidence).some(key => !allowed.includes(key)) || !['verified', 'unverified'].includes(evidence.status)
+      || !strings(evidence.source_ids) || new Set(evidence.source_ids).size !== evidence.source_ids.length || !nullableText(evidence.note)
+      || (evidence.status === 'unverified' && evidence.source_ids.length && !text(evidence.note))) throw fail('invalid_detail', `${field} 字段证据结构无效`);
+    const sources = new Map(detail.sources.map(source => [source.id, source]));
+    if (evidence.source_ids.some(id => !sources.has(id))) throw fail('invalid_detail', `${field} 字段证据引用无法解析`);
+    if (evidence.correction !== undefined && (!object(evidence.correction) || typeof evidence.correction.previous_text !== 'string'
+      || !text(evidence.correction.reason) || Object.keys(evidence.correction).length !== 2)) throw fail('invalid_detail', `${field} 字段修正记录无效`);
+    if (evidence.status !== 'verified') continue;
+    if (!evidence.source_ids.length || !text(detail[field]) || !detail.patch_status || detail.patch_status.status === 'unverified') throw fail('invalid_detail', `${field} 字段已核实缺少来源、正文或已核对补丁状态`);
+    if (field === 'syntax' && !evidence.source_ids.includes('registration')) throw fail('invalid_detail', 'syntax 字段已核实必须引用注册来源');
+    if (field === 'summary' && !evidence.source_ids.some(id => isImplementationSource(sources.get(id)))) throw fail('invalid_detail', 'summary 字段已核实必须引用实现类源码');
+  }
 }
 
 export function deriveVerification(detail) {
@@ -172,6 +213,7 @@ export function validateDetail(detail, entry, index) {
   for (const fact of [detail.defaults, detail.inheritance, ...detail.limitations]) if (fact.status === 'verified'
     && (!fact.source_ids.length || detail.patch_status.status === 'unverified')) throw fail('invalid_detail', '已核实事实缺少事实证据或已核对补丁状态');
   if ((detail.verification === 'deep_verified') !== validateRuntime(detail)) throw fail('invalid_detail', '深度核对状态与运行时证据不一致');
+  validateFieldEvidence(detail);
   return detail;
 }
 
@@ -184,6 +226,8 @@ export function detailUrl(siteBase, index, entry) {
   url.searchParams.set('id', entry.id);
   return url.href;
 }
+
+const sourceLinks = (detail, ids) => ids.map(id => { const source = detail.sources.find(source => source.id === id); return `[${source.file}:${source.start_line}–${source.end_line}](${source.url})`; }).join('、');
 
 export function renderMarkdown(result) {
   const rows = [`## ${STATUS_LABELS[result.status] ?? result.status}`];
@@ -199,8 +243,14 @@ export function renderMarkdown(result) {
   if (detail.verification === 'deep_verified') rows.push(DEEP_SCOPE_NOTE);
   if (result.status === 'context_required') rows.push('以下为该知识条目的预览；输入上下文尚未确定，不能据此判断配置适用性。');
   if (detail.verification === 'registration_only') rows.push('当前仅计为注册信息，尚未完成基础功能覆盖；若下方有研究说明，也不代表已核实 OpenResty 补丁后的完整行为。');
-  if (detail.syntax) rows.push('语法：' + detail.syntax);
-  rows.push(detail.summary ?? '功能说明尚未核实。');
+  // 字段状态只取自 *_evidence；条目评级只决定未登记出处时用“待补出处”还是“未核实”。
+  const fieldLine = field => {
+    const evidence = fieldEvidence(detail, field);
+    if (evidence.status === 'verified') return `已核实；出处：${sourceLinks(detail, evidence.source_ids)}`;
+    return detail.verification === 'registration_only' ? FACT_STATUS_LABELS.unverified : `${FIELD_PENDING_LABEL}（${FIELD_PENDING_NOTE}）`;
+  };
+  if (detail.syntax) rows.push('语法：' + detail.syntax, `语法状态：${fieldLine('syntax')}`);
+  rows.push(detail.summary ?? '功能说明尚未核实。', `功能状态：${fieldLine('summary')}`);
   rows.push('适用 context：' + (detail.contexts_verified ? detail.contexts.join('、') : '映射尚未核实'));
   rows.push(`默认值：${formatFact(detail.defaults)}`, `继承行为：${formatFact(detail.inheritance)}`);
   rows.push('相关阶段：' + (detail.phases.join('、') || '尚未记录'));
@@ -209,7 +259,7 @@ export function renderMarkdown(result) {
   if (detail.mechanism) rows.push('#### 配置实现链路（核实范围见条目说明）', detail.mechanism);
   if (detail.runtime) {
     rows.push(`#### 运行时链路（${FACT_STATUS_LABELS[detail.runtime.status]}）`, detail.runtime.text, RUNTIME_SCOPE_NOTE);
-    const links = ids => ids.map(id => { const source = detail.sources.find(source => source.id === id); return `[${source.file}:${source.start_line}–${source.end_line}](${source.url})`; }).join('、');
+    const links = ids => sourceLinks(detail, ids);
     detail.runtime.steps.forEach((step, i) => rows.push(`${i + 1}. 条件：${step.condition}\n\n   ${step.action}\n\n   依据：${links(step.source_ids)}`));
     rows.push('交叉印证：' + (links(detail.runtime.corroboration_source_ids) || '尚未记录'));
   } else rows.push('运行时链路：' + NO_RUNTIME_NOTE);

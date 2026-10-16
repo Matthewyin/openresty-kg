@@ -9,6 +9,7 @@
   "department_extensions": [
     { "component": "nginx-module-vts", "path": "repos/nginx-module-vts", "repository": "https://github.com/vozlt/nginx-module-vts", "revision": "52fe11e44c47a49b052be89e36dfa17d81bf52a5", "version": "commit 52fe11e44c47", "version_kind": "commit_snapshot", "deployment_status": "unknown", "registration_build": { "entry": "config" } }
   ],
+  "field_evidence_dir": "knowledge/field-evidence",
   "references_file": "knowledge/references.json",
   "component_scope_file": "knowledge/component-scope.json",
   "nginx_patch_audit": "analysis/NGINX_PATCH_AUDIT.json",

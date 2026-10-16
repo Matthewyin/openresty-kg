@@ -1,5 +1,5 @@
 import { parseConfig, parseSingle, matchDirective } from './src/core/core.mjs';
-import { createKnowledgeClient, relatedCandidates, STATUS_LABELS, VERIFICATION_LABELS, FACT_STATUS_LABELS, PATCH_STATUS_LABELS, formatFact, RUNTIME_SCOPE_NOTE, BASIC_SCOPE_NOTE, DEEP_SCOPE_NOTE, NO_RUNTIME_NOTE, AVAILABILITY_SCOPE_NOTE } from './src/query/knowledge.mjs';
+import { createKnowledgeClient, relatedCandidates, STATUS_LABELS, VERIFICATION_LABELS, FACT_STATUS_LABELS, PATCH_STATUS_LABELS, formatFact, fieldEvidence, FIELD_PENDING_LABEL, FIELD_PENDING_NOTE, RUNTIME_SCOPE_NOTE, BASIC_SCOPE_NOTE, DEEP_SCOPE_NOTE, NO_RUNTIME_NOTE, AVAILABILITY_SCOPE_NOTE } from './src/query/knowledge.mjs';
 import { SOURCE_LABELS, sourceDescription } from './src/core/source.mjs';
 import { summarizeConfig, needsOuterContext, needsAttention } from './src/query/config-results.mjs';
 
@@ -71,6 +71,23 @@ function queryPreviewNote(status) {
   return `来源：本次输入的唯一候选知识预览。${status === 'context_required' ? '上下文尚未确定，不能判断配置适用性。' : '仅匹配知识身份，未进行运行环境检查。'}`;
 }
 
+// 功能/语法字段的状态徽标与出处。状态只来自 *_evidence；条目评级仅决定未登记出处时
+// 显示中性“待补出处”（已基础核对）还是警示“未核实”（仅注册信息），不会把字段升级为已核实。
+function fieldStatusRow(detail, field) {
+  const evidence = fieldEvidence(detail, field);
+  const row = element('p', undefined, 'field-evidence');
+  if (evidence.status === 'verified') {
+    row.append(element('span', FACT_STATUS_LABELS.verified, 'fact-status verified'), element('span', '依据：', 'source-meta'));
+    for (const id of evidence.source_ids) {
+      const source = detail.sources.find(source => source.id === id);
+      const link = element('a', `${source.file}:${source.start_line}–${source.end_line} ↗ `, 'source-link');
+      link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; row.append(link);
+    }
+  } else if (detail.verification === 'registration_only') row.append(element('span', FACT_STATUS_LABELS.unverified, 'fact-status pending'));
+  else row.append(element('span', FIELD_PENDING_LABEL, 'fact-status neutral'), element('span', FIELD_PENDING_NOTE, 'verification-notes'));
+  return row;
+}
+
 function renderDetail(detail, previewNote) {
   const panel = byId('detail-panel'); panel.replaceChildren();
   panel.append(element('p', `${detail.component} / ${detail.module}`, 'detail-kicker'), element('h2', detail.name, 'detail-title'));
@@ -84,8 +101,8 @@ function renderDetail(detail, previewNote) {
   if (previewNote) panel.append(element('p', previewNote, 'notice'));
   if (detail.verification === 'registration_only') panel.append(element('p', '仅计为注册信息，基础功能覆盖尚未完成。下方研究说明不代表已核实发行版完整行为。', 'notice'));
   const functionality = section('功能与语法');
-  functionality.append(element('p', detail.summary ?? '功能说明尚未核实。'));
-  if (detail.syntax) functionality.append(element('pre', detail.syntax, 'syntax'));
+  functionality.append(element('p', detail.summary ?? '功能说明尚未核实。'), fieldStatusRow(detail, 'summary'));
+  if (detail.syntax) functionality.append(element('pre', detail.syntax, 'syntax'), fieldStatusRow(detail, 'syntax'));
   const facts = element('dl', undefined, 'facts');
   for (const [label, value] of [['适用 context', detail.contexts_verified ? detail.contexts.join('、') : '映射尚未核实'], ['默认值', formatFact(detail.defaults)], ['继承行为', formatFact(detail.inheritance)], ['相关阶段', detail.phases.join('、') || '尚未记录']]) {
     const pair = element('div'); pair.append(element('dt', label), element('dd', value)); facts.append(pair);
