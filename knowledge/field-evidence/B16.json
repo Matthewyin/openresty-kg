@@ -1,0 +1,707 @@
+{
+ "batch": "B16",
+ "entries": [
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "stats-handler",
+     "main-defaults",
+     "zone-enable",
+     "merge-values",
+     "limit-handler"
+    ],
+    "note": "LOG 统计 handler 首行判断 !ctx->enable || !vtscf->enable（本指令写入 enable）；ctx->enable 在 init_main_conf 初值 0、zone 解析时置 1；merge 默认 enable=1；limit-handler 只检查 limit/bypass_limit 而不读 enable，印证“不是统一总开关”。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter",
+   "evidence": [
+    {
+     "id": "stats-handler",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 281,
+     "end_line": 329
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "filter-handler",
+     "set-handler",
+     "stats-handler",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->filter：shm_add_server 以 filter && filter_host 选 Host 键，shm_add_filter 在 !filter 时直接返回，set_handler 在 !filter 时跳过变量处理；stats-handler 中 server/upstream 统计不检查 filter，故关闭后仍保留。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_host",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "host-key",
+     "final25-key-build"
+    ],
+    "note": "本指令写入 loc->filter_host：shm_add_server/find_name 以 filter && filter_host && headers_in.server.len 取 Host，否则取 cscf->server_name，空名称置为 \"_\"，随后由 generate_key 组成节点键。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_check_duplicate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "main-filter-unique",
+     "local-filter-unique",
+     "filter-unique",
+     "merge-values"
+    ],
+    "note": "本指令写入 filter_check_duplicate：init_main_conf 与 merge_loc_conf 在其非 0 时调用 filter_unique；该函数以 filter_key 与 filter_name 拼接后的 crc32 去重。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_by_set_key",
+   "evidence": [
+    {
+     "id": "filter-node",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 444,
+     "end_line": 517
+    },
+    {
+     "id": "stats-handler",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 281,
+     "end_line": 329
+    },
+    {
+     "id": "log-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 876,
+     "end_line": 884
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "filter-parser"
+    ],
+    "note": "NGX_CONF_TAKE12（1–2 个参数）；解析函数读取 value[1] 作为键，nelts==3 时 value[2] 作为组名，否则组名为空串，均 ngx_http_compile_complex_value。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "filter-parser",
+     "filter-runtime",
+     "filter-node",
+     "stats-handler",
+     "log-register",
+     "filter-inheritance"
+    ],
+    "note": "解析函数把键/组名存入 ctx->filter_keys（http 层）或 loc->filter_keys；LOG 阶段 stats-handler 调 shm_add_filter，分别遍历 ctx 与 loc 规则，filter_node 求值键后按“组@键”入节点累计，空键跳过；merge 阶段子级继承父级规则。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_filter_max_node",
+   "evidence": [
+    {
+     "id": "lru-scan",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_node.c",
+     "start_line": 294,
+     "end_line": 346
+    },
+    {
+     "id": "node-evict",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 220,
+     "end_line": 238
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "max-node-parser"
+    ],
+    "note": "NGX_CONF_1MORE；解析函数 value[1] 经 ngx_atoi 作为数量（负数报错），value[2..] 逐个保存为组前缀。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "max-node-parser",
+     "group-prefix",
+     "filter-lru",
+     "lru-scan",
+     "last-used",
+     "node-evict"
+    ],
+    "note": "解析函数写入 ctx->filter_max_node 与 matches；新建节点时 shm_add_node 调 find_lru：上限为 0 禁用，仅对 FG 组且命中前缀（strncmp）计数，used>=上限时 find_lru_node 在命中范围内按 stat_last_seen 取最小者，随后被删除。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_limit",
+   "evidence": [
+    {
+     "id": "limit-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 860,
+     "end_line": 866
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "limit-handler",
+     "limit-register",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->limit：limit-register 把 limit_handler 挂入 PREACCESS 阶段，handler 首行 !ctx->enable || !vtscf->limit || vtscf->bypass_limit 即返回 DECLINED；其后才逐类检查规则。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_limit_check_duplicate",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "main-limit-unique",
+     "local-limit-unique",
+     "limit-unique",
+     "merge-values"
+    ],
+    "note": "本指令写入 limit_check_duplicate：init_main_conf 对 ctx->limit_traffics 与 limit_filter_traffics 去重，merge_loc_conf 对局部两类列表去重；limit_traffic_unique 以 key 与 variable 拼接的 crc32 比较。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_limit_traffic",
+   "evidence": [
+    {
+     "id": "limit-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 860,
+     "end_line": 866
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "limit-parser"
+    ],
+    "note": "NGX_CONF_TAKE12；解析函数 value[1] 以首个 \":\" 拆为 member 与 size（ngx_parse_offset），nelts==3 时 value[2] 经 ngx_atoi 为 code，否则 503。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "limit-parser",
+     "limit-evaluation",
+     "limit-register",
+     "limit-inheritance"
+    ],
+    "note": "解析结果按层级存入 ctx->limit_traffics 或 loc->limit_traffics（type=server，key 为空）；PREACCESS 的 limit_handler 依次评估，handler_traffic 用当前 server 名生成键查已有节点，traffic_used > size 时返回 code；merge 阶段继承。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_limit_traffic_by_set_key",
+   "evidence": [
+    {
+     "id": "limit-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 860,
+     "end_line": 866
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "key-limit-parser"
+    ],
+    "note": "NGX_CONF_TAKE23；解析函数 value[1] 为键、value[2] 以 \":\" 拆为 member 与 size，nelts==4 时 value[3] 为 code，否则 503。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "key-limit-parser",
+     "limit-evaluation",
+     "limit-register",
+     "limit-inheritance"
+    ],
+    "note": "解析函数把键与 member 分别编译为复杂值，并由键前缀得到 group 类型，存入 limit_filter_traffics；PREACCESS 评估时 key 非空，按求值键与 type 查找节点并读取 member，严格大于 size 返回 code。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_zone",
+   "evidence": [
+    {
+     "id": "arg-count",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 413,
+     "end_line": 443
+    },
+    {
+     "id": "argument-table",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 50,
+     "end_line": 59
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "zone-parser",
+     "module-constants",
+     "arg-count",
+     "argument-table"
+    ],
+    "note": "注册标志 NOARGS|TAKE1，ngx_conf_handler 以 argument_number 表放行 0 或 1 个参数；解析函数循环 value[i]，只接受 \"shared:\" 前缀，以 \":\" 拆 name 与 size（ngx_parse_size），其他参数报 invalid parameter；默认名/大小见常量。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "zone-parser",
+     "module-constants",
+     "main-defaults"
+    ],
+    "note": "解析函数置 ctx->enable=1，使用默认名称/大小或 shared:name:size，经 ngx_shared_memory_add 绑定并设置 init；MAIN_CONF 限定仅 http 层。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_measure_status_codes",
+   "evidence": [
+    {
+     "id": "arg-count",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 413,
+     "end_line": 443
+    },
+    {
+     "id": "status-slot",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 189,
+     "end_line": 201
+    },
+    {
+     "id": "status-counters",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_shm.c",
+     "start_line": 258,
+     "end_line": 268
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "status-code-parser",
+     "arg-count"
+    ],
+    "note": "注册标志 NOARGS|1MORE，ngx_conf_handler 先判 1MORE 要求 nelts>=2，故至少 1 个参数；解析函数 value[1] 以 \"all\" 开头走全量分支，否则逐个 ngx_atoi 校验 100–599 且不得递减。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "status-code-parser",
+     "status-code-output",
+     "status-code-json-output",
+     "status-slot",
+     "status-counters"
+    ],
+    "note": "解析函数填充 ctx->measure_status_codes（all 时 100–599）；shm_add_node 据此分配计数器并计算槽位；JSON 与 Prometheus 输出逐码读取计数。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_dump",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "dump-parser"
+    ],
+    "note": "NGX_CONF_TAKE12；解析函数 value[1] 为文件路径，nelts==3 时 value[2] 经 ngx_parse_time(..., 0) 得到毫秒周期。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "dump-parser",
+     "dump-worker"
+    ],
+    "note": "解析函数置 ctx->dump=1 并保存 dump_file/dump_period；init_worker 在 ctx->enable & ctx->dump 且 rbtree 存在时 ngx_add_timer 并执行 restore，exit_worker 同条件下执行 dump。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display",
+   "evidence": [
+    {
+     "id": "arg-count",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 413,
+     "end_line": 443
+    },
+    {
+     "id": "argument-table",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 50,
+     "end_line": 59
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "display-binding",
+     "arg-count",
+     "argument-table"
+    ],
+    "note": "注册标志 NOARGS|TAKE1，放行 0 或 1 个参数；display 函数全程不读取 cf->args，仅设置 clcf->handler，故参数被忽略。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "display-binding",
+     "display-handler",
+     "control-commands"
+    ],
+    "note": "本指令把当前层 ngx_http_core_loc_conf 的 handler 设为 display_handler；该 handler 对 URI 以 /control 结尾的请求走控制处理，其余走默认展示，控制命令为 status/delete/reset。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_format",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "formats"
+    ],
+    "note": "NGX_CONF_TAKE1，ngx_conf_set_enum_slot 以取值表匹配，表项为 json、html、jsonp、prometheus。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "formats",
+     "merge-values",
+     "format-output"
+    ],
+    "note": "本指令写入 loc->format，merge 默认 JSON；display_handler_default 在 URI 未指定 /format/ 时取 vtscf->format 并据此选择 Content-Type 与输出路径。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_jsonp",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存单个字符串到 jsonp。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "jsonp-output",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->jsonp（默认回调名常量）；仅 JSONP 分支以 %V( 输出该名称并包裹数据，格式选择仍由 URI 的 /format/ 或 loc->format 决定（同一函数先赋值 format）。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_sum_key",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "NGX_CONF_TAKE1，ngx_conf_set_str_slot 保存单个字符串到 sum_key。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "sum-output",
+     "merge-values",
+     "module-constants"
+    ],
+    "note": "本指令写入 loc->sum_key，默认 \"*\"；JSON 输出以 sum_key 为名写出累计的 vtscf->stats 节点（Prometheus 同样转义后使用），各 server 节点的统计不因此改变。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_set_by_filter",
+   "evidence": [
+    {
+     "id": "set-node",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_set.c",
+     "start_line": 253,
+     "end_line": 375
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "set-parser",
+     "set-format"
+    ],
+    "note": "NGX_CONF_TAKE2；解析函数要求 value[1] 以 \"$\" 开头，value[2] 编译为复杂值；运行时 set_by_filter_init 以 \"/\" 拆为 group、zone、name(member)。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "set-parser",
+     "set-handler",
+     "set-value",
+     "set-node",
+     "set-format",
+     "phase-hook"
+    ],
+    "note": "解析函数登记变量并保存 value[2]；phase-hook 把 set_handler 挂入 ACCESS 阶段，filter 开启时逐变量求值 group/zone/member，由 set_node 在锁内查节点并写入变量值，查不到则 not_found。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_average_method",
+   "evidence": [
+    {
+     "id": "enum-slot",
+     "component": "nginx",
+     "file": "src/core/ngx_conf_file.c",
+     "start_line": 1352,
+     "end_line": 1385
+    },
+    {
+     "id": "average-consumer",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_display_json.c",
+     "start_line": 513,
+     "end_line": 527
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "average-parser",
+     "average-methods",
+     "enum-slot"
+    ],
+    "note": "NGX_CONF_TAKE12；解析函数以 AMM/WMA 取值表调用 ngx_conf_set_enum_slot 解析 value[1]，nelts==3 时 value[2] 经 ngx_parse_time 作为周期。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "average-parser",
+     "average-runtime",
+     "average-consumer",
+     "merge-values",
+     "module-constants"
+    ],
+    "note": "解析函数写入 average_method/average_period，merge 默认 AMM 与 60 秒；JSON/Prometheus 输出对请求耗时队列和上游响应耗时队列调用 time_queue_average，按方法与周期计算 AMM/WMA。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_histogram_buckets",
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "histogram-parser"
+    ],
+    "note": "NGX_CONF_1MORE；解析函数逐个 value[i] 以 ngx_atofp(...,3) 解析（非零），写入桶数组。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "histogram-parser",
+     "bucket-limit",
+     "bucket-consumer",
+     "merge-values"
+    ],
+    "note": "解析函数写入 loc->histogram_buckets（秒按三位小数转毫秒，超过 32 个上限即停止）；bucket_init 在其为 NULL 时 len=0（无分桶），否则按配置初始化；merge 为指针继承。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_bypass_limit",
+   "evidence": [
+    {
+     "id": "limit-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 860,
+     "end_line": 866
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "limit-bypass",
+     "limit-register",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->bypass_limit（默认 0）；PREACCESS 的 limit_handler 首行 vtscf->bypass_limit 为真即返回 NGX_DECLINED，之后的阈值检查不执行。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_bypass_stats",
+   "evidence": [
+    {
+     "id": "log-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 876,
+     "end_line": 884
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "stats-bypass",
+     "log-register",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->bypass_stats（默认 0）；LOG 阶段 stats-handler 首行 vtscf->bypass_stats 为真即返回，server、upstream、filter 及 NGX_HTTP_CACHE 下的 cache 统计都在其后。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_stats_by_upstream",
+   "evidence": [
+    {
+     "id": "log-register",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_module.c",
+     "start_line": 876,
+     "end_line": 884
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition"
+    ],
+    "note": "标准 flag setter：注册标志含 NGX_CONF_FLAG（仅 on/off 一个参数），ngx_conf_set_flag_slot 解析 on/off。且注册上下文仅 NGX_HTTP_MAIN_CONF。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "upstream-switch",
+     "log-register",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->stats_by_upstream，merge 默认 1；LOG 阶段 stats-handler 仅在其为真时调用 shm_add_upstream；MAIN_CONF 限定只在 http 层配置。"
+   }
+  },
+  {
+   "id": "nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_ignore_status",
+   "evidence": [
+    {
+     "id": "node-set",
+     "component": "nginx-module-vts",
+     "file": "src/ngx_http_vhost_traffic_status_node.c",
+     "start_line": 479,
+     "end_line": 503
+    }
+   ],
+   "syntax_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "registration",
+     "configuration-definition",
+     "status-masks"
+    ],
+    "note": "NGX_CONF_1MORE；ngx_conf_set_bitmask_slot 按取值表逐个参数累加位，表项 1xx–5xx 与 off。"
+   },
+   "summary_evidence": {
+    "status": "verified",
+    "source_ids": [
+     "mask-check",
+     "node-update",
+     "node-callers",
+     "node-set",
+     "merge-values"
+    ],
+    "note": "本指令写入 loc->ignore_status，新建节点（shm_add_node）与已有节点（node_set）都把它复制到 vtsn->ignore_status；node_update 先取 state->status（重试尝试）或响应状态，更新 last_seen 后用 ignore_status 宏按类别判断并提前返回。"
+   }
+  }
+ ]
+}
