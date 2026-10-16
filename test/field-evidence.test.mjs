@@ -36,6 +36,7 @@ async function createFixture() {
     await mkdir(directory); await mkdir(join(taskDir, 'site')); await mkdir(join(taskDir, 'src'));
     await writeFile(join(taskDir, 'site/index.html'), '<!doctype html><title>字段证据测试</title>');
     await writeFile(join(directory, 'module.c'), 'static ngx_command_t fixture_commands[] = {\n { ngx_string("fixture_extension_flag"), NGX_HTTP_MAIN_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot, 0, 0, NULL }, ngx_null_command\n};\nngx_module_t fixture_module = { NGX_MODULE_V1, NULL, fixture_commands, NGX_HTTP_MODULE };\n');
+    await writeFile(join(directory, 'README.md'), '# 夹具说明\n仅用于文档类来源判定。\n');
     await writeFile(join(directory, 'config'), 'ngx_addon_name=fixture_module\nFIXTURE_SRCS="$ngx_addon_dir/module.c"\nif test -n "$ngx_module_link"; then\nngx_module_type=HTTP\nngx_module_name=$ngx_addon_name\nngx_module_srcs="$FIXTURE_SRCS"\n. auto/module\nelse\nHTTP_MODULES="$HTTP_MODULES $ngx_addon_name"\nNGX_ADDON_SRCS="$NGX_ADDON_SRCS $FIXTURE_SRCS"\nfi\n');
     execFileSync('git', ['-C', directory, 'init'], { stdio: 'pipe' });
     execFileSync('git', ['-C', directory, 'remote', 'add', 'origin', 'https://github.com/fixture/department-module']);
@@ -116,7 +117,10 @@ test('覆盖层非法时构建报错且带条目 ID', async () => {
     ['unverified 缺 note', { [fileId]: [{ ...valid(), syntax_evidence: { status: 'unverified', source_ids: [], note: null } }] }, /缺口说明/],
     ['verified syntax 缺 registration', { [fileId]: [{ ...valid(), syntax_evidence: { status: 'verified', source_ids: ['flag-impl'], note: 'x' } }] }, /注册来源/],
     ['verified summary 只有配置类来源', { [fileId]: [{ ...valid(), summary_evidence: { status: 'verified', source_ids: ['registration', 'configuration-definition'], note: 'x' } }] }, /实现类源码/],
-    ['verified summary 只有文档类来源', { [fileId]: [{ ...valid(), evidence: [{ id: 'readme', component: 'fixture-module', file: 'config', start_line: 1, end_line: 2 }], summary_evidence: { status: 'verified', source_ids: ['readme'], note: 'x' } }] }, /实现类源码/],
+    ['verified summary 只有文档类来源（.md，id 不在排除名单）', { [fileId]: [{ ...valid(), evidence: [{ id: 'readme', component: 'fixture-module', file: 'README.md', start_line: 1, end_line: 2 }], summary_evidence: { status: 'verified', source_ids: ['readme'], note: 'x' } }] }, /实现类源码/],
+    ['verified summary 只引用 registration-container', { [fileId]: [{ ...valid(), evidence: [{ ...valid().evidence[0], id: 'registration-container' }], summary_evidence: { status: 'verified', source_ids: ['registration-container'], note: 'x' } }] }, /实现类源码/],
+    ['verified summary 只引用 owner-include', { [fileId]: [{ ...valid(), evidence: [{ ...valid().evidence[0], id: 'owner-include' }], summary_evidence: { status: 'verified', source_ids: ['owner-include'], note: 'x' } }] }, /实现类源码/],
+    ['evidence 项含未知键', { [fileId]: [{ ...valid(), evidence: [{ ...valid().evidence[0], note: '多余' }] }] }, /evidence 含未知键/],
     ['correction 缺 reason', { [fileId]: [{ ...valid(), corrections: { syntax: { text: '新语法;' } } }] }, /reason/],
     ['correction 缺对应 evidence', { [fileId]: [{ id: ID, corrections: { syntax: { text: '新语法;', reason: '不符' } } }] }, /syntax_evidence/],
     ['批次与文件名不一致', { B98: { batch: fileId, entries: [] } }, /批次/],

@@ -65,7 +65,7 @@ export function validateRuntime(detail) {
 // 字段证据只覆盖功能与语法；字段名与详情中的 `<field>_evidence` 一一对应。
 export const EVIDENCE_FIELDS = ['syntax', 'summary'];
 // 这些来源 ID 只证明注册、配置入口、归属或发行/构建信息，不能作为功能行为的实现依据。
-const NON_IMPLEMENTATION_SOURCE_IDS = ['registration', 'configuration-definition', 'module-owner', 'distribution-version', 'distribution-processing', 'module-build'];
+const NON_IMPLEMENTATION_SOURCE_IDS = ['registration', 'configuration-definition', 'module-owner', 'registration-container', 'owner-include', 'distribution-version', 'distribution-processing', 'module-build'];
 const unverifiedEvidence = () => ({ status: 'unverified', source_ids: [], note: null });
 // 历史发布没有字段证据，读取时统一视为“未逐字段核实”，不改写旧发布。
 export function fieldEvidence(detail, field) {

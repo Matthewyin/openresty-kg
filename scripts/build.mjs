@@ -75,6 +75,8 @@ export function prepareKnowledgeFacts(curated, sources, component, componentPatc
   };
 }
 
+// evidence 数组项只允许这些键；多余的键会被静默忽略而掩盖拼写错误，故显式拒绝。
+const EVIDENCE_ITEM_KEYS = ['id', 'component', 'file', 'start_line', 'end_line'];
 const OVERLAY_KEYS = ['id', 'evidence', 'syntax_evidence', 'summary_evidence', 'corrections'];
 const plainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const nonEmpty = value => typeof value === 'string' && value.trim().length > 0;
@@ -301,6 +303,8 @@ export async function build(configPath, { check = false } = {}) {
       const added = new Set();
       for (const item of overlay.evidence ?? []) {
         if (!plainObject(item) || !safeId(item.id)) throw new Error(`${id}: 字段证据 evidence.id 无效`);
+        const unknownKeys = Object.keys(item).filter(key => !EVIDENCE_ITEM_KEYS.includes(key));
+        if (unknownKeys.length) throw new Error(`${id}: 字段证据 evidence 含未知键 ${unknownKeys.join('、')}`);
         if (sources.some(source => source.id === item.id) || added.has(item.id)) throw new Error(`${id}: 字段证据来源 ID ${item.id} 与已有来源冲突`);
         added.add(item.id);
         sources.push(await snippet(item.component ?? record.component, item.file, item.start_line, item.end_line, item.id));
