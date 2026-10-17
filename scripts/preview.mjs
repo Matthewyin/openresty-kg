@@ -10,7 +10,7 @@ const root = resolve(dirname(configPath), config.output_dir);
 const { host, port, duration_ms: duration } = config.preview;
 if (!['127.0.0.1', '::1'].includes(host) || !Number.isInteger(port) || port < 0 || port > 65535 || !Number.isFinite(duration) || duration <= 0) throw new Error('临时预览配置无效');
 await readFile(resolve(root, 'site-config.json'));
-const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json' };
+const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.mp4': 'video/mp4' };
 const server = createServer(async (request, response) => {
   if (!['GET', 'HEAD'].includes(request.method)) { response.writeHead(405).end(); return; }
   let file;
@@ -19,7 +19,7 @@ const server = createServer(async (request, response) => {
     file = resolve(root, '.' + (pathname.endsWith('/') ? pathname + 'index.html' : pathname));
     if (!file.startsWith(root + sep)) { response.writeHead(403).end(); return; }
     const body = await readFile(file);
-    response.writeHead(200, { 'content-type': (types[extname(file)] ?? 'application/octet-stream') + '; charset=utf-8', 'cache-control': 'no-store' });
+    response.writeHead(200, { 'content-type': (types[extname(file)] ?? 'application/octet-stream') + (extname(file) === '.mp4' ? '' : '; charset=utf-8'), 'cache-control': 'no-store' });
     response.end(request.method === 'HEAD' ? undefined : body);
   } catch { response.writeHead(404).end(); }
 });

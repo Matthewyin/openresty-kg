@@ -11,13 +11,14 @@
   <script type="module" src="./layout.mjs"></script>
 </head>
 <body>
-  <!-- 顶栏：品牌、Agent 连接状态、锁定版本；只放“现在能不能用”的信息 -->
+  <!-- 顶栏：品牌、使用教程、Agent 连接状态与锁定版本 -->
   <header class="topbar">
     <a class="brand" href="./index.html">
       <span class="brand-mark" aria-hidden="true">OR</span>
       <span class="brand-text"><strong>OpenResty 配置知识站</strong><small>配置 → 实现 · 源码可追溯</small></span>
     </a>
     <div class="topbar-meta">
+      <a class="pill tutorial-link" href="./media/openresty-tutorial.mp4" target="_blank" rel="noopener" aria-label="使用教程（新标签页播放）"><span aria-hidden="true">▶</span> 使用教程</a>
       <span class="pill pill-agent"><span class="pill-dot" aria-hidden="true"></span><span id="agent-environment">正在检测 Agent</span></span>
       <span class="pill pill-edition" id="edition">正在加载知识发布…</span>
     </div>

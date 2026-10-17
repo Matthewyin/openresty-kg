@@ -89,8 +89,8 @@ location ^~ ${basePath} {
   disable_symlinks on;
   if ($uri ~ "(^|/)\\.") { return 404; }
   if ($uri ~ "\\\\\\\\") { return 404; }
-  if ($uri !~ "(?:\\.(?:html|js|mjs|css|json|svg|png|ico)$|/$)") { return 404; }
-  types { text/html html; text/javascript js mjs; text/css css; application/json json; image/svg+xml svg; image/png png; image/x-icon ico; }
+  if ($uri !~ "(?:\\.(?:html|js|mjs|css|json|svg|png|ico|mp4)$|/$)") { return 404; }
+  types { text/html html; text/javascript js mjs; text/css css; application/json json; image/svg+xml svg; image/png png; image/x-icon ico; video/mp4 mp4; }
   default_type application/octet-stream;
   add_header Cache-Control "no-store" always;
   add_header X-Content-Type-Options "nosniff" always;

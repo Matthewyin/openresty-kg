@@ -1,5 +1,9 @@
 # OpenResty 配置知识站 — 实施计划
 
+## 最新：教程视频入口（2026-10-17）
+
+模型状态左侧新增「使用教程」，在新标签页播放用户更换BGM后导出的视频。网页MP4已随源码构建并更新到本机OpenResty静态目录，MP4类型支持已生效；52项相关测试、实际点击播放和跳转验证通过。范围与证据见[教程入口验收](analysis/TUTORIAL_VIDEO_VERIFICATION.md)。
+
 ## 当前：动态IPv4已适配并切换，现场验收待用户登录（2026-10-16）
 
 按[动态计划](analysis/PI_DYNAMIC_IP_PLAN.md)完成相对链接、外层同源校验和内部固定origin，15组隔离检查及双地址桌面通过，D4独立审核通过后已将原入口增量切换到当前IP:30000/pi/。Pi健康、原OpenResty和GoAccess运行，7个旧后端未启动。LLDP启动后收到外部Docker停止信号，未反复重启。真实用户登录、实际模型端到端、跨设备/换网及其余现场验收待完成；不宣称全部验收通过。详见[本批记录](analysis/PI_DYNAMIC_IP_VERIFICATION.md)和[审核](analysis/PI_DYNAMIC_IP_REVIEW.md)。下方为各阶段历史状态。

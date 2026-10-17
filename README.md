@@ -4,6 +4,8 @@
 
 ## 文档入口
 
+网站顶栏的「▶ 使用教程」可在新标签页观看约3分30秒的视频，介绍界面、提问入口和结果阅读；使用用户更换BGM后的版本。网页媒体位于`site/media/openresty-tutorial.mp4`，随构建和部署打包复制，详见[入口验收](analysis/TUTORIAL_VIDEO_VERIFICATION.md)。
+
 | 要了解的内容 | 现行文档 |
 | --- | --- |
 | 网站怎么用（面向使用者） | [用户使用手册](USER_GUIDE.md) |

@@ -12,7 +12,7 @@ export async function serve(overrides, { website = false } = {}) {
   try { staticRoot = await realpath(website ? spike.config.distDir : join(ROOT, 'web')); }
   catch (error) { await spike.close(); throw error; }
   let origin;
-  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
+  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.mp4': 'video/mp4' };
   const server = createServer(async (req, res) => {
     const json = (status, value) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); };
     try {
@@ -57,7 +57,7 @@ export async function serve(overrides, { website = false } = {}) {
           if (!within(staticRoot, actual)) throw new Error('越界');
           body = await readFile(actual);
         } catch { json(404, { error: '文件不存在', code: 'not_found' }); return; }
-        res.writeHead(200, { 'Content-Type': `${types[extname(path)]}; charset=utf-8`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" });
+        res.writeHead(200, { 'Content-Type': types[extname(path)] + (extname(path) === '.mp4' ? '' : '; charset=utf-8'), 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" });
         res.end(req.method === 'HEAD' ? undefined : body); return;
       }
       json(404, { error: '入口不存在', code: 'not_found' });

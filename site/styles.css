@@ -103,6 +103,9 @@ code { font-family: var(--mono); }
   background: var(--card); font-size: var(--fs-xs); color: var(--ink-soft); white-space: nowrap;
 }
 .pill-edition { font-family: var(--mono); }
+.tutorial-link { color: var(--accent); text-decoration: none; }
+.tutorial-link:hover { background: var(--accent-soft); border-color: var(--accent); }
+.tutorial-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 /* 圆点颜色跟随 Agent 连接状态；检测中（尚无 data-state）为灰色 */
 .pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 0 3px var(--paper-deep); }
 .pill-agent:has([data-state="ready"]) .pill-dot { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
