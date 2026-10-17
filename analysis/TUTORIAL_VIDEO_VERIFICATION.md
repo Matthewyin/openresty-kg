@@ -1,21 +1,30 @@
-# 网站教程视频入口
+# 网站教程视频入口与停帧修复发布
 
-2026-10-17：按用户截图，在顶部模型状态左侧加入「▶ 使用教程」。使用相对地址 `./media/openresty-tutorial.mp4`，原生链接以新标签页打开浏览器播放器，保留原查询页。
+2026-10-17：顶部模型状态左侧「▶ 使用教程」使用相对地址 `./media/openresty-tutorial.mp4`，在新标签页打开浏览器播放器，保留原查询页。
 
-## 视频与实施
+## 当前发布
 
-- 来源为用户更换BGM后导出的 `video/openresty-quickstart-20261017/out/OpenResty使用教程-固定男声-可编辑版.mov`，269264502字节、210.047710秒。
-- 网页文件为 `site/media/openresty-tutorial.mp4`，17901353字节、1920×1080、210.047710秒。H.264 CRF20、fast预设，MP4 faststart；AAC音频直接复制，源与输出音频包SHA256完全一致。没有修改用户MOV或重新混音。
-- 正常构建和部署打包均复制整个site目录，媒体随页面进入dist。临时预览、Node同源服务及OpenResty部署模板补充MP4类型支持。
-- 本机OpenResty的pi-site只增量更新index.html、styles.css与该MP4；现行配置只增加MP4后缀与MIME类型，检查成功后平滑重载。原认证、API和知识发布保持原实现。本批没有重建Pi容器镜像，运行网站静态文件由OpenResty提供，后续打包会收录源目录中的媒体。
-- 回退副本在 `deployment/pi/.local/tutorial-backup-20261017/`，包含原入口配置及两个静态文件；实际部署位置在其中deployment.json记录。
+用户指定最终源为 `video/openresty-quickstart-20261017/out/OpenResty-study.mp4`，已替换此前发生画面停帧的MOV派生版本。
 
-## 验证结果
+| 对象 | 规格与身份 |
+| --- | --- |
+| 用户导出源 | 59990441字节，1920×1080、30fps、6300帧，容器时长210.047710秒 |
+| 源SHA256 | `8f703fe0b9a1f85b3c0bb2b011edb3d22242d15ce8fc309b3896e89439d7ffab` |
+| 网站媒体 | `site/media/openresty-tutorial.mp4`，16490245字节，1080p H.264、MP4 faststart |
+| 网站SHA256 | `9b1ef98e39788b426030ce8e9ef56c8af0557097b1279f7e1c132845f0b12fca` |
+| AAC包SHA256 | 源和网页版本均为 `c31d97ad41eec3a59e10a9b7d5d05e0edee2dfa5457285e17817f1a73076e6e5`，直接复制音轨，未重新混音 |
+| 本机镜像 | `pi-knowledge:tutorial-fixed-20261017`，镜像ID `sha256:b03d6a00e7f12a6801db118503d5689e6eb8d4052709d20de1c97740990f0375` |
 
-1. `npm run build`成功，知识发布仍为 `1.27.1.1-20040b374943dabc`。
-2. 网站启动、Agent UI、Pi同源网站与部署打包相关52项测试通过；修改文件语法和diff空白检查通过。
-3. Node临时隔离实例对MP4 HEAD返回200、`video/mp4`。
-4. 本机实际 `http://localhost:30000/pi/` 页面看到入口位于模型状态左侧；点击后得到独立播放器标签，原页面保留。视频播放推进到52.88秒，readyState=4；跳转到120秒后解码正常、无media error。原生播放器提供暂停、进度条、音量与全屏。
-5. 已登录浏览器的Range请求返回206、`video/mp4`、`bytes 0-1023/17901353`及1024字节。OpenResty配置检查及重载成功。
+网站原文件、dist、部署包、Pi镜像内文件及OpenResty静态挂载使用同一份网页媒体。打包保留当前知识发布 `1.27.1.1-20040b374943dabc`。镜像内1085个清单文件逐项摘要核验通过；静态目录与新包唯一差异为视频文件，已原子替换。Pi容器以现有Compose配置重建并保持原状态卷，健康检查ready=true、busy=false；未改原认证或重启其他容器。
 
-证据：`video/openresty-quickstart-20261017/out/qa/web-video.json`、`web-playback.json`、`web-tutorial-link.png`、`web-video-playback.png`。验证范围是入口、新标签页、播放与跳转；没有重新审核用户剪映导出的全片内容或主观混音听感，没有进行第二台设备验证。
+回退资料保存在本地忽略目录 `deployment/pi/.local/tutorial-fixed-20261017/`，包含原部署参数、旧网页视频及新包清单；旧镜像另留 `pi-knowledge:before-tutorial-fixed-20261017` 标签。没有上传模型配置、会话、剪映草稿或用户原始媒体。
+
+## 停帧验证与边界
+
+上一版检查只确认了链接、播放器进度和跳转，未确认底片内容随时间推进，不能作为画面正确性验收。用户反馈后，坏MOV抽样发现字幕变化但主画面滞留在约22秒；关闭剪映片段“超清画质”后，同一2:21位置立即恢复正确页面。观察支持本工程与超清处理链相关的兼容问题，未定位剪映内部算法或缓存机制。
+
+当前源视频通过36个时间点与原始无字幕底片对照，覆盖全部13镜头、原20–30秒故障区、35/50秒切点、141秒及片尾；主画面ROI排除字幕，零抽样冻结告警，同时间参考MAE最大0.011211。网页压缩版另通过24点、全部13镜头复核，零抽样冻结告警。独立审核核对联系表，不能仅以退出码0或零告警代替逐镜头内容检查。
+
+本机实际网站入口重新点击打开独立标签页，并检查后半段画面和媒体响应；详细记录在本地 `video/openresty-quickstart-20261017/out/qa/web-playback-fixed.json`。本次沿用上一轮入口代码52项相关测试结果，不声称为本轮重跑。
+
+本地证据：`out/qa/web-video-fixed.json`、`out/qa/freeze/user-fixed/`、`out/qa/freeze/web-fixed/`、`JIANYING_FREEZE_REVIEW.md`（均位于上述视频项目内）。本次是用户提供成片的发布与抽样画面验收，不是全片逐帧、主观音频听审、剪映保存后重开或跨设备验收。
