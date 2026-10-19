@@ -224,7 +224,7 @@ test('会话清理有时限：DELETE 无响应时，联网调用最多多等 2 �
   assert.ok(Date.now() - started < 3500, `清理耗时 ${Date.now() - started}ms`);
 });
 
-test('开关关闭（默认）：工具集与状态接口不含 web_search，选择阶段提示无联网规则，外部参考被拒', async t => {
+test('开关关闭（默认）：工具集与状态接口不含 web_search，选择阶段提示无联网规则，外部参考被丢弃而不使回答失败', async t => {
   const { spike, run, runRaw } = await setup(t, { webSearch: false });
   // 带问题的消息才会进入字段选择阶段（纯配置会走默认字段捷径，不发起选择请求）。
   const job = await run('默认值依据？\n```nginx\n' + fixtures.events.input + '\n```');
@@ -232,11 +232,11 @@ test('开关关闭（默认）：工具集与状态接口不含 web_search，选
   assert.deepEqual(job.tools, TOOL_NAMES);
   for (const request of spike.mock.requests) assert.ok(!request.tools.includes('web_search'));
   assert.ok(!JSON.stringify(selectionRequests(spike).at(-1).messages).includes('联网参考规则'));
-  // 模型在开关关闭时仍输出 web_refs，宿主必须拒绝整份回答（没有可引用的结果）。
-  const cachedBefore = await countCache(spike);
+  // 模型在开关关闭时仍输出 web_refs：没有可引用的结果，参考被整体丢弃并计数，回答照常完成，不展示任何参考。
   const uninvited = await runRaw(eventsRequest('说明默认值', 'web-uninvited'));
-  assert.equal(uninvited.state, 'failed'); assert.match(uninvited.error, /外部参考无效/);
-  assert.equal(await countCache(spike), cachedBefore);
+  assert.notEqual(uninvited.state, 'failed', uninvited.error);
+  assert.deepEqual(uninvited.webReferences, []); assert.equal(uninvited.webRefsDropped, 1);
+  assert.ok(!JSON.stringify(uninvited.modelSelection).includes(MOCK_NGINX_URL));
   // web_refs: [] 视为未提供，关闭时同样不报错。
   const empty = await runRaw(eventsRequest('说明默认值', 'web-empty-refs'));
   assert.equal(empty.state, 'awaiting_input', empty.error); assert.deepEqual(empty.webReferences, []);
@@ -385,10 +385,53 @@ test('web-fail：网络失败降级为普通工具结果，请求不失败，无
   assert.equal(spike.mock.webCalls.length, 1);
 });
 
-test('web-uninvited：开关开启但没有任何结果时，无法引用外部参考，请求失败', async t => {
-  const { runRaw } = await setup(t);
+test('web-uninvited：开关开启但没有任何结果时，外部参考被丢弃并计数，请求不失败', async t => {
+  const { spike, runRaw } = await setup(t);
   const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-uninvited' });
-  assert.equal(job.state, 'failed'); assert.match(job.error, /外部参考无效/);
+  assert.notEqual(job.state, 'failed', job.error);
+  assert.equal(job.webSearch.calls, 0); assert.equal(spike.mock.webCalls.length, 0);
+  assert.deepEqual(job.webReferences, []); assert.equal(job.webRefsDropped, 1);
+  assert.ok(!JSON.stringify(job.modelSelection).includes(MOCK_NGINX_URL));
+});
+
+// 外部参考无效不再使整份回答失败：无来源可核对（联网关闭，或开启但 0 次调用 / 0 条结果）时，
+// 任何 web_refs 都整体丢弃并计数；事实层照常校验并保留。覆盖 联网关闭/开启 × 数组/非数组/调用失败。
+for (const [webSearch, scenario, dropped] of [
+  [false, 'web-refs-facts', 2], [true, 'web-refs-facts', 2],
+  [false, 'web-refs-nonarray', 1], [true, 'web-refs-nonarray', 1],
+  [true, 'web-fail-refs', 1],
+]) {
+  test(`${scenario}（联网${webSearch ? '开启' : '关闭'}）：无可核对结果时参考全部丢弃，回答与事实保留，不展示、不写入任何参考内容`, async t => {
+    const { spike, runRaw } = await setup(t, { webSearch });
+    const request = { input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: scenario };
+    const job = await runRaw(request);
+    assert.notEqual(job.state, 'failed', job.error);
+    // 事实仍正常：summary 事实被选中并回填正文与引用。
+    assert.ok(job.modelSelection.facts.some(fact => fact.field === 'summary'));
+    assert.ok(job.modelSelection.resolvedFacts.some(fact => fact.field === 'summary' && fact.text));
+    // 参考：计数等于丢弃条数，webReferences 为空，且报告任何位置都不含被丢弃的网址或引文。
+    assert.equal(job.webRefsDropped, dropped); assert.deepEqual(job.webReferences, []);
+    assert.deepEqual(job.modelSelection.web_refs ?? [], []);
+    const shown = JSON.stringify({ webReferences: job.webReferences, modelSelection: job.modelSelection });
+    for (const leaked of [MOCK_NGINX_URL, 'forged.html', MOCK_NGINX_QUOTE]) assert.ok(!shown.includes(leaked), leaked);
+    // 联网开启的失败调用不改变结论；联网关闭时没有任何联网调用。
+    assert.equal(spike.mock.webCalls.length, scenario === 'web-fail-refs' ? 1 : 0);
+    // 缓存回放：命中缓存时 webRefsDropped 与空参考保持一致（没有联网调用的回答可缓存）。
+    if (scenario !== 'web-fail-refs') {
+      const again = await runRaw(request);
+      assert.equal(again.cacheHit, true); assert.equal(again.webRefsDropped, dropped); assert.deepEqual(again.webReferences, []);
+    }
+  });
+}
+
+test('web-refs-extra-key：参考被宽容不放宽事实层，多余顶层键仍使整份回答失败（联网开启与关闭）', async t => {
+  for (const webSearch of [false, true]) {
+    const { runRaw } = await setup(t, { webSearch });
+    const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-refs-extra-key' });
+    assert.equal(job.state, 'failed', `webSearch=${webSearch}`);
+    assert.match(job.error, /模型报告契约无效/); assert.equal(job.errorCategory, 'contract');
+    assert.deepEqual(job.webReferences ?? [], []);
+  }
 });
 
 test('web-mixed：有效引用保留原文，无效项丢弃且不出现在外部参考中', async t => {

@@ -637,6 +637,16 @@ test('指令名说明和被省略的外部参考都以文本显示固定文案�
   assert.equal(JSON.parse(ui.saved.get(`${storageKey}:list`))[0].title, 'client_max_body_size');
 });
 
+test('外部参考全部被丢弃且本次没有联网：显示中性文案，不暗示联网查过，也不出现被丢弃的内容', async () => {
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({
+    webRefsDropped: 2, webReferences: [], webSearch: { calls: 0 },
+  })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('模型给出的外部参考无法核实，已忽略'));
+  assert.ok(!text.includes('未通过校验'));
+});
+
 test('业务范围：ignored 结果显示未处理提示，并仍渲染业务结果', async () => {
   const notice = '消息中与配置无关的部分未处理。';
   const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ inputResolution: { action: 'config', ignored: true, notice } })) : undefined });

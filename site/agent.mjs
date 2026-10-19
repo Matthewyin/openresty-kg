@@ -446,7 +446,12 @@ function render(job, task) {
   const selection = job.modelSelection;
   // 外部参考由宿主校验后才写入 webReferences。不合规的条目只计个数，页面用固定文案说明，不展示被丢掉的原文。
   const references = Array.isArray(job.webReferences) ? job.webReferences : [];
-  if (Number.isInteger(job.webRefsDropped) && job.webRefsDropped > 0) node('p', '部分外部参考未通过校验，已省略', result, 'verification-notes');
+  // 本次确实联网（有调用）或仍保留了部分参考时，说“部分未通过校验”；否则（联网关闭或本次没有结果）用户从未见过外部参考，
+  // 若仍说“未通过校验”会让人误以为系统联网查过，改用中性文案。两句都是固定文案，不拼接被丢弃的网址或引文。
+  if (Number.isInteger(job.webRefsDropped) && job.webRefsDropped > 0) {
+    const searched = references.length > 0 || (Number.isInteger(job.webSearch?.calls) && job.webSearch.calls > 0);
+    node('p', searched ? '部分外部参考未通过校验，已省略' : '模型给出的外部参考无法核实，已忽略', result, 'verification-notes');
+  }
   const hasReferences = references.length > 0;
   // 三条状态文案互斥，只依据“是否有事实”与 inputResolution.unindexed 判断，不依赖模型是否输出 status（契约不强制 status）。
   const noFacts = !selection?.resolvedFacts?.length;

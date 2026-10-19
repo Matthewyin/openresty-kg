@@ -76,9 +76,20 @@ const WEB_PLANS = {
   'web-mixed': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
   'web-ref-extra': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
   'web-limit': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
+  // 外部参考无效时只丢弃参考、保留回答的场景。facts 都选 summary，用来确认丢弃参考不影响事实。
+  // 模型不调用 web_search 却输出 web_refs（联网关闭或开启但 0 次调用时都会遇到）。
+  'web-refs-facts': () => [],
+  // web_refs 不是数组。
+  'web-refs-nonarray': () => [],
+  // 联网开启且调用了一次，但调用失败（0 条结果），模型仍输出 web_refs。
+  'web-fail-refs': () => [{ query: 'MOCK_FAIL proxy', site: 'nginx.org' }],
+  // 事实层违规的反例：多出一个顶层键。参考被宽容不代表其他键被宽容。
+  'web-refs-extra-key': () => [],
 };
 
 // 各联网场景的最终答案。不合规的 web_refs 会被宿主丢弃，事实与 status 仍保留。
+// 每个候选只选 summary 字段的事实选择。
+const summaryFacts = candidates => candidates.flatMap(entry => ['summary'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field })));
 function webAnswer(scenario, candidates) {
   const status = candidates.length ? 'unsupported' : 'no_candidates';
   const ref = { url: MOCK_NGINX_URL, quote: MOCK_NGINX_QUOTE };
@@ -105,6 +116,11 @@ function webAnswer(scenario, candidates) {
     case 'web-mixed': return { facts: candidates.flatMap(entry => ['summary'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field }))), web_refs: [ref, { url: 'https://nginx.org/forged.html', quote: MOCK_NGINX_QUOTE }, { url: MOCK_NGINX_URL, quote: 'This sentence never appears in the search result.' }, ref] };
     // 多余的 title 键不能展示，也不能因此让整份回答失败。
     case 'web-ref-extra': return { facts: [], status, web_refs: [{ url: MOCK_NGINX_URL, quote: MOCK_NGINX_QUOTE, title: 'forged title' }] };
+    // 下面几个场景的 web_refs 一律不可能通过校验（没有对应的真实结果）；facts 保持正常选择 summary。
+    case 'web-refs-facts': return { facts: summaryFacts(candidates), web_refs: [ref, { url: 'https://nginx.org/forged.html', quote: MOCK_NGINX_QUOTE }] };
+    case 'web-refs-nonarray': return { facts: summaryFacts(candidates), web_refs: MOCK_NGINX_URL };
+    case 'web-fail-refs': return { facts: summaryFacts(candidates), web_refs: [ref] };
+    case 'web-refs-extra-key': return { facts: summaryFacts(candidates), web_refs: [ref], extra: true };
     case 'web-limit': return { facts: [], status, web_refs: limitQuotes.map(quote => ({ url: MOCK_NGINX_URL, quote })) };
     default: throw new Error('未知联网场景');
   }

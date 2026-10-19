@@ -22,7 +22,8 @@ export function parseModelReportText(text) {
 }
 // 前端在 webRefsDropped > 0 时显示这句，不拼接被丢弃的网址或引文。
 export const WEB_REFS_DROPPED_NOTICE = '部分外部参考未通过校验，已省略';
-// web 为本次请求的联网状态（job.webSearch）。未开启或本次没有结果时，模型输出的 web_refs 仍使整份回答无效。
+// web 为本次请求的联网状态（job.webSearch），可能为 undefined。未开启或本次没有结果时，模型输出的 web_refs
+// 整体被丢弃并计入 webRefsDropped，回答本身与事实照常保留；只有事实层违规才会使整份回答失败。
 const normalizeSpace = text => text.replace(/\s+/g, ' ');
 // 单条参考是否可用。不合规的条目只丢弃，不改写引文：通过的引文必须仍是模型提交的原文子串。
 function acceptWebRef(ref, web, seen) {
@@ -55,10 +56,15 @@ export function validateModelReport(value, bundle, web) {
   // 允许的键集合仍只有事实、可选 status、可选 web_refs。多余顶层键或 facts 不是数组属于事实层违规，整份失败。
   if (![['facts'], ['facts', 'status'], ['facts', 'web_refs'], ['facts', 'status', 'web_refs']].some(keys => sameKeys(value, keys)) || !Array.isArray(value.facts) || !bundle.analysis) throw new Error('模型报告契约无效');
   let webRefsDropped = 0;
-  // web_refs: [] 视为未提供。非空时：联网未开启或本次没有可引用结果，仍然拒绝整份回答。
+  // web_refs: [] 视为未提供。非空时一律交给 filterWebRefs 逐条筛选，不再因外部参考使整份回答失败：
+  // - 联网已开启且本次有结果：按结果集校验网址与引文，通过的保留，其余丢弃并计数；
+  // - 联网未开启，或开启但本次没有任何结果（0 次调用或 0 条结果）：没有可核对的来源，
+  //   此时传入空的结果集，使每一条都因“网址不在本次结果中”被丢弃（web_refs 不是数组时计 1），
+  //   于是“丢弃规则”只有 filterWebRefs 一处，不会出现一条没经校验的参考进入输出的旁路。
+  // 事实层（顶层键集合、facts、status）的校验在下面保持原样，不因本处放宽。
   if (Object.hasOwn(value, 'web_refs') && !(Array.isArray(value.web_refs) && value.web_refs.length === 0)) {
-    if (!web?.enabled || !(web.results instanceof Map) || web.results.size === 0) throw new Error('外部参考无效');
-    const filtered = filterWebRefs(value.web_refs, web);
+    const usable = Boolean(web?.enabled) && web.results instanceof Map && web.results.size > 0;
+    const filtered = filterWebRefs(value.web_refs, usable ? web : { results: new Map() });
     webRefsDropped = filtered.dropped;
     // 替换成通过校验的原条目。引文字符保持模型提交的内容，展示时只做首尾空白修剪。
     value = { ...value, web_refs: filtered.kept };
