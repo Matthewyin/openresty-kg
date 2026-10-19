@@ -365,8 +365,9 @@ function render(job, task) {
   }
   for (const error of job.parsed?.errors ?? []) node('p', `解析诊断：${error.message}（${error.line}:${error.column}）`, result, 'query-message error');
   const selection = job.modelSelection;
-  // 外部参考由宿主校验（域名白名单、引文来自本次结果）后才写入 webReferences；有参考时文案需指向下方区块。
+  // 外部参考由宿主校验后才写入 webReferences。不合规的条目只计个数，页面用固定文案说明，不展示被丢掉的原文。
   const references = Array.isArray(job.webReferences) ? job.webReferences : [];
+  if (Number.isInteger(job.webRefsDropped) && job.webRefsDropped > 0) node('p', '部分外部参考未通过校验，已省略', result, 'verification-notes');
   const hasReferences = references.length > 0;
   // 三条状态文案互斥，只依据“是否有事实”与 inputResolution.unindexed 判断，不依赖模型是否输出 status（契约不强制 status）。
   const noFacts = !selection?.resolvedFacts?.length;
@@ -463,7 +464,16 @@ async function finish(task) {
 async function followJob(task, job) {
   while (current(task)) {
     task.terminal = job.state !== 'running';
-    if (job.normalizedRequest) trackedSubject = job.normalizedRequest;
+    if (job.normalizedRequest) {
+      trackedSubject = job.normalizedRequest;
+      // 列表标题用索引规范名。提交当下还不知道归一化结果，等报告回来再替换用户的原始大小写。
+      const title = directiveName(job.normalizedRequest);
+      const id = task.sessionId || job.sessionId;
+      if (title && id) {
+        const existing = readSessions().find(item => item.id === id);
+        if (!existing || existing.title !== title) saveSession(id, title);
+      }
+    }
     if (task.showResults === false) note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
     else render(job, task);
     if (task.terminal) { if (interrupted?.requestId === task.requestId) interrupted = null; break; }

@@ -31,7 +31,7 @@
 | retentionEnabled | 默认 true。true 时在新请求开始前，以及同一进程的周期清理中删除过期数据；运行、恢复或关闭中跳过周期清理。显式 false 时不自动删除旧用户记录。 |
 | sessionTtlMs、cacheTtlMs | 默认均为 259200000（3 天）。会话按 metadata 最近更新时间、缓存按写入时间起算。完成或恢复会更新会话时间。保留中的会话所引用的 session 和 checkpoint 不因文件自身较旧而删除。无引用的旧 session/checkpoint 也按期限回收。缓存含会话正文副本，启用保留期限时 cacheTtlMs 不得大于 sessionTtlMs。 |
 | pruneIntervalMs | 周期清理间隔，默认 3600000（1 小时），可用 PI_SPIKE_PRUNE_INTERVAL_MS 覆盖。定时器属于当前进程，close 时清除；失败只记事件名，不写路径或会话内容。 |
-| logRequests | 开启后输出结构化启动/退出与请求终态日志，含模式、请求ID、release、状态、时长/用量，不记录配置、问题或凭据正文。 |
+| logRequests | 开启后输出结构化启动/退出与请求终态日志，含模式、请求ID、release、状态、时长/用量和错误类别，不记录配置、问题、凭据或错误原文。选择阶段失败时类别区分 parse（模型输出无法解析）、contract（模型报告契约无效）和 upstream（模型服务暂时不可用，不自动重试）。 |
 
 清理只处理已知状态目录内的记录；坏引用会中止清理，不以删除异常数据掩盖问题。新请求引用已删除会话时明确`session_unavailable`，不偷偷新建。jobs仅在内存，重启后旧requestId返回`job_unavailable`；session恢复返回请求和上下文状态，不返回完整旧报告、不续传中断token。
 

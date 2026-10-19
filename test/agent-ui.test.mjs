@@ -612,6 +612,22 @@ test('业务范围：范围外与问候只显示固定话术，不出现空模�
   }
 });
 
+test('指令名说明和被省略的外部参考都以文本显示固定文案，会话标题用规范名', async () => {
+  const notice = '已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 Client_Max_Body_Size）。';
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({
+    normalizedRequest: { input: 'client_max_body_size', mode: 'single', question: '默认值', release },
+    inputResolution: { action: 'directive', notice, canonicalized: { from: 'Client_Max_Body_Size', to: 'client_max_body_size' } },
+    webRefsDropped: 2,
+    webReferences: refs,
+  })) : undefined });
+  await ui.change('configuration', 'Client_Max_Body_Size 的默认值是什么');
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes(notice));
+  assert.ok(text.includes('部分外部参考未通过校验，已省略'));
+  assert.equal(JSON.parse(ui.saved.get(`${storageKey}:list`))[0].title, 'client_max_body_size');
+});
+
 test('业务范围：ignored 结果显示未处理提示，并仍渲染业务结果', async () => {
   const notice = '消息中与配置无关的部分未处理。';
   const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ inputResolution: { action: 'config', ignored: true, notice } })) : undefined });

@@ -36,7 +36,7 @@ async function setup(t, overrides = {}) {
 // 轮询等待测试状态出现，超时即失败，避免无限挂起。
 async function waitFor(check) { for (let i = 0; i < 2000 && !check(); i++) await delay(5); assert.ok(check(), '等待测试状态超时'); }
 const countCache = spike => readdir(join(spike.config.stateDir, 'cache')).then(files => files.filter(file => file.endsWith('.json')).length);
-const selectionRequests = spike => spike.mock.requests.filter(request => request.phase === 'selection');
+const selectionRequests = spike => spike.mock.requests.filter(request => request.phase === 'selection' || request.phase === 'field_selection');
 const FORBIDDEN_TOOLS = ['bash', 'read', 'write', 'edit', 'unknown_tool'];
 // 一段包含 upstream 名称的配置，用于验证查询词不能外发配置中的具体值。
 const LEAK_CONFIG = 'http { upstream backend_pool { server 192.0.2.10:8080; } server { listen 80; location / { proxy_pass http://backend_pool; } } }';
@@ -356,12 +356,21 @@ test('web-budget：每次请求最多实际调用两次，第三次被拒绝且�
 });
 
 for (const scenario of ['web-forged', 'web-offdomain', 'web-quote', 'web-splice']) {
-  test(`${scenario}：伪造网址、跨域网址、虚构或拼接引文使整份回答失败，且不写缓存`, async t => {
+  test(`${scenario}：伪造网址、跨域网址、虚构或拼接引文被丢弃，请求仍完成且不写缓存`, async t => {
     const { spike, runRaw } = await setup(t);
     const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: scenario });
-    assert.equal(job.state, 'failed'); assert.match(job.error, /外部参考无效/);
+    assert.equal(job.state, 'awaiting_input', job.error);
+    assert.equal(job.modelSelection.status, 'unsupported');
+    assert.deepEqual(job.modelSelection.facts, []);
+    assert.deepEqual(job.webReferences, []);
+    assert.equal(job.webRefsDropped, 1);
     assert.equal(job.webSearch.calls, 1);
     assert.equal(await countCache(spike), 0);
+    const shown = JSON.stringify(job.webReferences);
+    assert.ok(!shown.includes('forged.html'));
+    assert.ok(!shown.includes('reddit.com'));
+    assert.ok(!shown.includes('never appears'));
+    assert.ok(!shown.includes('operation proxy module'));
   });
 }
 
@@ -380,6 +389,43 @@ test('web-uninvited：开关开启但没有任何结果时，无法引用外部�
   const { runRaw } = await setup(t);
   const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-uninvited' });
   assert.equal(job.state, 'failed'); assert.match(job.error, /外部参考无效/);
+});
+
+test('web-mixed：有效引用保留原文，无效项丢弃且不出现在外部参考中', async t => {
+  const { runRaw } = await setup(t);
+  const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-mixed' });
+  assert.notEqual(job.state, 'failed', job.error);
+  assert.ok(job.modelSelection.facts.some(fact => fact.field === 'summary'));
+  assert.equal(job.webReferences.length, 1);
+  assert.equal(job.webReferences[0].url, MOCK_NGINX_URL);
+  assert.equal(job.webReferences[0].quote, MOCK_NGINX_QUOTE);
+  assert.equal(job.webRefsDropped, 3);
+  const shown = JSON.stringify(job.webReferences);
+  assert.ok(!shown.includes('forged.html'));
+  assert.ok(!shown.includes('never appears'));
+});
+
+test('web-ref-extra：引用上的多余键被丢弃，请求不失败', async t => {
+  const { runRaw } = await setup(t);
+  const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-ref-extra' });
+  assert.equal(job.state, 'awaiting_input', job.error);
+  assert.deepEqual(job.webReferences, []);
+  assert.equal(job.webRefsDropped, 1);
+  assert.ok(!JSON.stringify(job.webReferences).includes('forged title'));
+});
+
+test('web-limit：超过 3 条的有效引用只保留前三条，其余计入丢弃', async t => {
+  const { runRaw } = await setup(t);
+  const job = await runRaw({ input: fixtures.events.input, mode: 'main', question: '查询限制', mockScenario: 'web-limit' });
+  assert.equal(job.state, 'awaiting_input', job.error);
+  assert.equal(job.webReferences.length, 3);
+  assert.equal(job.webRefsDropped, 1);
+  assert.deepEqual(job.webReferences.map(item => item.quote), [
+    'Sets a deadline for the cache fill operation',
+    'deadline for the cache fill',
+    'cache fill operation in the',
+  ]);
+  assert.ok(!job.webReferences.some(item => item.quote === 'operation in the proxy module'));
 });
 
 test('web_refs 为空数组视为未提供，开关开启时不报错', async t => {
@@ -520,6 +566,25 @@ test('密钥不出现在任何输出中：视图、错误、轨迹与请求日�
   assert.ok(logs.some(line => line.includes('webSearchCalls')));
   // 即使错误消息中包含密钥，对外的错误文本也会被替换。
   assert.ok(!safeError(new Error(`bad ${secret}`), spike.secrets()).includes(secret));
+});
+
+test('失败日志只记录错误类别，不记录模型输出片段', async t => {
+  const { spike, runRaw } = await setup(t);
+  spike.config.logRequests = true;
+  const logs = [];
+  const originalLog = console.log;
+  console.log = (...args) => logs.push(args.join(' '));
+  t.after(() => { console.log = originalLog; });
+  const job = await runRaw(eventsRequest('查询限制', 'invalid-json'));
+  console.log = originalLog;
+  assert.equal(job.state, 'failed');
+  assert.ok(job.error);
+  const line = logs.find(item => item.includes('agent_request_end'));
+  const entry = JSON.parse(line);
+  assert.equal(entry.errorCategory, job.errorCategory);
+  assert.equal(typeof entry.errorCategory, 'string');
+  assert.ok(!line.includes('not json'));
+  assert.ok(!line.includes(job.error));
 });
 
 test('预算按请求计算：同一会话的后续请求重新获得两次联网调用', async t => {

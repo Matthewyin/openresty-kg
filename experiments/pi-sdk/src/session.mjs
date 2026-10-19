@@ -6,12 +6,12 @@ import { isIP } from 'node:net';
 import { InMemoryCredentialStore, InMemoryModelsStore } from '@earendil-works/pi-ai';
 import { createAgentSession, createExtensionRuntime, ModelRuntime, SessionManager, SettingsManager } from '@earendil-works/pi-coding-agent';
 import { loadSnapshot, knowledgeTools, toolNames, digest, within } from './knowledge-tools.mjs';
-import { SYSTEM_PROMPT, CONTRACT, parseModelReportText, validateModelReport, makeReport } from './report.mjs';
+import { SYSTEM_PROMPT, CONTRACT, FIELD_SELECTION_PHASE, FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY_PHASE, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY, isIntentResolutionShape, parseModelReportText, validateModelReport, makeReport } from './report.mjs';
 import { startMock } from './mock-provider.mjs';
-import { safeError, requestError } from './errors.mjs';
+import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
-import { INPUT_CONTRACT, INPUT_PROMPT, resolveInput } from './input-resolution.mjs';
+import { INPUT_CONTRACT, INPUT_PROMPT, resolveInput, cacheMessage, refreshCanonicalNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
 // 工具结果统一形状（与 knowledge-tools 中的 result 一致），供联网工具复用。
@@ -114,6 +114,8 @@ export function compactHistory(messages) {
       let prompt;
       try { prompt = JSON.parse(messageText(message.content)); } catch { return message; }
       if (prompt.phase === 'input_resolution') return { ...message, content: [{ type: 'text', text: JSON.stringify({ historical: true, phase: 'input_resolution', message: '[原输入仅保留在服务端记录]' }) }] };
+      // 字段选择纠正是宿主固定句。历史轮只留阶段占位，不把纠正句再次送给模型。
+      if (prompt.phase === FIELD_SELECTION_RETRY_PHASE) return { ...message, content: [{ type: 'text', text: JSON.stringify({ historical: true, phase: FIELD_SELECTION_RETRY_PHASE, message: '[字段选择纠正已省略]' }) }] };
       if (!prompt.request) return message;
       const { question, mode, context, module } = prompt.request;
       return { ...message, content: [{ type: 'text', text: JSON.stringify({ request: { question, mode, context, module }, identity: prompt.manifest?.matches?.map(match => ({ name: match.name, entryIds: match.entryIds })), release: prompt.manifest?.release, historical: true }) }] };
@@ -290,7 +292,7 @@ export class Spike {
     } else if (typeof request.input !== 'string' || Buffer.byteLength(request.input) > this.config.maxInputBytes || !['main', 'fragment', 'single'].includes(request.mode)) throw new Error('配置输入或模式无效');
     for (const key of ['question', 'context', 'module']) if (request[key] !== undefined && (typeof request[key] !== 'string' || request[key].length > 4096)) throw new Error(`${key} 无效`);
     if (request.release !== undefined && (typeof request.release !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(request.release) || ['.', '..'].includes(request.release))) throw new Error('知识发布标识无效');
-    if (request.mockScenario && (this.config.mode !== 'mock' || !['normal', 'forbidden', 'bad-citation', 'invalid-json', 'fenced-json', 'unknown-field', 'empty-selection', 'unsupported', 'query', 'analyze', 'extended', 'intent-rewrite', 'intent-name', 'intent-invalid', 'intent-mode', 'web', 'web-cited', 'web-leak', 'web-budget', 'web-forged', 'web-offdomain', 'web-quote', 'web-fail', 'web-uninvited', 'web-slow', 'web-splice', 'web-long', 'web-site', 'web-extra', 'web-empty-refs', 'intent-web'].includes(request.mockScenario))) throw new Error('mock 场景无效');
+    if (request.mockScenario && (this.config.mode !== 'mock' || !['normal', 'forbidden', 'bad-citation', 'invalid-json', 'fenced-json', 'unknown-field', 'empty-selection', 'unsupported', 'query', 'analyze', 'extended', 'intent-rewrite', 'intent-name', 'intent-invalid', 'intent-mode', 'intent-echo', 'intent-echo-twice', 'parse-once', 'empty-once', 'parse-twice', 'parse-multi', 'upstream-500', 'upstream-429', 'web', 'web-cited', 'web-leak', 'web-budget', 'web-forged', 'web-offdomain', 'web-quote', 'web-fail', 'web-uninvited', 'web-slow', 'web-splice', 'web-long', 'web-site', 'web-extra', 'web-empty-refs', 'web-mixed', 'web-ref-extra', 'web-limit', 'intent-web'].includes(request.mockScenario))) throw new Error('mock 场景无效');
     if (unified) return { message: request.message, ...(request.release === undefined ? {} : { release: request.release }), mockScenario: request.mockScenario ?? 'normal' };
     return { input: request.input, mode: request.mode, question: request.question ?? '', context: request.context ?? '', module: request.module ?? '', ...(request.release === undefined ? {} : { release: request.release }), mockScenario: request.mockScenario ?? 'normal' };
   }
@@ -304,15 +306,16 @@ export class Spike {
     // webSearch 为本次请求的联网状态：results 只保存在宿主内存中，不出现在视图里。
     const job = { requestId: randomUUID(), sessionId: sessionId ?? randomUUID(), existingSession: sessionId !== undefined, mode: this.config.mode, state: 'running', cacheHit: false, trace: [], tools: [...toolNames(this.config)], cancelled: false, normalizedRequest: null, inputResolution: null,
       // attempts 只记录被拒原因（守卫给出的固定文字），不记录查询原文，供验证脚本做软观察。
-      webSearch: { calls: 0, rejected: 0, queries: [], attempts: [], results: new Map() },
+      // enabled 只给报告校验区分“联网没开”和“开了但本次有结果”。视图不带出这个字段。
+      webSearch: { enabled: this.config.webSearch, calls: 0, rejected: 0, queries: [], attempts: [], results: new Map() },
       metrics: { stages: {}, modelRoundTrips: 0, inputBytes: 0, outputBytes: 0, finalOutputBytes: 0, sdkTurns: 0, toolCalls: 0, rounds: [], usage: null } };
     this.jobs.set(job.requestId, job);
     this.running = job;
     const timeout = setTimeout(() => { job.timedOut = true; void job.session?.abort(); }, this.config.timeoutMs);
-    job.done = this.execute(job, request).catch(error => { job.state = job.cancelled ? 'cancelled' : 'failed'; job.error = safeError(error, this.secrets()); job.errorCode = error.code ?? 'request_failed'; }).finally(() => {
+    job.done = this.execute(job, request).catch(error => { job.state = job.cancelled ? 'cancelled' : 'failed'; job.errorCategory = errorCategory(error); job.error = safeError(error, this.secrets()); job.errorCode = error.code ?? 'request_failed'; }).finally(() => {
       clearTimeout(timeout); job.metrics.totalMs = performance.now() - started; job.finishedAt = Date.now();
-      // 日志只记录联网调用次数，不记录查询词或结果正文。
-      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, webSearchCalls: job.webSearch.calls }));
+      // 日志只记录联网调用次数和错误类别，不记录查询词、结果正文或错误原文。
+      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls }));
       if (this.running === job) this.running = null;
       this.pruneJobs();
     });
@@ -547,7 +550,10 @@ export class Spike {
     const context = manager.buildSessionContext().messages;
     const previousHistory = budgetHistory(compactHistory([...context, { role: 'user', content: '' }]).slice(0, -1), config.compactHistoryBytes);
     if (Buffer.byteLength(JSON.stringify(previousHistory)) >= config.maxHistoryBytes) throw requestError('history_limit', '本轮输入过大，请缩短问题', 413);
-    const key = cacheKey({ request: unified ? { ...submittedRequest, currentConfig, currentSubject, inputContract: INPUT_CONTRACT } : request, context, knowledgeHash: snapshot.hash, codeHash: this.codeHash, siteBase: config.siteBase, model: { mode: config.mode, id: config.modelId, baseUrl: config.mode === 'mock' ? 'local-mock' : config.baseUrl, reasoning: config.reasoning, thinkingLevel: config.thinkingLevel, maxTurns: config.maxTurns, contextWindow: config.contextWindow, maxTokens: config.maxTokens, compat: config.compat, webSearch: config.webSearch } });
+    // 指令名查询把唯一规范名折进消息后再做缓存键，因此 Client_Max_Body_Size 与 client_max_body_size 是同一次查询。
+    // 含配置语法的消息不折叠，避免两份大小写不同的配置共用结果。
+    const cacheRequest = unified ? { ...submittedRequest, message: cacheMessage(submittedRequest.message, snapshot.index.directives), currentConfig, currentSubject, inputContract: INPUT_CONTRACT } : request;
+    const key = cacheKey({ request: cacheRequest, context, knowledgeHash: snapshot.hash, codeHash: this.codeHash, siteBase: config.siteBase, model: { mode: config.mode, id: config.modelId, baseUrl: config.mode === 'mock' ? 'local-mock' : config.baseUrl, reasoning: config.reasoning, thinkingLevel: config.thinkingLevel, maxTurns: config.maxTurns, contextWindow: config.contextWindow, maxTokens: config.maxTokens, compat: config.compat, webSearch: config.webSearch } });
     const cachePath = join(config.stateDir, 'cache', `${key}.json`);
     check();
     let cached;
@@ -557,6 +563,13 @@ export class Spike {
     if (cached) {
       check();
       const file = join(config.stateDir, 'sessions', `${randomUUID()}.jsonl`);
+      // 缓存键把“整句恰为一个指令名”的大小写折叠了，命中的结果可能来自另一种写法。
+      // 规范名说明依赖本次用户写法，所以按当前消息重算，不能沿用缓存里的 notice / canonicalized。
+      if (unified) {
+        const refresh = resolution => refreshCanonicalNotice(resolution, submittedRequest.message, snapshot.index.directives);
+        cached.report = { ...cached.report, inputResolution: refresh(cached.report.inputResolution) };
+        cached.resolution = { ...cached.resolution, inputResolution: refresh(cached.resolution.inputResolution) };
+      }
       const updatedMeta = { ...metaFields(), ...cached.resolution, file, state: 'completed', cacheKeys: rememberCacheKeys(meta, key) };
       if (maintenance.bytes + Buffer.byteLength(cached.session) + Buffer.byteLength(JSON.stringify(updatedMeta)) >= config.maxStateBytes) throw requestError('storage_limit', '服务端状态容量已达上限，请维护清理后重试', 503);
       await writeFile(file, cached.session, { mode: 0o600 });
@@ -577,6 +590,8 @@ export class Spike {
     if (previousFile) await copyFile(previousFile, checkpoint);
     await atomicJson(metaPath, pendingMeta);
     let cacheWritten = false;
+    // 选择阶段只有一次纠正名额，意图四键和无法解析共用。失败回滚和成功提交都要看到它，所以放在 finish 外面。
+    let selectionRetried = false;
     const decorate = report => ({ ...report, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null });
     const finish = async (report, state) => stage('commitMs', async () => {
       check();
@@ -589,7 +604,8 @@ export class Spike {
       const nextSubject = parsedInput && (!unified || ['config', 'directive'].includes(job.inputResolution?.action)) && !job.inputResolution?.unindexed ? job.normalizedRequest : currentSubject;
       const resolution = { normalizedRequest: job.normalizedRequest, inputResolution: job.inputResolution, currentConfig: nextConfig, currentSubject: nextSubject };
       // 范围外、问候和联网结果不写精确缓存。可能写缓存时先把键算进 metadata，容量检查才能看到最终文件大小。
-      const cacheable = state === 'completed' && !['out_of_scope', 'greeting'].includes(job.inputResolution?.action) && !job.webSearch.calls;
+      // 发生过字段选择纠正的请求不写完成缓存：会话里带有一次错误输出，不能当成可复用的干净结果。
+      const cacheable = state === 'completed' && !selectionRetried && !['out_of_scope', 'greeting'].includes(job.inputResolution?.action) && !job.webSearch.calls;
       const completedMeta = { ...metaFields(), ...resolution, file, state, ...(cacheable ? { cacheKeys: rememberCacheKeys(meta, key) } : {}) };
       const projectedBytes = await stateBytes(config.stateDir) - (await lstat(metaPath)).size + Buffer.byteLength(JSON.stringify(completedMeta));
       if (projectedBytes >= config.maxStateBytes) throw requestError('storage_limit', '服务端状态容量已达上限，请维护清理后重试', 503);
@@ -611,6 +627,7 @@ export class Spike {
     const rollback = async error => {
       if (cacheWritten) await unlink(cachePath);
       job.state = job.cancelled ? 'cancelled' : 'failed';
+      job.errorCategory = errorCategory(error);
       job.error = safeError(error, this.secrets());
       job.errorCode = error.code ?? 'request_failed';
       if (previousFile) await copyFile(checkpoint, previousFile);
@@ -631,7 +648,11 @@ export class Spike {
       if (metrics.sdkTurns > config.maxTurns) throw new Error('超过轮次限制');
       if (job.trace.some(event => event.isError)) throw new Error('SDK 工具调用失败或请求禁用工具');
       const last = sdk.session.messages.findLast(message => message.role === 'assistant');
-      if (!last || last.stopReason === 'error' || last.stopReason === 'aborted') throw new Error(last?.errorMessage ?? 'SDK 未完成');
+      // 空字符串不能用 ?? 放过，否则失败原因会是空白，日志里只剩 request_failed。
+      // stopReason 为 error 表示模型服务调用本身失败（HTTP 4xx/5xx、限流、网络超时等）。
+      // 这里只换成固定文案，不把上游正文带回。选择阶段是否再请求一次由调用方决定，model 自己不循环。
+      if (last?.stopReason === 'error') throw taggedError('upstream', UPSTREAM_MESSAGE);
+      if (!last || last.stopReason === 'aborted') throw new Error(last?.errorMessage || 'SDK 未完成');
       const text = last.content.filter(item => item.type === 'text').map(item => item.text).join('');
       metrics.finalOutputBytes = Buffer.byteLength(text);
       return text;
@@ -662,7 +683,8 @@ export class Spike {
       check();
       Object.assign(job, decorate(await stage('basicReportMs', () => makeReport(null, bundle))), { phase: 'basic' });
       const pendingInput = bundle.analysis.questions.length || bundle.analysis.parsed.errors.length || !bundle.analysis.parsed.directives.length || bundle.analysis.matches.some(match => !['matched', 'block_entry'].includes(match.status));
-      const prompt = { contract: CONTRACT, request: { question: request.question, mode: request.mode, context: request.context, module: request.module, mockScenario: request.mockScenario }, manifest: bundle.manifest };
+      // phase 与 output 告诉模型这一轮不是意图提取。没有这两个字段时，系统提示开头的 input_resolution 规则会被当成当前任务。
+      const prompt = { contract: CONTRACT, phase: FIELD_SELECTION_PHASE, output: FIELD_SELECTION_OUTPUT, request: { question: request.question, mode: request.mode, context: request.context, module: request.module, mockScenario: request.mockScenario }, manifest: bundle.manifest };
       if (Buffer.byteLength(JSON.stringify(previousHistory)) + Buffer.byteLength(JSON.stringify(prompt)) > config.maxHistoryBytes) throw requestError('history_limit', '本轮输入过大，请缩短问题', 413);
       // 未收录指令需要进入模型阶段，才能在无候选时联网参考，因此跳过“空问题直接回填默认字段”的捷径。
       if (!request.question.trim() && request.mockScenario === 'normal' && !job.inputResolution?.unindexed) {
@@ -673,8 +695,29 @@ export class Spike {
         await finish(makeReport(defaults ? validateModelReport(defaults, bundle) : null, bundle, job.webSearch), pendingInput ? 'awaiting_input' : 'completed');
         return;
       }
-      const text = await model(prompt, 'selection');
-      const report = await stage('validateHydrateMs', () => makeReport(validateModelReport(parseModelReportText(text), bundle, job.webSearch), bundle, job.webSearch));
+      let text = await model(prompt, 'selection');
+      // 第一次输出是否可用：不是合法 JSON（含空输出）或恰为意图四键，两者共用同一个重试名额，合计最多纠正一次。
+      // 上游模型错误（HTTP 4xx/5xx、限流、网络超时）在 model() 里直接抛出 upstream 类错误，不进入这里，也不自动重试。
+      // 不放宽解析：既不用正则修补 JSON，也不从自然语言里抓取 JSON，多个并列对象仍然失败。
+      let parsed = null;
+      let parseFailed = false;
+      try { parsed = parseModelReportText(text); } catch { parseFailed = true; }
+      if (parseFailed || isIntentResolutionShape(parsed)) {
+        selectionRetried = true;
+        check();
+        // 纠正句固定、不含用户原文或模型输出。重试计入 modelRoundTrips、轮次与总超时；不重置 web.calls。
+        // maxTurns 默认 16，意图、两次联网和这次纠正都在限额内。意图四键用意图句，解析失败用解析句。
+        text = await model({ phase: FIELD_SELECTION_RETRY_PHASE, instruction: parseFailed ? FIELD_SELECTION_PARSE_RETRY : FIELD_SELECTION_RETRY }, 'selection');
+      }
+      // 最终输出仍不是合法 JSON：报“无法解析”（parse 类）；能解析但不合契约：报“契约无效”（contract 类）。两者文案固定，不含模型原文。
+      let finalValue;
+      try { finalValue = parseModelReportText(text); } catch { throw taggedError('parse', PARSE_MESSAGE); }
+      const report = await stage('validateHydrateMs', () => {
+        // 校验函数的文案都是固定短句；统一打 contract 标记，避免个别文案被类别正则漏判。
+        let valid;
+        try { valid = validateModelReport(finalValue, bundle, job.webSearch); } catch (error) { throw taggedError('contract', error.message); }
+        return makeReport(valid, bundle, job.webSearch);
+      });
       const hasContent = report.modelSelection.resolvedFacts.some(fact => typeof fact.text === 'string' && fact.text.trim());
       const finalState = pendingInput || !hasContent || report.modelSelection.status ? 'awaiting_input' : 'completed';
       await finish(report, finalState);

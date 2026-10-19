@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
-import { Spike, ROOT } from '../src/session.mjs';
+import { Spike, ROOT, cacheKey, compactHistory } from '../src/session.mjs';
 import { serve } from '../server.mjs';
-import { configMode, resolveInput, suggestNames, damerauLevenshtein, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
+import { configMode, resolveInput, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
+import { FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY } from '../src/report.mjs';
+import { UPSTREAM_MESSAGE, PARSE_MESSAGE } from '../src/errors.mjs';
 import { fixtures } from './fixtures/configs.mjs';
 
 async function setup(t, overrides = {}) {
@@ -348,7 +350,7 @@ test('HTTP能力标识、完整/brief响应和恢复均提供统一输入契约'
 });
 
 // 业务范围（意图契约 v2）：mock 只做关键词识别，真实判断由模型完成；此处只验证宿主的分支与状态。
-const selectionCount = requests => requests.filter(request => request.phase === 'selection').length;
+const selectionCount = requests => requests.filter(request => request.phase === 'selection' || request.phase === 'field_selection').length;
 
 test('业务范围：天气、写代码、执行命令与联网查询返回 out_of_scope，完成且不进入字段选择', async t => {
   const { spike, run } = await setup(t);
@@ -531,11 +533,12 @@ test('相近指令名建议：纯解析分支附带 suggestions 并保持原澄�
   assert.equal(near.normalizedRequest, null); assert.equal(near.inputResolution.action, 'clarify');
   assert.ok(near.inputResolution.suggestions.includes('client_max_body_size'));
   assert.equal(near.inputResolution.message, `当前知识发布索引未收录指令 cLient_mEX_oody_size。你是否想查：${near.inputResolution.suggestions.join('、')}？以上仅为名称相近的提示，未自动替换，请确认后重新输入。`);
-  // 大小写完全匹配只提示，不自动替换为小写名称，也不进入查询。
+  // 大小写唯一命中时采用索引原名，并说明原写法。不再停在“未收录”澄清。
   const caseOnly = resolveInput(directive('Proxy_Pass'), { message: 'Proxy_Pass' }, snapshot);
-  assert.equal(caseOnly.normalizedRequest, null); assert.equal(caseOnly.inputResolution.action, 'clarify');
-  assert.deepEqual(caseOnly.inputResolution.suggestions, ['proxy_pass']);
-  assert.match(caseOnly.inputResolution.message, /未自动替换/);
+  assert.equal(caseOnly.inputResolution.action, 'directive');
+  assert.equal(caseOnly.normalizedRequest.input, 'proxy_pass');
+  assert.deepEqual(caseOnly.inputResolution.canonicalized, { from: 'Proxy_Pass', to: 'proxy_pass' });
+  assert.equal(caseOnly.inputResolution.notice, '已按指令名 proxy_pass 理解（Nginx 指令名区分大小写，原写法 Proxy_Pass）。');
   // 无关名称：文案与改动前完全一致，且不写 suggestions 键。
   const plain = resolveInput(directive('zzzzzzzz_qqqq'), { message: 'zzzzzzzz_qqqq' }, snapshot);
   assert.equal(plain.inputResolution.message, '当前知识发布索引未收录指令 zzzzzzzz_qqqq，请核对名称或提供配置。');
@@ -544,7 +547,7 @@ test('相近指令名建议：纯解析分支附带 suggestions 并保持原澄�
   const web = resolveInput(directive('client_max_body_sise'), { message: 'client_max_body_sise' }, snapshot, null, { webSearch: true });
   assert.equal(web.inputResolution.unindexed, true); assert.equal(web.inputResolution.action, 'directive');
   assert.equal(Object.hasOwn(web.inputResolution, 'suggestions'), false); assert.equal(web.normalizedRequest.input, 'client_max_body_sise');
-  // 开启联网但不是蛇形（含大写）：仍澄清并给出建议。
+  // 混合大小写的拼写错误仍有相近名称：即使开了联网，也给规范名建议，不把错名送去搜索。
   const upper = resolveInput(directive('cLient_mEX_oody_size'), { message: 'cLient_mEX_oody_size' }, snapshot, null, { webSearch: true });
   assert.equal(upper.inputResolution.action, 'clarify'); assert.ok(upper.inputResolution.suggestions.includes('client_max_body_size'));
 });
@@ -574,4 +577,273 @@ test('相近指令名建议：开启联网时蛇形未收录名仍进入字段�
   assert.equal(Object.hasOwn(job.inputResolution, 'suggestions'), false); assert.equal(job.normalizedRequest.input, 'client_max_body_sise');
   assert.equal(job.state, 'awaiting_input', job.error);
   assert.ok(selectionCount(spike.mock.requests) > 0);
+});
+
+test('指令名大小写：全大写与混合大小写命中规范名并带说明，拼写错误仍建议规范名', async t => {
+  const { run } = await setup(t);
+  const upper = await run('CLIENT_MAX_BODY_SIZE 的默认值是什么');
+  assert.equal(upper.inputResolution.action, 'directive', upper.error);
+  assert.equal(upper.normalizedRequest.input, 'client_max_body_size');
+  assert.deepEqual(upper.inputResolution.canonicalized, { from: 'CLIENT_MAX_BODY_SIZE', to: 'client_max_body_size' });
+  assert.equal(upper.inputResolution.notice, '已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。');
+  const mixed = await run('Client_Max_Body_Size 的默认值是什么');
+  assert.equal(mixed.normalizedRequest.input, 'client_max_body_size', mixed.error);
+  assert.equal(mixed.inputResolution.canonicalized.from, 'Client_Max_Body_Size');
+  // 模型必须交回消息里的原词。宿主只在这之后做大小写归一，不接受模型改写后的小写名。
+  const rewritten = resolveInput({ action: 'directive', input: 'client_max_body_size', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 的默认值是什么' }, { index: { release_id: 'test', directives: [{ name: 'client_max_body_size' }] } });
+  assert.equal(rewritten.normalizedRequest, null);
+  const typo = await run('cLient_mEX_oody_size');
+  assert.equal(typo.inputResolution.action, 'clarify');
+  assert.ok(typo.inputResolution.suggestions.includes('client_max_body_size'));
+});
+
+test('指令名大小写：索引里有多种大小写时澄清并列出，不自动选择', () => {
+  const snapshot = { index: { release_id: 'test', directives: [{ name: 'Listen' }, { name: 'listen' }, { name: 'proxy_pass' }] } };
+  const ambiguous = resolveInput({ action: 'directive', input: 'LISTEN', question: '', ignored: false }, { message: 'LISTEN 的默认值' }, snapshot);
+  assert.equal(ambiguous.normalizedRequest, null);
+  assert.equal(ambiguous.inputResolution.action, 'clarify');
+  assert.match(ambiguous.inputResolution.message, /Listen、listen/);
+  assert.doesNotMatch(ambiguous.inputResolution.message, /proxy_pass/);
+});
+
+test('指令名大小写：ignored 提示与规范名说明都保留；多个名称和跑题比较不区分大小写', () => {
+  const snapshot = { index: { release_id: 'test', directives: [{ name: 'client_max_body_size' }, { name: 'proxy_pass' }] } };
+  const both = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: true }, { message: 'CLIENT_MAX_BODY_SIZE 的默认值，另外今天天气怎么样' }, snapshot);
+  assert.equal(both.normalizedRequest.input, 'client_max_body_size');
+  assert.equal(both.inputResolution.ignored, true);
+  assert.ok(both.inputResolution.notice.includes('消息中与配置无关的部分未处理。'));
+  assert.ok(both.inputResolution.notice.includes('已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。'));
+  const many = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 和 PROXY_PASS' }, snapshot);
+  assert.equal(many.normalizedRequest, null);
+  assert.match(many.inputResolution.message, /多个指令名称/);
+  const same = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 就是 client_max_body_size' }, snapshot);
+  assert.equal(same.normalizedRequest.input, 'client_max_body_size');
+  const off = resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message: '今天天气怎么样 PROXY_PASS' }, snapshot);
+  assert.equal(off.inputResolution.action, 'clarify');
+  assert.match(off.inputResolution.message, /指令名/);
+  const weather = resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message: '今天天气怎么样' }, snapshot);
+  assert.equal(weather.inputResolution.action, 'out_of_scope');
+});
+
+test('指令名大小写：联网放行把混合大小写蛇形名收成小写，并带说明', async t => {
+  const { run } = await setup(t, { webSearch: true });
+  const job = await run('Ssl_Certificate_Cache 是做什么的');
+  assert.equal(job.inputResolution.action, 'directive', job.error);
+  assert.equal(job.inputResolution.unindexed, true);
+  assert.equal(job.normalizedRequest.input, 'ssl_certificate_cache');
+  assert.deepEqual(job.inputResolution.canonicalized, { from: 'Ssl_Certificate_Cache', to: 'ssl_certificate_cache' });
+  assert.match(job.inputResolution.notice, /已按指令名 ssl_certificate_cache 理解（Nginx 指令名区分大小写，原写法 Ssl_Certificate_Cache）。/);
+  assert.equal(job.state, 'awaiting_input', job.error);
+});
+
+const userText = message => typeof message.content === 'string' ? message.content : (message.content ?? []).map(part => part.text ?? '').join('');
+
+test('选择阶段用户提示带 field_selection，并写明不要输出意图 JSON', async t => {
+  const { spike, run } = await setup(t);
+  const job = await run('worker_connections 的默认值是什么');
+  assert.notEqual(job.state, 'failed', job.error);
+  const selection = spike.mock.requests.filter(request => request.phase === 'field_selection');
+  assert.equal(selection.length, 1);
+  const prompt = JSON.parse(userText(selection[0].messages.findLast(message => message.role === 'user')));
+  assert.equal(prompt.phase, 'field_selection');
+  assert.equal(prompt.output, FIELD_SELECTION_OUTPUT);
+});
+
+test('选择阶段首次交回意图 JSON 时重试一次并完成，纠正消息不含用户原文', async t => {
+  const { spike, run } = await setup(t);
+  const question = '请解释已有默认值';
+  const message = question + '\n```nginx\n' + fixtures.events.input + '\n```';
+  const job = await run(message, undefined, { mockScenario: 'intent-echo' });
+  assert.notEqual(job.state, 'failed', job.error);
+  assert.equal(job.metrics.modelRoundTrips, 3);
+  const retry = spike.mock.requests.find(request => request.phase === 'field_selection_retry');
+  assert.ok(retry);
+  const text = userText(retry.messages.findLast(item => item.role === 'user'));
+  assert.equal(JSON.parse(text).instruction, FIELD_SELECTION_RETRY);
+  assert.ok(!text.includes(fixtures.events.input));
+  assert.ok(!text.includes(question));
+  assert.equal(job.webSearch.calls, 0);
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+});
+
+test('选择阶段两次都交回意图 JSON 时失败、不写缓存并回滚会话', async t => {
+  const { spike, run } = await setup(t);
+  const job = await run('请解释已有默认值\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'intent-echo-twice' });
+  assert.equal(job.state, 'failed', job.error);
+  assert.match(job.error, /模型报告契约无效/);
+  assert.equal(job.metrics.modelRoundTrips, 3);
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  const restored = await spike.restore(job.sessionId);
+  assert.equal(restored.state, 'failed');
+  assert.equal(restored.normalizedRequest, null);
+  assert.equal(restored.currentConfig, null);
+  assert.equal(restored.messages, 0);
+});
+
+test('缓存键折叠只发生在整句恰为一个规范名时；带其他文字或配置语法的消息保持原文', () => {
+  const names = [{ name: 'client_max_body_size' }, { name: 'return' }, { name: 'set' }];
+  // 整句恰为一个名称：大小写与首尾空白都折到索引原名。
+  assert.equal(cacheMessage('Client_Max_Body_Size', names), 'client_max_body_size');
+  assert.equal(cacheMessage('  CLIENT_MAX_BODY_SIZE\n', names), 'client_max_body_size');
+  // 带其他文字：句中的普通英文词（Return、Set）可能只是巧合同名，语义不同的问法不得共用缓存。
+  assert.equal(cacheMessage('Return 是什么意思', names), 'Return 是什么意思');
+  assert.equal(cacheMessage('Set the value', names), 'Set the value');
+  assert.equal(cacheMessage('Client_Max_Body_Size 的默认值是什么', names), 'Client_Max_Body_Size 的默认值是什么');
+  assert.equal(cacheMessage('events { Worker_Connections 1024; }', names), 'events { Worker_Connections 1024; }');
+  // 索引里同一小写形式有多个规范名时不猜测，保持原文。
+  assert.equal(cacheMessage('LISTEN', [{ name: 'Listen' }, { name: 'listen' }]), 'LISTEN');
+  // 未收录名称不折叠。
+  assert.equal(cacheMessage('Ssl_Certificate_Cache', names), 'Ssl_Certificate_Cache');
+});
+
+test('缓存命中时按当前写法重算规范名说明，不沿用另一种写法留下的 notice', () => {
+  const names = [{ name: 'client_max_body_size' }];
+  const upper = { action: 'directive', ignored: true, notice: '消息中与配置无关的部分未处理。\n已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。', canonicalized: { from: 'CLIENT_MAX_BODY_SIZE', to: 'client_max_body_size' } };
+  // 缓存来自大写写法，当前用户输入小写：说明与 canonicalized 都应去掉，ignored 提示保留。
+  const lower = refreshCanonicalNotice(upper, 'client_max_body_size', names);
+  assert.equal(lower.canonicalized, undefined);
+  assert.equal(lower.notice, '消息中与配置无关的部分未处理。');
+  assert.equal(lower.ignored, true);
+  // 缓存来自小写（无说明），当前输入混合大小写：补上说明。
+  const mixed = refreshCanonicalNotice({ action: 'directive' }, 'Client_Max_Body_Size', names);
+  assert.deepEqual(mixed.canonicalized, { from: 'Client_Max_Body_Size', to: 'client_max_body_size' });
+  assert.match(mixed.notice, /原写法 Client_Max_Body_Size/);
+  // 只含规范名说明时，去掉后不留空 notice 键。
+  assert.equal(Object.hasOwn(refreshCanonicalNotice({ action: 'directive', notice: upper.notice.split('\n')[1], canonicalized: upper.canonicalized }, 'client_max_body_size', names), 'notice'), false);
+  // 非 directive 或整句不是单个名称：原样返回。
+  const config = { action: 'config' };
+  assert.equal(refreshCanonicalNotice(config, 'client_max_body_size', names), config);
+  assert.equal(refreshCanonicalNotice(upper, 'Client_Max_Body_Size 的默认值', names), upper);
+});
+
+test('选择阶段首次输出不是 JSON：重试一次并完成，纠正句固定、不含原文、不写缓存', async t => {
+  const { spike, run } = await setup(t);
+  const question = '请解释已有默认值';
+  const message = question + '\n```nginx\n' + fixtures.events.input + '\n```';
+  const job = await run(message, undefined, { mockScenario: 'parse-once' });
+  assert.notEqual(job.state, 'failed', job.error);
+  assert.equal(job.metrics.modelRoundTrips, 3);
+  const retries = spike.mock.requests.filter(request => request.phase === 'field_selection_retry');
+  assert.equal(retries.length, 1);
+  const text = userText(retries[0].messages.findLast(item => item.role === 'user'));
+  assert.equal(JSON.parse(text).instruction, FIELD_SELECTION_PARSE_RETRY);
+  assert.ok(!text.includes(fixtures.events.input));
+  assert.ok(!text.includes(question));
+  assert.ok(!text.includes('好的，我来选择字段'));
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+});
+
+test('选择阶段首次输出为空：同样重试一次并完成', async t => {
+  const { run } = await setup(t);
+  const job = await run('请解释已有默认值\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'empty-once' });
+  assert.notEqual(job.state, 'failed', job.error);
+  assert.equal(job.metrics.modelRoundTrips, 3);
+});
+
+test('选择阶段两次都不是 JSON：报“模型输出无法解析”（parse 类）、不含模型原文、不写缓存并回滚会话', async t => {
+  const { spike, run } = await setup(t);
+  spike.config.logRequests = true;
+  const logs = [];
+  const originalLog = console.log;
+  console.log = (...args) => logs.push(args.join(' '));
+  t.after(() => { console.log = originalLog; });
+  const job = await run('请解释已有默认值\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'parse-twice' });
+  console.log = originalLog;
+  assert.equal(job.state, 'failed');
+  assert.equal(job.error, PARSE_MESSAGE);
+  assert.equal(job.errorCategory, 'parse');
+  // 只重试一次：意图 1 次 + 选择 1 次 + 纠正 1 次。
+  assert.equal(job.metrics.modelRoundTrips, 3);
+  assert.equal(spike.mock.requests.filter(request => request.phase === 'field_selection_retry').length, 1);
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  const restored = await spike.restore(job.sessionId);
+  assert.equal(restored.state, 'failed');
+  assert.equal(restored.normalizedRequest, null);
+  assert.equal(restored.currentConfig, null);
+  assert.equal(restored.messages, 0);
+  const entry = JSON.parse(logs.find(line => line.includes('agent_request_end')));
+  assert.equal(entry.errorCategory, 'parse');
+  assert.ok(!JSON.stringify(entry).includes('不是 JSON'));
+});
+
+test('契约无效与输出无法解析是两种固定文案和两个类别；解析失败不会被放宽解析接住', async t => {
+  const { spike, run } = await setup(t);
+  // bad-citation 能解析成 JSON，但引用不属于当前候选：contract 类，不触发重试。
+  const contract = await run('请解释已有默认值\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'bad-citation' });
+  assert.equal(contract.state, 'failed');
+  assert.equal(contract.errorCategory, 'contract');
+  assert.notEqual(contract.error, PARSE_MESSAGE);
+  assert.equal(spike.mock.requests.filter(request => request.phase === 'field_selection_retry').length, 0);
+  // invalid-json 两次都是 not json，不从文本里抓取 JSON：parse 类。
+  const parse = await run('请解释已有默认值\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'invalid-json' });
+  assert.equal(parse.errorCategory, 'parse');
+  assert.equal(parse.error, PARSE_MESSAGE);
+});
+
+test('选择阶段两段并列 JSON：不能只取第一段，纠正一次后仍报无法解析', async t => {
+  const { spike, run } = await setup(t);
+  const question = '请解释已有默认值';
+  const message = question + '\n```nginx\n' + fixtures.events.input + '\n```';
+  const job = await run(message, undefined, { mockScenario: 'parse-multi' });
+  assert.equal(job.state, 'failed');
+  assert.equal(job.error, PARSE_MESSAGE);
+  assert.equal(job.errorCategory, 'parse');
+  // 若宿主抽走第一段，facts 非空，请求会完成或报「模型选择为空」，而不是无法解析。
+  assert.notEqual(job.error, '模型选择为空');
+  assert.equal(job.metrics.modelRoundTrips, 3);
+  const retries = spike.mock.requests.filter(request => request.phase === 'field_selection_retry');
+  assert.equal(retries.length, 1);
+  const text = userText(retries[0].messages.findLast(item => item.role === 'user'));
+  assert.equal(JSON.parse(text).instruction, FIELD_SELECTION_PARSE_RETRY);
+  assert.ok(!text.includes(fixtures.events.input));
+  assert.ok(!text.includes(question));
+  assert.equal(job.modelSelection, null);
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+});
+
+test('上游模型错误（HTTP 5xx、429）归为 upstream：固定文案、不自动重试、不泄露上游正文、不写缓存', async t => {
+  for (const scenario of ['upstream-500', 'upstream-429']) {
+    const { spike, run } = await setup(t);
+    spike.config.logRequests = true;
+    const logs = [];
+    const originalLog = console.log;
+    console.log = (...args) => logs.push(args.join(' '));
+    const question = '请解释已有默认值';
+    const job = await run(question + '\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: scenario });
+    console.log = originalLog;
+    assert.equal(job.state, 'failed', scenario);
+    assert.equal(job.error, UPSTREAM_MESSAGE, scenario);
+    assert.equal(job.errorCategory, 'upstream', scenario);
+    assert.ok(!JSON.stringify(job).includes('upstream-secret-body'), scenario);
+    // 不自动重试：只有意图 1 次 + 失败的选择 1 次，没有纠正请求。
+    assert.equal(job.metrics.modelRoundTrips, 2, scenario);
+    assert.equal(spike.mock.requests.filter(request => request.phase === 'field_selection_retry').length, 0, scenario);
+    const line = logs.find(item => item.includes('agent_request_end'));
+    assert.equal(JSON.parse(line).errorCategory, 'upstream');
+    assert.ok(!line.includes('upstream-secret-body'));
+    assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+    // 会话回滚，下一次请求不受影响。
+    const restored = await spike.restore(job.sessionId);
+    assert.equal(restored.state, 'failed');
+    assert.equal(restored.messages, 0);
+  }
+});
+
+test('历史压缩省略意图形态的选择输出和纠正消息原文', () => {
+  const secret = '用户配置原文标记';
+  const messages = [
+    { role: 'user', content: JSON.stringify({ phase: 'field_selection', output: FIELD_SELECTION_OUTPUT, request: { question: '下一问', mode: 'main', context: '', module: '' } }) },
+    { role: 'assistant', content: [{ type: 'text', text: JSON.stringify({ action: 'directive', input: secret, question: secret, ignored: false }) }] },
+    { role: 'user', content: JSON.stringify({ phase: 'field_selection_retry', instruction: FIELD_SELECTION_RETRY }) },
+    { role: 'assistant', content: [{ type: 'text', text: JSON.stringify({ facts: [{ entryId: 'id', field: 'summary' }] }) }] },
+    { role: 'user', content: JSON.stringify({ phase: 'input_resolution', message: '下一轮' }) },
+  ];
+  const compact = compactHistory(messages);
+  assert.equal(compact[1].content[0].text, '[历史非引用输出已省略]');
+  const retry = JSON.parse(compact[2].content[0].text);
+  assert.equal(retry.phase, 'field_selection_retry');
+  assert.equal(retry.message, '[字段选择纠正已省略]');
+  assert.ok(!JSON.stringify(retry).includes(FIELD_SELECTION_RETRY));
+  assert.ok(!compact[1].content[0].text.includes(secret));
+  assert.ok(!JSON.stringify(retry).includes(secret));
 });

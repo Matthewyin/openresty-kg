@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { inputEnvelope } from './input-resolution.mjs';
+import { FIELD_SELECTION_RETRY_PHASE } from './report.mjs';
 
 // 测试用问候识别：只匹配整句短问候，真实判断由模型完成。
 const GREETING = /^(你好|您好|谢谢|多谢|hi|hello|你是谁|你能做什么)[！!。.？?]*$/i;
@@ -71,12 +72,23 @@ const WEB_PLANS = {
   'web-extra': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org', url: 'https://evil.invalid/' }],
   'web-uninvited': () => [],
   'web-empty-refs': () => [],
+  // 混合与单条不合规都先做一次真实搜索，让结果集里有可保留的原文。
+  'web-mixed': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
+  'web-ref-extra': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
+  'web-limit': () => [{ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }],
 };
 
-// 各联网场景的最终答案。异常场景（伪造 url、跨域、虚构引文、拼接引文）用于验证宿主校验会使整份回答失败。
+// 各联网场景的最终答案。不合规的 web_refs 会被宿主丢弃，事实与 status 仍保留。
 function webAnswer(scenario, candidates) {
   const status = candidates.length ? 'unsupported' : 'no_candidates';
   const ref = { url: MOCK_NGINX_URL, quote: MOCK_NGINX_QUOTE };
+  // 同一篇摘要里的四段互不重复的原文，用来验证超过 3 条时只保留前三条。
+  const limitQuotes = [
+    'Sets a deadline for the cache fill operation',
+    'deadline for the cache fill',
+    'cache fill operation in the',
+    'operation in the proxy module',
+  ];
   switch (scenario) {
     case 'web': return { facts: [], status, web_refs: [ref] };
     case 'web-cited': return { facts: candidates.flatMap(entry => ['summary', 'defaults', 'inheritance'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field }))), web_refs: [ref] };
@@ -89,12 +101,21 @@ function webAnswer(scenario, candidates) {
     case 'web-splice': return { facts: [], status: 'unsupported', web_refs: [{ url: MOCK_NGINX_URL, quote: 'Sets a deadline for the cache fill operation proxy module.' }] };
     case 'web-uninvited': return { facts: [], status, web_refs: [ref] };
     case 'web-empty-refs': return { facts: [], status, web_refs: [] };
+    // 有效引用、伪造网址、虚构引文和重复项放在一起。事实层仍选择 summary，用来确认丢弃参考时不丢掉字段。
+    case 'web-mixed': return { facts: candidates.flatMap(entry => ['summary'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field }))), web_refs: [ref, { url: 'https://nginx.org/forged.html', quote: MOCK_NGINX_QUOTE }, { url: MOCK_NGINX_URL, quote: 'This sentence never appears in the search result.' }, ref] };
+    // 多余的 title 键不能展示，也不能因此让整份回答失败。
+    case 'web-ref-extra': return { facts: [], status, web_refs: [{ url: MOCK_NGINX_URL, quote: MOCK_NGINX_QUOTE, title: 'forged title' }] };
+    case 'web-limit': return { facts: [], status, web_refs: limitQuotes.map(quote => ({ url: MOCK_NGINX_URL, quote })) };
     default: throw new Error('未知联网场景');
   }
 }
 
 export async function startMock(config) {
   const requests = [];
+  // 纠正轮的用户消息没有 mockScenario。沿用本进程上一轮选择提示里的场景，供测试编排重试。
+  let activeScenario = 'normal';
+  // 纠正轮不再附带 manifest。保留上一轮选择提示里的候选，重试时才能交回正常字段。
+  let activeManifest = { candidates: [] };
   // webCalls 记录宿主实际到达模拟搜索服务的调用，用于断言防泄露与调用预算。
   const webCalls = [];
   // mcpDeletes 记录宿主在会话结束时发出的 DELETE（携带的会话 ID），用于断言会话被释放。
@@ -151,6 +172,7 @@ export async function startMock(config) {
       const lastUser = body.messages.findLastIndex(message => message.role === 'user');
       const raw = body.messages[lastUser].content;
       const prompt = JSON.parse(typeof raw === 'string' ? raw : raw.map(item => item.text ?? '').join(''));
+      const messageText = message => typeof message.content === 'string' ? message.content : (message.content ?? []).map(item => item.text ?? '').join('');
       const results = body.messages.slice(lastUser + 1).filter(message => message.role === 'tool');
       const record = { phase: prompt.phase ?? 'selection', tools: (body.tools ?? []).map(item => item.function.name), userTurns: body.messages.filter(item => item.role === 'user').length, resultCount: results.length, inputBytes: Buffer.concat(chunks).length, thinking: body.thinking, messages: body.messages };
       requests.push(record);
@@ -159,7 +181,9 @@ export async function startMock(config) {
       await delay(config.mockDelayMs, undefined, { signal: controller.signal });
       let calls;
       let text;
-      const scenario = prompt.request.mockScenario;
+      if (typeof prompt.request?.mockScenario === 'string') activeScenario = prompt.request.mockScenario;
+      if (prompt.manifest) activeManifest = prompt.manifest;
+      const scenario = prompt.request?.mockScenario ?? activeScenario;
       if (prompt.phase === 'input_resolution') {
         const value = mockIntent(prompt, config);
         if (scenario === 'intent-rewrite') value.input = 'http { server { listen 80; } }';
@@ -168,15 +192,46 @@ export async function startMock(config) {
         text = scenario === 'intent-invalid' ? 'not json' : JSON.stringify(value);
         // 意图阶段没有活动工具；模拟模型在此强行调用 web_search，宿主必须拒绝（请求失败且不访问网络）。
         if (scenario === 'intent-web' && !results.length) calls = [{ name: 'web_search', arguments: JSON.stringify({ query: 'proxy_cache_lock_age nginx', site: 'nginx.org' }) }];
+      } else if (scenario === 'upstream-500' || scenario === 'upstream-429') {
+        // 只在字段选择阶段返回 HTTP 错误（意图阶段仍走正常 JSON）。响应体里的标记不得出现在用户文案和日志里。
+        const status = scenario === 'upstream-429' ? 429 : 500;
+        res.writeHead(status, { 'Content-Type': 'application/json' }).end(JSON.stringify({ error: { message: `upstream-secret-body-${status}` } }));
+        return;
+      } else if (scenario === 'parse-once' || scenario === 'empty-once' || scenario === 'parse-twice' || scenario === 'parse-multi' || scenario === 'invalid-json') {
+        // parse-once 第一次是自然语言，empty-once 第一次是空串，纠正后给出正常字段。
+        // parse-twice 与 invalid-json 两次都不是 JSON。parse-multi 两次都是两段合法 JSON 拼在一起，宿主不能只取第一段。
+        const retried = body.messages.some(message => message.role === 'user' && messageText(message).includes(`"${FIELD_SELECTION_RETRY_PHASE}"`));
+        const factsText = () => {
+          const candidates = (prompt.manifest ?? activeManifest)?.candidates ?? [];
+          const facts = candidates.flatMap(entry => ['summary', 'defaults', 'inheritance'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field })));
+          return JSON.stringify({ facts });
+        };
+        if (scenario === 'parse-multi') {
+          const one = factsText();
+          text = one + one;
+        } else if (retried && scenario !== 'parse-twice' && scenario !== 'invalid-json') text = factsText();
+        else if (scenario === 'empty-once') text = '';
+        else if (scenario === 'invalid-json') text = 'not json';
+        else text = '好的，我来选择字段：不是 JSON';
+      } else if (scenario === 'intent-echo' || scenario === 'intent-echo-twice') {
+        // 第一次选择交回意图四键。intent-echo 在宿主纠正后再给正常字段；intent-echo-twice 两次都交回意图 JSON。
+        const retried = body.messages.some(message => message.role === 'user' && messageText(message).includes(`"${FIELD_SELECTION_RETRY_PHASE}"`));
+        if (scenario === 'intent-echo-twice' || !retried) text = JSON.stringify({ action: 'directive', input: 'events', question: '', ignored: false });
+        else {
+          const candidates = (prompt.manifest ?? activeManifest).candidates ?? [];
+          const facts = candidates.flatMap(entry => ['summary', 'defaults', 'inheritance'].filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field })));
+          text = JSON.stringify({ facts });
+        }
       } else if (WEB_PLANS[scenario]) {
         // 联网场景：按计划逐次调用 web_search（results.length 为已返回的工具结果数），计划完成后输出答案。
-        const plan = WEB_PLANS[scenario](prompt.manifest);
+        const plan = WEB_PLANS[scenario](prompt.manifest ?? activeManifest);
         if (results.length < plan.length) calls = [{ name: 'web_search', arguments: JSON.stringify(plan[results.length]) }];
-        else text = JSON.stringify(webAnswer(scenario, prompt.manifest.candidates));
+        else text = JSON.stringify(webAnswer(scenario, (prompt.manifest ?? activeManifest).candidates));
       } else if (scenario === 'forbidden' && !results.length) {
         calls = ['bash', 'read', 'write', 'edit', 'unknown_tool'].map(name => ({ name, arguments: JSON.stringify({ command: 'false', path: 'SHOULD_NOT_EXIST', content: 'forbidden' }) }));
       } else {
-        const candidates = prompt.manifest.candidates;
+        // 纠正轮的用户消息不带 manifest，沿用最近一次选择提示里的候选。
+        const candidates = (prompt.manifest ?? activeManifest).candidates;
         if (scenario === 'query' && !results.length) calls = [{ name: 'query_knowledge', arguments: JSON.stringify({ entryIds: candidates.map(entry => entry.entryId), fields: ['defaults', 'inheritance'] }) }];
         else if (scenario === 'analyze' && !results.length) calls = [{ name: 'analyze_config', arguments: '{}' }];
         else {
@@ -184,7 +239,7 @@ export async function startMock(config) {
           const facts = candidates.flatMap(entry => fields.filter(field => entry.fields[field]).map(field => ({ entryId: entry.entryId, field })));
           if (scenario === 'bad-citation') facts.push({ entryId: 'invented', field: 'defaults' });
           if (scenario === 'unknown-field') facts.push({ entryId: candidates[0].entryId, field: 'invented' });
-          text = scenario === 'invalid-json' ? 'not json' : JSON.stringify(scenario === 'unsupported' ? { facts: [], status: 'unsupported' } : { facts: scenario === 'empty-selection' ? [] : facts });
+          text = JSON.stringify(scenario === 'unsupported' ? { facts: [], status: 'unsupported' } : { facts: scenario === 'empty-selection' ? [] : facts });
           if (scenario === 'fenced-json') text = '```json\n' + text + '\n```';
         }
       }

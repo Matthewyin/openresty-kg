@@ -45,7 +45,7 @@ npm run live -- --env-file ../../.env
 
 mock 是实验进程独立启动的本地 OpenAI-compatible HTTP SSE 服务，由已安装 SDK provider 解码，再由真实 agent loop 完成字段选择，两个只读工具保留按需调用。它依据协议编排预期调用，不模拟模型推理，不证明理解、自由解释、工具选择质量或任意追问回答质量。真实模型结果与 mock 分开记录。
 
-当前 `pi-spike-report-v2` 契约只允许模型输出紧凑的 `facts:[{entryId,field}]`，不包含正文、源码或自填引用。宿主预解析一次配置并持有已校验候选详情；模型仅收到当前问题、候选身份、字段和证据 ID 索引，通常一次往返、不调用工具。没有问题的请求只返回全量基础报告，provider 请求为零；有问题且未命中缓存时仍由真实 SDK 请求模型，不能把两者混为同一次模型提速。超出字段范围的问题返回 `status:unsupported`、`awaiting_input`，不生成自由结论。空引用、未知身份/字段和额外正文不能完成。
+当前 `pi-spike-report-v2` 契约只允许模型输出紧凑的 `facts:[{entryId,field}]`，不包含正文、源码或自填引用。字段选择的用户 JSON 带 `phase: field_selection`。意图四键、不是合法 JSON 的输出（含空输出）共用一次纠正；纠正句固定且不含用户原文，随后历史里变成占位。仍无法解析时报「模型输出无法解析」（类别 parse），能解析但契约不合报契约文案（类别 contract）。上游模型错误（HTTP 4xx/5xx、限流、网络超时）报「模型服务暂时不可用，请稍后重试」（类别 upstream），不外露上游正文，也不自动重试。解析不从说明文字里抽取 JSON。宿主预解析一次配置并持有已校验候选详情；模型仅收到当前问题、候选身份、字段和证据 ID 索引，通常一次往返、不调用工具。没有问题的请求只返回全量基础报告，provider 请求为零；有问题且未命中缓存时仍由真实 SDK 请求模型，不能把两者混为同一次模型提速。超出字段范围的问题返回 `status:unsupported`、`awaiting_input`，不生成自由结论。空引用、未知身份/字段和额外正文不能完成。
 
 以下专用变量是 live 接口，启动器按显式文件映射。代码只实现 `openai-completions` 兼容接入；其他协议不在本轮内。兼容字段在 `config.json` 的 `compat` 中按实际服务调整。不要从个人 Pi 设置补凭据。
 
@@ -57,7 +57,7 @@ mock 是实验进程独立启动的本地 OpenAI-compatible HTTP SSE 服务，�
 - 自定义空 ResourceLoader；settings、credentials、modelsStore 全部显式内存实例。modelsPath 为 null，authPath/cwd/agentDir/SessionManager 目录均明确指定在实例状态目录。禁用压缩、重试、预热、目录发现和外部模型目录刷新。
 - 状态目录及其祖先/子目录禁止符号链接；服务端只接受会话 ID，不接受文件路径。仅监听回环地址，写入 API 只收 JSON 并拒绝跨站 Origin。
 - 知识加载复用原 validateIndex/getDetail，并读取所选发布全部索引内文件的实际内容计算 hash，不以 mtime 替代。内容未变时复用已解析快照与校验详情；请求期间固定同一内存快照。可指定当前或历史 release，不存在或不一致即拒绝，绝不回退当前发布。逻辑 HTTP 地址只映射受限本地快照，不发知识网络请求；未索引文件不影响摘要，越界路径及任意 URL 均拒绝。
-- 缓存键包含精确配置/问题/解析模式/上下文/模块、会话完整有效上下文、知识文件排序内容摘要、SDK 锁版本及实现内容、系统提示词/报告契约、模型/服务/输出限制及兼容设置。只原子保存 completed 报告和完成会话快照；命中不调用 SDK/provider，追问会打开独立复制的真实 SDK 会话。awaiting_input、failed、cancelled 不写完成缓存。
+- 缓存键包含精确配置/问题/解析模式/上下文/模块、会话完整有效上下文、知识文件排序内容摘要、SDK 锁版本及实现内容、系统提示词/报告契约、模型/服务/输出限制及兼容设置。整条消息恰为一个能唯一对应索引规范名的标识符时，键使用索引中的规范名，命中后按本次写法重算规范名说明；带其他文字或配置语法的消息不折叠。只原子保存 completed 报告和完成会话快照；命中不调用 SDK/provider，追问会打开独立复制的真实 SDK 会话。awaiting_input、failed、cancelled 不写完成缓存。
 - 页面按条目显示状态、功能、默认值、继承、限制与固定源码锚点；模型选择分区，完整 JSON 仅作调试。所有内容用 textContent，链接仅 HTTP(S)，详情导航携带 id 与 release。
 - 原始 SDK 会话和用户记录保留；`transformContext` 仅在模型侧压缩历史，将旧工具全文/事实正文替换为问题、身份和字段引用，不清空上下文。旧契约通过 `contractChanged` 明示，旧缓存由契约与代码 hash 失效；历史身份不作为当前发布事实。
 
