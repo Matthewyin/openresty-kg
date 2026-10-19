@@ -206,7 +206,8 @@ export function inputEnvelope(message) {
   const directives = parsed.directives.filter(item => item.kind !== 'block_entry');
   const pure = !parsed.errors.length && directives.length && directives.every(item => /^[A-Za-z_][A-Za-z0-9_]*$/.test(item.name));
   // 完整配置先由原解析器判定，Lua字符串中的围栏不属于Markdown边界。
-  if (pure) return { completeInput: message, outside: '', blocks: 0 };
+  // 纯配置：整条消息就是配置原文，起点为 0（与旧行为下模型逐字返回整条消息时 indexOf 的结果一致）。
+  if (pure) return { completeInput: message, inputStart: 0, outside: '', blocks: 0 };
   const blocks = [];
   let opening;
   for (const line of message.matchAll(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)\r?(?:\n|$)/gm)) {
@@ -219,7 +220,9 @@ export function inputEnvelope(message) {
   if (opening || blocks.length > 1) return { blocks: blocks.length, incomplete: Boolean(opening) };
   if (!blocks.length) return { blocks: 0 };
   const block = blocks[0];
-  return { blocks: 1, completeInput: message.slice(block.contentStart, block.contentEnd).replace(/\r?\n$/, ''),
+  // inputStart 是围栏内容在 message 中的起点，供宿主直接给出精确的 configRange，
+  // 不必再用 indexOf（围栏外的文字里若恰好含同样的片段，indexOf 会命中围栏外的位置）。
+  return { blocks: 1, completeInput: message.slice(block.contentStart, block.contentEnd).replace(/\r?\n$/, ''), inputStart: block.contentStart,
     outside: message.slice(0, block.start) + '\n' + message.slice(block.end) };
 }
 
@@ -231,17 +234,66 @@ export function configMode(input, question = '') {
   return parseSingle(input).status === 'ok' ? 'single' : 'fragment';
 }
 
-// options.webSearch 为 true 时，未收录的指令名不再澄清，而是进入字段选择阶段，由模型决定是否联网查询。
+// 意图阶段诊断：outcome 的固定枚举。只描述“为什么被拒”的类别，绝不携带模型输出或用户消息内容。
+// 接受用中文常量 '接受'；其余均为下列代码之一（测试按此集合校验，新增代码需同步）。
+export const INTENT_ACCEPTED = '接受';
+export const INTENT_REFUSAL_CODES = Object.freeze([
+  'shape_invalid',            // 模型输出不是合法 JSON，或键集合/类型/动作不合契约
+  'envelope_multiple',        // 消息含多个完整围栏
+  'envelope_incomplete',      // 消息含未闭合围栏
+  'model_clarify',            // 模型自己选择了 clarify
+  'non_config_with_fence',    // 消息含完整围栏（或纯配置）而模型动作不是 config
+  'question_not_substring',   // question 不是消息的逐字子串
+  'config_empty',             // config 的 input 为空（含空围栏）
+  'config_not_substring',     // 无围栏消息中，模型 input 不是消息的逐字子串
+  'config_no_directives',     // config 提取结果解析不出任何指令
+  'followup_no_subject',      // followup 带了 input，或会话没有可沿用对象
+  'followup_release_mismatch',// followup 的上次对象属于另一个知识发布
+  'directive_not_substring',  // directive 的 input 不是合法标识符或不在消息中
+  'directive_case_ambiguous', // 指令名在索引中有多种大小写写法
+  'directive_unindexed',      // 指令名未被索引收录
+  'directive_multiple',       // 消息含多个指令名
+  'out_of_scope_mentions_directive', // 模型判 out_of_scope，但消息含已收录指令名，降级澄清
+]);
+
+// 统一入口的对外形态保持不变：只返回 { normalizedRequest, inputResolution }。
+// 需要诊断信息的调用方（session.mjs）使用 resolveInputDetailed。
 export function resolveInput(value, raw, snapshot, previous, options = {}) {
-  const rejected = () => clarification('无法确认配置原文或指令名称，请提供完整配置，并说明要查询的问题。');
+  const { intent, ...result } = resolveInputDetailed(value, raw, snapshot, previous, options);
+  return result;
+}
+
+// options.webSearch 为 true 时，未收录的指令名不再澄清，而是进入字段选择阶段，由模型决定是否联网查询。
+// 返回值在 { normalizedRequest, inputResolution } 之外多带一个 intent 诊断对象（见下）：
+//   intent = { modelAction, modelInputBytes, envelope: 'none'|'complete'|'multiple'|'incomplete', outcome: '接受'|拒绝代码 }
+// 它只含固定枚举与一个字节数，不含模型输出或用户消息内容；调用方应把它放进 metrics，而不是 inputResolution（后者会被前端渲染并写入缓存）。
+export function resolveInputDetailed(value, raw, snapshot, previous, options = {}) {
+  // 先算围栏信息：既用于后续判断，也用于诊断（模型输出不合契约时同样要记录消息的围栏形态）。
+  const envelope = inputEnvelope(raw.message);
+  const envelopeKind = envelope.incomplete ? 'incomplete' : envelope.blocks > 1 ? 'multiple' : envelope.completeInput !== undefined ? 'complete' : 'none';
+  // modelAction 只在属于固定动作枚举时记录；其他任何值一律记为 null，避免把模型输出原样带入诊断。
+  const ACTIONS = ['config', 'followup', 'directive', 'clarify', 'out_of_scope', 'greeting'];
+  const intent = { modelAction: ACTIONS.includes(value?.action) ? value.action : null,
+    modelInputBytes: typeof value?.input === 'string' ? Buffer.byteLength(value.input) : null, envelope: envelopeKind, outcome: INTENT_ACCEPTED };
+  // 所有拒绝都经 refuse 收口：记录原因代码并原样返回澄清结果。
+  const refuse = (code, result) => { intent.outcome = code; return result; };
+  const resolved = resolveIntent(value, raw, snapshot, previous, options, envelope, refuse);
+  return { ...resolved, intent };
+}
+
+function resolveIntent(value, raw, snapshot, previous, options, envelope, refuse) {
+  const rejected = code => refuse(code, clarification('无法确认配置原文或指令名称，请提供完整配置，并说明要查询的问题。'));
   // 契约固定四个键；缺键、多键或 ignored 非布尔都视为模型输出不可信，一律澄清。
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).sort().join() !== 'action,ignored,input,question'
-      || !['config', 'followup', 'directive', 'clarify', 'out_of_scope', 'greeting'].includes(value.action) || typeof value.input !== 'string' || typeof value.question !== 'string' || typeof value.ignored !== 'boolean') return rejected();
-  const envelope = inputEnvelope(raw.message);
-  if (envelope.blocks > 1 || envelope.incomplete) return clarification('请将配置合并为一个完整代码块或分别提交；多个围栏或未闭合围栏不能确定唯一配置。');
-  if (value.action === 'clarify') return clarification('请提供要查询的配置、明确的指令名称，或说明要继续哪个配置。');
+      || !['config', 'followup', 'directive', 'clarify', 'out_of_scope', 'greeting'].includes(value.action) || typeof value.input !== 'string' || typeof value.question !== 'string' || typeof value.ignored !== 'boolean') return rejected('shape_invalid');
+  if (envelope.blocks > 1 || envelope.incomplete) return refuse(envelope.incomplete ? 'envelope_incomplete' : 'envelope_multiple', clarification('请将配置合并为一个完整代码块或分别提交；多个围栏或未闭合围栏不能确定唯一配置。'));
+  if (value.action === 'clarify') return refuse('model_clarify', clarification('请提供要查询的配置、明确的指令名称，或说明要继续哪个配置。'));
   // 完整配置时任何非 config 动作（包括 out_of_scope）都澄清，避免配置内的域名或注释被当作跑题。
-  if (envelope.completeInput !== undefined && (value.action !== 'config' || value.input.trim() !== envelope.completeInput.trim())) return clarification('提取结果没有保留完整配置，请将全部配置、注释和外层放在单个代码块中重新提交。');
+  if (envelope.completeInput !== undefined && value.action !== 'config') return refuse('non_config_with_fence', clarification('无法确认这条消息是要解析的配置。请在配置之外用一句话说明要查询的问题，或直接重新发送。'));
+  // 消息是完整配置（恰有一个完整围栏，或整条消息就是纯配置）且模型动作是 config：
+  // 配置原文由宿主从 inputEnvelope 的 completeInput / inputStart 直接取出，不再要求模型逐字抄回。
+  // 这比“模型抄写”更保真：模型输出的 input（为空、被截断或改了一个字符）一律忽略，不会改变最终配置。
+  const hostInput = envelope.completeInput !== undefined;
   if (value.action === 'greeting') return { normalizedRequest: null, inputResolution: { action: 'greeting', message: THANKS.test(raw.message) ? THANKS_REPLY : GREETING_REPLY } };
   if (value.action === 'out_of_scope') {
     // 宿主只能放宽模型判定：消息含已收录指令名时不直接拒绝，降级为澄清，避免误伤“指令名+业务问题”。
@@ -250,11 +302,14 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
     const exactNames = new Set(snapshot.index.directives.map(entry => entry.name).filter(name => typeof name === 'string'));
     const lowerNames = new Set([...exactNames].map(name => name.toLowerCase()));
     const mentionsDirective = (raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []).some(token => lowerNames.has(token.toLowerCase()) && countsAsDirective(token, '', exactNames));
-    if (mentionsDirective) return clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。');
+    if (mentionsDirective) return refuse('out_of_scope_mentions_directive', clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。'));
     return { normalizedRequest: null, inputResolution: { action: 'out_of_scope', message: SCOPE_REPLY } };
   }
-  if (value.question && !raw.message.includes(value.question)) return rejected();
+  // question 仍要求是消息的逐字子串（与是否由宿主取围栏原文无关）。
+  if (value.question && !raw.message.includes(value.question)) return rejected('question_not_substring');
   let input = value.input;
+  // config 动作的配置起点（UTF-16 下标）；围栏场景直接取围栏内容起点，其余沿用 indexOf。
+  let configStart = -1;
   let question = value.question;
   let mode;
   let context = '';
@@ -263,17 +318,17 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
   // 仅 directive 分支会写入：大小写归一说明，以及与 ignored 提示合并后的 notice。
   let directiveNotice = null;
   if (value.action === 'followup') {
-    if (input || !previous?.input?.trim()) return clarification('当前会话没有可沿用的配置或指令名称，请先提供明确的查询对象。');
-    if (previous.release !== snapshot.index.release_id) return clarification('当前发布与上次配置的发布不同，请切回对应发布或重新提交配置。');
+    if (input || !previous?.input?.trim()) return refuse('followup_no_subject', clarification('当前会话没有可沿用的配置或指令名称，请先提供明确的查询对象。'));
+    if (previous.release !== snapshot.index.release_id) return refuse('followup_release_mismatch', clarification('当前发布与上次配置的发布不同，请切回对应发布或重新提交配置。'));
     ({ input, mode, context = '', module = '' } = previous);
   } else if (value.action === 'directive') {
     const explicit = new Set(raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []);
     // 模型返回的 input 必须是用户消息里的逐字片段。这里仍是精确比较，防止模型把名称改写成别的词。
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(input) || !explicit.has(input)) return rejected();
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(input) || !explicit.has(input)) return rejected('directive_not_substring');
     const directives = snapshot.index.directives;
     const forms = nameForms(input, directives);
     // 索引里同一小写形式有多个规范名时不猜测。列出这些原名，让用户自己选。
-    if (forms.length > 1) return clarification(`指令名 ${input} 在当前索引中有多种大小写写法：${forms.join('、')}。Nginx 指令名区分大小写，请改用其中一种完整写法后重新查询。`);
+    if (forms.length > 1) return refuse('directive_case_ambiguous', clarification(`指令名 ${input} 在当前索引中有多种大小写写法：${forms.join('、')}。Nginx 指令名区分大小写，请改用其中一种完整写法后重新查询。`));
     const given = input;
     if (forms.length === 1) {
       // 规范名永远取索引里的原名，不取用户的大小写。
@@ -288,7 +343,7 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
       if (options.webSearch && UNINDEXED_NAME.test(lower) && (given === lower || suggestions.length === 0)) {
         unindexed = true;
         input = lower;
-      } else return unindexedClarification(given, names);
+      } else return refuse('directive_unindexed', unindexedClarification(given, names));
     }
     // 消息里其他标识符也按小写折到唯一规范名。Listen 与 listen 算同一条，不能当成“多个指令”。
     const mentioned = new Set();
@@ -297,11 +352,11 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
       // 仅大小写不同的普通英文词（Set proxy_pass 里的 Set）不计入，也不触发多写法澄清。
       if (!countsAsDirective(token, given, exactNames)) continue;
       const tokenForms = nameForms(token, directives);
-      if (tokenForms.length > 1 && token.toLowerCase() !== given.toLowerCase()) return clarification(`消息中的指令名在当前索引里有多种大小写写法：${tokenForms.join('、')}。请明确要查询的名称。`);
+      if (tokenForms.length > 1 && token.toLowerCase() !== given.toLowerCase()) return refuse('directive_case_ambiguous', clarification(`消息中的指令名在当前索引里有多种大小写写法：${tokenForms.join('、')}。请明确要查询的名称。`));
       if (tokenForms.length === 1) mentioned.add(tokenForms[0]);
     }
     // 未收录名称与已收录名称同时出现时同样澄清，不能只查询其中一个而静默丢弃另一个。
-    if (mentioned.size > 1 || (unindexed && mentioned.size > 0)) return clarification('消息中包含多个指令名称，请分别查询或提供一段连续配置。');
+    if (mentioned.size > 1 || (unindexed && mentioned.size > 0)) return refuse('directive_multiple', clarification('消息中包含多个指令名称，请分别查询或提供一段连续配置。'));
     const notices = [];
     if (value.ignored) notices.push('消息中与配置无关的部分未处理。');
     // 只有用户写法和规范名不同才说明。完全一致时不额外打扰。
@@ -313,8 +368,18 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
     };
     mode = 'single';
   } else {
-    if (!input.trim() || !raw.message.includes(input)) return rejected();
-    const start = raw.message.indexOf(input);
+    if (hostInput) {
+      // 宿主采用完整配置原文：input 与 configRange 都来自 inputEnvelope，字节级等于围栏内容（纯配置时等于整条消息，起点 0）。
+      // 它恒等于 message.slice(inputStart, inputStart + input.length)，因此后面的起点计算天然成立。
+      input = envelope.completeInput;
+      configStart = envelope.inputStart;
+      if (!input.trim()) return rejected('config_empty');
+    } else {
+      if (!input.trim()) return rejected('config_empty');
+      if (!raw.message.includes(input)) return rejected('config_not_substring');
+      configStart = raw.message.indexOf(input);
+    }
+    const start = configStart;
     const outside = envelope.outside ?? raw.message.slice(0, start) + '\n' + raw.message.slice(start + input.length);
     // 声明只接受配置外的问题原文；带配置语法、注释或引号的剩余文本不作声明。
     const outsideQuestion = outside.includes(question) && !/[#"'`{};$\[\]]/.test(outside) ? question : '';
@@ -326,9 +391,10 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
     })) question = '';
     const parsed = mode === 'single' ? parseSingle(input) : parseConfig(input, { mode });
     const directives = parsed.directives ?? (parsed.directive ? [parsed.directive] : []);
-    if (!directives.length) return rejected();
+    if (!directives.length) return rejected('config_no_directives');
   }
-  const start = value.action === 'config' ? raw.message.indexOf(input) : -1;
+  // config 的起点已在分支内确定（围栏用精确边界，否则 indexOf）；其他动作没有 configRange。
+  const start = value.action === 'config' ? configStart : -1;
   // directive 的提示已经含大小写说明；其他动作仍只在模型标记 ignored 时追加原句，避免丢掉任一句。
   const ignored = directiveNotice ?? (value.ignored ? { ignored: true, notice: '消息中与配置无关的部分未处理。' } : {});
   // unindexed 仅在未收录指令进入字段选择时出现，便于会话恢复与前端识别。

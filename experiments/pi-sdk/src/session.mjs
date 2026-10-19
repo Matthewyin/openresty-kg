@@ -11,7 +11,7 @@ import { startMock } from './mock-provider.mjs';
 import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
-import { INPUT_CONTRACT, INPUT_PROMPT, resolveInput, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
+import { INPUT_CONTRACT, INPUT_PROMPT, resolveInputDetailed, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
 // 工具结果统一形状（与 knowledge-tools 中的 result 一致），供联网工具复用。
@@ -315,7 +315,8 @@ export class Spike {
     job.done = this.execute(job, request).catch(error => { job.state = job.cancelled ? 'cancelled' : 'failed'; job.errorCategory = errorCategory(error); job.error = safeError(error, this.secrets()); job.errorCode = error.code ?? 'request_failed'; }).finally(() => {
       clearTimeout(timeout); job.metrics.totalMs = performance.now() - started; job.finishedAt = Date.now();
       // 日志只记录联网调用次数和错误类别，不记录查询词、结果正文或错误原文。
-      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls }));
+      // intent 为意图阶段诊断（固定枚举 + 字节数，见 resolveInputDetailed）；缓存命中或意图阶段未完成时为 null。
+      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls, intent: job.metrics.intent ?? null }));
       if (this.running === job) this.running = null;
       this.pruneJobs();
     });
@@ -665,7 +666,12 @@ export class Spike {
         const text = await model(prompt, 'input_resolution');
         let value;
         try { value = parseModelReportText(text); } catch { value = null; }
-        Object.assign(job, resolveInput(value, submittedRequest, snapshot, currentSubject, { webSearch: config.webSearch }));
+        // intent 是意图阶段诊断（模型动作、input 字节数、围栏形态、接受/拒绝原因代码），只含固定枚举与数字，
+        // 不含模型输出或消息内容。它写入 job.metrics.intent（内存中的 job 视图与请求结束日志），
+        // 不进入 inputResolution、报告、会话元数据或完成缓存，因此前端不会渲染它，缓存命中的任务也没有该字段。
+        const { intent, ...resolved } = resolveInputDetailed(value, submittedRequest, snapshot, currentSubject, { webSearch: config.webSearch });
+        Object.assign(job, resolved);
+        metrics.intent = intent;
         if (!job.normalizedRequest) {
           // 范围外与问候是固定的已完成回复，不要求用户补充对象，因此不进入 awaiting_input；话术已在 inputResolution.message 中。
           // finish 只在 config / directive 时更新 currentConfig / currentSubject，这里不会覆盖已有对象。

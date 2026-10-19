@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Spike, ROOT, cacheKey, compactHistory } from '../src/session.mjs';
 import { serve } from '../server.mjs';
-import { configMode, resolveInput, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
+import { configMode, resolveInput, resolveInputDetailed, INTENT_ACCEPTED, INTENT_REFUSAL_CODES, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
 import { FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY } from '../src/report.mjs';
 import { UPSTREAM_MESSAGE, PARSE_MESSAGE } from '../src/errors.mjs';
 import { fixtures } from './fixtures/configs.mjs';
@@ -71,15 +71,21 @@ test('混合消息保留中文、emoji、CRLF、注释和Lua原文，字段阶�
   assert.deepEqual(spike.mock.requests[1].tools.sort(), ['analyze_config', 'query_knowledge']);
 });
 
-test('拒绝模型改写、补外层、发明名称、非法JSON和猜测mode，不缓存澄清', async t => {
+test('拒绝发明名称、非法JSON和猜测mode，不缓存澄清；模型改写完整配置时宿主采用原文', async t => {
   const { spike, run } = await setup(t);
-  for (const mockScenario of ['intent-rewrite', 'intent-name', 'intent-invalid', 'intent-mode']) {
+  for (const mockScenario of ['intent-name', 'intent-invalid', 'intent-mode']) {
     const job = await run(fixtures.events.input, undefined, { mockScenario });
     assert.equal(job.state, 'awaiting_input', job.error); assert.equal(job.inputResolution.action, 'clarify');
     assert.equal(job.normalizedRequest, null); assert.equal(job.metrics.modelRoundTrips, 1);
     assert.deepEqual(job.parsed.errors, []); assert.ok(job.inputResolution.message);
   }
   assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  // 纯配置被模型改写成别的配置（intent-rewrite）：宿主忽略模型 input，采用整条消息，结果与用户原文一致。
+  const rewritten = await run(fixtures.events.input, undefined, { mockScenario: 'intent-rewrite' });
+  assert.equal(rewritten.state, 'completed', rewritten.error); assert.equal(rewritten.inputResolution.action, 'config');
+  assert.equal(rewritten.normalizedRequest.input, fixtures.events.input);
+  assert.deepEqual(rewritten.normalizedRequest.configRange, { start: 0, end: fixtures.events.input.length });
+  assert.equal(rewritten.metrics.intent.outcome, '接受');
 });
 
 test('无对象澄清；显式名称独立查询、未知/多个名称不伪造配置', async t => {
@@ -276,22 +282,218 @@ test('B03：仅主配置声明走默认字段，带业务问题仍经过字段�
   }
 });
 
-test('R01：完整纯配置及单围栏不能截为首块、内部单条或名称，保留注释', async t => {
+test('R01：完整配置（纯配置或单围栏）由宿主取原文，模型截为首块、内部单条或名称都无效；非 config 动作仍澄清，保留注释', async t => {
   const first = 'events { worker_connections 1024; }';
   const whole = '# 保留注释🙂\r\n' + first + '\r\nhttp { server { listen 80; } }';
   const snapshot = { index: { release_id: 'test', directives: [{ name: 'events' }, { name: 'worker_connections' }, { name: 'http' }] } };
-  for (const message of [whole, '说明已有功能。\n```nginx\r\n' + whole + '\r\n```']) {
-    for (const [action, input] of [['config', first], ['config', 'worker_connections 1024;'], ['config', 'worker_connections'], ['directive', 'worker_connections']]) {
-      assert.equal(resolveInput({ action, input, question: '', ignored: false }, { message }, snapshot).inputResolution.action, 'clarify');
-    }
-    assert.equal(resolveInput({ action: 'config', input: whole, question: '', ignored: false }, { message }, snapshot).normalizedRequest.input, whole);
+  // 纯配置（无围栏）：action=config 时宿主采用整条消息，模型截取首块、内部单条、名称或留空都不影响结果；configRange 为 [0, 消息长度]。
+  for (const input of [first, 'worker_connections 1024;', 'worker_connections', '', whole]) {
+    const adopted = resolveInput({ action: 'config', input, question: '', ignored: false }, { message: whole }, snapshot);
+    assert.equal(adopted.normalizedRequest.input, whole, `纯配置，模型 input=${input}`);
+    assert.deepEqual(adopted.normalizedRequest.configRange, { start: 0, end: whole.length });
   }
+  // 非 config 动作仍澄清。
+  for (const action of ['directive', 'followup', 'out_of_scope', 'greeting', 'clarify']) {
+    const input = action === 'directive' ? 'worker_connections' : '';
+    assert.equal(resolveInput({ action, input, question: '', ignored: false }, { message: whole }, snapshot, { input: 'events {}', mode: 'main', release: 'test' }).inputResolution.action, 'clarify', action);
+  }
+  // 单围栏：配置原文由宿主按围栏边界取出，模型 input 截成首块/内部单条/名称都不影响结果；只有非 config 动作仍澄清。
+  const fenced = '说明已有功能。\n```nginx\r\n' + whole + '\r\n```';
+  for (const input of [first, 'worker_connections 1024;', 'worker_connections', whole]) {
+    const adopted = resolveInput({ action: 'config', input, question: '', ignored: false }, { message: fenced }, snapshot);
+    assert.equal(adopted.normalizedRequest.input, whole, `模型 input=${input}`);
+  }
+  assert.equal(resolveInput({ action: 'directive', input: 'worker_connections', question: '', ignored: false }, { message: fenced }, snapshot).inputResolution.action, 'clarify');
+  // 单条纯配置：config 采用整条消息；directive（名称）不能顶替配置，仍无对象。
   const single = 'worker_connections 1024;';
-  for (const action of ['config', 'directive']) assert.equal(resolveInput({ action, input: 'worker_connections', question: '', ignored: false }, { message: single }, snapshot).normalizedRequest, null);
-  const { run, spike } = await setup(t, { mockIntentResult: { action: 'config', input: first, question: '', ignored: false } });
+  assert.equal(resolveInput({ action: 'config', input: 'worker_connections', question: '', ignored: false }, { message: single }, snapshot).normalizedRequest.input, single);
+  assert.equal(resolveInput({ action: 'directive', input: 'worker_connections', question: '', ignored: false }, { message: single }, snapshot).normalizedRequest, null);
+  // 整条链路：模型只返回首块，纯配置仍以完整消息完成，结果与逐字返回的基线一致。
+  const baseline = await (await setup(t)).run(whole);
+  const { run } = await setup(t, { mockIntentResult: { action: 'config', input: first, question: '', ignored: false } });
   const job = await run(whole);
-  assert.equal(job.state, 'awaiting_input'); assert.equal(job.normalizedRequest, null);
-  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  assert.equal(job.state, baseline.state, job.error); assert.equal(job.normalizedRequest.input, whole);
+  assert.deepEqual(job.normalizedRequest, baseline.normalizedRequest);
+  assert.deepEqual(job.matches, baseline.matches);
+  assert.deepEqual(job.metrics.intent, { modelAction: 'config', modelInputBytes: Buffer.byteLength(first), envelope: 'complete', outcome: '接受' });
+});
+
+// ---- 完整围栏由宿主取原文（模型改写/截断/留空均被忽略） ----
+
+// 围栏内容里的配置：含中文、emoji、CRLF 与注释，用来确认“字节级等于围栏内容”。
+const FENCE_CONFIG = '# 保留注释🙂\r\nevents { worker_connections 1024; }\r\nhttp { server { listen 80; } }';
+const FENCE_SNAPSHOT = { index: { release_id: 'test', directives: [{ name: 'events' }, { name: 'worker_connections' }, { name: 'http' }, { name: 'server' }, { name: 'listen' }] } };
+
+test('完整围栏 + action=config：模型 input 为空/截断/改一个字符/完全不同，宿主都采用围栏原文且 configRange 精确', () => {
+  const question = '请解释已有功能限制';
+  // 围栏外的文字故意先出现一份相同的配置片段：configRange 必须指向围栏内，而不是 indexOf 命中的围栏外位置。
+  const message = `${question}，比如 events { worker_connections 1024; }\n\`\`\`nginx\r\n${FENCE_CONFIG}\r\n\`\`\``;
+  const fenceStart = message.indexOf('```nginx\r\n') + '```nginx\r\n'.length;
+  const variants = ['', FENCE_CONFIG.slice(0, 40), FENCE_CONFIG.replace('1024', '1025'), 'events { worker_connections 1024; }', 'http { server { listen 81; } }', FENCE_CONFIG];
+  for (const input of variants) {
+    const detailed = resolveInputDetailed({ action: 'config', input, question, ignored: false }, { message }, FENCE_SNAPSHOT);
+    const request = detailed.normalizedRequest;
+    assert.ok(request, `模型 input=${JSON.stringify(input)}`);
+    // 字节级等于围栏内容（不含围栏标记与末尾一个换行）。
+    assert.equal(request.input, FENCE_CONFIG);
+    assert.equal(Buffer.from(request.input).equals(Buffer.from(FENCE_CONFIG)), true);
+    assert.deepEqual(request.configRange, { start: fenceStart, end: fenceStart + FENCE_CONFIG.length });
+    assert.equal(message.slice(request.configRange.start, request.configRange.end), FENCE_CONFIG);
+    assert.equal(request.question, question); assert.equal(request.inputSource, 'message'); assert.equal(request.mode, 'main');
+    assert.equal(detailed.inputResolution.action, 'config');
+    // 诊断：被接受，记录模型 input 的字节数与围栏形态，不含内容。
+    assert.deepEqual(detailed.intent, { modelAction: 'config', modelInputBytes: Buffer.byteLength(input), envelope: 'complete', outcome: '接受' });
+  }
+  // 公开入口 resolveInput 的返回形态不变：没有 intent 键。
+  assert.deepEqual(Object.keys(resolveInput({ action: 'config', input: '', question: '', ignored: false }, { message }, FENCE_SNAPSHOT)).sort(), ['inputResolution', 'normalizedRequest']);
+});
+
+test('configRange 起点来自围栏边界而非 indexOf：围栏外先出现同样文字时不会指向围栏外', () => {
+  // 围栏外的 “listen 80;” 与围栏内容完全相同。若起点回退成 indexOf(input)，会得到 0（围栏外），而围栏内容起点是 17。
+  const message = 'listen 80; 看\n```\nlisten 80;\n```';
+  assert.equal(message.indexOf('listen 80;'), 0);
+  const fenceStart = message.indexOf('```\n') + '```\n'.length;
+  assert.equal(fenceStart, 17);
+  // 模型 input 逐字等于围栏内容与完全不同两种情形，结果都应指向围栏内。
+  for (const input of ['listen 80;', '', 'listen 81;']) {
+    const request = resolveInput({ action: 'config', input, question: '', ignored: false }, { message }, FENCE_SNAPSHOT).normalizedRequest;
+    assert.equal(request.input, 'listen 80;', input);
+    assert.deepEqual(request.configRange, { start: 17, end: 27 }, input);
+    assert.equal(message.slice(request.configRange.start, request.configRange.end), 'listen 80;');
+  }
+});
+
+test('边界行为（现状记录）：纯配置带首尾空白/换行时 input 与 configRange 含空白；围栏内容末尾多一个空行时 input 保留多出的换行；解析结果与无空白版本一致', async t => {
+  const core = 'events { worker_connections 1024; }';
+  const { run } = await setup(t);
+  const baseline = await run(core);
+  assert.equal(baseline.state, 'completed', baseline.error);
+  // 纯配置：首尾有空白和换行。宿主采用整条消息，configRange 为 [0, 消息长度]；mode 不受空白影响。
+  const padded = '\n\n  ' + core + '  \n\n';
+  const pure = resolveInput({ action: 'config', input: core, question: '', ignored: false }, { message: padded }, FENCE_SNAPSHOT).normalizedRequest;
+  assert.equal(pure.input, padded); assert.deepEqual(pure.configRange, { start: 0, end: padded.length }); assert.equal(pure.mode, 'main');
+  const paddedJob = await run(padded);
+  assert.equal(paddedJob.state, baseline.state, paddedJob.error); assert.equal(paddedJob.normalizedRequest.input, padded);
+  assert.deepEqual(paddedJob.parsed.errors, []);
+  assert.deepEqual(paddedJob.matches.map(item => item.status), baseline.matches.map(item => item.status));
+  assert.equal(paddedJob.summary.matched, baseline.summary.matched);
+  // 围栏内容末尾多一个空行：只去掉紧邻围栏标记的那一个换行，多出的 \n 保留在 input 里（范围同样含它）。
+  const message = '```nginx\n' + core + '\n\n```';
+  const blank = resolveInput({ action: 'config', input: '', question: '', ignored: false }, { message }, FENCE_SNAPSHOT).normalizedRequest;
+  assert.equal(blank.input, core + '\n'); assert.deepEqual(blank.configRange, { start: 9, end: 9 + core.length + 1 }); assert.equal(blank.mode, 'main');
+  const blankJob = await run(message);
+  assert.equal(blankJob.state, baseline.state, blankJob.error); assert.equal(blankJob.normalizedRequest.input, core + '\n');
+  assert.deepEqual(blankJob.parsed.errors, []);
+  assert.deepEqual(blankJob.matches.map(item => item.status), baseline.matches.map(item => item.status));
+  assert.equal(blankJob.summary.matched, baseline.summary.matched);
+});
+
+test('完整围栏 + 非 config 动作仍澄清；多围栏、未闭合围栏、无围栏路径不变并记录原因代码', () => {
+  const fenced = '```nginx\n' + FENCE_CONFIG + '\n```';
+  for (const action of ['followup', 'directive', 'out_of_scope', 'greeting', 'clarify']) {
+    const input = action === 'directive' ? 'worker_connections' : '';
+    const detailed = resolveInputDetailed({ action, input, question: '', ignored: false }, { message: fenced }, FENCE_SNAPSHOT, { input: 'events {}', mode: 'main', release: 'test' });
+    assert.equal(detailed.normalizedRequest, null, action); assert.equal(detailed.inputResolution.action, 'clarify', action);
+    assert.equal(detailed.intent.outcome, action === 'clarify' ? 'model_clarify' : 'non_config_with_fence', action);
+    assert.equal(detailed.intent.modelAction, action); assert.equal(detailed.intent.envelope, 'complete');
+  }
+  const multiple = resolveInputDetailed({ action: 'config', input: 'events {}', question: '', ignored: false }, { message: '```\nevents {}\n```\n```\nhttp {}\n```' }, FENCE_SNAPSHOT);
+  assert.equal(multiple.inputResolution.action, 'clarify'); assert.equal(multiple.intent.envelope, 'multiple'); assert.equal(multiple.intent.outcome, 'envelope_multiple');
+  const open = resolveInputDetailed({ action: 'config', input: 'events {}', question: '', ignored: false }, { message: '```nginx\nevents {}' }, FENCE_SNAPSHOT);
+  assert.equal(open.inputResolution.action, 'clarify'); assert.equal(open.intent.envelope, 'incomplete'); assert.equal(open.intent.outcome, 'envelope_incomplete');
+  // 无围栏、非纯配置：模型 input 仍必须是消息的逐字子串，改一个字符即澄清；逐字时 configRange 取其所在位置。
+  const loose = '请解释 server { listen 80; } 的含义';
+  const changed = resolveInputDetailed({ action: 'config', input: 'server { listen 81; }', question: '', ignored: false }, { message: loose }, FENCE_SNAPSHOT);
+  assert.equal(changed.normalizedRequest, null); assert.equal(changed.intent.envelope, 'none'); assert.equal(changed.intent.outcome, 'config_not_substring');
+  const empty = resolveInputDetailed({ action: 'config', input: '', question: '', ignored: false }, { message: loose }, FENCE_SNAPSHOT);
+  assert.equal(empty.normalizedRequest, null); assert.equal(empty.intent.outcome, 'config_empty');
+  const exact = resolveInputDetailed({ action: 'config', input: 'server { listen 80; }', question: '', ignored: false }, { message: loose }, FENCE_SNAPSHOT);
+  assert.equal(exact.normalizedRequest.input, 'server { listen 80; }'); assert.equal(exact.intent.outcome, '接受');
+  // 契约错误、question 不在消息中：同样记录固定代码；modelAction 只在属于固定动作枚举时才记录。
+  const shape = resolveInputDetailed({ action: 'rm -rf', input: 'x', question: '', ignored: false }, { message: loose }, FENCE_SNAPSHOT);
+  assert.deepEqual(shape.intent, { modelAction: null, modelInputBytes: 1, envelope: 'none', outcome: 'shape_invalid' });
+  assert.deepEqual(resolveInputDetailed(null, { message: loose }, FENCE_SNAPSHOT).intent, { modelAction: null, modelInputBytes: null, envelope: 'none', outcome: 'shape_invalid' });
+  const badQuestion = resolveInputDetailed({ action: 'config', input: 'server { listen 80; }', question: '消息里没有的问题', ignored: false }, { message: loose }, FENCE_SNAPSHOT);
+  assert.equal(badQuestion.intent.outcome, 'question_not_substring');
+  // 所有 outcome 要么是“接受”，要么属于固定枚举。
+  for (const item of [multiple, open, changed, empty, exact, shape, badQuestion]) assert.ok(item.intent.outcome === INTENT_ACCEPTED || INTENT_REFUSAL_CODES.includes(item.intent.outcome), item.intent.outcome);
+});
+
+test('完整围栏 + 模型 input 为空/截断/改字符：整条链路得到与默认模拟一致的完整结果；非 config 动作澄清且不写缓存', async t => {
+  const question = '请解释已有功能限制和代码原理';
+  const message = question + '\n```nginx\n' + FENCE_CONFIG + '\n```';
+  // 基线：默认 mock 逐字返回围栏内容。
+  const base = await setup(t);
+  const baseline = await base.run(message);
+  assert.equal(baseline.state, 'completed', baseline.error);
+  assert.equal(baseline.normalizedRequest.input, FENCE_CONFIG);
+  assert.deepEqual(baseline.metrics.intent, { modelAction: 'config', modelInputBytes: Buffer.byteLength(FENCE_CONFIG), envelope: 'complete', outcome: '接受' });
+  // 缓存命中的任务没有意图阶段，也就没有 intent 字段，且不报错。
+  const hit = await base.run(message);
+  assert.equal(hit.cacheHit, true); assert.equal(hit.state, 'completed'); assert.equal('intent' in hit.metrics, false);
+  // 每个变体用独立实例：缓存键与模型输出无关，同实例会命中缓存而跳过意图阶段。
+  for (const [name, input] of [['空字符串', ''], ['截断片段', FENCE_CONFIG.slice(0, 30)], ['改一个字符', FENCE_CONFIG.replace('1024', '1025')]]) {
+    const { run } = await setup(t, { mockIntentResult: { action: 'config', input, question, ignored: false } });
+    const job = await run(message);
+    assert.equal(job.state, 'completed', `${name}：${job.error}`);
+    assert.equal(job.inputResolution.action, 'config', name);
+    assert.equal(job.normalizedRequest.input, FENCE_CONFIG, name);
+    // 解析结果与用户原文一致：规范化请求、匹配与摘要都等同基线。
+    assert.deepEqual(job.normalizedRequest, baseline.normalizedRequest, name);
+    assert.deepEqual(job.matches, baseline.matches, name); assert.deepEqual(job.summary, baseline.summary, name);
+    assert.deepEqual(job.metrics.intent, { modelAction: 'config', modelInputBytes: Buffer.byteLength(input), envelope: 'complete', outcome: '接受' }, name);
+  }
+  // 完整围栏 + followup/directive：仍然澄清，不提交对象、不写缓存。
+  for (const intent of [{ action: 'followup', input: '', question, ignored: false }, { action: 'directive', input: 'worker_connections', question, ignored: false }]) {
+    const { spike, run } = await setup(t, { mockIntentResult: intent });
+    const job = await run(message);
+    assert.equal(job.state, 'awaiting_input', intent.action); assert.equal(job.inputResolution.action, 'clarify', intent.action);
+    assert.equal(job.normalizedRequest, null, intent.action);
+    assert.equal(job.metrics.intent.outcome, 'non_config_with_fence', intent.action); assert.equal(job.metrics.intent.modelAction, intent.action);
+    assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  }
+});
+
+test('意图诊断：写入 metrics.intent 与请求日志，只含固定枚举与字节数，不含模型输出或消息内容', async t => {
+  const message = '请解释\n```nginx\n' + FENCE_CONFIG + '\n```';
+  // 1) 纯配置 + 模型 action=config 但改写了 input：宿主采用整条消息，接受；诊断记录的是模型 input 的字节数。
+  const rewritten = await setup(t, { logRequests: true });
+  const logs = [];
+  const originalLog = console.log;
+  console.log = (...args) => logs.push(args.join(' '));
+  t.after(() => { console.log = originalLog; });
+  const pure = await rewritten.run(fixtures.events.input, undefined, { mockScenario: 'intent-rewrite' });
+  assert.equal(pure.state, 'completed', pure.error); assert.equal(pure.normalizedRequest.input, fixtures.events.input);
+  assert.deepEqual(pure.metrics.intent, { modelAction: 'config', modelInputBytes: Buffer.byteLength('http { server { listen 80; } }'), envelope: 'complete', outcome: '接受' });
+  // 2) 模型输出不是 JSON：不记录动作与字节数；围栏形态仍来自宿主对消息的判断。
+  const invalid = await rewritten.run(message, undefined, { mockScenario: 'intent-invalid' });
+  assert.equal(invalid.state, 'awaiting_input');
+  // 剩余的拒绝路径：纯配置 + 模型动作为 directive（不是 config）→ non_config_with_fence。
+  rewritten.spike.config.mockIntentResult = { action: 'directive', input: 'events', question: '', ignored: false };
+  const refused = await rewritten.run(fixtures.stream.input);
+  delete rewritten.spike.config.mockIntentResult;
+  assert.equal(refused.state, 'awaiting_input'); assert.equal(refused.normalizedRequest, null);
+  assert.deepEqual(refused.metrics.intent, { modelAction: 'directive', modelInputBytes: 6, envelope: 'complete', outcome: 'non_config_with_fence' });
+  assert.deepEqual(invalid.metrics.intent, { modelAction: null, modelInputBytes: null, envelope: 'complete', outcome: 'shape_invalid' });
+  // 3) 围栏消息 + 模型 intent-rewrite（改写 input）：宿主采用围栏原文，完成。
+  const adopted = await rewritten.run('说明\n```nginx\n' + fixtures.events.input + '\n```', undefined, { mockScenario: 'intent-rewrite' });
+  assert.equal(adopted.state, 'completed', adopted.error); assert.equal(adopted.normalizedRequest.input, fixtures.events.input);
+  assert.equal(adopted.metrics.intent.outcome, '接受');
+  console.log = originalLog;
+  // 日志：每个请求一条，intent 与 metrics.intent 一致；日志不含配置内容、question 或任何模型输出。
+  // 只看本测试四个请求自己的结束日志（按 requestId 过滤）：console.log 是进程级全局，捕获窗口内
+  // 若有与本测试无关的日志混入，也不会影响断言，测试因此是确定性的。
+  const jobs = [pure, invalid, refused, adopted];
+  const lines = logs.filter(line => { try { const entry = JSON.parse(line); return entry.event === 'agent_request_end' && jobs.some(job => job.requestId === entry.requestId); } catch { return false; } });
+  const entries = lines.map(line => JSON.parse(line));
+  assert.equal(entries.length, jobs.length);
+  // 日志按请求顺序产生；按 requestId 对应，不依赖顺序。
+  for (const job of jobs) assert.deepEqual(entries.find(entry => entry.requestId === job.requestId).intent, job.metrics.intent);
+  for (const line of lines) { assert.ok(!line.includes('worker_connections'), line); assert.ok(!line.includes('保留注释')); assert.ok(!line.includes('http { server')); }
+  // 4) 诊断不进入 inputResolution、报告或缓存；意图字段只有固定键。
+  assert.equal('intent' in adopted.inputResolution, false); assert.equal('intent' in adopted, false);
+  for (const [, value] of Object.entries(adopted.metrics.intent)) assert.ok(typeof value === 'number' || typeof value === 'string' || value === null);
+  for (const file of await readdir(join(rewritten.spike.config.stateDir, 'cache'))) assert.ok(!(await readFile(join(rewritten.spike.config.stateDir, 'cache', file), 'utf8')).includes('modelInputBytes'));
 });
 
 test('R01：默认mock保留纯配置首尾注释；Lua字符串中的围栏不算独立代码块', async t => {
@@ -304,18 +506,21 @@ test('R01：默认mock保留纯配置首尾注释；Lua字符串中的围栏不�
   assert.equal(resolved.state, 'completed', resolved.error); assert.equal(resolved.normalizedRequest.input, lua);
 });
 
-test('R01：unknown首条或首块不能被丢弃后完成或写缓存', async t => {
+test('R01：unknown首条或首块不会被丢弃：模型只返回后一块时宿主仍采用完整消息，且未知指令使请求停在待补充、不写缓存', async t => {
   const known = 'events { worker_connections 1024; }';
+  // 模型只返回丢掉 unknown 首条/首块之后的部分（旧规则下会被澄清）；现在宿主忽略它，采用整条纯配置消息。
   const { spike, run } = await setup(t, { mockIntentResult: { action: 'config', input: known, question: '', ignored: false } });
   for (const prefix of ['unknown_first on;', 'unknown_first { unknown_child on; }']) {
     const message = prefix + '\n' + known;
     for (let i = 0; i < 2; i++) {
       const job = await run(message);
-      assert.equal(job.state, 'awaiting_input'); assert.equal(job.inputResolution.action, 'clarify');
-      assert.equal(job.normalizedRequest, null); assert.equal(job.cacheHit, false);
+      // 首条 unknown 没有被丢弃：规范化输入是完整消息，首条匹配为 unknown，因此不能完成。
+      assert.equal(job.normalizedRequest.input, message); assert.equal(job.inputResolution.action, 'config');
+      assert.equal(job.matches[0].status, 'unknown'); assert.equal(job.state, 'awaiting_input'); assert.equal(job.cacheHit, false);
       const saved = await spike.restore(job.sessionId);
-      assert.equal(saved.currentConfig, null); assert.equal(saved.currentSubject, null);
+      assert.equal(saved.currentConfig.input, message);
     }
+    // 模型逐字返回完整消息时结果相同。
     spike.config.mockIntentResult = { action: 'config', input: message, question: '', ignored: false };
     const complete = await run(message);
     assert.equal(complete.normalizedRequest.input, message); assert.equal(complete.matches[0].status, 'unknown');
