@@ -82,4 +82,4 @@ Pi不存在、重建或换IP时入口无需重载；Docker DNS缓存到期及服
 
 ## 发布更新记录（2026-10-19）
 
-本机容器已按上述流程更新：`prepare.mjs`打包、构建镜像`pi-knowledge:session-retention`、更新专用参数文件的`PI_IMAGE`与`PI_WEB_SEARCH=true`，并用`docker compose --env-file`重建容器，再把同一镜像内`/app/dist`复制到数据挂载中的`pi-site/`。本次包含已在本机容器开启的联网参考、业务范围分流、相近名称建议、自动压缩、会话列表和 3 天自动删除。冒烟查询未得到外部参考（0 条），用时约 18 秒。回滚时恢复镜像标签`pi-knowledge:before-session-retention`、目录`pi-site.before-session-retention`、备份参数文件`deploy.env.before-session-retention`，以及`.local`目录中的会话卷备份，再重建容器。这些名称是本机操作记录，不代表部门服务器已部署。
+本机容器已按上述流程更新：`prepare.mjs`打包、构建镜像`pi-knowledge:session-retention`、更新专用参数文件的`PI_IMAGE`与`PI_WEB_SEARCH=true`，并用`docker compose --env-file`重建容器，再把同一镜像内`/app/dist`复制到数据挂载中的`pi-site/`。本次包含已在本机容器开启的联网参考、业务范围分流、相近名称建议、自动压缩、会话列表和 3 天自动删除。容器内联网冒烟：联网调用正常，一次得到 3 条外部参考（约 105 秒）；另有请求因模型输出不符合报告契约失败，属于偶发问题，待后续处理。回滚时恢复镜像标签`pi-knowledge:before-session-retention`、目录`pi-site.before-session-retention`、备份参数文件`deploy.env.before-session-retention`，以及`.local`目录中的会话卷备份，再重建容器。这些名称是本机操作记录，不代表部门服务器已部署。
