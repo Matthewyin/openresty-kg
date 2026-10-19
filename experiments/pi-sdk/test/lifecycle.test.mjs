@@ -10,7 +10,8 @@ async function setup(t, overrides = {}) {
   await mkdir(join(ROOT, '.state'), { recursive: true });
   const dir = await mkdtemp(join(ROOT, '.state/local-lifecycle-'));
   let spike = await Spike.create({ stateDir: join(dir, 'state'), mockDelayMs: 1, ...overrides });
-  t.after(async () => { await spike.close(); await rm(dir, { recursive: true, force: true }); });
+  // 释放快照与模型请求，避免本文件累积超出堆上限；定时器由 close 清除。
+  t.after(async () => { await spike.close(); spike.snapshot = null; spike.jobs.clear(); if (spike.mock) spike.mock.requests.length = 0; await rm(dir, { recursive: true, force: true }); });
   return { dir, get spike() { return spike; }, async restart() { await spike.close(); spike = await Spike.create({ ...spike.config }); return spike; } };
 }
 async function run(spike, request = fixtures.events, id) { const job = spike.start(request, id); await job.done; return job; }
@@ -41,16 +42,35 @@ test('恢复占用完整操作生命周期，异常释放，关闭后拒绝新�
   await assert.rejects(spike.ready(), error => error.code === 'unavailable');
 });
 
-test('历史预算拦截前保留原记录，不调用模型，不截断上下文', async t => {
-  const { spike } = await setup(t);
+test('小压缩预算下长会话仍可追问；只有本轮自身超过硬上限才拒绝，且不改原记录', async t => {
+  const { spike } = await setup(t, { compactHistoryBytes: 1200 });
   const first = await run(spike);
+  assert.equal(first.state, 'completed', first.error);
   const meta = JSON.parse(await readFile(spike.metadataPath(first.sessionId), 'utf8'));
-  const before = await readFile(meta.file, 'utf8');
-  spike.config.maxHistoryBytes = 1;
-  const blocked = await run(spike, { ...fixtures.events, question: '继续默认值' }, first.sessionId);
-  assert.equal(blocked.state, 'failed'); assert.equal(blocked.errorCode, 'history_limit');
-  assert.equal(spike.mock.requests.length, 0); assert.equal(await readFile(meta.file, 'utf8'), before);
-  assert.equal((await run(spike, { ...fixtures.events, question: '新问题' })).errorCode, 'history_limit');
+  const manager = spike.manager(meta.file);
+  const secret = '旧问题原文不得进入摘要';
+  for (let i = 0; i < 5; i++) {
+    manager.appendMessage({ role: 'user', content: JSON.stringify({ request: { question: `${secret}-${i}-` + '长'.repeat(800), mode: 'main', context: '', module: '' } }), timestamp: Date.now() });
+    manager.appendMessage({ role: 'assistant', content: [{ type: 'text', text: JSON.stringify({ facts: [{ entryId: 'nginx--ngx_event_core_module--worker_connections', field: 'defaults' }] }) }], timestamp: Date.now() });
+  }
+  manager.appendMessage({ role: 'user', content: JSON.stringify({ request: { question: '最近一小问', mode: 'main', context: '', module: '' } }), timestamp: Date.now() });
+  manager.appendMessage({ role: 'assistant', content: [{ type: 'text', text: JSON.stringify({ facts: [{ entryId: 'nginx--ngx_event_core_module--worker_connections', field: 'syntax' }] }) }], timestamp: Date.now() });
+  const follow = await run(spike, { ...fixtures.events, question: '继续默认值' }, first.sessionId);
+  assert.equal(follow.state, 'completed', follow.error);
+  const payload = JSON.stringify(spike.mock.requests.at(-1).messages);
+  // 发给模型的正文里引号会被再转义一层，因此只检查 digest 这个标记，不要求裸的 "digest":true。
+  assert.ok(payload.includes('digest'));
+  assert.ok(!payload.includes(secret));
+  assert.ok(payload.includes('继续默认值'));
+  assert.ok((await readFile(meta.file, 'utf8')).includes(secret));
+  const saved = await readFile(meta.file, 'utf8');
+  spike.config.maxHistoryBytes = spike.config.compactHistoryBytes;
+  const blocked = await run(spike, { ...fixtures.events, question: '再问限制' }, first.sessionId);
+  assert.equal(blocked.state, 'failed'); assert.equal(blocked.errorCode, 'history_limit'); assert.match(blocked.error, /本轮输入过大/);
+  assert.equal(blocked.metrics.modelRoundTrips, 0); assert.equal(await readFile(meta.file, 'utf8'), saved);
+  spike.config.maxHistoryBytes = 80;
+  const fresh = await run(spike, { ...fixtures.events, question: '新问题' });
+  assert.equal(fresh.errorCode, 'history_limit'); assert.match(fresh.error, /本轮输入过大/);
 });
 
 test('容量拦截包括无问题与缓存克隆；重复拒绝不持续增长', async t => {
@@ -117,7 +137,7 @@ test('精确缓存无需新模型输入；收紧输入预算不阻止零模型�
 });
 
 test('未启用保留策略时不删除旧用户数据；坏引用阻止整批删除', async t => {
-  const { spike } = await setup(t);
+  const { spike } = await setup(t, { retentionEnabled: false });
   const first = await run(spike);
   const path = spike.metadataPath(first.sessionId);
   const old = new Date(0); await utimes(path, old, old);

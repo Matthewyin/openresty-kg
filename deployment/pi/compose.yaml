@@ -12,6 +12,8 @@ services:
       PI_SPIKE_PUBLIC_ORIGIN: http://pi-agent:${PI_PORT:-51808}
       PI_SPIKE_RELATIVE_LINKS: 'true'
       PI_SPIKE_STATE_DIR: .state/container
+      # 联网参考默认关闭；开启后容器需能访问 open.bigmodel.cn 的联网搜索 MCP。
+      PI_SPIKE_WEB_SEARCH: ${PI_WEB_SEARCH:-false}
     volumes:
       - pi-state:/app/experiments/pi-sdk/.state/container
       - type: bind

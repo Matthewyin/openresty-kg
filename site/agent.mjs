@@ -13,6 +13,8 @@ let authDraftProtected = false;
 let generation = 0;
 let sessionId = '';
 let release = document.body.dataset.release ?? '';
+// 最近一次可沿用的对象，只用来给本机列表起标题；不写入服务端。
+let trackedSubject = null;
 try { sessionId = localStorage.getItem(storageKey) ?? ''; } catch {}
 if (!/^[0-9a-f-]{36}$/.test(sessionId)) sessionId = '';
 
@@ -39,11 +41,116 @@ function controls() {
   $('agent-retry').disabled = Boolean(active);
   $('agent-session').textContent = sessionId || '未创建';
   $('agent-result').setAttribute('aria-busy', String(Boolean(active)));
+  renderSessions();
 }
 function remember(id) {
   sessionId = id;
   try { if (id) localStorage.setItem(storageKey, id); else localStorage.removeItem(storageKey); } catch {}
   controls();
+}
+// 列表键与当前会话 ID 分开。解析失败、不是数组或条目缺字段时整表视为空，避免坏数据撑破界面。
+function readSessions() {
+  try {
+    const value = JSON.parse(localStorage.getItem(`${storageKey}:list`) ?? '[]');
+    if (!Array.isArray(value)) return [];
+    const items = [];
+    for (const item of value) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+      if (typeof item.id !== 'string' || !/^[0-9a-f-]{36}$/.test(item.id) || typeof item.title !== 'string' || !Number.isFinite(item.updatedAt)) continue;
+      items.push({ id: item.id, title: item.title, updatedAt: item.updatedAt });
+    }
+    return items.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20);
+  } catch { return []; }
+}
+function writeSessions(items) {
+  try { localStorage.setItem(`${storageKey}:list`, JSON.stringify(items.slice(0, 20))); } catch {}
+  renderSessions();
+}
+// 纯指令名才作为标题；整段配置含空格或符号时改用用户消息，避免把配置原文放进浏览器列表。
+function directiveName(subject) {
+  const input = typeof subject?.input === 'string' ? subject.input.trim() : '';
+  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(input) ? input : '';
+}
+function listTitle(message) {
+  const name = directiveName(trackedSubject);
+  if (name) return name;
+  const line = String(message ?? '').split(/\r?\n/).map(item => item.trim()).find(Boolean) ?? '';
+  return line.slice(0, 30) || '未命名会话';
+}
+// 最多 20 条，按 updatedAt 倒序。传入 title 时替换，否则保留原标题，只刷新时间。
+function saveSession(id, title) {
+  if (!/^[0-9a-f-]{36}$/.test(id)) return;
+  const items = readSessions();
+  const previous = items.find(item => item.id === id);
+  const next = { id, title: title || previous?.title || '未命名会话', updatedAt: Date.now() };
+  writeSessions([next, ...items.filter(item => item.id !== id)].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20));
+}
+function dropSession(id) {
+  writeSessions(readSessions().filter(item => item.id !== id));
+}
+function formatTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = number => String(number).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+function renderSessions() {
+  const list = $('agent-history-list');
+  if (!list) return;
+  list.replaceChildren();
+  const ttl = service?.retentionEnabled === true && Number.isFinite(service.sessionTtlMs) ? service.sessionTtlMs : 0;
+  const now = Date.now();
+  for (const item of readSessions()) {
+    const row = node('li', undefined, list, item.id === sessionId ? 'is-current' : '');
+    node('span', item.title, row, 'session-title');
+    node('time', formatTime(item.updatedAt), row);
+    const remain = ttl ? ttl - (now - item.updatedAt) : 0;
+    const expired = Boolean(ttl) && remain <= 0;
+    if (ttl) node('span', expired ? '已过期' : `剩余 ${Math.ceil(remain / 86400000)} 天`, row, expired ? 'expired' : '');
+    const switchButton = node('button', '切换', row, 'text-button');
+    switchButton.type = 'button';
+    switchButton.disabled = Boolean(active || interrupted);
+    switchButton.addEventListener('click', () => openSession(item.id));
+    const deleteButton = node('button', '删除', row, 'text-button');
+    deleteButton.type = 'button';
+    deleteButton.disabled = Boolean(active || interrupted);
+    deleteButton.addEventListener('click', () => deleteListed(item.id));
+    // 按本机时间已过期的项可以只从列表拿掉，不必再等服务端清理。
+    if (expired) {
+      const removeButton = node('button', '移除', row, 'text-button');
+      removeButton.type = 'button';
+      removeButton.addEventListener('click', () => dropSession(item.id));
+    }
+  }
+}
+async function openSession(id) {
+  if (active || interrupted || !/^[0-9a-f-]{36}$/.test(id)) return;
+  const previousId = sessionId;
+  const previousSubject = trackedSubject;
+  authDraftProtected = false;
+  // 切换尚未成功时不能沿用上一个会话的对象，否则标题和追问会串会话。
+  trackedSubject = null;
+  remember(id);
+  const outcome = await restore();
+  if (outcome === 'expired') return;
+  if (outcome !== 'ok') { trackedSubject = previousSubject; remember(previousId); }
+}
+async function deleteListed(id) {
+  if (active || interrupted || !/^[0-9a-f-]{36}$/.test(id)) return;
+  try { await api(`/api/sessions/${id}`, undefined, undefined, 'DELETE'); }
+  catch (error) {
+    if (error.code === 'auth_required') { requireLogin(); return; }
+    note(`删除未完成：${error.message}`, true);
+    return;
+  }
+  dropSession(id);
+  if (sessionId !== id) return;
+  interrupted = null;
+  authDraftProtected = false;
+  trackedSubject = null;
+  invalidate('已删除当前会话，输入框内容保留，提交后开始新会话。');
+  remember('');
+  $('configuration').dispatchEvent(new CustomEvent('agent-reset'));
 }
 function currentRequest() {
   return { message: $('configuration').value, release: document.body.dataset.release };
@@ -68,9 +175,10 @@ function requireLogin(task) {
   loginNote();
   controls();
 }
-async function api(path, body, signal) {
+async function api(path, body, signal, method) {
   const timeout = service?.requestTimeoutMs ?? Number($('agent-panel').dataset.probeTimeoutMs);
-  const response = await fetch(new URL(path.replace(/^\//, ''), appBase), { method: body === undefined ? 'GET' : 'POST', cache: 'no-store',
+  const verb = method ?? (body === undefined ? 'GET' : 'POST');
+  const response = await fetch(new URL(path.replace(/^\//, ''), appBase), { method: verb, cache: 'no-store',
     ...(body === undefined ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
     signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(timeout)]) : AbortSignal.timeout(timeout) });
   if (response.status === 401) throw Object.assign(new Error('登录已失效'), { code: 'auth_required' });
@@ -190,6 +298,33 @@ function showConfiguration(parent, request, title) {
   node('pre', request.input, preview, 'syntax');
   node('p', `查询问题：${request.question || '功能、限制与代码实现'}`, preview, 'verification-notes');
 }
+// 无需知识查询的动作：澄清、范围外、问候只展示固定话术，不展示配置预览或“没有可展示的模型选取”。
+const NO_QUERY_ACTIONS = new Set(['clarify', 'out_of_scope', 'greeting']);
+// 外部参考标题：仅 https 且不带用户信息、不带端口的地址才设置 href，其余（javascript:、data:、带凭据或端口等）只作为纯文本显示，不可点击。
+// 带凭据或端口的地址常用于伪装真实主机，宿主白名单之外再加一层前端兜底。
+// 标题来自外部网页，必须通过 node() 的 textContent 写入，不能拼接 HTML 字符串。
+function externalTitle(parent, href, text) {
+  let url = null;
+  try { url = new URL(href); } catch { url = null; }
+  if (url?.protocol !== 'https:' || url.username || url.password || url.port) return node('span', text, parent, 'external-ref-title');
+  const el = node('a', text, parent, 'external-ref-title');
+  el.href = url.href; el.target = '_blank'; el.rel = 'noopener noreferrer';
+  return el;
+}
+// 外部参考区块：来自联网搜索，未按锁定版本核实，因此与源码事实卡片分开，用虚线与琥珀色标示。
+// 标题与说明由宿主固定；站点名与引文来自外部页面，只能作为文本写入。
+function externalReferences(parent, references) {
+  const section = node('section', undefined, parent, 'external-refs');
+  node('h3', '外部参考（未按锁定版本核实）', section);
+  node('p', '来自联网搜索，仅供参考；内容可能对应其他版本，未经本站源码核对。', section, 'verification-notes');
+  for (const ref of references) {
+    const item = node('article', undefined, section, 'external-ref');
+    externalTitle(item, ref.url, ref.title || ref.url);
+    if (ref.site) node('p', ref.site, item, 'external-ref-site');
+    // 引文为空时不渲染空 blockquote，避免出现无内容的引用块。
+    if (ref.quote) node('blockquote', ref.quote, item, 'external-ref-quote');
+  }
+}
 function render(job, task) {
   if (job.knowledgeVersion?.release && job.knowledgeVersion.release !== task.request.release) throw new Error('结果发布与当前请求不一致，请刷新知识站。');
   const result = $('agent-result'); result.replaceChildren();
@@ -199,7 +334,9 @@ function render(job, task) {
   const phase = job.state !== 'running' ? '' : job.phase === 'input_resolution' ? ' · 正在识别配置与问题' : job.summary ? ' · 基础匹配已就绪，等待模型选取' : ' · 正在准备知识与会话';
   note(`${state}${phase}${job.cacheHit ? ' · 历史精确缓存（本次未推理）' : ''}${job.error ? ` · ${job.error}` : ''}`, job.state === 'failed');
   if (job.inputResolution?.message) node('p', job.inputResolution.message, result, 'notice');
-  if (job.normalizedRequest && job.inputResolution?.action !== 'clarify') {
+  // 消息中有未处理的跑题部分时，在结果区说明，避免用户误以为整条消息都已处理。
+  if (job.inputResolution?.notice) node('p', job.inputResolution.notice, result, 'verification-notes');
+  if (job.normalizedRequest && !NO_QUERY_ACTIONS.has(job.inputResolution?.action)) {
     const request = job.normalizedRequest;
     showConfiguration(result, request, job.inputResolution?.action === 'followup' ? '本次沿用的配置（展开核对）' : '本次识别的配置 / 指令（展开核对）');
     const key = JSON.stringify(request);
@@ -228,8 +365,17 @@ function render(job, task) {
   }
   for (const error of job.parsed?.errors ?? []) node('p', `解析诊断：${error.message}（${error.line}:${error.column}）`, result, 'query-message error');
   const selection = job.modelSelection;
-  if (selection?.status === 'unsupported') node('p', '当前知识字段无法回答此问题；未生成自由解释，请调整问题。', result);
-  if (!selection?.resolvedFacts?.length && job.inputResolution?.action !== 'clarify') node('p', '本次没有可展示的模型选取。可使用本地查询查看知识，或补充问题后重试。', result);
+  // 外部参考由宿主校验（域名白名单、引文来自本次结果）后才写入 webReferences；有参考时文案需指向下方区块。
+  const references = Array.isArray(job.webReferences) ? job.webReferences : [];
+  const hasReferences = references.length > 0;
+  // 三条状态文案互斥，只依据“是否有事实”与 inputResolution.unindexed 判断，不依赖模型是否输出 status（契约不强制 status）。
+  const noFacts = !selection?.resolvedFacts?.length;
+  const unindexed = Boolean(job.inputResolution?.unindexed) && noFacts && Boolean(selection);
+  // 未收录优先：知识发布中没有这个名称，不能笼统地说“未生成解释”或“没有可展示的模型选取”。
+  if (unindexed) node('p', hasReferences ? '当前知识发布未收录该指令。下面是联网找到的外部参考。' : '当前知识发布未收录该指令。', result);
+  else if (selection?.status === 'unsupported') node('p', hasReferences ? '当前知识字段无法回答此问题；下面是联网找到的外部参考。' : '当前知识字段无法回答此问题；未生成自由解释，请调整问题。', result);
+  // 仅在确实没有任何可展示内容时提示；有外部参考时外部参考区块本身就是可读结果，不再显示此句。
+  if (noFacts && !unindexed && !NO_QUERY_ACTIONS.has(job.inputResolution?.action) && !hasReferences) node('p', '本次没有可展示的模型选取。可使用本地查询查看知识，或补充问题后重试。', result);
   // 按知识条目分组：同一指令的多个字段放进一张卡片，用户按“指令”而不是按“字段”阅读。
   // Map 保留模型返回的先后顺序，组内字段顺序也不变。
   const groups = new Map();
@@ -272,6 +418,8 @@ function render(job, task) {
       }
     }
   }
+  // 外部参考位于模型事实卡片之后，与源码证据区分；仅在存在有效参考时渲染。
+  if (hasReferences) externalReferences(result, references);
   for (const text of job.limitations ?? []) node('p', text, result, 'verification-notes');
   if (job.metrics) node('p', `本次模型请求 ${job.metrics.modelRoundTrips ?? 0} 次 · 总耗时 ${Math.round(job.metrics.totalMs ?? 0)} ms · 模型原始最终输出 ${job.metrics.finalOutputBytes ?? 0} bytes`, result, 'agent-metrics');
 }
@@ -295,6 +443,7 @@ async function submit(event) {
     task.sessionId = job.sessionId;
     if (!current(task)) { task.cancelled = true; await stop(task); return; }
     remember(job.sessionId);
+    saveSession(job.sessionId, listTitle(request.message));
     await followJob(task, job);
     if (!current(task) && !task.terminal) task.cancelled = true;
   } catch (error) {
@@ -314,6 +463,7 @@ async function finish(task) {
 async function followJob(task, job) {
   while (current(task)) {
     task.terminal = job.state !== 'running';
+    if (job.normalizedRequest) trackedSubject = job.normalizedRequest;
     if (task.showResults === false) note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
     else render(job, task);
     if (task.terminal) { if (interrupted?.requestId === task.requestId) interrupted = null; break; }
@@ -323,35 +473,37 @@ async function followJob(task, job) {
   }
 }
 async function restore() {
-  if (active || !(sessionId || interrupted)) return;
+  if (active || !(sessionId || interrupted)) return 'aborted';
   const recoveringJob = Boolean(interrupted);
   const preserveInput = authDraftProtected || recoveringJob;
   const task = { kind: 'restore', generation: ++generation, fingerprint: fingerprint(), controller: new AbortController() };
   active = task; note('正在恢复服务端会话…'); controls();
   try {
-    if ((needsLogin || !service) && !await probe()) return;
-    if (!current(task)) return;
+    if ((needsLogin || !service) && !await probe()) return 'failed';
+    if (!current(task)) return 'aborted';
     if (interrupted) {
       const pending = interrupted;
       let job;
       try { job = await api(`/api/jobs/${pending.requestId}?brief=1`, undefined, task.controller.signal); }
       catch (error) { if (error.code !== 'job_unavailable') throw error; }
-      if (!current(task)) return;
+      if (!current(task)) return 'aborted';
       if (pending.sessionId) remember(pending.sessionId);
       if (job) {
         Object.assign(task, { kind: 'run', requestId: pending.requestId, sessionId, request: pending.request, showResults: pending.showResults !== false && pending.fingerprint === task.fingerprint });
         controls();
         await followJob(task, job);
         if (current(task) && task.terminal) authDraftProtected = false;
-        return;
+        return 'ok';
       }
     }
     const saved = await api(`/api/sessions/${sessionId}`, undefined, task.controller.signal);
-    if (!current(task)) return;
+    if (!current(task)) return 'aborted';
     if (saved.request.release && saved.request.release !== document.body.dataset.release) throw new Error('会话属于另一知识发布，请先打开对应发布后恢复，或新建会话');
     interrupted = null;
     authDraftProtected = false;
     active = null;
+    trackedSubject = saved.currentSubject ?? saved.currentConfig ?? null;
+    if (sessionId) saveSession(sessionId, directiveName(trackedSubject) || undefined);
     if (!preserveInput) {
       $('configuration').value = saved.request.message ?? [saved.request.input, saved.request.question].filter(Boolean).join('\n\n');
       $('configuration').dispatchEvent(new Event('input'));
@@ -362,12 +514,22 @@ async function restore() {
       if (restoredConfig.release === document.body.dataset.release) $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: restoredConfig }));
     }
     note(`已恢复 ${saved.messages} 条会话记录；${preserveInput ? `${recoveringJob ? '旧任务不可续传，' : ''}当前输入已保留，未自动提交；` : saved.request.message === undefined ? '旧会话的配置与问题已合并到输入框；' : ''}${saved.interrupted ? '已丢弃中断轮次；' : ''}${saved.knowledgeChanged || saved.contractChanged ? '知识或契约已变化，下次提交按当前发布重新选取。' : '可继续追问。'}`);
+    return 'ok';
   } catch (error) {
-    if (error.code === 'auth_required' && active === task) requireLogin(task);
-    else if (current(task)) {
+    if (error.code === 'auth_required' && active === task) { requireLogin(task); return 'failed'; }
+    if (task.kind === 'restore' && error.code === 'session_unavailable' && current(task)) {
+      const expiredId = sessionId;
+      dropSession(expiredId);
+      remember('');
+      note('会话已过期', true);
+      return 'expired';
+    }
+    if (current(task)) {
       if (task.kind === 'run') { task.cancelled = true; if (error.code === 'job_unavailable') task.terminal = true; }
       note(`恢复未完成：${error.message}`, true);
+      return 'failed';
     }
+    return 'aborted';
   }
   finally { await finish(task); }
 }
@@ -378,7 +540,7 @@ $('agent-cancel').addEventListener('click', () => {
   invalidate('已停止旧结果显示，正在确认取消…');
   if (task?.requestId) void stop(task).then(() => { if (task.authPaused) return; if (interrupted?.requestId === task.requestId) interrupted = null; if (active === task) { active = null; controls(); } if (task.generation + 1 === generation) note('已取消；基础查询仍可使用。'); }).catch(() => {});
 });
-$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
+$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; trackedSubject = null; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
 $('agent-restore').addEventListener('click', restore);
 $('agent-retry').addEventListener('click', probe);
 $('configuration').addEventListener('input', () => invalidate());

@@ -4,7 +4,7 @@ import { join, resolve, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { Spike, ROOT } from './src/session.mjs';
 import { publicError } from './src/errors.mjs';
-import { within } from './src/knowledge-tools.mjs';
+import { within, toolNames } from './src/knowledge-tools.mjs';
 
 export async function serve(overrides, { website = false } = {}) {
   const spike = await Spike.create(overrides);
@@ -24,7 +24,7 @@ export async function serve(overrides, { website = false } = {}) {
         catch { json(503, { ready: false, error: '服务尚未就绪，请稍后重试', code: 'not_ready' }); }
         return;
       }
-      if (req.method === 'GET' && url.pathname === '/api/status') { json(200, { unifiedInput: true, mode: spike.config.mode, model: spike.config.modelId, tools: ['analyze_config', 'query_knowledge'], siteBase: spike.config.siteBase, mockDelayMs: spike.config.mockDelayMs, website, pollIntervalMs: spike.config.pollIntervalMs, requestTimeoutMs: spike.config.timeoutMs }); return; }
+      if (req.method === 'GET' && url.pathname === '/api/status') { json(200, { unifiedInput: true, mode: spike.config.mode, model: spike.config.modelId, tools: toolNames(spike.config), webSearch: spike.config.webSearch, siteBase: spike.config.siteBase, mockDelayMs: spike.config.mockDelayMs, website, pollIntervalMs: spike.config.pollIntervalMs, requestTimeoutMs: spike.config.timeoutMs, sessionTtlMs: spike.config.sessionTtlMs, retentionEnabled: spike.config.retentionEnabled }); return; }
       const jobMatch = url.pathname.match(/^\/api\/jobs\/([0-9a-f-]{36})$/);
       if (req.method === 'GET' && jobMatch) {
         spike.pruneJobs();
@@ -35,6 +35,7 @@ export async function serve(overrides, { website = false } = {}) {
       }
       const sessionMatch = url.pathname.match(/^\/api\/sessions\/([0-9a-f-]{36})$/);
       if (req.method === 'GET' && sessionMatch) { json(200, await spike.restore(sessionMatch[1])); return; }
+      if (req.method === 'DELETE' && sessionMatch) { json(200, await spike.deleteSession(sessionMatch[1])); return; }
       if (req.method === 'POST') {
         if (!req.headers['content-type']?.startsWith('application/json')) { json(415, { error: '需要 JSON', code: 'unsupported_media_type' }); return; }
         const chunks = []; let size = 0;
@@ -61,7 +62,7 @@ export async function serve(overrides, { website = false } = {}) {
         res.end(req.method === 'HEAD' ? undefined : body); return;
       }
       json(404, { error: '入口不存在', code: 'not_found' });
-    } catch (error) { const failure = publicError(error, spike.config.apiKey); json(failure.status, { error: failure.error, code: failure.code }); }
+    } catch (error) { const failure = publicError(error, spike.secrets()); json(failure.status, { error: failure.error, code: failure.code }); }
   });
   try { await new Promise((resolve, reject) => { server.once('error', reject); server.listen(spike.config.port, spike.config.host, resolve); }); }
   catch (error) { await spike.close(); throw error; }

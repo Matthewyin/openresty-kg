@@ -5,7 +5,8 @@ import { loadLiveEnv } from './live-env.mjs';
 import { RUNTIME_ENV } from './runtime-config.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
-const MODEL_ENV = ['PI_SPIKE_MODE', 'PI_SPIKE_BASE_URL', 'PI_SPIKE_API_KEY', 'PI_SPIKE_MODEL', 'PI_SPIKE_PROVIDER', 'PI_SPIKE_CONTEXT_WINDOW', 'PI_SPIKE_MAX_TOKENS'];
+// 联网搜索 Key 与模型 Key 同属秘密变量，只允许从调用者环境显式透传，不从部署 JSON 写入。
+const MODEL_ENV = ['PI_SPIKE_MODE', 'PI_SPIKE_BASE_URL', 'PI_SPIKE_API_KEY', 'PI_SPIKE_MODEL', 'PI_SPIKE_PROVIDER', 'PI_SPIKE_CONTEXT_WINDOW', 'PI_SPIKE_MAX_TOKENS', 'PI_SPIKE_WEB_SEARCH_API_KEY'];
 
 function option(args, name) {
   const at = args.indexOf(name);

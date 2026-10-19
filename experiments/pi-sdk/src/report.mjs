@@ -9,8 +9,32 @@ export function parseModelReportText(text) {
   const fenced = trimmed.match(/^```json\r?\n([\s\S]*?)\r?\n```$/);
   return JSON.parse(fenced ? fenced[1] : trimmed);
 }
-export function validateModelReport(value, bundle) {
-  if ((!sameKeys(value, ['facts']) && !sameKeys(value, ['facts', 'status'])) || !Array.isArray(value.facts) || !bundle.analysis) throw new Error('模型报告契约无效');
+// web 为本次请求的联网状态（job.webSearch）；未启用或无结果时，模型输出的 web_refs 一律无效。
+const normalizeSpace = text => text.replace(/\s+/g, ' ');
+function validateWebRefs(refs, web) {
+  if (!web || web.results.size === 0) throw new Error('外部参考无效');
+  if (!Array.isArray(refs) || refs.length < 1 || refs.length > 3) throw new Error('外部参考无效');
+  const seen = new Set();
+  for (const ref of refs) {
+    // 每项只能有 url 与 quote 两个字符串键，防止模型夹带其他字段（例如网页正文或伪造标题）。
+    if (!sameKeys(ref, ['url', 'quote']) || typeof ref.url !== 'string' || typeof ref.quote !== 'string') throw new Error('外部参考无效');
+    const source = web.results.get(ref.url);
+    // url 必须来自本次真实返回并通过宿主过滤的结果，伪造或越界域名都在这里被拒绝。
+    if (!source) throw new Error('外部参考无效');
+    const quote = ref.quote.trim();
+    if (quote.length < 8 || quote.length > 300) throw new Error('外部参考无效');
+    // 引文必须是该结果摘要的原文子串；空白折叠后比较，允许模型对换行做等价处理但不允许改写文字。
+    if (!normalizeSpace(source.content).includes(normalizeSpace(quote))) throw new Error('外部参考无效');
+    const key = `${ref.url}\n${quote}`;
+    if (seen.has(key)) throw new Error('外部参考无效');
+    seen.add(key);
+  }
+}
+export function validateModelReport(value, bundle, web) {
+  // 允许的键集合：基础字段，可选 status，可选 web_refs（仅在联网开启且有结果时才会通过 validateWebRefs）。
+  if (![['facts'], ['facts', 'status'], ['facts', 'web_refs'], ['facts', 'status', 'web_refs']].some(keys => sameKeys(value, keys)) || !Array.isArray(value.facts) || !bundle.analysis) throw new Error('模型报告契约无效');
+  // web_refs: [] 视为未提供，键存在但为空不构成错误；非空时才执行完整校验。
+  if (Object.hasOwn(value, 'web_refs') && !(Array.isArray(value.web_refs) && value.web_refs.length === 0)) validateWebRefs(value.web_refs, web);
   const required = new Set(bundle.analysis.matches.flatMap(match => match.candidates.map(entry => entry.id)));
   for (const id of required) if (!bundle.details.has(id)) throw new Error('候选条目未通过宿主知识校验');
   if (value.status !== undefined && (!['unsupported', 'no_candidates'].includes(value.status) || value.facts.length || (value.status === 'no_candidates' && required.size))) throw new Error('模型选择状态无效');
@@ -30,8 +54,13 @@ export function validateModelReport(value, bundle) {
   }
   return value;
 }
-export function makeReport(value, bundle) {
+export function makeReport(value, bundle, web) {
   const analysis = bundle.analysis;
+  // 外部参考的标题与站点由宿主从已保存的结果回填，模型只提供 url 与引文，无法自行声明来源名称。
+  const webReferences = (value?.web_refs ?? []).map(ref => {
+    const source = web?.results.get(ref.url);
+    return { url: ref.url, title: source?.title ?? '', site: source?.site ?? '', quote: ref.quote.trim() };
+  });
   const resolvedFacts = (value?.facts ?? []).map(fact => {
     const detail = bundle.details.get(fact.entryId);
     const raw = detail[fact.field];
@@ -56,6 +85,8 @@ export function makeReport(value, bundle) {
       }),
     })),
     modelSelection: value ? { ...value, resolvedFacts, citations } : null,
+    // 外部参考独立于源码引用；展示时由前端标注为“未按锁定版本核实”。
+    webReferences,
     limitations: [SCOPE, '源码依据校验限现有发布的固定 revision、源码片段及引用一致性；本实验不重新拉取或执行源码。'],
   };
 }

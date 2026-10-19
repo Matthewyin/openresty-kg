@@ -36,7 +36,7 @@ Pi SDK和pi-ai依赖由 [实验包](experiments/pi-sdk/package.json) 及其锁�
 
 1. 用户在单框中明确发送消息。页面把 `request.message`、页面 `release` 和可选 `sessionId` 提交到同源服务；折叠的静态查询选项不混入请求。旧 `input/mode/question/context/module` 请求仍供已有调用方使用，不与 message 混用。
 2. 服务端检查输入、单活动请求限制，加载指定知识快照，计算缓存键；精确命中时直接返回已完成报告，本次模型计量为零。
-3. 统一消息未命中缓存时先经 Pi 意图阶段：定位消息中的原文配置、提取明确指令名称，或沿用会话配置。缺少对象则返回澄清；不由模型补造配置上下文。随后用原解析与匹配模块处理配置、预加载候选详情。原文位置与确定性语法解析仍各司其职。
+3. 统一消息未命中缓存时先经 Pi 意图阶段：定位消息中的原文配置、提取明确指令名称，或沿用会话配置。缺少对象则返回澄清；不由模型补造配置上下文。与配置无关的请求（`out_of_scope`）和问候（`greeting`）返回固定话术后结束，不加载知识、不改变会话对象、不写缓存。随后用原解析与匹配模块处理配置、预加载候选详情。原文位置与确定性语法解析仍各司其职。
 4. 字段选择阶段收到问题、mode/context/module、精简manifest、压缩后的历史，以及按需读取的短字段摘要。manifest包含发布与摘要、名称、位置、匹配状态、候选身份、字段状态及证据ID。纯配置使用默认问题，不要求用户再填问题框；旧 API 无问题路径仍可零模型返回基础报告。
 5. 模型返回短字段选择；服务端验证范围和证据关系，从当前快照恢复原文与来源。有问题的统一消息通常包含意图与字段选择两个模型阶段，共用本轮总超时与取消入口；纯配置经意图识别后由宿主直接选取默认字段，省去第二次模型调用。默认内容仍经相同字段与来源校验。按需工具往返另计，不套用旧路径性能结论。
 6. 浏览器展示选中字段及源码，并以只读方式展示本次识别或沿用的配置。`normalizedRequest` 用于调用原网站解析和目录展示，不覆盖单框消息；`inputResolution` 表示意图或澄清。输入变化清除旧结果并取消旧任务，迟到响应不得覆盖新输入。页面检查 `/api/status` 的 `unifiedInput` 能力，旧服务提示重启而非误发新格式。
@@ -57,7 +57,7 @@ Pi SDK和pi-ai依赖由 [实验包](experiments/pi-sdk/package.json) 及其锁�
 - 每次请求及恢复读取发布内容并计算摘要；同release的内容变化也会影响缓存。摘要相同时可复用已解析的快照对象和已校验详情，不能描述成“缓存后不再读盘”。
 - 模型仅能返回 `facts:[{entryId,field}]`，字段为 `summary`、`syntax`、`defaults`、`inheritance`、`limitations`、`runtime`；不接受额外事实正文或自填源码。无法回答可返回固定的`unsupported`状态，无候选可返回`no_candidates`。
 - 服务端补齐 `resolvedFacts.value/text/status/source_ids` 和 `citations`。引用必须来自该字段关联来源；不把条目任意源码当作字段证据。
-- 功能与语法以详情中的`summary_evidence/syntax_evidence`为字段状态来源（覆盖层见`knowledge/field-evidence/`，构建时合并并校验）；历史发布没有这两个字段时按未核实处理。无字段证据但条目已基础核对时显示“待补出处”（说明“已随条目基础核对；尚未逐字段登记源码出处。”），仅注册信息的条目显示“未核实”；不得因条目评级改为“已核实”。限制逐项保留状态与来源；空限制列表不意味着没有限制；运行时只展示已有步骤和关联证据。
+- 功能与语法以详情中的`summary_evidence/syntax_evidence`为字段状态来源（覆盖层见`knowledge/field-evidence/`，构建时合并并校验；`node scripts/build.mjs --config project.config.json --check`只校验、不写`dist`）；历史发布没有这两个字段时按未核实处理。无字段证据但条目已基础核对时显示“待补出处”（说明“已随条目基础核对；尚未逐字段登记源码出处。”），仅注册信息的条目显示“未核实”；不得因条目评级改为“已核实”。限制逐项保留状态与来源；空限制列表不意味着没有限制；运行时只展示已有步骤和关联证据。
 - 展示由受控HTML页面使用文本节点完成，不执行模型HTML；SVG不是当前结果协议。结构化JSON是事实载体，网页是展示层。
 
 匹配与字段引用校验用于知识理解和追溯，不等于用户参数、现场版本或模块启用验证。这不是待补的网站有效性功能。
@@ -68,12 +68,13 @@ Pi SDK和pi-ai依赖由 [实验包](experiments/pi-sdk/package.json) 及其锁�
 
 | 接口 | 当前行为 |
 | --- | --- |
-| `GET /api/status` | 模式、模型标识、工具列表、站点地址及轮询/超时设置；不返回模型凭据 |
+| `GET /api/status` | 模式、模型标识、工具列表、站点地址、轮询/超时，以及 `sessionTtlMs`、`retentionEnabled`；不返回模型凭据 |
 | `GET /api/ready` | 本地配置/知识读取/状态可写就绪检查，返回release和busy；失败503，不调用模型，不证明模型出口可用 |
 | `POST /api/run` | JSON含`request`与可选`sessionId`；统一入口含message/release，旧input/mode/question入口兼容保留；接受后返回202与requestId，不代表完成 |
 | `GET /api/jobs/:requestId?brief=1` | 读取本进程请求状态；running时省略items/matches/parsed，结束时返回完整报告；进程重启后旧requestId不再可查 |
 | `POST /api/cancel` | 按requestId取消活动请求，等待SDK abort及收尾；不承诺模型供应端立即停止计费 |
 | `GET /api/sessions/:sessionId` | 恢复请求、上下文计数与状态变化标记；可恢复中断检查点，不是单纯读取静态历史报告 |
+| `DELETE /api/sessions/:sessionId` | 删除该会话的 metadata、sessions 文件、检查点，以及 metadata 中记录的缓存键；不存在时仍返回 `{deleted:false}`。运行中或恢复中返回 409/busy |
 
 请求状态为`running`、`completed`、`awaiting_input`、`cancelled`、`failed`；尚未提交只是页面空闲，没有独立持久化idle请求。解析不完整、候选未确定或模型返回超范围状态时进入待补充。`completed`表示本次流程完成、选择通过契约校验，不保证任意问题所需字段都已选全；选中的空字段仍明确显示未记录，不作为“已回答”的内容。HTTP错误和已接受请求的最终失败需分别处理，202不能作为验收成功。
 
@@ -99,7 +100,7 @@ Pi SDK和pi-ai依赖由 [实验包](experiments/pi-sdk/package.json) 及其锁�
 
 ### 6.2 模型上下文
 
-SDK负责会话和运行循环；项目的`compactHistory`只缩短下一次送给模型的历史：保留问题、身份、字段及必要工具调用，剔除旧事实长正文、旧工具全文和历史thinking。磁盘原SDK记录仍保留。没有启用自动会话压缩、长期语义记忆或个人资料画像；本地适配增加UTF-8字节预算，超限提示缩短问题或新会话，不截断原用户记录。
+SDK负责会话和运行循环。发给模型前先做 `compactHistory`（保留问题、身份、字段及必要工具调用，剔除旧事实长正文、旧工具全文和历史 thinking），若仍超过 `compactHistoryBytes`，再由 `budgetHistory` 把更早的整轮收成一条不含原文的摘要，至少保留当前一轮，且不拆开 toolCall 与 toolResult。磁盘上的 SDK JSONL 不截断、不改写。没有长期语义记忆或个人资料画像。只有本轮输入自身仍超过 `maxHistoryBytes` 时才拒绝，提示缩短问题。
 
 ### 6.3 精确缓存，不是共享检索成果库
 
@@ -111,7 +112,7 @@ SDK负责会话和运行循环；项目的`compactHistory`只缩短下一次送�
 
 本地适配增加终态job数量/期限、历史输入字节、状态字节及可选保留策略，数值来自配置。磁盘预算覆盖准入、缓存克隆、检查点预留与最终metadata增量；不足时拒绝写入或不生成可重建缓存，不以删除有效历史释放空间。SDK生成及原子文件替换存在短时额外占用，这不是文件系统硬配额。
 
-`retentionEnabled`默认false，旧用户记录不自动删除；显式启用后，在串行新请求开始时清理过期metadata及不再引用的旧session/checkpoint、过期cache。保留metadata引用优先于文件自身年龄，坏引用中止清理。状态路径仍固定在项目`.state`内且禁止软链接；没有跨进程锁，不允许多个实例同时写同一状态。具体参数及停写备份/同路径还原说明见[运行说明](experiments/pi-sdk/DEPLOYMENT.md)。
+`retentionEnabled` 默认 true。会话与缓存默认 3 天（259200000 毫秒）无活动即删除；缓存含会话正文副本，因此 `cacheTtlMs` 不得长于 `sessionTtlMs`。清理发生在新请求开始前，并由同一进程每小时（`pruneIntervalMs`）再跑一次；运行、恢复或关闭中跳过。没有独立清理进程，也没有跨进程锁，不允许多个实例同时写同一状态。保留中的 metadata 所引用的 session 与 checkpoint 不因文件自身较旧而删除；坏引用中止清理。显式关闭保留期限后不再自动删除。状态路径仍固定在项目 `.state` 内且禁止软链接。具体参数及停写备份/同路径还原说明见[运行说明](experiments/pi-sdk/DEPLOYMENT.md)。
 
 ## 7. Pi与工具控制
 
@@ -121,6 +122,9 @@ Pi只在项目内安装。使用明确的cwd、agentDir、SessionManager、内�
 | --- | --- |
 | `analyze_config` | 返回服务端已解析摘要和候选，不接收新配置、不重复解析 |
 | `query_knowledge` | 在当前候选内按entryId或批量entryIds读取选定字段短摘要和证据ID；不读任意文件或URL |
+| `web_search`（默认关闭） | 仅 `PI_SPIKE_WEB_SEARCH=true` 时出现在字段选择阶段；宿主作为MCP客户端调用智谱 `web_search_prime`，调用前检查查询（长度、地址、域名、配置具体值，NFKC归一化后比对），每请求最多2次；结果按域名白名单过滤并截断，作为不可信数据返回。被拒、超预算、网络失败返回普通结果，不使请求失败 |
+
+意图契约为 `pi-unified-input-v2`：`{action, input, question, ignored}`，action 增加 `out_of_scope`、`greeting`。联网参考的输出校验在 `report.mjs`：`web_refs` 的网址必须来自本次请求的过滤结果，引文必须是对应摘要的连续原文；宿主回填 `webReferences` 的标题与站点。联网 Key 取 `PI_SPIKE_WEB_SEARCH_API_KEY`，仅当模型地址为 `open.bigmodel.cn` 时才回退到模型 Key。历史压缩去除联网工具的参数与网页正文，后续轮次不带入外部内容。实现见 `experiments/pi-sdk/src/web-search.mjs`。
 
 常规优化路径不调用这两个工具，但SDK实际活动工具集合仍受上述列表限制。现有 `mcp/server.mjs` 与Pi内部的MCP接入是两回事；SDK支持某能力不代表本项目已经启用。
 

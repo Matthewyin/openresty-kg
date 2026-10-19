@@ -240,6 +240,14 @@ textarea:disabled { opacity: .6; cursor: not-allowed; }
 main:has(#agent-result[aria-busy="true"]) #agent-status::before { background: var(--caret); animation: pulse 1.1s ease-in-out infinite; }
 .session-tools { display: flex; align-items: center; gap: 4px 12px; flex-wrap: wrap; font-size: var(--fs-xs); color: var(--muted); }
 .session-id code { color: var(--ink-soft); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+/* 会话行占满后，列表落到下一行；当前项加深，过期用危险色，标题允许换行以免撑破窄屏 */
+.session-history { flex: 1 1 100%; margin: 4px 0 0; }
+.session-history summary { cursor: pointer; color: var(--accent); font-size: var(--fs-xs); width: fit-content; }
+.session-history ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.session-history li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--muted); font-size: var(--fs-xs); }
+.session-history li.is-current { color: var(--ink); }
+.session-history .session-title { color: var(--ink-soft); overflow-wrap: anywhere; }
+.session-history .expired { color: var(--danger); }
 .text-button { padding: 2px 0; border: 0; background: none; color: var(--accent); font-size: var(--fs-xs); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(29, 90, 71, .35); }
 .privacy-note { margin: 10px 0 0; color: var(--muted); font-size: var(--fs-xs); }
 
@@ -335,6 +343,15 @@ select:disabled, input:disabled { background: var(--paper-deep); color: var(--mu
 .agent-subfact { margin: 10px 0; padding: 4px 0 4px 12px; border-left: 2px solid var(--line); }
 .agent-subfact h5, .agent-fact-body > h5 { margin: 10px 0 4px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-soft); }
 .agent-metrics { margin: 8px 0 0; font: var(--fs-xs)/1.8 var(--mono); color: var(--muted); }
+/* 外部参考区块（联网搜索，未按锁定版本核实）：虚线与琥珀色区别于源码证据卡片，颜色均走主题变量 */
+.external-refs { margin: 14px 0 0; padding: 12px 16px; border: 1px dashed var(--amber); border-radius: var(--radius); background: var(--card); overflow-wrap: anywhere; }
+.external-refs h3 { margin: 0 0 4px; font-size: var(--fs-sm); font-weight: 600; color: var(--amber); }
+.external-refs > .verification-notes { margin: 0 0 6px; }
+.external-ref { margin: 10px 0 0; padding-left: 12px; border-left: 2px solid var(--line); min-width: 0; }
+.external-ref-title { display: inline-block; margin: 0; font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
+a.external-ref-title { color: var(--accent); }
+.external-ref-site { margin: 2px 0 0; font-size: var(--fs-xs); color: var(--muted); }
+.external-ref-quote { margin: 6px 0 0; padding: 2px 0 2px 10px; border-left: 3px solid var(--line-soft); color: var(--ink-soft); font-size: var(--fs-sm); white-space: pre-wrap; }
 
 /* 核实状态徽标（Agent 回答与详情共用颜色语义） */
 .fact-status {

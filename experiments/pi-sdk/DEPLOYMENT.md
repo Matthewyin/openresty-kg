@@ -25,15 +25,23 @@
 | 参数 | 当前实现与单位 |
 | --- | --- |
 | maxJobs、jobTtlMs | 最多保留的终态job数量、终态保存毫秒数。开始请求、请求收尾和job读取时惰性回收；活动job不删除，内存最多再含一个活动job。 |
-| maxHistoryBytes | 已压缩的待重放历史、下一轮提示及实际provider输入的UTF-8字节预算，不是token数。超限提示缩短问题或新会话，不删旧记录。新会话精确缓存不发送模型输入，可以在预算收紧后返回，但仍受磁盘容量检查。 |
+| maxHistoryBytes | 压缩之后的待重放历史、下一轮提示及实际 provider 输入的 UTF-8 硬上限，不是 token 数。只有本轮输入自身仍超过该上限才拒绝，提示「本轮输入过大，请缩短问题；原记录未删除」。不删旧记录。新会话精确缓存不发送模型输入，可以在预算收紧后返回，但仍受磁盘容量检查。 |
+| compactHistoryBytes | 发给模型前的压缩目标，默认 65536，必须小于 maxHistoryBytes。先做字段级 compactHistory，仍超出时把更早的整轮收成一条摘要（不含问题原文、配置原文和联网查询词），至少保留当前一轮。可用 PI_SPIKE_COMPACT_HISTORY_BYTES 覆盖。 |
 | maxStateBytes | 状态持久文件的字节预算。新请求准入、缓存克隆、检查点预留及完成metadata增量均检查；容量不够时不新增完成缓存。SDK生成中的文件及原子写临时副本可能短时额外占用空间，不能当作文件系统硬配额，磁盘需留余量。 |
-| retentionEnabled | 默认false，不自动删除旧用户记录；预算耗尽时拒绝请求，须维护者确认保留规则后处理。true时在新请求执行开始、尚未有本轮状态写入时清理过期数据。 |
-| sessionTtlMs、cacheTtlMs | 会话metadata最近更新时间、缓存写入时间起算的毫秒数。完成/恢复更新会话时间；保留会话所引用的session和checkpoint不因文件自身较旧而删除。无引用旧session/checkpoint也按期限回收。 |
+| retentionEnabled | 默认 true。true 时在新请求开始前，以及同一进程的周期清理中删除过期数据；运行、恢复或关闭中跳过周期清理。显式 false 时不自动删除旧用户记录。 |
+| sessionTtlMs、cacheTtlMs | 默认均为 259200000（3 天）。会话按 metadata 最近更新时间、缓存按写入时间起算。完成或恢复会更新会话时间。保留中的会话所引用的 session 和 checkpoint 不因文件自身较旧而删除。无引用的旧 session/checkpoint 也按期限回收。缓存含会话正文副本，启用保留期限时 cacheTtlMs 不得大于 sessionTtlMs。 |
+| pruneIntervalMs | 周期清理间隔，默认 3600000（1 小时），可用 PI_SPIKE_PRUNE_INTERVAL_MS 覆盖。定时器属于当前进程，close 时清除；失败只记事件名，不写路径或会话内容。 |
 | logRequests | 开启后输出结构化启动/退出与请求终态日志，含模式、请求ID、release、状态、时长/用量，不记录配置、问题或凭据正文。 |
 
 清理只处理已知状态目录内的记录；坏引用会中止清理，不以删除异常数据掩盖问题。新请求引用已删除会话时明确`session_unavailable`，不偷偷新建。jobs仅在内存，重启后旧requestId返回`job_unavailable`；session恢复返回请求和上下文状态，不返回完整旧报告、不续传中断token。
 
-不让多个进程同时写同一状态目录；当前没有跨进程锁或分布式协调。保留清理是实例内部的串行操作，不提供独立后台清理进程。状态必须位于当前安装根的`experiments/pi-sdk/.state`中，禁止符号链接；metadata保存绝对路径，异路径迁移未支持。
+不让多个进程同时写同一状态目录；当前没有跨进程锁或分布式协调。保留清理是实例内部的串行操作：新请求开始前做一次，另外由本进程定时器按 `pruneIntervalMs` 重复。清理进行中时提交、恢复和删除返回 409/busy。不提供独立后台清理进程。状态必须位于当前安装根的`experiments/pi-sdk/.state`中，禁止符号链接；metadata保存绝对路径，异路径迁移未支持。卷内会话与缓存会按上述期限删除，备份前要先停写。
+
+## 升级到 3 天自动删除
+
+从仍关闭保留期限的旧版本升上来之后，第一次新请求，或最迟约一小时内的定时清理，会删除所有超过 3 天没有活动的会话、检查点和缓存。缓存里保存了会话正文副本，所以会一起删除。若要先留下这些旧数据，按上一节停写并备份，或在启动环境设置 `PI_SPIKE_RETENTION_ENABLED=false`。容器在 `deployment/pi/compose.yaml` 的 `pi-agent.environment` 增加 `PI_SPIKE_RETENTION_ENABLED: 'false'`，再重建容器；不要用 `down -v`，否则卷会被直接清掉。
+
+每个会话的 `cacheKeys` 只记录最近 50 个缓存键。更早的缓存不再挂在会话上，仍由 `cacheTtlMs` 到期后回收。
 
 ## 就绪与运行检查
 

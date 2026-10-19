@@ -144,7 +144,8 @@ test('只有明确提交才发送统一 message；本地解析选项不混入 Ag
   await ui.submit();
   const sent = ui.requests.find(request => request.path === '/api/run');
   assert.deepEqual(sent.body.request, { message: 'worker_connections', release });
-  assert.equal(ui.saved.size, 1); assert.equal(ui.saved.get(storageKey), sessionId);
+  assert.equal(ui.saved.get(storageKey), sessionId);
+  assert.equal(JSON.parse(ui.saved.get(`${storageKey}:list`)).length, 1);
   await ui.change('configuration', '继续问继承'); await ui.submit();
   assert.equal(ui.requests.filter(request => request.path === '/api/run').at(-1).body.sessionId, sessionId);
   for (const mode of ['config', 'main']) {
@@ -199,7 +200,7 @@ test('取消、新会话与 release 变化均防止迟到轮询覆盖当前输�
     held.resolve(reply(report())); await done;
     assert.equal(ui.nodes.get('agent-result').textContent, '', action);
     assert.ok(ui.requests.some(request => request.path === '/api/cancel'), action);
-    if (action === 'new') { assert.equal(ui.saved.size, 0); assert.equal(ui.nodes.get('configuration').value, 'worker_connections'); }
+    if (action === 'new') { assert.equal(ui.saved.has(storageKey), false); assert.equal(ui.nodes.get('configuration').value, 'worker_connections'); }
   }
 });
 
@@ -596,4 +597,292 @@ test('Agent 卡片区分功能/语法的已核实、待补出处与未核实', a
   // 只有功能/语法才使用“待补出处”；其他字段未核实仍按原样显示。
   const other = await render([{ ...fact('defaults', 'unverified', 'basic_verified'), value: { text: '默认', status: 'unverified', source_ids: [] } }]);
   assert.ok(!other.textContent.includes(knowledge.FIELD_PENDING_LABEL));
+});
+
+test('业务范围：范围外与问候只显示固定话术，不出现空模型选取提示或配置预览', async () => {
+  const cases = [['out_of_scope', '本服务只查询 OpenResty/Nginx 配置。'], ['greeting', '你好，我是配置查询助手。']];
+  for (const [action, message] of cases) {
+    const ui = await start({ api: request => request.path === '/api/run'
+      ? reply(report({ state: 'completed', summary: undefined, questions: [], normalizedRequest: null, modelSelection: null, inputResolution: { action, message } })) : undefined });
+    await ui.submit();
+    const text = ui.nodes.get('agent-result').textContent;
+    assert.ok(text.includes(message), action);
+    assert.doesNotMatch(text, /本次没有可展示的模型选取/, action);
+    assert.doesNotMatch(text, /本次识别的配置|本次沿用的配置/, action);
+  }
+});
+
+test('业务范围：ignored 结果显示未处理提示，并仍渲染业务结果', async () => {
+  const notice = '消息中与配置无关的部分未处理。';
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ inputResolution: { action: 'config', ignored: true, notice } })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes(notice));
+  assert.ok(text.includes('默认 512'));
+});
+
+// 外部参考测试：宿主已校验过的 webReferences 形状为 {url,title,site,quote}。
+const refs = [
+  { url: 'https://nginx.org/en/docs/http/ngx_http_proxy_module.html', title: '官方文档标题', site: 'nginx.org', quote: 'proxy_cache_lock enables locking of cache fills' },
+];
+const refTitle = '官方文档标题';
+// 查找外部参考区块，供多个测试复用。
+const referenceBlock = root => descendants(root).find(node => node.className === 'external-refs');
+
+test('外部参考：有参考时区块位于事实卡片之后，标题链接属性正确，引文作为文本显示', async () => {
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ webReferences: refs })) : undefined });
+  await ui.submit();
+  const result = ui.nodes.get('agent-result');
+  const text = result.textContent;
+  assert.ok(text.includes('外部参考（未按锁定版本核实）'));
+  assert.ok(text.includes('来自联网搜索，仅供参考；内容可能对应其他版本，未经本站源码核对。'));
+  // 区块在模型事实卡片之后渲染。
+  assert.ok(text.indexOf('默认 512') < text.indexOf('外部参考（未按锁定版本核实）'));
+  const block = referenceBlock(result);
+  assert.ok(block, '应渲染外部参考区块');
+  const title = descendants(block).find(node => node.textContent === refTitle);
+  assert.equal(title.tagName, 'a');
+  assert.equal(title.href, refs[0].url);
+  assert.equal(title.target, '_blank');
+  assert.equal(title.rel, 'noopener noreferrer');
+  assert.ok(descendants(block).some(node => node.className === 'external-ref-site' && node.textContent === 'nginx.org'));
+  assert.ok(descendants(block).some(node => node.tagName === 'blockquote' && node.textContent === refs[0].quote));
+  assert.ok(!descendants(result).some(node => ['img', 'script'].includes(node.tagName)));
+});
+
+test('外部参考：非 https 地址不设置 href，仅以文本显示', async () => {
+  const unsafe = [
+    { url: 'http://nginx.org/en/plain.html', title: 'HTTP 标题', site: 'nginx.org', quote: '普通 http 地址的引文内容' },
+    { url: 'javascript:alert(1)', title: 'JS 标题', site: 'nginx.org', quote: '脚本协议地址的引文内容' },
+  ];
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ webReferences: unsafe })) : undefined });
+  await ui.submit();
+  const block = referenceBlock(ui.nodes.get('agent-result'));
+  for (const label of ['HTTP 标题', 'JS 标题']) {
+    const el = descendants(block).find(node => node.textContent === label);
+    assert.ok(el, label);
+    assert.equal(el.href, undefined, label);
+    assert.notEqual(el.tagName, 'a', label);
+  }
+  assert.ok(!descendants(block).some(node => typeof node.href === 'string' && /^(javascript|http:)/.test(node.href)));
+});
+
+test('外部参考：恶意标题以文本显示，不生成元素', async () => {
+  const malicious = '<img src=x onerror=alert(1)>';
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ webReferences: [{ ...refs[0], title: malicious }] })) : undefined });
+  await ui.submit();
+  const result = ui.nodes.get('agent-result');
+  assert.ok(result.textContent.includes(malicious));
+  assert.ok(!descendants(result).some(node => ['img', 'script'].includes(node.tagName)));
+  assert.equal(descendants(result).find(node => node.textContent === malicious).tagName, 'a');
+});
+
+test('外部参考：unsupported 且有参考时显示指向参考的文案，不显示空选取提示', async () => {
+  const ui = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', modelSelection: { status: 'unsupported', resolvedFacts: [], citations: [] }, webReferences: refs })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('当前知识字段无法回答此问题；下面是联网找到的外部参考。'));
+  assert.ok(!text.includes('未生成自由解释'));
+  assert.ok(!text.includes('本次没有可展示的模型选取'));
+  assert.ok(referenceBlock(ui.nodes.get('agent-result')));
+});
+
+test('外部参考：unsupported 无参考时保持原文案', async () => {
+  const ui = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', modelSelection: { status: 'unsupported', resolvedFacts: [], citations: [] } })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('当前知识字段无法回答此问题；未生成自由解释，请调整问题。'));
+  assert.ok(text.includes('本次没有可展示的模型选取'));
+  assert.equal(referenceBlock(ui.nodes.get('agent-result')), undefined);
+});
+
+test('外部参考：未收录指令有参考时追加指向参考的文案，不显示空选取提示', async () => {
+  const ui = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection: { status: 'no_candidates', resolvedFacts: [], citations: [] }, webReferences: refs })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('当前知识发布未收录该指令。下面是联网找到的外部参考。'));
+  assert.ok(!text.includes('本次没有可展示的模型选取'));
+  assert.ok(referenceBlock(ui.nodes.get('agent-result')));
+});
+
+test('外部参考：未收录指令无参考时只显示未收录文案', async () => {
+  const ui = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection: { status: 'no_candidates', resolvedFacts: [], citations: [] } })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('当前知识发布未收录该指令。'));
+  assert.ok(!text.includes('下面是联网找到的外部参考'));
+  assert.equal(referenceBlock(ui.nodes.get('agent-result')), undefined);
+});
+
+test('外部参考：带用户信息或端口的 https 地址同样不设置 href', async () => {
+  const tricky = [
+    { url: 'https://user@nginx.org/en/user.html', title: '带用户名标题', site: 'nginx.org', quote: '带用户名地址的引文内容' },
+    { url: 'https://user:secret@nginx.org/en/pw.html', title: '带密码标题', site: 'nginx.org', quote: '带密码地址的引文内容' },
+    { url: 'https://nginx.org:8443/en/port.html', title: '带端口标题', site: 'nginx.org', quote: '带端口地址的引文内容' },
+  ];
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ webReferences: tricky })) : undefined });
+  await ui.submit();
+  const block = referenceBlock(ui.nodes.get('agent-result'));
+  for (const label of ['带用户名标题', '带密码标题', '带端口标题']) {
+    const el = descendants(block).find(node => node.textContent === label);
+    assert.ok(el, label);
+    assert.equal(el.tagName, 'span', label);
+    assert.equal(el.href, undefined, label);
+  }
+});
+
+test('外部参考：引文为空时不渲染 blockquote，标题与站点仍显示', async () => {
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report({ webReferences: [{ ...refs[0], quote: '' }] })) : undefined });
+  await ui.submit();
+  const block = referenceBlock(ui.nodes.get('agent-result'));
+  assert.ok(block);
+  assert.ok(!descendants(block).some(node => node.tagName === 'blockquote'));
+  assert.ok(descendants(block).some(node => node.textContent === refTitle));
+});
+
+test('外部参考：未收录且没有 status 的空事实加参考时，显示未收录文案并指向参考', async () => {
+  // 模型未输出 status 时（契约不强制），仍须依据 unindexed 与空事实显示未收录文案。
+  const ui = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection: { resolvedFacts: [], citations: [] }, webReferences: refs })) : undefined });
+  await ui.submit();
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('当前知识发布未收录该指令。下面是联网找到的外部参考。'));
+  assert.ok(!text.includes('本次没有可展示的模型选取'));
+  assert.ok(referenceBlock(ui.nodes.get('agent-result')));
+});
+
+test('外部参考：未收录与 unsupported 同时出现时，优先显示未收录文案', async () => {
+  const withRefs = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection: { status: 'unsupported', resolvedFacts: [], citations: [] }, webReferences: refs })) : undefined });
+  await withRefs.submit();
+  const textWithRefs = withRefs.nodes.get('agent-result').textContent;
+  assert.ok(textWithRefs.includes('当前知识发布未收录该指令。下面是联网找到的外部参考。'));
+  assert.ok(!textWithRefs.includes('当前知识字段无法回答此问题'));
+  const noRefs = await start({ api: request => request.path === '/api/run'
+    ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection: { status: 'unsupported', resolvedFacts: [], citations: [] } })) : undefined });
+  await noRefs.submit();
+  const textNoRefs = noRefs.nodes.get('agent-result').textContent;
+  assert.ok(textNoRefs.includes('当前知识发布未收录该指令。'));
+  assert.ok(!textNoRefs.includes('未生成自由解释'));
+  assert.ok(!textNoRefs.includes('当前知识字段无法回答此问题'));
+});
+
+test('外部参考：未收录且无参考时，不出现“没有可展示的模型选取”（无论是否有 status）', async () => {
+  for (const modelSelection of [{ resolvedFacts: [], citations: [] }, { status: 'no_candidates', resolvedFacts: [], citations: [] }]) {
+    const ui = await start({ api: request => request.path === '/api/run'
+      ? reply(report({ state: 'awaiting_input', inputResolution: { action: 'directive', unindexed: true }, modelSelection })) : undefined });
+    await ui.submit();
+    const text = ui.nodes.get('agent-result').textContent;
+    assert.ok(text.includes('当前知识发布未收录该指令。'));
+    assert.ok(!text.includes('本次没有可展示的模型选取'));
+  }
+});
+
+test('历史会话列表：新增、更新、上限 20、删除、过期与标题只走文本', async t => {
+  const pages = [];
+  // 页面沙箱会留住知识索引；测完放开引用，避免和同文件其他用例叠在一起。
+  t.after(() => { pages.length = 0; });
+  const keep = page => { pages.push(page); return page; };
+  const listKey = `${storageKey}:list`;
+  const buttons = (root, label) => descendants(root).filter(node => node.tagName === 'button' && node.textContent === label);
+  const baseStatus = { mode: 'mock', unifiedInput: true, model: 'test', siteBase: 'http://site.test/', pollIntervalMs: 2, requestTimeoutMs: 1000, retentionEnabled: true, sessionTtlMs: 259200000 };
+  const added = keep(await start());
+  await added.submit();
+  const created = JSON.parse(added.saved.get(listKey));
+  assert.equal(created.length, 1); assert.equal(created[0].id, sessionId); assert.equal(created[0].title, 'worker_connections');
+  const titled = keep(await start());
+  await titled.change('configuration', `${'字'.repeat(40)}\n第二行不进标题`);
+  await titled.submit();
+  assert.equal(JSON.parse(titled.saved.get(listKey))[0].title, '字'.repeat(30));
+  const named = keep(await start({ stored: sessionId, api: request => {
+    if (request.path === '/api/status') return reply(baseStatus);
+    if (request.path.startsWith('/api/sessions/')) return reply({ request: { message: 'worker_connections 的默认值', release }, currentSubject: { input: 'worker_connections', mode: 'single', release }, messages: 2 });
+  } }));
+  await named.click('agent-restore');
+  await named.change('configuration', '默认值呢');
+  await named.submit();
+  assert.equal(JSON.parse(named.saved.get(listKey))[0].title, 'worker_connections');
+  const previous = [{ id: sessionId, title: '旧标题', updatedAt: 10 }];
+  const updated = keep(await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify(previous)]] }));
+  await updated.submit();
+  const touched = JSON.parse(updated.saved.get(listKey))[0];
+  assert.equal(touched.title, 'worker_connections'); assert.ok(touched.updatedAt > 10);
+  const seeded = Array.from({ length: 20 }, (_, index) => ({ id: `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`, title: `旧${index}`, updatedAt: 1000 + index }));
+  const capped = keep(await start({ storedEntries: [[listKey, JSON.stringify(seeded)]] }));
+  await capped.submit();
+  const limited = JSON.parse(capped.saved.get(listKey));
+  assert.equal(limited.length, 20);
+  assert.equal(limited.some(item => item.id === sessionId), true);
+  assert.equal(limited.some(item => item.id === seeded[0].id), false);
+  const malicious = '<img src=x onerror=alert(1)>';
+  const staleId = '33333333-3333-4333-8333-333333333333';
+  const expired = keep(await start({ storedEntries: [[listKey, JSON.stringify([{ id: staleId, title: malicious, updatedAt: Date.now() - 10000 }])]], api: request => request.path === '/api/status' ? reply({ ...baseStatus, sessionTtlMs: 1000 }) : undefined }));
+  const expiredText = expired.nodes.get('agent-history-list').textContent;
+  assert.match(expiredText, /已过期/); assert.ok(expiredText.includes(malicious));
+  assert.ok(!descendants(expired.nodes.get('agent-history-list')).some(node => node.tagName === 'img'));
+  assert.equal(expired.requests.some(request => request.method === 'DELETE'), false);
+  await buttons(expired.nodes.get('agent-history-list'), '移除')[0].dispatchEvent({ type: 'click' });
+  assert.equal(JSON.parse(expired.saved.get(listKey)).length, 0);
+  const otherId = '44444444-4444-4444-8444-444444444444';
+  const removable = keep(await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]] }));
+  const otherRow = removable.nodes.get('agent-history-list').children.find(node => node.textContent.includes('另一会话'));
+  await otherRow.children.find(node => node.tagName === 'button' && node.textContent === '切换').dispatchEvent({ type: 'click' });
+  assert.equal(removable.saved.get(storageKey), otherId);
+  assert.ok(removable.requests.some(request => request.method === 'GET' && request.path === `/api/sessions/${otherId}`));
+  const currentRow = removable.nodes.get('agent-history-list').children.find(node => node.className === 'is-current');
+  await currentRow.children.find(node => node.textContent === '删除').dispatchEvent({ type: 'click' });
+  assert.ok(removable.requests.some(request => request.method === 'DELETE' && request.path === `/api/sessions/${otherId}`));
+  assert.equal(removable.saved.has(storageKey), false);
+  assert.match(removable.nodes.get('agent-status').textContent, /已删除当前会话/);
+  const broken = keep(await start({ storedEntries: [[listKey, '{']] }));
+  assert.equal(broken.nodes.get('agent-history-list').children.length, 0);
+  const held = deferred();
+  const busy = keep(await start({ storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }])]], api: request => {
+    if (request.path === '/api/run') return reply(report({ state: 'running', modelSelection: null }));
+    if (request.path.startsWith('/api/jobs/')) return held.promise;
+  } }));
+  const pending = busy.submit();
+  await until(() => busy.nodes.get('agent-submit').disabled);
+  assert.equal(buttons(busy.nodes.get('agent-history-list'), '切换')[0].disabled, true);
+  assert.equal(buttons(busy.nodes.get('agent-history-list'), '删除')[0].disabled, true);
+  held.resolve(reply(report()));
+  await pending;
+});
+
+test('切换失败回滚到旧会话标识，删除当前会话清空结果', async t => {
+  const pages = [];
+  t.after(() => { pages.length = 0; });
+  const listKey = `${storageKey}:list`;
+  const otherId = '44444444-4444-4444-8444-444444444444';
+  const switched = await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]], api: request => request.path === `/api/sessions/${otherId}` ? reply({ error: '服务故障', code: 'request_failed' }, 500) : undefined });
+  pages.push(switched);
+  const otherRow = switched.nodes.get('agent-history-list').children.find(node => node.textContent.includes('另一会话'));
+  await otherRow.children.find(node => node.textContent === '切换').dispatchEvent({ type: 'click' });
+  assert.equal(switched.saved.get(storageKey), sessionId);
+  assert.equal(switched.nodes.get('agent-session').textContent, sessionId);
+  assert.match(switched.nodes.get('agent-status').textContent, /恢复未完成/);
+  const removed = await start();
+  pages.push(removed);
+  await removed.submit();
+  assert.match(removed.nodes.get('agent-result').textContent, /默认 512/);
+  const currentRow = removed.nodes.get('agent-history-list').children.find(node => node.className === 'is-current');
+  await currentRow.children.find(node => node.textContent === '删除').dispatchEvent({ type: 'click' });
+  assert.equal(removed.nodes.get('agent-result').textContent, '');
+  assert.match(removed.nodes.get('agent-status').textContent, /已删除当前会话/);
+  assert.equal(removed.saved.has(storageKey), false);
+});
+
+test('外部参考：无参考或空数组时不出现区块与参考文案', async () => {
+  for (const patch of [{}, { webReferences: [] }]) {
+    const ui = await start({ api: request => request.path === '/api/run' ? reply(report(patch)) : undefined });
+    await ui.submit();
+    const text = ui.nodes.get('agent-result').textContent;
+    assert.ok(text.includes('默认 512'));
+    assert.ok(!text.includes('外部参考'));
+    assert.equal(referenceBlock(ui.nodes.get('agent-result')), undefined);
+  }
 });

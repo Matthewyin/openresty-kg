@@ -6,8 +6,11 @@ import { parseConfig, parseSingle } from '../../../src/core/parser.mjs';
 import { matchDirective } from '../../../src/core/matcher.mjs';
 import { summarizeConfig, needsOuterContext, needsAttention } from '../../../src/query/config-results.mjs';
 import { createKnowledgeClient, validateIndex, isSafeId, fieldEvidence } from '../../../src/query/knowledge.mjs';
+import { WEB_TOOL } from './web-search.mjs';
 
 export const TOOL_NAMES = ['analyze_config', 'query_knowledge'];
+// 活动工具集合的唯一来源：开关关闭时与原来完全一致，只有开启联网参考时才追加 web_search。
+export const toolNames = config => (config?.webSearch ? [...TOOL_NAMES, WEB_TOOL] : TOOL_NAMES);
 export const digest = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 export function within(base, path) {
   const part = relative(base, path);
@@ -133,7 +136,8 @@ export function knowledgeTools(snapshot, current, audit) {
       },
     },
   ];
-  return { tools, details, analysis, get manifest() { return manifest; }, async prepare() {
+  // request 与 snapshot 供联网工具做防泄露检查：查询词只与本次请求的配置、已收录的指令名与模块名比对。
+  return { tools, details, analysis, request: current(), snapshot, get manifest() { return manifest; }, async prepare() {
     const candidates = [...new Map(analysis.matches.flatMap(match => match.candidates).map(entry => [entry.id, entry])).values()];
     await Promise.all(candidates.map(async entry => {
       let detail = snapshot.validatedDetails.get(entry.id);

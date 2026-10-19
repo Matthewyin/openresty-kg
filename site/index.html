@@ -64,6 +64,11 @@
             <button id="agent-restore" class="text-button" type="button" disabled>恢复会话</button>
             <button id="agent-retry" class="text-button" type="button">重新检测服务</button>
           </div>
+          <!-- 历史会话只存在这台浏览器：标题用文本节点渲染，不把用户输入插进 HTML -->
+          <details id="agent-history" class="session-history">
+            <summary>历史会话</summary>
+            <ul id="agent-history-list"></ul>
+          </details>
         </div>
         <p class="privacy-note">提交后，整段内容（含配置原文）会发送到服务端 Pi 及所配置的模型，并保存会话用于追问；回答里的说明与源码均取自固定版本知识库。</p>
         <details class="local-query-options">

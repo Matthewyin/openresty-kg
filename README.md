@@ -28,7 +28,9 @@
 
 两份部门样例涉及50个知识身份：44项限定运行时链及6项配置边界已核对，固定剩余25项清单已清零。六项为include、events、http、stream及HTTP/stream各自的variables_hash_bucket_size，保持basic，不要求虚构运行时链；详见`analysis/SAMPLE_CONFIGURATION_BOUNDARIES.md`。内容批次的247项全量测试、两份原样例和25项桌面验收见`analysis/SAMPLE_FINAL25_RUNTIME_VERIFICATION.md`及REVIEW。本轮解析边界、可选示例加载和状态提示修复另见`analysis/WEBSITE_RELIABILITY_PLAN.md`及其VERIFICATION/REVIEW；不沿用历史测试数冒称本轮结果。
 
-默认值与继承补证已完成（2026-10-15）：冻结清单340个身份、537个字段（225默认值、312继承）逐项通过源码审核及引用复核；本发布默认值或继承未核实项为0，不适用项均保留原因。该批发布`1.27.1.1-f43ab3d7392bdcc9`通过613项自动测试及340详情真实桌面核对，两份原样例保持24/24、258/258唯一匹配。范围、审核、验收及页面记录见`analysis/DEFAULTS_340_MANIFEST.json`、`analysis/DEFAULTS_340_VERIFICATION.md`、`analysis/defaults-340-browser-final.json`。这不将全部条目晋级为深度内容，也不把适用条件或现场启用自动改为已核实。现场版本、模块安装与实际运行不属于本站验收；内网部署尚未实施，Codex真实接入暂缓。历史发行/扩展批次记录保留在`analysis/WEBSITE_COMPLETION_VERIFICATION.md`和`analysis/EXTENSION_MODULE_VERIFICATION.md`。
+功能与语法字段级证据已完成（2026-10-17）：1041项×2字段共2082处均由源码片段逐字段登记为已核实，新增860个片段，审核过的修正119处（原文与理由保留在字段证据的`correction`中）。当前发布为`1.27.1.1-20040b374943dabc`，本机`npm test`651/651、pi-sdk 68/68、部署测试4/4。范围、审核尺度、各批记录见`analysis/FIELD_EVIDENCE_VERIFICATION.md`与`analysis/field-evidence/`，覆盖数据在`knowledge/field-evidence/`。适用条件、废弃状态、模块依赖不在该批范围，详情页仍可能显示“未核实”或“尚未记录”。使用说明见[用户使用手册](USER_GUIDE.md)。
+
+默认值与继承补证已完成（2026-10-15）：冻结清单340个身份、537个字段（225默认值、312继承）逐项通过源码审核及引用复核；本发布默认值或继承未核实项为0，不适用项均保留原因。该批发布`1.27.1.1-f43ab3d7392bdcc9`（历史发布，现已被上述发布取代）当时通过613项自动测试及340详情真实桌面核对，两份原样例保持24/24、258/258唯一匹配。范围、审核、验收及页面记录见`analysis/DEFAULTS_340_MANIFEST.json`、`analysis/DEFAULTS_340_VERIFICATION.md`、`analysis/defaults-340-browser-final.json`。这不将全部条目晋级为深度内容，也不把适用条件或现场启用自动改为已核实。现场版本、模块安装与实际运行不属于本站验收；内网部署尚未实施，Codex真实接入暂缓。历史发行/扩展批次记录保留在`analysis/WEBSITE_COMPLETION_VERIFICATION.md`和`analysis/EXTENSION_MODULE_VERIFICATION.md`。
 
 历史可靠性批次（不是当前发布）：`1.27.1.1-f9f6f0ffb7eba3d8`曾通过268项测试及正常/示例故障桌面验收，1041项知识事实保持原样。Lua修复仅用于文本块边界；固定LuaJIT和lua-nginx配置块词法器不完全等价，不把网站解析成功当作原生配置加载成功，已知边界见`analysis/WEBSITE_RELIABILITY_PARSER_EVIDENCE.md`。
 
@@ -45,6 +47,8 @@ npm run build
 npm test
 npm run preview
 ```
+
+只校验、不落盘（不写`dist`与`analysis/coverage.json`）可用 `node scripts/build.mjs --config project.config.json --check`，输出各批字段证据的已核实/未核实计数，修改`knowledge/field-evidence/`后建议先运行。
 
 打开最后一条命令输出的 HTTP 地址。预览仅监听本机，默认使用 51795 端口、2 小时后自动结束，Ctrl+C 可提前结束；地址端口和持续时间由 `project.config.json` 的 `preview` 配置传入。它只用于临时查看，不是业务后端或部署服务。服务结束后，在项目目录重新运行 `npm run preview` 即可恢复同一地址。
 
@@ -74,7 +78,7 @@ npm run preview
 
 不需要 Agent 时，展开“仅本地查询 / 手动指定解析方式”，使用同一框输入纯配置或指令名称，再点“仅本地识别并查询”；这条路径不发送配置到服务端。折叠选项只影响本地查询。Agent 不可用时目录、知识详情、参考浏览和本地查询仍可用。若页面提示“Agent 需要更新”，停止旧的本地进程后重新运行 `npm run agent`。
 
-真实模型专项验证：`node scripts/verify-unified-input.mjs --env-file .env`。它只使用合成配置和独立临时状态目录，完成后清理测试会话，结果写入 `analysis/PI_UNIFIED_INPUT_LIVE_RESULTS.json`。追加 `--edge` 验证主配置声明、原文保真、多围栏及配置注释边界，记录到独立的 EDGE_RESULTS 文件。追加 `--serve` 可启动随机回环端口用于隔离桌面验收，按 Ctrl+C 清理并停止；不占用正常的51808端口或用户会话。
+真实模型专项验证：`node scripts/verify-unified-input.mjs --env-file .env`。它只使用合成配置和独立临时状态目录，完成后清理测试会话，结果写入 `analysis/PI_UNIFIED_INPUT_LIVE_RESULTS.json`。追加 `--edge` 验证主配置声明、原文保真、多围栏及配置注释边界，记录到独立的 EDGE_RESULTS 文件。追加 `--scope` 验证跑题、问候与混合问题的分支（误拒与漏拦分开计数），追加 `--web` 打开联网参考并验证防泄露与结果白名单，结果分别写入 SCOPE_RESULTS 与 `PI_WEB_SEARCH_LIVE_RESULTS.json`。追加 `--serve` 可启动随机回环端口用于隔离桌面验收，按 Ctrl+C 清理并停止；不占用正常的51808端口或用户会话。
 
 默认服务仅绑定本机，同源提供 `dist` 与 API，不公开项目目录、`.env` 或会话文件。容器候选可以显式配置host、publicOrigin和basePath，但不等于已经开放原内网入口；见[容器适配说明](deployment/pi/README.md)。共享检索成果库和多用户管理不属于本次接入范围。
 

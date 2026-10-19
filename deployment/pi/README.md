@@ -66,7 +66,20 @@ Pi不存在、重建或换IP时入口无需重载；Docker DNS缓存到期及服
 2. 将同一运行包的 `dist` 发布到原数据挂载中的独立目录；原配置只加经过审查的片段，原全站登录和审计不改。
 3. 从 `example.env` 创建专用非敏感参数文件：镜像、固定容器名、`basePath`、内部端口、网络、模型文件绝对路径。Compose 必须显式传 `--env-file`，不要将模型 `.env` 当作 Compose 参数文件。
 4. 模型文件只读挂载，必须能被容器 UID 1000 读取；切换前做不输出内容的可读性检查，不自动更改原文件权限。Compose不设置API密钥环境值，镜像也不含凭据。
-5. `PI_SPIKE_HOST` 非回环时仍须配置 `PI_SPIKE_PUBLIC_ORIGIN`，Compose已固定为内部origin；`PI_SPIKE_RELATIVE_LINKS=true` 时以 `PI_SPIKE_BASE_PATH=/pi/` 作为根相对详情基址。不要取消Host/Origin检查，也不要把容器内部origin当作用户访问地址。
-6. 备份原配置和专用Pi状态，保留安装绝对路径；只在获准后执行启动/重载与局域网验收。不要用 `down -v` 删除需保留的会话卷。
+5. 联网参考由参数文件的 `PI_WEB_SEARCH=true` 开启（默认 `false`），Compose 传为 `PI_SPIKE_WEB_SEARCH`。开启后用户问题相关的查询词会发往智谱联网搜索；Key 沿用模型文件中的智谱 Key，非智谱模型须在模型文件外另行提供 `PI_SPIKE_WEB_SEARCH_API_KEY`。开启属于部署变更，需单独确认。本机容器已经用户确认开启。
+6. `PI_SPIKE_HOST` 非回环时仍须配置 `PI_SPIKE_PUBLIC_ORIGIN`，Compose已固定为内部origin；`PI_SPIKE_RELATIVE_LINKS=true` 时以 `PI_SPIKE_BASE_PATH=/pi/` 作为根相对详情基址。不要取消Host/Origin检查，也不要把容器内部origin当作用户访问地址。
+7. 备份原配置和专用Pi状态，保留安装绝对路径；只在获准后执行启动/重载与局域网验收。不要用 `down -v` 删除需保留的会话卷。Pi 默认开启 3 天无活动删除：会话 metadata、会话文件、检查点，以及含会话正文的缓存都会被定期清理，`pi-state` 卷里的过期数据不会长期保留。需要留存时先停写再备份，不要依赖卷本身做长期存档。
+
+## 升级到 3 天自动删除
+
+升级后第一次新请求，或最迟约一小时内的定时清理，会删除所有超过 3 天没有活动的会话与缓存（缓存含会话正文）。若要保留旧数据，先按上面的停写步骤备份，或设置 `PI_SPIKE_RETENTION_ENABLED=false`。容器在 `compose.yaml` 的 `pi-agent.environment` 增加 `PI_SPIKE_RETENTION_ENABLED: 'false'` 后重建，不要执行 `down -v`。每个会话只记下最近 50 个 `cacheKeys`，更早的缓存靠 `cacheTtlMs` 回收。
 
 原密码审计问题已单独记录，未在接入中修复。真实登录测试前应告知原行为，并使用已确认的测试账号或已有登录，不能把本批“复用登录”描述成原认证系统全面安全审核通过。
+
+## 发布更新记录（2026-10-17）
+
+字段级证据发布`1.27.1.1-20040b374943dabc`已按上述流程更新：`prepare.mjs`打包、构建镜像`pi-knowledge:field-evidence`、更新专用参数文件的`PI_IMAGE`并用`docker compose --env-file`重建容器，再把同一镜像内`/app/dist`复制到数据挂载中的`pi-site/`。镜像与静态目录必须同时更新，否则页面与Agent的发布号不一致。回滚时恢复旧镜像标签`pi-knowledge:before-field-evidence`、目录`pi-site.before-field-evidence`和备份参数文件`deploy.env.before-field-evidence`，再重建容器。这些名称是本机操作记录，不代表部门服务器已部署。
+
+## 发布更新记录（2026-10-19）
+
+本机容器已按上述流程更新：`prepare.mjs`打包、构建镜像`pi-knowledge:session-retention`、更新专用参数文件的`PI_IMAGE`与`PI_WEB_SEARCH=true`，并用`docker compose --env-file`重建容器，再把同一镜像内`/app/dist`复制到数据挂载中的`pi-site/`。本次包含已在本机容器开启的联网参考、业务范围分流、相近名称建议、自动压缩、会话列表和 3 天自动删除。冒烟查询未得到外部参考（0 条），用时约 18 秒。回滚时恢复镜像标签`pi-knowledge:before-session-retention`、目录`pi-site.before-session-retention`、备份参数文件`deploy.env.before-session-retention`，以及`.local`目录中的会话卷备份，再重建容器。这些名称是本机操作记录，不代表部门服务器已部署。
