@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Spike, ROOT, cacheKey, compactHistory } from '../src/session.mjs';
 import { serve } from '../server.mjs';
-import { configMode, resolveInput, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
+import { configMode, resolveInput, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
 import { FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY } from '../src/report.mjs';
 import { UPSTREAM_MESSAGE, PARSE_MESSAGE } from '../src/errors.mjs';
 import { fixtures } from './fixtures/configs.mjs';
@@ -846,4 +846,212 @@ test('历史压缩省略意图形态的选择输出和纠正消息原文', () =>
   assert.ok(!JSON.stringify(retry).includes(FIELD_SELECTION_RETRY));
   assert.ok(!compact[1].content[0].text.includes(secret));
   assert.ok(!JSON.stringify(retry).includes(secret));
+});
+
+// ---- 大写开头的普通词不计为指令名（Set / Return 等） ----
+
+// 构造最小快照：同时含 set、return 等常见英文词同名指令与蛇形指令。
+const wordSnapshot = { index: { release_id: 'test', directives: ['set', 'return', 'root', 'proxy_pass', 'client_max_body_size', 'listen'].map(name => ({ name })) } };
+const directiveIntent = (input, ignored = false) => ({ action: 'directive', input, question: '', ignored });
+
+test('普通词误判：Set proxy_pass 的作用按 proxy_pass 查询，Set 不计入多指令澄清', () => {
+  const message = 'Set proxy_pass 的作用';
+  const resolved = resolveInput(directiveIntent('proxy_pass'), { message }, wordSnapshot);
+  assert.equal(resolved.inputResolution.action, 'directive');
+  assert.equal(resolved.normalizedRequest.input, 'proxy_pass');
+  // proxy_pass 已是索引原名，没有大小写说明，也没有澄清。
+  assert.equal(resolved.inputResolution.notice, undefined);
+  assert.equal(resolved.inputResolution.canonicalized, undefined);
+  // 同类普通词：Return、Root、If、Map、Include、Listen 均不计入。
+  for (const word of ['Return', 'Root', 'Listen', 'If', 'Map', 'Include']) {
+    const one = resolveInput(directiveIntent('proxy_pass'), { message: `${word} proxy_pass 的作用` }, wordSnapshot);
+    assert.equal(one.inputResolution.action, 'directive', word);
+  }
+});
+
+test('普通词误判：含下划线的蛇形名、精确大小写名称、模型 input 本身仍计入', () => {
+  // 蛇形名即使大小写不同也计入：Client_Max_Body_Size 与 Proxy_Pass 仍触发多名称澄清。
+  const snake = resolveInput(directiveIntent('Client_Max_Body_Size'), { message: 'Client_Max_Body_Size 与 Proxy_Pass' }, wordSnapshot);
+  assert.equal(snake.normalizedRequest, null);
+  assert.match(snake.inputResolution.message, /多个指令名称/);
+  // 精确大小写的 set 与 proxy_pass 仍澄清。
+  const exact = resolveInput(directiveIntent('proxy_pass'), { message: 'set 和 proxy_pass' }, wordSnapshot);
+  assert.equal(exact.normalizedRequest, null);
+  assert.match(exact.inputResolution.message, /多个指令名称/);
+  // 模型 input 恰是 Set（用户确实只问 Set）：按规范名处理并提示，且它与另一个精确名称同在时仍澄清。
+  const only = resolveInput(directiveIntent('Set'), { message: 'Set 是什么' }, wordSnapshot);
+  assert.equal(only.normalizedRequest.input, 'set');
+  assert.deepEqual(only.inputResolution.canonicalized, { from: 'Set', to: 'set' });
+  assert.match(only.inputResolution.notice, /已按指令名 set 理解/);
+  const both = resolveInput(directiveIntent('Set'), { message: 'Set 和 proxy_pass 的区别' }, wordSnapshot);
+  assert.equal(both.normalizedRequest, null);
+  assert.match(both.inputResolution.message, /多个指令名称/);
+  // 大小写不同且不含下划线的名称：既不是 input 也不是蛇形名，与 input 同在时不计入。
+  const word = resolveInput(directiveIntent('Client_Max_Body_Size'), { message: 'Client_Max_Body_Size 之后 Return 什么' }, wordSnapshot);
+  assert.equal(word.normalizedRequest.input, 'client_max_body_size');
+});
+
+test('普通词误判：out_of_scope 降级判断同样忽略普通词；精确大小写或蛇形名仍降级', () => {
+  const scope = message => resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message }, wordSnapshot).inputResolution.action;
+  // 无任何指令名的跑题消息里出现大写开头的普通词：正常 out_of_scope。
+  assert.equal(scope('Return the weather'), 'out_of_scope');
+  assert.equal(scope('Set the alarm and Root for me'), 'out_of_scope');
+  // 精确大小写的指令名（return）仍降级，原有语义不变。
+  assert.equal(scope('return the weather'), 'clarify');
+  // 蛇形名即使大小写不同也降级。
+  assert.equal(scope('今天天气怎么样 PROXY_PASS'), 'clarify');
+  assert.equal(scope('Client_Max_Body_Size 之后讲个笑话'), 'clarify');
+});
+
+test('普通词误判：整条 session 路径，Set proxy_pass 按 proxy_pass 查询且不触发澄清', async t => {
+  const { run } = await setup(t, { mockIntentResult: { action: 'directive', input: 'proxy_pass', question: 'Set proxy_pass 的作用', ignored: false } });
+  const job = await run('Set proxy_pass 的作用');
+  assert.equal(job.inputResolution.action, 'directive', job.error);
+  assert.equal(job.normalizedRequest.input, 'proxy_pass');
+  assert.equal(job.inputResolution.notice, undefined);
+  assert.ok(job.matches.length > 0);
+});
+
+test('普通词误判：整条 session 路径，Return 开头的跑题消息正常 out_of_scope，含精确指令名仍澄清', async t => {
+  const { run, spike } = await setup(t);
+  const off = await run('Return 今天的天气');
+  assert.equal(off.inputResolution.action, 'out_of_scope', off.error);
+  assert.equal(off.inputResolution.message, SCOPE_REPLY);
+  assert.equal(off.state, 'completed');
+  assert.equal(selectionCount(spike.mock.requests), 0);
+  const exact = await run('return 今天的天气');
+  assert.equal(exact.inputResolution.action, 'clarify', exact.error);
+  assert.equal(exact.state, 'awaiting_input');
+});
+
+// ---- 配置里的指令名大小写提示 ----
+
+const LISTEN_NOTICE = '配置中的 Listen 未匹配。Nginx 指令名区分大小写；索引中有 listen，未自动按其查询。';
+
+test('配置大小写提示：Listen 80; 给出提示，但不改配置原文、不改匹配结果、不改缓存语义', async t => {
+  const { spike, run } = await setup(t);
+  const message = 'http {\n  server {\n    Listen 80;\n    server_name example.invalid;\n  }\n}';
+  const job = await run(message);
+  assert.equal(job.inputResolution.action, 'config', job.error);
+  assert.equal(job.inputResolution.notice, LISTEN_NOTICE);
+  // 只提示不替换：原文逐字保留，没有 canonicalized 字段，Listen 仍按精确大小写判为未收录。
+  assert.equal(job.normalizedRequest.input, message);
+  assert.equal(job.inputResolution.canonicalized, undefined);
+  const index = job.parsed.directives.findIndex(item => item.name === 'Listen');
+  assert.ok(index >= 0);
+  assert.equal(job.matches[index].status, 'unknown');
+  assert.equal(job.matches[index].reason, 'name_not_in_index');
+  // 提示进入会话元数据：恢复后仍能显示。
+  assert.equal((await spike.restore(job.sessionId)).inputResolution.notice, LISTEN_NOTICE);
+  // 含未匹配指令的结果停在 awaiting_input，本来就不写完成缓存；再次提交同一消息不会命中缓存，提示由重新解析得到，文字一致。
+  assert.equal(job.state, 'awaiting_input');
+  const again = await run(message);
+  assert.equal(again.cacheHit, false);
+  assert.equal(again.inputResolution.notice, LISTEN_NOTICE);
+});
+
+test('配置大小写提示：正常配置与有语法错误的配置不产生该提示', async t => {
+  const { run } = await setup(t);
+  for (const message of [fixtures.events.input, fixtures.fragment.input, fixtures.stream.input, 'http { server { listen 80; } }']) {
+    const job = await run(message);
+    assert.equal(job.inputResolution.notice, undefined, message);
+  }
+  // 语法错误（花括号未闭合）即使含 Listen 也不提示，避免对被截断/误切的名称误报。
+  const broken = await run('http { server { Listen 80; }');
+  assert.ok(broken.parsed.errors.length > 0);
+  assert.equal(broken.inputResolution.notice, undefined);
+  // 名称查询（directive）不走该提示。
+  const named = await run('worker_connections 的默认值是什么');
+  assert.equal(named.inputResolution.notice, undefined);
+});
+
+test('配置大小写提示：与 ignored 提示换行合并，两者都保留', async t => {
+  const { run } = await setup(t);
+  const message = '请说明这段配置的默认值。今天天气怎么样？\n```nginx\nhttp { server { Listen 80; } }\n```';
+  const job = await run(message);
+  assert.equal(job.inputResolution.action, 'config', job.error);
+  assert.equal(job.inputResolution.ignored, true);
+  assert.equal(job.inputResolution.notice, `消息中与配置无关的部分未处理。\n${LISTEN_NOTICE}`);
+  assert.equal(job.normalizedRequest.input, 'http { server { Listen 80; } }');
+});
+
+test('配置大小写提示：沿用配置的追问同样带提示', async t => {
+  const { run } = await setup(t);
+  const first = await run('http { server { Listen 80; } }');
+  assert.equal(first.inputResolution.notice, LISTEN_NOTICE);
+  const follow = await run('刚才这段有哪些限制', first.sessionId);
+  assert.equal(follow.inputResolution.action, 'followup', follow.error);
+  assert.equal(follow.inputResolution.notice, LISTEN_NOTICE);
+  assert.equal(follow.normalizedRequest.input, 'http { server { Listen 80; } }');
+});
+
+test('配置大小写提示：单元规则——仅未匹配且未精确收录的名称、多规范名全列、最多 5 个、名称限长', () => {
+  const entries = names => names.map(name => ({ name }));
+  const make = (names, statuses = {}) => ({
+    parsed: { errors: [], directives: names.map(name => ({ name })) },
+    matches: names.map(name => ({ status: statuses[name] ?? 'unknown' })),
+  });
+  // 同一小写形式有多个规范名：全部列出（字典序）。
+  assert.equal(caseMismatchNotice(make(['LISTEN']), entries(['listen', 'Listen'])),
+    '配置中的 LISTEN 未匹配。Nginx 指令名区分大小写；索引中有 Listen、listen，未自动按其查询。');
+  // 已匹配、block_entry、名称已在索引里（上下文/歧义问题）、索引里没有大小写变体：都不提示。
+  assert.equal(caseMismatchNotice(make(['Listen'], { Listen: 'matched' }), entries(['listen'])), null);
+  assert.equal(caseMismatchNotice(make(['Server'], { Server: 'block_entry' }), entries(['server'])), null);
+  assert.equal(caseMismatchNotice(make(['listen'], { listen: 'ambiguous' }), entries(['listen'])), null);
+  assert.equal(caseMismatchNotice(make(['no_such']), entries(['listen'])), null);
+  // 语法错误：不提示。
+  const broken = make(['Listen']);
+  broken.parsed.errors = [{ code: 'x' }];
+  assert.equal(caseMismatchNotice(broken, entries(['listen'])), null);
+  // 同名重复出现只列一次；多个不同名称合并成一条。
+  assert.equal(caseMismatchNotice(make(['Listen', 'Listen', 'Server']), entries(['listen', 'server'])),
+    '配置中的 Listen、Server 未匹配。Nginx 指令名区分大小写；索引中有 listen、server，未自动按其查询。');
+  // 超过 5 个：只列前 5 个并标出总数。
+  const many = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1'];
+  const notice = caseMismatchNotice(make(many), entries(many.map(name => name.toLowerCase())));
+  assert.ok(notice.startsWith('配置中的 A1、B1、C1、D1、E1 等共 7 个 未匹配。'), notice);
+  assert.ok(notice.includes('索引中有 a1、b1、c1、d1、e1 等共 7 个，'), notice);
+  assert.ok(!notice.includes('F1') && !notice.includes('f1'));
+  // 超长名称：展示限制在 100 字符内并以省略号结尾。
+  const long = `Aa${'b'.repeat(200)}`;
+  const clipped = caseMismatchNotice(make([long]), entries([long.toLowerCase()]));
+  assert.ok(clipped.includes(`${long.slice(0, 100)}…`));
+  assert.ok(!clipped.includes(long.slice(0, 101)));
+  assert.ok(clipped.includes(`${long.toLowerCase().slice(0, 100)}…`));
+  // 合并提示：已有 notice 换行拼接；没有提示文本时原样返回。
+  assert.equal(appendResolutionNotice({ action: 'config', notice: '甲' }, '乙').notice, '甲\n乙');
+  assert.equal(appendResolutionNotice({ action: 'config' }, '乙').notice, '乙');
+  const unchanged = { action: 'config' };
+  assert.equal(appendResolutionNotice(unchanged, null), unchanged);
+});
+
+test('配置大小写提示：map 等数据块内的条目不误报；同块外的 Listen 仍提示；整块在 http 里也不误报', async t => {
+  const { run } = await setup(t);
+  // 片段缺外层：块内条目被解析为普通指令（状态 unknown），仍不得提示。
+  const bare = await run('map $a $b { Default 1; Listen 2; }');
+  assert.equal(bare.inputResolution.action, 'config', bare.error);
+  assert.ok(bare.parsed.directives.some(item => item.name === 'Listen' && item.kind === 'simple'), '应复现“条目被当作普通指令”的形状');
+  assert.equal(bare.inputResolution.notice, undefined);
+  // 同一消息里块外的 Listen 80; 仍提示，且只提示块外的名称。
+  const mixed = await run('map $a $b { Default 1; Listen 2; }\nListen 80;');
+  assert.equal(mixed.inputResolution.notice, LISTEN_NOTICE);
+  // 整块在 http 里：条目为 block_entry，同样无提示。
+  const wrapped = await run('http { map $a $b { Default 1; Listen 2; } }');
+  assert.equal(wrapped.inputResolution.notice, undefined);
+  // 其他数据块与嵌套：geo、types、split_clients、charset_map 内的条目同样跳过。
+  for (const message of ['geo $g { Default x; }', 'types { Text/html html; }', 'split_clients $a $b { 50% x; * y; }', 'charset_map a b { Listen 1; }']) {
+    const job = await run(message);
+    assert.equal(job.inputResolution.notice, undefined, message);
+  }
+});
+
+test('配置大小写提示：单元——数据块判定同时看 contexts 与 parent_index', () => {
+  const entries = [{ name: 'listen' }];
+  const make = directives => ({ parsed: { errors: [], directives }, matches: directives.map(() => ({ status: 'unknown' })) });
+  // 仅 contexts 含数据块名。
+  assert.equal(caseMismatchNotice(make([{ name: 'Listen', contexts: ['map'], parent_index: null }]), entries), null);
+  // 仅 parent_index 链上有数据块（contexts 缺失时的兜底），含多层嵌套。
+  assert.equal(caseMismatchNotice(make([{ name: 'geo', parent_index: null }, { name: 'x', parent_index: 0 }, { name: 'Listen', parent_index: 1 }]), entries), null);
+  // 普通块内的 Listen 仍提示。
+  assert.ok(caseMismatchNotice(make([{ name: 'server', contexts: [], parent_index: null }, { name: 'Listen', contexts: ['server'], parent_index: 0 }]), entries));
 });

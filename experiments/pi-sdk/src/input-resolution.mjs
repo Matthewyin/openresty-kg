@@ -85,6 +85,81 @@ function nameForms(token, directives) {
   return forms.sort(byName);
 }
 
+// 判断消息中的某个词能否“计为一个指令名”（用于“多个指令名”澄清与 out_of_scope 降级）。
+// Nginx 指令名区分大小写，而 Set、Return、Root、If、Map、Include、Listen 等同时是常见英文词，
+// 句首大写或普通行文里的这类词不应被当成用户点名的指令。规则：
+// ① 与索引原名精确相同（大小写一致）——照常计入；
+// ② 仅大小写不同：只有它恰是模型返回的 input（用户最该查的对象），或含下划线（蛇形名几乎不可能是普通英文词）才计入。
+// exactNames 为索引原名集合；given 为模型返回的 input（out_of_scope 路径没有 input，传空串即可）。
+const countsAsDirective = (token, given, exactNames) => exactNames.has(token) || token === given || token.includes('_');
+
+// 提示中单个名称的展示上限（字符数）。名称只用于展示，前端以 textContent 渲染，这里仅防止异常长词撑爆提示。
+const NOTICE_NAME_MAX = 100;
+// 一条提示最多列出的不同名称个数，超出以“等共 N 个”省略。
+const NOTICE_NAME_LIMIT = 5;
+const clipName = name => (name.length > NOTICE_NAME_MAX ? `${name.slice(0, NOTICE_NAME_MAX)}…` : name);
+const listNames = names => `${names.slice(0, NOTICE_NAME_LIMIT).map(clipName).join('、')}${names.length > NOTICE_NAME_LIMIT ? ` 等共 ${names.length} 个` : ''}`;
+
+// 条目是“数据”而不是指令的块：map、geo、types、split_clients、charset_map（与 src/core/contexts.mjs 的自定义块处理器一致）。
+// 这些块在 http/stream 内会被解析为 block_entry；但片段缺少外层（如 `map $a $b { Default 1; Listen 2; }`）时，
+// 条目会被当成普通指令、状态为 unknown。其名称（Default、Listen 等）是数据键，不能对它们提示大小写。
+const DATA_BLOCKS = new Set(['map', 'geo', 'types', 'split_clients', 'charset_map']);
+// 指令是否位于数据块内：先看解析器给出的祖先上下文链 contexts，再沿 parent_index 向上核对父指令名，二者任一命中即视为数据。
+function insideDataBlock(item, directives) {
+  if ((item?.contexts ?? []).some(name => DATA_BLOCKS.has(name))) return true;
+  for (let parent = item?.parent_index, depth = 0; Number.isInteger(parent) && depth < 64; depth++) {
+    const node = directives[parent];
+    if (!node) return false;
+    if (DATA_BLOCKS.has(node.name)) return true;
+    parent = node.parent_index;
+  }
+  return false;
+}
+
+// 配置中指令名大小写提示：只提示，不替换任何内容，不改变匹配结果。
+// 仅当满足全部条件时返回提示文本，否则返回 null：
+// 1. 配置解析无语法错误（有错误时名称可能是被截断/误切的片段，提示易误报）；
+// 2. 某个指令匹配状态不是 matched / block_entry；
+// 3. 该指令名不在索引中（精确大小写）——若名称已在索引里，未匹配的原因是上下文或歧义，与大小写无关；
+// 4. 索引中存在与它仅大小写不同的名称（同一小写形式有多个规范名时全部列出）；
+// 5. 它不在 map/geo/types/split_clients/charset_map 等数据块内（块内条目是数据，不是指令）。
+// analysis 为 knowledgeTools 的 bundle.analysis（含 parsed 与 matches，按下标一一对应）；directives 为索引中的指令条目。
+export function caseMismatchNotice(analysis, directives) {
+  if (!analysis?.parsed || analysis.parsed.errors?.length) return null;
+  const exactNames = new Set();
+  const byLower = new Map();
+  for (const entry of directives ?? []) {
+    const name = entry?.name;
+    if (typeof name !== 'string' || !name || exactNames.has(name)) continue;
+    exactNames.add(name);
+    const lower = name.toLowerCase();
+    if (!byLower.has(lower)) byLower.set(lower, []);
+    byLower.get(lower).push(name);
+  }
+  // 配置里未匹配的写法（按首次出现顺序去重）与索引中对应的规范名（去重后按字典序）。
+  const tokens = [];
+  const indexNames = new Set();
+  const parsedDirectives = analysis.parsed.directives ?? [];
+  parsedDirectives.forEach((item, i) => {
+    const status = analysis.matches?.[i]?.status;
+    const token = item?.name;
+    if (typeof token !== 'string' || !token || ['matched', 'block_entry'].includes(status) || exactNames.has(token) || insideDataBlock(item, parsedDirectives)) return;
+    const forms = byLower.get(token.toLowerCase());
+    if (!forms) return;
+    if (!tokens.includes(token)) tokens.push(token);
+    for (const form of forms) indexNames.add(form);
+  });
+  if (!tokens.length) return null;
+  return `配置中的 ${listNames(tokens)} 未匹配。Nginx 指令名区分大小写；索引中有 ${listNames([...indexNames].sort(byName))}，未自动按其查询。`;
+}
+
+// 把一条提示并入 inputResolution.notice：与已有提示（ignored、规范名说明）换行合并，不覆盖、不丢失。
+// 不新增前端需要的字段，前端已显示 inputResolution.notice。
+export function appendResolutionNotice(resolution, text) {
+  if (!resolution || !text) return resolution;
+  return { ...resolution, notice: [resolution.notice, text].filter(Boolean).join('\n') };
+}
+
 // 统一消息的缓存键用这份文本，而不是用户按下发送时的原始大小写。
 // 只折叠“整句恰好是一个标识符、且大小写不敏感地唯一对应索引里一个规范名”的消息（如 Client_Max_Body_Size）。
 // 带其他文字的自然语言（如“Return 是什么意思”“Set 之后会怎样”）不折叠：句中的普通英文词可能碰巧与某条指令同名，
@@ -171,8 +246,11 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
   if (value.action === 'out_of_scope') {
     // 宿主只能放宽模型判定：消息含已收录指令名时不直接拒绝，降级为澄清，避免误伤“指令名+业务问题”。
     // 比较不区分大小写。PROXY_PASS 与索引里的 proxy_pass 是同一条指令，不能因为写法不同就当成跑题。
-    const tokenLowers = new Set((raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []).map(token => token.toLowerCase()));
-    if (snapshot.index.directives.some(entry => typeof entry.name === 'string' && tokenLowers.has(entry.name.toLowerCase()))) return clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。');
+    // 但仅大小写不同的普通英文词（Return the weather 里的 Return）不算：只有精确大小写命中，或含下划线的蛇形名才降级。
+    const exactNames = new Set(snapshot.index.directives.map(entry => entry.name).filter(name => typeof name === 'string'));
+    const lowerNames = new Set([...exactNames].map(name => name.toLowerCase()));
+    const mentionsDirective = (raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []).some(token => lowerNames.has(token.toLowerCase()) && countsAsDirective(token, '', exactNames));
+    if (mentionsDirective) return clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。');
     return { normalizedRequest: null, inputResolution: { action: 'out_of_scope', message: SCOPE_REPLY } };
   }
   if (value.question && !raw.message.includes(value.question)) return rejected();
@@ -214,7 +292,10 @@ export function resolveInput(value, raw, snapshot, previous, options = {}) {
     }
     // 消息里其他标识符也按小写折到唯一规范名。Listen 与 listen 算同一条，不能当成“多个指令”。
     const mentioned = new Set();
+    const exactNames = new Set(directives.map(entry => entry.name));
     for (const token of explicit) {
+      // 仅大小写不同的普通英文词（Set proxy_pass 里的 Set）不计入，也不触发多写法澄清。
+      if (!countsAsDirective(token, given, exactNames)) continue;
       const tokenForms = nameForms(token, directives);
       if (tokenForms.length > 1 && token.toLowerCase() !== given.toLowerCase()) return clarification(`消息中的指令名在当前索引里有多种大小写写法：${tokenForms.join('、')}。请明确要查询的名称。`);
       if (tokenForms.length === 1) mentioned.add(tokenForms[0]);

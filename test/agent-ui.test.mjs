@@ -175,12 +175,13 @@ test('brief 轮询先显示 summary，最终只渲染选中字段与固定来源
   assert.ok(links.some(url => url.hostname === 'github.com'));
 });
 
-test('提交尚未返回 requestId 就改输入，迟到任务仍被取消，不保存旧会话或回显', async () => {
+test('提交尚未返回 requestId 就点取消，迟到任务仍被取消，不保存旧会话或回显', async () => {
   const held = deferred();
   const ui = await start({ api: request => request.path === '/api/run' ? held.promise : undefined });
   const done = ui.submit();
   await until(() => ui.requests.some(request => request.path === '/api/run'));
-  await ui.change('configuration', '另一份配置');
+  // 需求变更：原先这里用“改输入”触发取消；输入变化不再取消任务，改用显式取消按钮覆盖同一条迟到任务防线。
+  await ui.click('agent-cancel');
   held.resolve(reply(report({ state: 'running' }))); await done;
   assert.ok(ui.requests.some(request => request.path === '/api/cancel' && request.body.requestId === requestId));
   assert.equal(ui.nodes.get('agent-result').textContent, ''); assert.equal(ui.saved.size, 0);
@@ -198,7 +199,11 @@ test('取消、新会话与 release 变化均防止迟到轮询覆盖当前输�
     if (action === 'release') { ui.document.body.dataset.release = 'next-release'; await tick(); }
     else await ui.click(action === 'cancel' ? 'agent-cancel' : 'agent-new');
     held.resolve(reply(report())); await done;
-    assert.equal(ui.nodes.get('agent-result').textContent, '', action);
+    // 需求变更：新会话与 release 变化仍清空对话流；取消保留已出现的轮次，但迟到结果不得写入，且该轮标为已取消。
+    if (action === 'cancel') {
+      assert.ok(ui.nodes.get('agent-result').textContent.includes('已取消'), action);
+      assert.ok(!ui.nodes.get('agent-result').textContent.includes('默认 512'), action);
+    } else assert.equal(ui.nodes.get('agent-result').textContent, '', action);
     assert.ok(ui.requests.some(request => request.path === '/api/cancel'), action);
     if (action === 'new') { assert.equal(ui.saved.has(storageKey), false); assert.equal(ui.nodes.get('configuration').value, 'worker_connections'); }
   }
@@ -304,7 +309,9 @@ test('取消运行中的 Agent 同步清除它派生的解析目录，不留无�
   held.resolve(reply(report())); await done;
   assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /worker_connections/);
   assert.equal(ui.nodes.get('parsed-results').children.length, 0);
-  assert.equal(ui.nodes.get('agent-result').textContent, '');
+  // 需求变更：取消不再清空回答区，改为保留该轮并标记已取消；仍不得出现迟到的最终结果。
+  assert.ok(ui.nodes.get('agent-result').textContent.includes('已取消'));
+  assert.ok(!ui.nodes.get('agent-result').textContent.includes('默认 512'));
 });
 
 test('切换本地查询会取消旧 Agent，后续取消及迟到结果不清除本地查询', async () => {
@@ -534,7 +541,9 @@ test('登录中断后编辑输入，恢复旧job不覆盖输入、不渲染旧�
   await ui.submit(); await ui.change('configuration', '新问题');
   loggedIn = true; await ui.click('agent-restore');
   assert.equal(ui.nodes.get('configuration').value, '新问题');
-  assert.equal(ui.nodes.get('agent-result').textContent, '');
+  // 需求变更：输入变化不再清空回答区；旧轮仍在，但标为“结果未回填”，且不渲染迟到的最终结果。
+  assert.ok(!ui.nodes.get('agent-result').textContent.includes('默认 512'));
+  assert.ok(ui.nodes.get('agent-result').textContent.includes('结果未回填'));
   assert.match(ui.nodes.get('agent-status').textContent, /原任务完成.*输入已保留/);
   assert.equal(ui.nodes.get('agent-submit').disabled, false);
 });
@@ -901,4 +910,319 @@ test('外部参考：无参考或空数组时不出现区块与参考文案', as
     assert.ok(!text.includes('外部参考'));
     assert.equal(referenceBlock(ui.nodes.get('agent-result')), undefined);
   }
+});
+
+// ---------- 对话流（追问保留上一轮回答） ----------
+// 轮次卡与其摘要行：fake DOM 中 details 的 open 是普通属性，summary 的摘要写在 turn-summary 子节点。
+const turnsOf = ui => ui.nodes.get('agent-result').children.filter(node => node.className === 'agent-turn');
+const turnSummary = turn => descendants(turn).find(node => node.className === 'turn-summary')?.textContent;
+const publishedRelease = () => JSON.parse(read('dist/knowledge/index.json')).release_id;
+
+test('对话流：输入变化不清空回答区、不取消任务，只在状态行给出轻提示', async () => {
+  const ui = await start();
+  await ui.submit();
+  assert.match(ui.nodes.get('agent-result').textContent, /默认 512/);
+  await ui.change('configuration', '继续问继承');
+  // 回答仍在；状态行是追问提示，不再说“旧结果不再用于当前输入”。
+  assert.match(ui.nodes.get('agent-result').textContent, /默认 512/);
+  assert.equal(turnsOf(ui).length, 1);
+  assert.match(ui.nodes.get('agent-status').textContent, /输入已变化，提交后将作为追问或新查询处理/);
+  assert.doesNotMatch(ui.nodes.get('agent-status').textContent, /旧结果不再用于当前输入/);
+  assert.equal(ui.requests.filter(request => request.path === '/api/cancel').length, 0);
+  assert.equal(ui.nodes.get('agent-submit').disabled, false);
+});
+
+test('对话流：运行中改输入不取消任务，结果落入原轮次；运行中仍不允许重复提交', async () => {
+  const held = deferred(); let polling = false;
+  const ui = await start({ api: request => {
+    if (request.path === '/api/run') return reply(report({ state: 'running', modelSelection: null }));
+    if (request.path.startsWith('/api/jobs/')) { polling = true; return held.promise; }
+  } });
+  const done = ui.submit(); await until(() => polling);
+  const before = ui.nodes.get('agent-status').textContent;
+  await ui.change('configuration', '运行中追加的新问题');
+  // 运行中不覆盖进度文字，提交按钮保持禁用，再次提交不产生第二个 /api/run。
+  assert.equal(ui.nodes.get('agent-status').textContent, before);
+  assert.equal(ui.nodes.get('agent-submit').disabled, true);
+  await ui.submit();
+  assert.equal(ui.requests.filter(request => request.path === '/api/run').length, 1);
+  held.resolve(reply(report())); await done;
+  assert.equal(ui.requests.filter(request => request.path === '/api/cancel').length, 0);
+  assert.equal(turnsOf(ui).length, 1);
+  assert.match(turnsOf(ui)[0].textContent, /默认 512/);
+  assert.equal(ui.nodes.get('configuration').value, '运行中追加的新问题');
+  assert.equal(ui.nodes.get('agent-submit').disabled, false);
+});
+
+test('对话流：连续两次提交产生两个轮次卡，旧轮折叠、新轮展开，历史轮不触发请求', async () => {
+  const ui = await start();
+  await ui.change('configuration', '第一问 worker_connections'); await ui.submit();
+  let cards = turnsOf(ui);
+  assert.equal(cards.length, 1); assert.equal(cards[0].open, true);
+  await ui.change('configuration', '第二问 继承'); await ui.submit();
+  cards = turnsOf(ui);
+  assert.equal(cards.length, 2);
+  assert.deepEqual(cards.map(card => card.open), [false, true]);
+  assert.deepEqual(cards.map(turnSummary), ['第一问 worker_connections', '第二问 继承']);
+  // 两轮的回答都还在；第二次提交携带同一会话。
+  assert.ok(cards.every(card => /默认 512/.test(card.textContent)));
+  assert.equal(ui.requests.filter(request => request.path === '/api/run').at(-1).body.sessionId, sessionId);
+  // 旧轮只是已渲染的 DOM：之后输入、再等待都不再有网络请求。
+  const count = ui.requests.length;
+  await ui.change('configuration', '第三问草稿');
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(ui.requests.length, count);
+});
+
+test('对话流：最多保留 20 轮，超出从最旧一轮移除；摘要截断且按文本显示', async () => {
+  const ui = await start();
+  for (let i = 1; i <= 22; i++) { await ui.change('configuration', `问题 ${i}`); await ui.submit(); }
+  const cards = turnsOf(ui);
+  assert.equal(cards.length, 20);
+  assert.equal(turnSummary(cards[0]), '问题 3'); assert.equal(turnSummary(cards.at(-1)), '问题 22');
+  assert.ok(cards[0].textContent.startsWith('第 3 轮')); assert.ok(cards.at(-1).textContent.startsWith('第 22 轮'));
+  assert.deepEqual(cards.map(card => card.open), [...Array(19).fill(false), true]);
+  // 长输入只取首个非空行并截断到 60 个字符；含 HTML/script 的用户文本只作为文本。
+  const attack = `\n  <script>alert(1)</script><img src=x onerror=alert(1)>${'长'.repeat(80)}\n第二行不进摘要`;
+  await ui.change('configuration', attack); await ui.submit();
+  const last = turnsOf(ui).at(-1);
+  const summary = turnSummary(last);
+  assert.equal(Array.from(summary).length, 61);
+  assert.ok(summary.startsWith('<script>alert(1)</script><img src=x onerror=alert(1)>') && summary.endsWith('…'));
+  assert.ok(!summary.includes('第二行'));
+  assert.ok(!descendants(ui.nodes.get('agent-result')).some(node => ['img', 'script'].includes(node.tagName)));
+  assert.equal(turnsOf(ui).length, 20);
+});
+
+// 真实后端形态：首轮 config 带 inputSource:'message' 与 configRange，question 是用户问题；
+// 追问是 inputSource:'meta'、无 configRange，question 是追问句。input/mode/context/module/release 才决定右侧内容。
+const firstObject = release_ => ({ input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: release_, inputSource: 'message', configRange: { start: 0, end: 35 } });
+const followObject = release_ => ({ input: 'events { worker_connections 1024; }', mode: 'fragment', question: '继承呢', release: release_, inputSource: 'meta' });
+const PRIOR = /此处为上一次识别出的对象/;
+
+test('对话流：真实形态的追问（inputSource:meta、无 configRange、question 不同）右侧不重置，input 变了才替换', async () => {
+  const published = publishedRelease();
+  const objects = [firstObject(published), followObject(published), { input: 'http { gzip on; }', mode: 'fragment', question: '功能？', release: published, inputSource: 'message', configRange: { start: 0, end: 16 } }];
+  let runs = 0;
+  const ui = await start({ originalApp: true, api: request => request.path === '/api/run'
+    ? reply(report({ knowledgeVersion: { release: published }, normalizedRequest: objects[runs++], inputResolution: { action: runs === 2 ? 'followup' : 'config' } })) : undefined });
+  const events = [];
+  ui.nodes.get('configuration').addEventListener('agent-analysis', () => events.push('agent-analysis'));
+  await ui.change('configuration', 'events { worker_connections 1024; }\n默认值？'); await ui.submit();
+  await until(() => ui.nodes.get('query-status').textContent.includes('已提取 2 项'));
+  const catalogAfterFirst = ui.nodes.get('catalog-list').textContent;
+  assert.match(catalogAfterFirst, /worker_connections/);
+  // 追问输入：右侧不清除，只加中性标注。
+  await ui.change('configuration', '那继承呢？');
+  assert.equal(ui.nodes.get('catalog-list').textContent, catalogAfterFirst);
+  assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+  assert.match(ui.nodes.get('agent-result').textContent, /默认 512/);
+  // 提交追问：对象实际内容相同，不再派发 agent-analysis；右侧不变，输入与提交一致故标注撤销。
+  await ui.submit();
+  assert.deepEqual(events, ['agent-analysis']);
+  assert.equal(turnsOf(ui).length, 2);
+  assert.equal(ui.nodes.get('catalog-list').textContent, catalogAfterFirst);
+  assert.doesNotMatch(ui.nodes.get('query-status').textContent, PRIOR);
+  assert.match(ui.nodes.get('query-status').textContent, /已提取 2 项/);
+  // input 变了才替换右侧；旧轮卡仍保留。
+  await ui.change('configuration', '换成 gzip'); await ui.submit();
+  assert.equal(events.length, 2);
+  await until(() => ui.nodes.get('catalog-list').textContent.includes('gzip'));
+  assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+  assert.equal(turnsOf(ui).length, 3);
+});
+
+test('对话流：运行中用户又改了输入，完成后右侧加标注（沿用对象与替换对象两条路径都覆盖）', async () => {
+  const published = publishedRelease();
+  const gzip = { input: 'http { gzip on; }', mode: 'fragment', question: '功能？', release: published, inputSource: 'message' };
+  // 第四轮是 gzip 对象的追问：本轮确认右侧属于它，输入与提交一致时才可撤销标注。
+  const objects = [firstObject(published), followObject(published), gzip, { ...gzip, question: '再问', inputSource: 'meta' }];
+  let run = -1; let gate = null;
+  const ui = await start({ originalApp: true, api: request => {
+    if (request.path === '/api/run') { run++; return reply(report({ state: 'running', knowledgeVersion: { release: published }, normalizedRequest: objects[run], inputResolution: { action: run === 1 ? 'followup' : 'config' } })); }
+    if (request.path.startsWith('/api/jobs/')) return gate ? gate.promise : reply(report({ knowledgeVersion: { release: published }, normalizedRequest: objects[run], inputResolution: { action: run === 1 ? 'followup' : 'config' } }));
+  } });
+  await ui.change('configuration', '第一问'); await ui.submit();
+  await until(() => ui.nodes.get('query-status').textContent.includes('已提取 2 项'));
+  assert.doesNotMatch(ui.nodes.get('query-status').textContent, PRIOR);
+  // 路径一：沿用同一对象（不派发 agent-analysis）。运行期间输入框被改，完成后仍要标注。
+  gate = deferred();
+  const second = ui.change('configuration', '第二问').then(() => ui.submit());
+  await until(() => ui.nodes.get('agent-submit').disabled);
+  await ui.change('configuration', '第二问之后又改的草稿');
+  gate.resolve(reply(report({ knowledgeVersion: { release: published }, normalizedRequest: objects[1], inputResolution: { action: 'followup' } }))); await second;
+  assert.match(ui.nodes.get('query-status').textContent, /已提取 2 项/);
+  assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+  // 路径二：替换为新对象（派发 agent-analysis，runQuery 重建右侧）。同样要在重建后保留/出现标注。
+  gate = deferred();
+  const third = ui.change('configuration', '第三问').then(() => ui.submit());
+  await until(() => ui.nodes.get('agent-submit').disabled);
+  await ui.change('configuration', '第三问之后又改的草稿');
+  gate.resolve(reply(report({ knowledgeVersion: { release: published }, normalizedRequest: objects[2], inputResolution: { action: 'config' } }))); await third;
+  await until(() => ui.nodes.get('catalog-list').textContent.includes('gzip'));
+  assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+  // 提交的消息与输入框一致时没有标注。
+  await ui.change('configuration', '第四问'); gate = null; await ui.submit();
+  assert.doesNotMatch(ui.nodes.get('query-status').textContent, PRIOR);
+});
+
+test('对话流：本地解析结果在输入变化后仍被清除，不会显示为当前输入的结果', async () => {
+  const ui = await start({ originalApp: true });
+  await ui.nodes.get('query-form').dispatchEvent({ type: 'submit', preventDefault() {} });
+  assert.match(ui.nodes.get('query-status').textContent, /唯一匹配/);
+  assert.match(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+  await ui.change('configuration', 'gzip');
+  assert.match(ui.nodes.get('query-status').textContent, /输入已变化，请重新查询/);
+  assert.doesNotMatch(ui.nodes.get('query-status').textContent, /唯一匹配/);
+  assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+  // 本地查询之后 Agent 追问即使对象相同，也要重新派发并替换右侧（右侧已不再属于 Agent）。
+  const published = publishedRelease();
+  const object = { input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: published };
+  const agentUi = await start({ originalApp: true, api: request => request.path === '/api/run' ? reply(report({ knowledgeVersion: { release: published }, normalizedRequest: object, inputResolution: { action: 'config' } })) : undefined });
+  await agentUi.submit();
+  await until(() => agentUi.nodes.get('query-status').textContent.includes('已提取 2 项'));
+  await agentUi.nodes.get('query-form').dispatchEvent({ type: 'submit', preventDefault() {} });
+  await until(() => agentUi.nodes.get('query-status').textContent.includes('唯一匹配'));
+  await agentUi.submit();
+  await until(() => agentUi.nodes.get('query-status').textContent.includes('已提取 2 项'));
+  assert.equal(turnsOf(agentUi).length, 2);
+});
+
+test('对话流：新会话、切换会话、删除当前会话完全清空对话流与右侧，恢复只显示当前对象', async () => {
+  const published = publishedRelease();
+  const otherId = '44444444-4444-4444-8444-444444444444';
+  const listKey = `${storageKey}:list`;
+  const subject = { input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: published };
+  const restored = { input: 'http { gzip on; }', mode: 'fragment', question: '功能？', release: published };
+  const ui = await start({ originalApp: true, stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]], api: request => {
+    if (request.path === `/api/sessions/${otherId}`) return reply({ request: { message: 'gzip 的功能', release: published }, currentSubject: restored, messages: 2 });
+    if (request.path === '/api/run') return reply(report({ knowledgeVersion: { release: published }, normalizedRequest: subject, inputResolution: { action: 'config' } }));
+  } });
+  const pending = async () => { await until(() => ui.nodes.get('query-status').textContent.includes('已提取 2 项')); };
+  // 先产生两轮，右侧显示 worker_connections。
+  await ui.change('configuration', '第一问'); await ui.submit(); await pending();
+  await ui.change('configuration', '第二问'); await ui.submit();
+  assert.equal(turnsOf(ui).length, 2);
+  // 切换会话：对话流只剩恢复卡（不是完整历史），右侧换成恢复的对象。
+  const otherRow = ui.nodes.get('agent-history-list').children.find(node => node.textContent.includes('另一会话'));
+  await otherRow.children.find(node => node.textContent === '切换').dispatchEvent({ type: 'click' });
+  assert.equal(turnsOf(ui).length, 1);
+  assert.match(turnsOf(ui)[0].textContent, /会话已恢复.*不含历史轮次/);
+  assert.doesNotMatch(ui.nodes.get('agent-result').textContent, /默认 512/);
+  await until(() => ui.nodes.get('catalog-list').textContent.includes('gzip'));
+  assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+  // 新会话：对话流与右侧都清空。
+  await ui.click('agent-new');
+  assert.equal(ui.nodes.get('agent-result').textContent, '');
+  assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /gzip/);
+  // 新会话后同一对象的提交必须重新替换右侧（不能被“已显示”误判跳过）。
+  await ui.change('configuration', '再来'); await ui.submit(); await pending();
+  assert.equal(turnsOf(ui).length, 1);
+  assert.match(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+  // 删除当前会话：对话流与右侧清空。
+  const current = ui.nodes.get('agent-history-list').children.find(node => node.className === 'is-current');
+  await current.children.find(node => node.textContent === '删除').dispatchEvent({ type: 'click' });
+  assert.equal(ui.nodes.get('agent-result').textContent, '');
+  assert.doesNotMatch(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+});
+
+test('对话流：失败、被拒绝或发布不一致的提交不留下空轮次卡', async () => {
+  for (const reply_ of [reply({ error: '忙碌', code: 'busy' }, 409), reply({ error: '服务故障' }, 503), reply(report({ knowledgeVersion: { release: 'wrong-release' } }))]) {
+    const ui = await start({ api: request => request.path === '/api/run' ? reply_ : undefined });
+    await ui.submit();
+    assert.equal(turnsOf(ui).length, 0);
+  }
+});
+
+test('恢复会话时用户编辑输入导致放弃：状态栏写明原因，不停在“正在恢复”，输入保留', async () => {
+  const held = deferred();
+  const ui = await start({ stored: sessionId, api: request => request.path.startsWith('/api/sessions/') ? held.promise : undefined });
+  const restoring = ui.click('agent-restore');
+  await until(() => ui.requests.some(request => request.path.startsWith('/api/sessions/')));
+  assert.match(ui.nodes.get('agent-status').textContent, /正在恢复/);
+  await ui.change('configuration', '恢复期间编辑');
+  held.resolve(reply({ request: { input: '旧输入', release }, messages: 5 })); await restoring;
+  assert.match(ui.nodes.get('agent-status').textContent, /输入已变化，已放弃本次恢复回填/);
+  assert.doesNotMatch(ui.nodes.get('agent-status').textContent, /正在恢复/);
+  assert.equal(ui.nodes.get('configuration').value, '恢复期间编辑');
+  assert.equal(ui.nodes.get('agent-restore').disabled, false);
+});
+
+test('恢复卡显示后端 restore 返回的 inputResolution.notice，只作为文本', async () => {
+  const notice = '已按指令名 worker_connections 理解（原写法 Worker_Connections）。\n<img src=x onerror=alert(1)>';
+  const ui = await start({ stored: sessionId, api: request => request.path.startsWith('/api/sessions/')
+    ? reply({ request: { message: 'Worker_Connections 的默认值', release }, currentSubject: { input: 'worker_connections', mode: 'single', release }, inputResolution: { action: 'directive', notice }, messages: 2 }) : undefined });
+  await ui.click('agent-restore');
+  const card = turnsOf(ui)[0];
+  assert.ok(card.textContent.includes(notice));
+  assert.equal(descendants(card).find(node => node.textContent === notice)?.className, 'verification-notes');
+  assert.ok(!descendants(card).some(node => ['img', 'script'].includes(node.tagName)));
+  // 没有 notice 时不出现空说明段落。
+  const plain = await start({ stored: sessionId });
+  await plain.click('agent-restore');
+  assert.ok(!descendants(plain.nodes.get('agent-result')).some(node => node.className === 'verification-notes' && node.textContent === ''));
+});
+
+test('轮次卡内的说明文字按换行分行显示（white-space: pre-line）', () => {
+  const css = read('site/styles.css');
+  assert.match(css, /\.agent-turn \.verification-notes\s*\{[^}]*white-space:\s*pre-line/);
+});
+
+// M1：不更新右侧的轮次（澄清、问候、范围外）不能撤销标注，右侧仍是更早的对象。
+for (const [action, extra] of [['clarify', { state: 'awaiting_input', summary: undefined, modelSelection: null }], ['greeting', { summary: undefined, modelSelection: null }], ['out_of_scope', { summary: undefined, modelSelection: null }]]) {
+  test(`对话流：对象 A 之后接一次 ${action}，输入与提交一致时右侧标注仍在；改回 A 的原文才撤销`, async () => {
+    const published = publishedRelease();
+    let run = 0;
+    const ui = await start({ originalApp: true, api: request => request.path === '/api/run'
+      ? reply(run++ === 0
+        ? report({ knowledgeVersion: { release: published }, normalizedRequest: firstObject(published), inputResolution: { action: 'config' } })
+        : report({ knowledgeVersion: { release: published }, normalizedRequest: null, questions: [], inputResolution: { action, message: '固定话术' }, ...extra })) : undefined });
+    await ui.change('configuration', '第一问'); await ui.submit();
+    await until(() => ui.nodes.get('query-status').textContent.includes('已提取 2 项'));
+    assert.doesNotMatch(ui.nodes.get('query-status').textContent, PRIOR);
+    await ui.change('configuration', '你好');
+    assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+    await ui.submit();
+    assert.match(turnsOf(ui)[1].textContent, /固定话术/);
+    // 终态时输入框值 == 提交消息，但本轮没有更新右侧：标注必须保留，右侧结果不变。
+    assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+    assert.match(ui.nodes.get('catalog-list').textContent, /worker_connections/);
+    // O2：输入变化再改回“你好”仍保留；只有改回产生右侧对象的原文（第一问）才撤销，再改走又出现。
+    await ui.change('configuration', '你好呀'); await ui.change('configuration', '你好');
+    assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+    await ui.change('configuration', '第一问');
+    assert.doesNotMatch(ui.nodes.get('query-status').textContent, PRIOR);
+    await ui.change('configuration', '第一问？');
+    assert.match(ui.nodes.get('query-status').textContent, PRIOR);
+  });
+}
+
+// O1：Agent 对象没有被右侧采用（查询抛错 / 发布与页面索引不一致被忽略）后，已显示对象键失效，
+// 同对象的下一次提交要重新派发，而不是停在“查询未完成”。
+test('对话流：右侧 Agent 查询抛错后，同对象的下一次提交重新派发 agent-analysis', async () => {
+  const published = publishedRelease();
+  // 每次回复新建一个对象：module 的第 1 次读取来自 agent.mjs 的键计算，第 2 次来自页面 submit()，在那里抛错，走 runQuery 的 catch。
+  const broken = () => { let reads = 0; return { input: 'worker_connections', mode: 'single', context: 'events', get module() { if (++reads === 2) throw new Error('模拟右侧查询抛错'); return ''; }, question: '默认值？', release: published, inputSource: 'message' }; };
+  const ui = await start({ originalApp: true, api: request => request.path === '/api/run'
+    ? reply(report({ knowledgeVersion: { release: published }, normalizedRequest: broken(), inputResolution: { action: 'config' } })) : undefined });
+  const events = [];
+  ui.nodes.get('configuration').addEventListener('agent-analysis', () => events.push('agent-analysis'));
+  await ui.change('configuration', '第一问'); await ui.submit();
+  await until(() => ui.nodes.get('query-status').textContent.includes('查询未完成'));
+  assert.deepEqual(events, ['agent-analysis']);
+  await ui.change('configuration', '同一对象的追问'); await ui.submit();
+  assert.deepEqual(events, ['agent-analysis', 'agent-analysis']);
+  assert.equal(turnsOf(ui).length, 2);
+});
+
+test('对话流：Agent 对象的发布与页面索引不一致被右侧忽略后，同对象的下一次提交重新派发', async () => {
+  const published = publishedRelease();
+  const object = { input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: 'other-release', inputSource: 'message' };
+  const ui = await start({ originalApp: true, api: request => request.path === '/api/run'
+    ? reply(report({ knowledgeVersion: { release: published }, normalizedRequest: object, inputResolution: { action: 'config' } })) : undefined });
+  const events = [];
+  ui.nodes.get('configuration').addEventListener('agent-analysis', () => events.push('agent-analysis'));
+  await ui.change('configuration', '第一问'); await ui.submit();
+  await ui.change('configuration', '追问'); await ui.submit();
+  assert.deepEqual(events, ['agent-analysis', 'agent-analysis']);
 });

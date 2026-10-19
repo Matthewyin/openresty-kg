@@ -32,6 +32,63 @@ function environment(text, state) {
   el.dataset.state = state;
 }
 function note(text, error = false) { $('agent-status').textContent = text; $('agent-status').classList.toggle('error', error); }
+// ---------- 对话流 ----------
+// #agent-result 是对话流容器：每次被服务端接受的提交对应一个「轮次卡」（details/summary），
+// 新轮追加在下方；只有最新一轮默认展开，旧轮折叠成摘要行。历史轮只是已渲染好的 DOM，不再发起任何网络请求。
+// 最多保留 MAX_TURNS 轮，超出时从最旧一轮开始移除，保证页面节点数有界。
+const MAX_TURNS = 20;
+const SUMMARY_LIMIT = 60;
+let turns = []; // [{ root, body, state, number }]，按时间从旧到新
+let turnNumber = 0; // 单调递增的轮次号；被裁掉的旧轮不会让编号回退
+
+// 用户输入摘要：取第一行非空文本、折叠空白、按码点截断（不会截断代理对）。只作为文本节点内容，不当 HTML 解析。
+function summarizeInput(message) {
+  const line = String(message ?? '').split(/\r?\n/).map(item => item.replace(/\s+/g, ' ').trim()).find(Boolean) ?? '（空）';
+  const chars = Array.from(line);
+  return chars.length > SUMMARY_LIMIT ? `${chars.slice(0, SUMMARY_LIMIT).join('')}…` : line;
+}
+// 追加一个轮次卡并返回它；旧轮全部折叠，新轮展开。
+function addTurn(label) {
+  const root = node('details');
+  root.className = 'agent-turn';
+  const head = node('summary', undefined, root);
+  const number = ++turnNumber;
+  node('span', `第 ${number} 轮`, head, 'turn-no');
+  node('span', label, head, 'turn-summary');
+  const state = node('span', '', head, 'turn-state');
+  const body = node('div', undefined, root, 'turn-body');
+  for (const turn of turns) turn.root.open = false;
+  root.open = true;
+  const turn = { root, body, state, number };
+  turns.push(turn);
+  if (turns.length > MAX_TURNS) {
+    turns = turns.slice(turns.length - MAX_TURNS);
+    $('agent-result').replaceChildren(...turns.map(item => item.root));
+  } else $('agent-result').append(root);
+  return turn;
+}
+// 清空整个对话流：只用于新会话、切换/恢复会话、删除当前会话、知识发布变化这类有意的边界。
+function clearConversation() {
+  turns = [];
+  turnNumber = 0;
+  $('agent-result').replaceChildren();
+}
+// 轮次未正常结束（取消、登录失效、请求失败）时：移除“运行中”占位，把原因写在摘要行；已展示的内容保留。
+function settleTurn(turn, text) {
+  if (!turn) return;
+  turn.body.replaceChildren(...Array.from(turn.body.children).filter(child => child.className !== 'agent-pending'));
+  turn.state.textContent = text;
+}
+// 右侧候选/详情当前对应的 Agent 对象键。追问没有新对象时据此跳过派发，让右侧保持不动。
+let shownAnalysisKey = null;
+function resetShownAnalysis() { shownAnalysisKey = null; }
+// 键只取右侧候选/详情实际读取的字段（与 app.mjs 的 submit(request) 一致：input/mode/context/module，release 用于校验发布）。
+// 不能用整个 normalizedRequest：首轮带 inputSource/configRange 且 question 是用户问题，追问是 inputSource:'meta'、无 configRange、question 是追问句，
+// 这些字段不影响右侧，却会让键每次都不同。提交路径与恢复路径共用本函数。
+function analysisKey(request) {
+  return JSON.stringify([request.input ?? null, request.mode ?? null, request.context || null, request.module || null, request.release ?? null]);
+}
+
 function controls() {
   const ready = Boolean(service && !needsLogin && document.body.dataset.release);
   $('agent-submit').disabled = !ready || Boolean(active) || Boolean(interrupted);
@@ -150,13 +207,16 @@ async function deleteListed(id) {
   trackedSubject = null;
   invalidate('已删除当前会话，输入框内容保留，提交后开始新会话。');
   remember('');
+  resetShownAnalysis();
   $('configuration').dispatchEvent(new CustomEvent('agent-reset'));
 }
 function currentRequest() {
   return { message: $('configuration').value, release: document.body.dataset.release };
 }
 const fingerprint = () => JSON.stringify(currentRequest());
-const current = task => active === task && !task.cancelled && task.generation === generation && task.fingerprint === fingerprint();
+// 输入变化不再使提交任务失效（以提交时为准，结果进入自己的轮次卡）。
+// 唯一例外是“恢复会话”：它会把服务端内容回填输入框，期间用户编辑输入就必须放弃恢复，避免覆盖用户输入。
+const current = task => active === task && !task.cancelled && task.generation === generation && (task.kind !== 'restore' || task.fingerprint === fingerprint());
 function loginNote() {
   note(`登录已失效，请重新登录后点击“${sessionId || interrupted ? '恢复会话' : '重新检测服务'}”；输入已保留。${interrupted ? '任务标识已保留，后端任务可能仍在运行，未确认取消。' : ''}`, true);
   link($('agent-status'), new URL('/login', appBase).href, '打开登录页');
@@ -166,6 +226,7 @@ function requireLogin(task) {
   authDraftProtected = true;
   if (task) {
     task.authPaused = true;
+    settleTurn(task.turn, '登录失效，任务中断');
     task.controller.abort();
     task.wake?.();
     if (task.requestId && !task.terminal) interrupted = task;
@@ -234,13 +295,17 @@ async function stop(task) {
   catch (error) { if (error.code === 'auth_required') requireLogin(task); throw error; }
   finally { task.stopPromise = null; }
 }
-function invalidate(text = '输入已变化，请重新发送；旧结果不再用于当前输入。') {
+// 使当前活动任务与结果失效。keepConversation=true 时保留已有轮次（取消、改用本地查询），
+// 否则清空整个对话流（新会话、删除当前会话、知识发布变化）。输入框编辑不走这里，见 inputHint。
+function invalidate(text, { keepConversation = false } = {}) {
   generation++;
-  $('agent-result').replaceChildren();
+  if (keepConversation) { if (active && !active.terminal) settleTurn(active.turn, '已取消'); }
+  else clearConversation();
   if (needsLogin) loginNote(); else note(service ? text : serviceIssue);
   if (active) {
     const task = active;
     if (task.analysisKey) {
+      resetShownAnalysis();
       $('configuration').dispatchEvent(new CustomEvent('agent-reset', { detail: '本次 Agent 分析已失效，请重新提交或使用本地查询。' }));
       delete task.analysisKey;
     }
@@ -250,6 +315,12 @@ function invalidate(text = '输入已变化，请重新发送；旧结果不再�
     if (task.kind === 'run') void stop(task).catch(error => { if (error.code !== 'auth_required' && active === task) note('取消尚未确认，请再次点击取消或检查服务。', true); });
   }
   controls();
+}
+// 输入框变化的轻提示：不清空回答、不取消任务、不改变会话；是否作为追问由提交时的服务端决定。
+// 任务运行中保持进度文字不被覆盖；登录失效与服务不可用的提示优先，与原先一致。
+function inputHint() {
+  if (active) return;
+  if (needsLogin) loginNote(); else note(service ? '输入已变化，提交后将作为追问或新查询处理；上方已有回答保留。' : serviceIssue);
 }
 function link(parent, href, text) {
   let url;
@@ -327,20 +398,28 @@ function externalReferences(parent, references) {
 }
 function render(job, task) {
   if (job.knowledgeVersion?.release && job.knowledgeVersion.release !== task.request.release) throw new Error('结果发布与当前请求不一致，请刷新知识站。');
-  const result = $('agent-result'); result.replaceChildren();
-  // 每个任务首次出结果时把回答区滚入视野，告诉用户“接下来看这里”；后续轮询不再打断阅读。
-  if (!task.revealed) { task.revealed = true; result.closest?.('section')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
+  // 轮次卡在首次渲染时才创建：被服务端拒绝、发布不一致等尚无结果的失败不会留下空卡。
+  task.turn ??= addTurn(summarizeInput(task.request?.message));
+  const result = task.turn.body; result.replaceChildren();
+  task.turn.state.textContent = labels[job.state] ?? job.state ?? '';
+  // 每个任务首次出结果时把本轮卡滚入视野，告诉用户“接下来看这里”；后续轮询不再打断阅读。
+  if (!task.revealed) { task.revealed = true; task.turn.root.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
   const state = labels[job.state] ?? job.state;
   const phase = job.state !== 'running' ? '' : job.phase === 'input_resolution' ? ' · 正在识别配置与问题' : job.summary ? ' · 基础匹配已就绪，等待模型选取' : ' · 正在准备知识与会话';
   note(`${state}${phase}${job.cacheHit ? ' · 历史精确缓存（本次未推理）' : ''}${job.error ? ` · ${job.error}` : ''}`, job.state === 'failed');
   if (job.inputResolution?.message) node('p', job.inputResolution.message, result, 'notice');
   // 消息中有未处理的跑题部分时，在结果区说明，避免用户误以为整条消息都已处理。
   if (job.inputResolution?.notice) node('p', job.inputResolution.notice, result, 'verification-notes');
+  // 本轮是否“拥有”右侧：渲染了 normalizedRequest 且不是澄清/范围外/问候这类不更新右侧的动作。
+  // 下面的块执行后，右侧要么已被本轮替换，要么与 shownAnalysisKey 一致（本轮对象与已显示对象相同）。
+  task.ownsRight = Boolean(job.normalizedRequest) && !NO_QUERY_ACTIONS.has(job.inputResolution?.action);
   if (job.normalizedRequest && !NO_QUERY_ACTIONS.has(job.inputResolution?.action)) {
     const request = job.normalizedRequest;
     showConfiguration(result, request, job.inputResolution?.action === 'followup' ? '本次沿用的配置（展开核对）' : '本次识别的配置 / 指令（展开核对）');
-    const key = JSON.stringify(request);
-    if (task.analysisKey !== key) {
+    // 右侧候选/详情只在对象真的变化时替换：追问沿用同一对象时不重置，也不让本任务“拥有”右侧（取消追问不应清掉上一轮的对象）。
+    const key = analysisKey(request);
+    if (key !== shownAnalysisKey) {
+      shownAnalysisKey = key;
       task.analysisKey = key;
       $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: request }));
     }
@@ -436,7 +515,7 @@ async function submit(event) {
   const request = currentRequest();
   if (!request.message.trim()) { note('请输入配置、问题或追问。', true); return; }
   const task = { kind: 'run', generation: ++generation, fingerprint: fingerprint(), request, controller: new AbortController() };
-  active = task; $('agent-result').replaceChildren(); note('正在提交到 Agent…'); controls();
+  active = task; note('正在提交到 Agent…'); controls();
   try {
     // 提交响应必须接收 requestId；输入变化时随后取消，不能先中断请求而丢失任务身份。
     let job = await api('/api/run', { request, ...(sessionId ? { sessionId } : {}) });
@@ -449,7 +528,7 @@ async function submit(event) {
     if (!current(task) && !task.terminal) task.cancelled = true;
   } catch (error) {
     if (error.code === 'auth_required' && active === task) requireLogin(task);
-    else if (current(task)) { task.cancelled = true; if (error.code === 'job_unavailable') task.terminal = true; note(`Agent 未完成：${error.message}。原查询不受影响。`, true); }
+    else if (current(task)) { task.cancelled = true; if (error.code === 'job_unavailable') task.terminal = true; settleTurn(task.turn, '未完成'); note(`Agent 未完成：${error.message}。原查询不受影响。`, true); }
   } finally { await finish(task); }
 }
 async function finish(task) {
@@ -474,13 +553,25 @@ async function followJob(task, job) {
         if (!existing || existing.title !== title) saveSession(id, title);
       }
     }
-    if (task.showResults === false) note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
-    else render(job, task);
+    if (task.showResults === false) {
+      if (task.turn) task.turn.state.textContent = `原任务${labels[job.state] ?? job.state}（结果未回填）`;
+      note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
+    }
+    else {
+      render(job, task);
+      // 终态渲染完成后告知提交时的消息：app 据此判断输入框是否已被改动，决定右侧是否标注“上一次识别的对象”。
+      if (task.terminal && task.turn) $('configuration').dispatchEvent(new CustomEvent('agent-turn-done', { detail: { message: task.request?.message ?? '', owned: Boolean(task.ownsRight) } }));
+    }
     if (task.terminal) { if (interrupted?.requestId === task.requestId) interrupted = null; break; }
     await pause(task);
     if (!current(task)) { task.cancelled = true; break; }
     job = await api(`/api/jobs/${task.requestId}?brief=1`, undefined, task.controller.signal);
   }
+}
+// 恢复被“用户编辑输入”放弃时写明原因，避免状态栏停在“正在恢复…”；其他放弃原因（新会话、发布变化等）各自已有提示。
+function abandonRestore(task) {
+  if (task.kind === 'restore' && active === task && !task.cancelled && task.generation === generation && task.fingerprint !== fingerprint()) note('输入已变化，已放弃本次恢复回填；输入已保留，可重新点击“恢复会话”。');
+  return 'aborted';
 }
 async function restore() {
   if (active || !(sessionId || interrupted)) return 'aborted';
@@ -490,16 +581,17 @@ async function restore() {
   active = task; note('正在恢复服务端会话…'); controls();
   try {
     if ((needsLogin || !service) && !await probe()) return 'failed';
-    if (!current(task)) return 'aborted';
+    if (!current(task)) return abandonRestore(task);
     if (interrupted) {
       const pending = interrupted;
       let job;
       try { job = await api(`/api/jobs/${pending.requestId}?brief=1`, undefined, task.controller.signal); }
       catch (error) { if (error.code !== 'job_unavailable') throw error; }
-      if (!current(task)) return 'aborted';
+      if (!current(task)) return abandonRestore(task);
       if (pending.sessionId) remember(pending.sessionId);
+      if (!job) settleTurn(pending.turn, '任务不可续传');
       if (job) {
-        Object.assign(task, { kind: 'run', requestId: pending.requestId, sessionId, request: pending.request, showResults: pending.showResults !== false && pending.fingerprint === task.fingerprint });
+        Object.assign(task, { kind: 'run', requestId: pending.requestId, sessionId, request: pending.request, turn: pending.turn, showResults: pending.showResults !== false && pending.fingerprint === task.fingerprint });
         controls();
         await followJob(task, job);
         if (current(task) && task.terminal) authDraftProtected = false;
@@ -507,7 +599,7 @@ async function restore() {
       }
     }
     const saved = await api(`/api/sessions/${sessionId}`, undefined, task.controller.signal);
-    if (!current(task)) return 'aborted';
+    if (!current(task)) return abandonRestore(task);
     if (saved.request.release && saved.request.release !== document.body.dataset.release) throw new Error('会话属于另一知识发布，请先打开对应发布后恢复，或新建会话');
     interrupted = null;
     authDraftProtected = false;
@@ -517,11 +609,25 @@ async function restore() {
     if (!preserveInput) {
       $('configuration').value = saved.request.message ?? [saved.request.input, saved.request.question].filter(Boolean).join('\n\n');
       $('configuration').dispatchEvent(new Event('input'));
+      // 切换/恢复会话是有意的边界：对话流与右侧候选/详情完全清空，只显示恢复出的当前对象（服务端不返回完整历史报告）。
+      clearConversation();
+      resetShownAnalysis();
+      $('configuration').dispatchEvent(new CustomEvent('agent-reset', { detail: '已恢复会话；右侧只显示恢复的当前对象，不含历史轮次。' }));
     }
     const restoredConfig = saved.currentSubject ?? saved.currentConfig ?? saved.normalizedRequest;
-    if (!preserveInput && restoredConfig?.input) {
-      showConfiguration($('agent-result'), restoredConfig, '恢复的会话配置 / 指令（展开核对；不是历史完整报告）');
-      if (restoredConfig.release === document.body.dataset.release) $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: restoredConfig }));
+    // 后端恢复时返回的说明（如指令名大小写规范化、未处理的无关部分）：只作为文本显示在恢复卡里。
+    const restoredNotice = typeof saved.inputResolution?.notice === 'string' ? saved.inputResolution.notice.trim() : '';
+    if (!preserveInput && (restoredConfig?.input || restoredNotice)) {
+      const turn = addTurn('会话已恢复（仅当前对象，不含历史轮次）');
+      turn.state.textContent = '已恢复';
+      if (restoredNotice) node('p', restoredNotice, turn.body, 'verification-notes');
+      if (restoredConfig?.input) {
+        showConfiguration(turn.body, restoredConfig, '恢复的会话配置 / 指令（展开核对；不是历史完整报告）');
+        if (restoredConfig.release === document.body.dataset.release) {
+          shownAnalysisKey = analysisKey(restoredConfig);
+          $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: restoredConfig }));
+        }
+      }
     }
     note(`已恢复 ${saved.messages} 条会话记录；${preserveInput ? `${recoveringJob ? '旧任务不可续传，' : ''}当前输入已保留，未自动提交；` : saved.request.message === undefined ? '旧会话的配置与问题已合并到输入框；' : ''}${saved.interrupted ? '已丢弃中断轮次；' : ''}${saved.knowledgeChanged || saved.contractChanged ? '知识或契约已变化，下次提交按当前发布重新选取。' : '可继续追问。'}`);
     return 'ok';
@@ -535,25 +641,30 @@ async function restore() {
       return 'expired';
     }
     if (current(task)) {
-      if (task.kind === 'run') { task.cancelled = true; if (error.code === 'job_unavailable') task.terminal = true; }
+      if (task.kind === 'run') { task.cancelled = true; if (error.code === 'job_unavailable') task.terminal = true; settleTurn(task.turn, '恢复未完成'); }
       note(`恢复未完成：${error.message}`, true);
       return 'failed';
     }
-    return 'aborted';
+    return abandonRestore(task);
   }
   finally { await finish(task); }
 }
 $('agent-form').addEventListener('submit', submit);
-$('query-form').addEventListener('submit', () => { if (active) invalidate('已切换到本地查询，正在取消之前的 Agent 请求。'); }, { capture: true });
+// 本地查询会替换右侧候选/详情：先让“已显示的 Agent 对象”失效，之后的追问即使对象相同也要重新派发。
+$('query-form').addEventListener('submit', () => { resetShownAnalysis(); if (active) invalidate('已切换到本地查询，正在取消之前的 Agent 请求。', { keepConversation: true }); }, { capture: true });
+// “浏览全部目录”同样会清掉右侧的 Agent 对象。
+$('browse-all')?.addEventListener('click', resetShownAnalysis);
+// 右侧没有采用本次 Agent 对象（查询失败、发布不一致被忽略）：已显示对象失效，下一次同对象提交要重新派发。
+$('configuration').addEventListener('agent-analysis-failed', resetShownAnalysis);
 $('agent-cancel').addEventListener('click', () => {
   const task = active;
-  invalidate('已停止旧结果显示，正在确认取消…');
+  invalidate('正在确认取消；已有轮次保留，本轮不再更新…', { keepConversation: true });
   if (task?.requestId) void stop(task).then(() => { if (task.authPaused) return; if (interrupted?.requestId === task.requestId) interrupted = null; if (active === task) { active = null; controls(); } if (task.generation + 1 === generation) note('已取消；基础查询仍可使用。'); }).catch(() => {});
 });
-$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; trackedSubject = null; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
+$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; trackedSubject = null; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); resetShownAnalysis(); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
 $('agent-restore').addEventListener('click', restore);
 $('agent-retry').addEventListener('click', probe);
-$('configuration').addEventListener('input', () => invalidate());
+$('configuration').addEventListener('input', inputHint);
 new MutationObserver(() => {
   const next = document.body.dataset.release ?? '';
   if (next !== release) {

@@ -38,7 +38,7 @@
 
 ### 原静态查询
 
-浏览器解析提供的文本，保留参数、位置、块层级和 context，结合模块匹配知识身份；支持查询结果目录、全站浏览、相关项和参考浏览。修改输入清除旧结果。普通查询不触发 Agent POST，也不依赖模型或 Pi 服务；无 API 时 Agent 明确不可用，原查询继续工作。
+浏览器解析提供的文本，保留参数、位置、块层级和 context，结合模块匹配知识身份；支持查询结果目录、全站浏览、相关项和参考浏览。修改输入清除本地解析的旧结果；Agent 回答按轮保留为对话流（最多 20 轮），不因输入变化清除。粘贴配置中写错大小写的指令（如 `Listen`）给出区分大小写的提示，不静默改写用户配置；句首大写的普通英文词（如 `Set proxy_pass 的作用` 中的 `Set`）不当作第二个指令。普通查询不触发 Agent POST，也不依赖模型或 Pi 服务；无 API 时 Agent 明确不可用，原查询继续工作。
 
 同名候选、未知指令、缺 context、解析错误与未分析外部引用分别提示，不自动择优。块内数据和控制项保留独立分类、位置与块路径，不冒充普通指令；Lua 词法边界不等于原生配置加载语义。
 
@@ -87,7 +87,7 @@
 | 覆盖与基础内容 | 分母由发行组件/扩展注册集合核定；功能、入口、状态与来源齐全。 | [发行验收](analysis/WEBSITE_COMPLETION_VERIFICATION.md)、[扩展验收](analysis/EXTENSION_MODULE_VERIFICATION.md)。不等于现场启用。 |
 | 部门深度与补证 | 按确定样例逐项核对功能、限制及源码；默认/继承未核实与不适用分开。 | [样例验收](analysis/SAMPLE_FINAL25_RUNTIME_VERIFICATION.md)、[六项边界](analysis/SAMPLE_CONFIGURATION_BOUNDARIES.md)、[默认/继承验收](analysis/DEFAULTS_340_VERIFICATION.md)。 |
 | 原查询与解析边界 | 单项/片段/main、同名、Lua、块内数据及外部文件状态可靠；静态独立可用。 | [可靠性验收](analysis/WEBSITE_RELIABILITY_VERIFICATION.md)、[解析边界证据](analysis/WEBSITE_RELIABILITY_PARSER_EVIDENCE.md)。不验证参数语义。 |
-| Pi 正确性与交互 | 真实模型选择已有字段；校验、来源、固定发布、追问/恢复/取消/缓存成立；输入变化不允许陈旧结果覆盖。 | [Pi 验收](analysis/PI_AGENT_SPEED_VERIFICATION.md)、[独立审核](analysis/PI_AGENT_SPEED_REVIEW.md)。包含本机真实桌面与静态降级，非部门部署验收。 |
+| Pi 正确性与交互 | 真实模型选择已有字段；校验、来源、固定发布、追问/恢复/取消/缓存成立；追问保留上一轮回答，每轮结果只属于其提交时的输入；输入变化不得使本地解析结果或迟到响应被误读为当前输入的结果。 | [Pi 验收](analysis/PI_AGENT_SPEED_VERIFICATION.md)、[独立审核](analysis/PI_AGENT_SPEED_REVIEW.md)。包含本机真实桌面与静态降级，非部门部署验收。 |
 | Pi 性能计量 | 常规三样例各三次独立冷缓存、固定问题；各一次真实模型请求、零工具往返；输入低于20KB，最终文本不超过2KiB且比各自历史输出减少至少70%。 | 同上。总耗时包含 host 工作；字节不是 token，最终文本不等于补齐报告；历史单次参考不是严格 A/B。基础零模型或缓存命中不得充当模型提速样本。 |
 | 可选 MCP | 单项与错误/歧义、JSON/Markdown/链接遵循共用知识；协议测试与宿主验收分开。 | [原链路审核](analysis/REVIEW.md)；真实 Codex 暂缓，不阻塞当前网站收口。 |
 

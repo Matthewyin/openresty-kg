@@ -13,6 +13,12 @@ let querySequence = 0;
 let previewSequence = 0;
 let catalogMode = 'all';
 let queryCandidates = [];
+// 右侧候选/详情当前属于谁：'agent' = 由 Agent 提交的 normalizedRequest 派生；'local' = 用户点“仅本地识别并查询”；null = 无结果/目录浏览。
+// 输入框变化后，本地结果不再对应当前输入，必须清除；Agent 结果属于对话流中已提交的那一轮，保留并加显式标注。
+let resultOwner = null;
+// 最近一次“确认右侧属于它”的 Agent 提交消息；输入框改回这条原文时才可撤销标注（clarify/greeting 等不更新右侧的轮次不会写入它）。
+let ownedMessage = null;
+let priorNote = null; // “以下为上一次 Agent 提交的结果”标注节点，复用同一个节点避免重复
 function message(text, error = false) { const node = byId('global-status'); node.textContent = text; node.classList.toggle('error', error); }
 function section(title) { const node = element('section', undefined, 'detail-section'); node.append(element('h3', title)); return node; }
 
@@ -26,6 +32,7 @@ function resetFilters() {
 }
 
 function clearQuery(text) {
+  resultOwner = null; ownedMessage = null;
   ++querySequence;
   ++previewSequence;
   catalogMode = 'query';
@@ -40,7 +47,20 @@ function clearQuery(text) {
   renderCatalog();
 }
 
+// 在 Agent 结果上显示/移除“上一次提交”标注。标注与结果一起存在于 #query-status，随下一次查询的 replaceChildren 自然消失。
+function markPrior(show) {
+  const status = byId('query-status');
+  const present = priorNote && [...status.children].includes(priorNote);
+  if (show && !present) {
+    priorNote ??= element('p', '此处为上一次识别出的对象，不一定对应当前输入框的内容。', 'query-message agent-prior');
+    status.replaceChildren(priorNote, ...status.children);
+  } else if (!show && present) status.replaceChildren(...[...status.children].filter(child => child !== priorNote));
+}
+
 function inputChanged() {
+  // Agent 对话流的追问：右侧属于已提交的上一轮，不清除，只加显式标注避免误读为当前输入的结果。
+  if (resultOwner === 'agent') { markPrior(ownedMessage === null || byId('configuration').value !== ownedMessage); return; }
+  // 本地解析结果不再对应当前输入：保持原有清除语义。
   clearQuery('输入已变化，请重新查询。');
   // stale 标记让样式在“只有这条提示、没有结果”时收起回答区，避免每次输入都弹出空的第 2 步。
   byId('query-status').append(element('p', '输入已变化，请重新查询。', 'query-message stale'));
@@ -297,11 +317,15 @@ async function submit(generation, request) {
 
 async function runQuery(request) {
   clearQuery('正在识别本次输入…');
+  resultOwner = request ? 'agent' : 'local';
   const generation = querySequence;
   const button = byId('query-submit'); button.disabled = true;
   try { await submit(generation, request); }
   catch {
     if (generation !== querySequence) return;
+    resultOwner = null; ownedMessage = null;
+    // 通知 Agent 侧：右侧已不再显示该对象，下一次同对象提交必须重新派发。
+    byId('configuration').dispatchEvent(new CustomEvent('agent-analysis-failed'));
     ++previewSequence; queryCandidates = []; selectedId = null; renderCatalog();
     byId('parsed-results').replaceChildren();
     resetResultFilter();
@@ -311,8 +335,19 @@ async function runQuery(request) {
 }
 byId('query-form').addEventListener('submit', async event => { event.preventDefault(); await runQuery(); });
 byId('configuration').addEventListener('agent-analysis', event => {
-  if (event.detail?.release !== index?.release_id) return;
+  if (event.detail?.release !== index?.release_id) { byId('configuration').dispatchEvent(new CustomEvent('agent-analysis-failed')); return; }
   void runQuery(event.detail);
+});
+// Agent 一轮结束（终态渲染完成）。规则：
+// - 输入框与提交消息不一致：一律加标注（用户在等待期间又改了输入）。
+// - 一致：只有本轮确认右侧属于它（detail.owned）才能撤销标注；澄清/范围外/问候等不更新右侧的轮次不能撤销，
+//   否则右侧仍是更早的对象却像当前输入的结果。
+byId('configuration').addEventListener('agent-turn-done', event => {
+  if (resultOwner !== 'agent') return;
+  const message = event.detail?.message ?? '';
+  if (event.detail?.owned) ownedMessage = message;
+  if (byId('configuration').value !== message) markPrior(true);
+  else if (event.detail?.owned) markPrior(false);
 });
 byId('configuration').addEventListener('agent-reset', event => clearQuery(event.detail || '新会话尚未提交，请输入配置或问题。'));
 byId('configuration').addEventListener('input', inputChanged);

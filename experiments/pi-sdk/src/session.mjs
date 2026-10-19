@@ -11,7 +11,7 @@ import { startMock } from './mock-provider.mjs';
 import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
-import { INPUT_CONTRACT, INPUT_PROMPT, resolveInput, cacheMessage, refreshCanonicalNotice } from './input-resolution.mjs';
+import { INPUT_CONTRACT, INPUT_PROMPT, resolveInput, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
 // 工具结果统一形状（与 knowledge-tools 中的 result 一致），供联网工具复用。
@@ -681,6 +681,13 @@ export class Spike {
       bundle = await stage('parseMs', () => knowledgeTools(snapshot, () => request, job.trace));
       await stage('preloadMs', () => bundle.prepare());
       check();
+      // 配置里的指令名与索引仅大小写不同（如 Listen 80;）时给出提示：只提示，不替换配置原文、不改变匹配结果。
+      // 提示并入 inputResolution.notice（与 ignored、规范名说明换行合并），随 decorate/finish 写入报告、会话元数据与完成缓存，
+      // 缓存键已含消息与知识哈希，命中缓存时由缓存的 report/resolution 原样恢复。
+      // 名称查询（directive）的规范名已由 resolveInput 说明，这里只处理配置原文（config）及沿用配置的追问（followup）。
+      if (unified && ['config', 'followup'].includes(job.inputResolution?.action)) {
+        job.inputResolution = appendResolutionNotice(job.inputResolution, caseMismatchNotice(bundle.analysis, snapshot.index.directives));
+      }
       Object.assign(job, decorate(await stage('basicReportMs', () => makeReport(null, bundle))), { phase: 'basic' });
       const pendingInput = bundle.analysis.questions.length || bundle.analysis.parsed.errors.length || !bundle.analysis.parsed.directives.length || bundle.analysis.matches.some(match => !['matched', 'block_entry'].includes(match.status));
       // phase 与 output 告诉模型这一轮不是意图提取。没有这两个字段时，系统提示开头的 input_resolution 规则会被当成当前任务。

@@ -308,8 +308,23 @@ select:disabled, input:disabled { background: var(--paper-deep); color: var(--mu
   border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-sm);
 }
 .agent-pending::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
-#agent-result > .notice { margin: 0 0 12px; }
-#agent-result > .verification-notes { margin: 6px 0; }
+/* 对话流：每轮一个 details；旧轮折叠成摘要行，最新一轮默认展开 */
+.agent-turn { margin: 0 0 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.agent-turn > summary {
+  display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; padding: 8px 14px; cursor: pointer;
+  font-size: var(--fs-sm); color: var(--ink-soft);
+}
+.agent-turn[open] > summary { border-bottom: 1px solid var(--line-soft); }
+.agent-turn .turn-no { font-weight: 600; color: var(--accent); white-space: nowrap; }
+.agent-turn .turn-summary { flex: 1; min-width: 0; font-family: var(--mono); overflow-wrap: anywhere; }
+.agent-turn .turn-state { font-size: var(--fs-xs); color: var(--muted); white-space: nowrap; }
+.turn-body { padding: 12px 14px 2px; }
+.turn-body > .notice { margin: 0 0 12px; }
+.turn-body > .verification-notes { margin: 6px 0; }
+/* 后端可能用换行合并多条提示：轮次卡内的说明文字按换行分行显示 */
+.agent-turn .verification-notes { white-space: pre-line; }
+/* 右侧保留的 Agent 结果在输入变化后的显式标注 */
+#query-status .agent-prior { color: var(--amber); }
 
 /* 本次识别/沿用的配置：折叠预览 */
 .resolved-input { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
