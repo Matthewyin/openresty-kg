@@ -1,5 +1,4 @@
-
-    // Resolve the theme before first paint so light-preference users don't
+// Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
     (function () {
       try {
@@ -23,4 +22,3 @@
         document.documentElement.setAttribute('data-theme', theme);
       } catch (_) {}
     })();
-  

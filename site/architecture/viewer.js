@@ -1,5 +1,4 @@
-
-    var Archify = {};
+var Archify = {};
     var archifyI18nData = (function () {
       var node = document.getElementById('archify-i18n-data');
       try { return JSON.parse(node ? node.textContent : '{}'); }
@@ -9165,4 +9164,3 @@
         Archify.presentation.exit();
       }
     });
-  
