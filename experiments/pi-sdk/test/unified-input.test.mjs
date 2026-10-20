@@ -517,8 +517,9 @@ test('R01：unknown首条或首块不会被丢弃：模型只返回后一块时�
       // 首条 unknown 没有被丢弃：规范化输入是完整消息，首条匹配为 unknown，因此不能完成。
       assert.equal(job.normalizedRequest.input, message); assert.equal(job.inputResolution.action, 'config');
       assert.equal(job.matches[0].status, 'unknown'); assert.equal(job.state, 'awaiting_input'); assert.equal(job.cacheHit, false);
+      // 未收录指令使配置校验为 fail：本轮配置如实展示，但不成为后续追问沿用的当前对象。
       const saved = await spike.restore(job.sessionId);
-      assert.equal(saved.currentConfig.input, message);
+      assert.equal(saved.normalizedRequest.input, message); assert.equal(saved.currentConfig, null);
     }
     // 模型逐字返回完整消息时结果相同。
     spike.config.mockIntentResult = { action: 'config', input: message, question: '', ignored: false };
@@ -1160,15 +1161,8 @@ test('配置大小写提示：与 ignored 提示换行合并，两者都保留',
   assert.equal(job.normalizedRequest.input, 'http { server { Listen 80; } }');
 });
 
-test('配置大小写提示：沿用配置的追问同样带提示', async t => {
-  const { run } = await setup(t);
-  const first = await run('http { server { Listen 80; } }');
-  assert.equal(first.inputResolution.notice, LISTEN_NOTICE);
-  const follow = await run('刚才这段有哪些限制', first.sessionId);
-  assert.equal(follow.inputResolution.action, 'followup', follow.error);
-  assert.equal(follow.inputResolution.notice, LISTEN_NOTICE);
-  assert.equal(follow.normalizedRequest.input, 'http { server { Listen 80; } }');
-});
+// 说明：含大小写错误指令名的配置校验为 fail（见 validation.test.mjs），不会成为后续追问沿用的对象，
+// 因此“沿用配置的追问带大小写提示”的路径不再可达；相关行为由 validation.test.mjs 的闸门用例覆盖。
 
 test('配置大小写提示：单元规则——仅未匹配且未精确收录的名称、多规范名全列、最多 5 个、名称限长', () => {
   const entries = names => names.map(name => ({ name }));

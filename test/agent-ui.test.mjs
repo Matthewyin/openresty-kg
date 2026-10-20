@@ -1239,3 +1239,189 @@ test('对话流：Agent 对象的发布与页面索引不一致被右侧忽略�
   await ui.change('configuration', '追问'); await ui.submit();
   assert.deepEqual(events, ['agent-analysis', 'agent-analysis']);
 });
+
+// ---------- 配置校验块 ----------
+const NOT_CHECKED = ['参数个数与取值', '重复或冲突', '指令所需模块是否可用', 'include 文件、证书路径与变量是否存在'];
+// 按固定契约构造 validation；overrides 可替换 checks 或其中某项，便于构造 fail/needs_input 与非法形状。
+const makeValidation = (verdict, checks) => ({ verdict, checks: checks ?? [
+  { id: 'syntax', title: '语法', status: 'pass', issues: [] },
+  { id: 'directive_names', title: '指令名（区分大小写）', status: verdict === 'fail' ? 'fail' : 'pass', issues: verdict === 'fail' ? [{ line: 3, name: 'Worker_Connections', message: '未知指令 Worker_Connections', suggestions: ['worker_connections', 'worker_aio_requests'] }] : [] },
+  { id: 'context', title: '上下文', status: verdict === 'needs_input' ? 'needs_input' : verdict === 'fail' ? 'skipped' : 'pass', issues: verdict === 'needs_input' ? [{ line: 5, name: 'listen', message: '缺少外层 http/server，无法确定上下文' }] : [] },
+], notChecked: NOT_CHECKED });
+const validationBlock = root => descendants(root).find(node => /^validation-block\b/.test(node.className ?? ''));
+const runWith = async patch => {
+  const ui = await start({ api: request => request.path === '/api/run' ? reply(report(patch)) : undefined });
+  await ui.submit();
+  return ui;
+};
+
+test('配置校验：三种 verdict 的标题、默认展开/折叠、逐项文字、脚注，且位于本轮其他内容之前', async () => {
+  const cases = [['pass', '✓ 配置校验：通过', false], ['fail', '✗ 配置校验：未通过', true], ['needs_input', '… 配置校验：需要补充', true]];
+  for (const [verdict, title, open] of cases) {
+    const ui = await runWith({ validation: makeValidation(verdict), inputResolution: { action: 'config', message: '固定识别说明' }, normalizedRequest: { input: 'events { worker_connections 1; }', mode: 'fragment', release } });
+    const body = turnsOf(ui)[0].children.find(node => node.className === 'turn-body');
+    const block = validationBlock(ui.nodes.get('agent-result'));
+    assert.ok(block, verdict);
+    // 位置：本轮 body 的第一个子节点，先于识别说明、配置折叠块、统计与模型选取。
+    assert.equal(body.children[0], block, verdict);
+    assert.equal(block.open, open, verdict);
+    const summary = block.children.find(node => node.tagName === 'summary');
+    assert.equal(summary.textContent, title, verdict);
+    const text = block.textContent;
+    for (const expected of ['语法：通过', '指令名（区分大小写）：', '上下文：', `未校验：${NOT_CHECKED.join('、')}`]) assert.ok(text.includes(expected), `${verdict} ${expected}`);
+    const content = body.textContent;
+    assert.ok(content.indexOf('配置校验') < content.indexOf('固定识别说明') && content.indexOf('配置校验') < content.indexOf('默认 512'), verdict);
+  }
+  // 逐项状态文字：不通过 / 需要补充 / 未检查。
+  const fail = await runWith({ validation: makeValidation('fail') });
+  assert.ok(fail.nodes.get('agent-result').textContent.includes('指令名（区分大小写）：不通过'));
+  assert.ok(fail.nodes.get('agent-result').textContent.includes('上下文：未检查'));
+  const needs = await runWith({ validation: makeValidation('needs_input') });
+  assert.ok(needs.nodes.get('agent-result').textContent.includes('上下文：需要补充'));
+  // 没有 validation 时不出现该块。
+  const none = await runWith({});
+  assert.equal(validationBlock(none.nodes.get('agent-result')), undefined);
+});
+
+test('配置校验：fail 列出“第 N 行：message”与“正确写法”，需要补充列出缺失上下文', async () => {
+  const noFacts = { modelSelection: { resolvedFacts: [], citations: [] } };
+  const fail = await runWith({ ...noFacts, validation: makeValidation('fail') });
+  const failText = fail.nodes.get('agent-result').textContent;
+  assert.ok(failText.includes('第 3 行：未知指令 Worker_Connections'));
+  assert.ok(failText.includes('正确写法：worker_connections、worker_aio_requests'));
+  // 通过项与未检查项不列 issues；只有 fail 项下有“第 N 行”。
+  assert.equal((failText.match(/第 \d+ 行：/g) ?? []).length, 1);
+  const needs = await runWith({ ...noFacts, validation: makeValidation('needs_input') });
+  assert.ok(needs.nodes.get('agent-result').textContent.includes('第 5 行：缺少外层 http/server，无法确定上下文'));
+});
+
+// 原因句只在后端确实跳过模型（metrics.gate.modelSkipped === true）、任务已结束且 verdict 为 fail 时显示。
+const NO_FACTS = { modelSelection: { resolvedFacts: [], citations: [] } };
+const CAUSE = '配置校验未通过，没有继续查询知识字段。';
+const gateMetrics = (verdict, modelSkipped) => ({ modelRoundTrips: 0, totalMs: 5, finalOutputBytes: 0, gate: { verdict, modelSkipped } });
+const anyCause = text => /没有继续查询知识字段/.test(text);
+
+test('配置校验：fail 且后端跳过模型时显示原因句，并压掉“补充问题后重试”那句', async () => {
+  const ui = await runWith({ ...NO_FACTS, validation: makeValidation('fail'), metrics: gateMetrics('fail', true) });
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes(CAUSE));
+  assert.ok(!text.includes('本次没有可展示的模型选取') && !text.includes('补充问题后重试'));
+  assert.ok(text.includes('第 3 行：未知指令 Worker_Connections'));
+});
+
+test('配置校验：fail 但没有 metrics.gate（老数据）不显示原因句，原有提示保留', async () => {
+  for (const metrics of [undefined, { modelRoundTrips: 1, totalMs: 5, finalOutputBytes: 1 }, { gate: { verdict: 'fail', modelSkipped: false } }]) {
+    const ui = await runWith({ ...NO_FACTS, validation: makeValidation('fail'), ...(metrics === undefined ? { metrics: undefined } : { metrics }) });
+    const text = ui.nodes.get('agent-result').textContent;
+    assert.ok(!anyCause(text), JSON.stringify(metrics));
+    assert.ok(text.includes('本次没有可展示的模型选取'), JSON.stringify(metrics));
+  }
+});
+
+test('配置校验：运行中不显示原因句（validation 已写入但选取尚空）', async () => {
+  const held = deferred(); let polling = false;
+  const running = report({ state: 'running', modelSelection: null, validation: makeValidation('fail'), metrics: gateMetrics('fail', true) });
+  const ui = await start({ api: request => {
+    if (request.path === '/api/run') return reply(running);
+    if (request.path.startsWith('/api/jobs/')) { polling = true; return held.promise; }
+  } });
+  const done = ui.submit(); await until(() => polling);
+  // 运行中：校验块已显示，原因句与“没有可展示的模型选取”都不出现。
+  const during = ui.nodes.get('agent-result').textContent;
+  assert.ok(validationBlock(ui.nodes.get('agent-result')));
+  assert.ok(!anyCause(during) && !during.includes('本次没有可展示的模型选取'));
+  // 终态且后端确实跳过模型后才出现。
+  held.resolve(reply({ ...running, state: 'completed', ...NO_FACTS })); await done;
+  assert.ok(ui.nodes.get('agent-result').textContent.includes(CAUSE));
+});
+
+test('配置校验：needs_input 不再有原因句（模型仍会调用），选取为空或 unsupported 也不写“没有继续查询”', async () => {
+  const cases = [
+    { ...NO_FACTS, metrics: gateMetrics('needs_input', false) },
+    { modelSelection: { status: 'unsupported', resolvedFacts: [], citations: [] }, metrics: gateMetrics('needs_input', false) },
+    // 即使数据自相矛盾地带了 modelSkipped:true，needs_input 也不显示。
+    { ...NO_FACTS, metrics: gateMetrics('needs_input', true) },
+  ];
+  for (const patch of cases) {
+    const ui = await runWith({ ...patch, validation: makeValidation('needs_input') });
+    assert.ok(!anyCause(ui.nodes.get('agent-result').textContent), JSON.stringify(patch));
+  }
+  // verdict 为 pass 时同样不显示。
+  const pass = await runWith({ ...NO_FACTS, validation: makeValidation('pass'), metrics: gateMetrics('pass', true) });
+  assert.ok(!anyCause(pass.nodes.get('agent-result').textContent));
+  // 已有模型事实时不显示。
+  const withFacts = await runWith({ validation: makeValidation('fail'), metrics: gateMetrics('fail', true) });
+  assert.ok(!anyCause(withFacts.nodes.get('agent-result').textContent));
+});
+
+test('配置校验：缺失或非法形状整块不显示，也不报错、不影响其余回答', async () => {
+  const good = () => makeValidation('fail');
+  const mutate = change => { const value = good(); change(value); return value; };
+  const invalid = [
+    '字符串', 42, ['数组'], { verdict: 'pass' }, // 非对象 / 缺 checks
+    mutate(value => { value.checks = '不是数组'; }),
+    mutate(value => { value.verdict = 'unknown'; }),
+    mutate(value => { value.checks[0].status = 'weird'; }),
+    mutate(value => { value.checks[0].title = ''; }),
+    mutate(value => { value.checks[1].issues = '不是数组'; }),
+    mutate(value => { value.checks[1].issues.push('不是对象'); }),
+    mutate(value => { value.checks[1].issues.push(null); }),
+    mutate(value => { value.checks[1].issues[0].line = 3.5; }),
+    mutate(value => { value.checks[1].issues[0].line = '3'; }),
+    mutate(value => { value.checks[1].issues[0].message = 7; }),
+    mutate(value => { value.checks[1].issues[0].suggestions = 'worker_connections'; }),
+    mutate(value => { value.checks[1].issues[0].suggestions = [1]; }),
+    mutate(value => { value.notChecked = '不是数组'; }),
+  ];
+  for (const validation of invalid) {
+    const ui = await runWith({ validation, modelSelection: { resolvedFacts: [], citations: [] } });
+    const text = ui.nodes.get('agent-result').textContent;
+    assert.equal(validationBlock(ui.nodes.get('agent-result')), undefined, JSON.stringify(validation));
+    assert.ok(!text.includes('配置校验') && !text.includes('没有继续查询知识字段'), JSON.stringify(validation));
+    assert.equal(turnsOf(ui).length, 1);
+    assert.match(ui.nodes.get('agent-status').textContent, /完成/);
+  }
+});
+
+test('配置校验：message/title/suggestions 只作为文本，不生成元素', async () => {
+  const attack = '<img src=x onerror=alert(1)>';
+  const validation = makeValidation('fail', [{ id: 'directive_names', title: `指令名${attack}`, status: 'fail', issues: [{ line: 1, name: 'x', message: attack, suggestions: [attack] }] }]);
+  const ui = await runWith({ validation });
+  const result = ui.nodes.get('agent-result');
+  assert.ok(result.textContent.includes(`第 1 行：${attack}`) && result.textContent.includes(`正确写法：${attack}`) && result.textContent.includes(`指令名${attack}`));
+  assert.ok(!descendants(result).some(node => ['img', 'script'].includes(node.tagName)));
+});
+
+test('配置校验：每项检查最多渲染 20 条 issues，超出只提示数量', async () => {
+  const issues = Array.from({ length: 25 }, (_, index) => ({ line: index + 1, name: 'x', message: `问题${index + 1}` }));
+  const ui = await runWith({ validation: makeValidation('fail', [{ id: 'syntax', title: '语法', status: 'fail', issues }]) });
+  const list = descendants(ui.nodes.get('agent-result')).find(node => node.className === 'validation-issues');
+  assert.equal(list.children.length, 21);
+  const text = ui.nodes.get('agent-result').textContent;
+  assert.ok(text.includes('第 20 行：问题20') && !text.includes('问题21'));
+  assert.ok(text.includes('另有 5 条未显示'));
+});
+
+test('配置校验：会话恢复卡显示后端 restore 返回的 validation，缺失或非法则不显示', async () => {
+  const restoreWith = async validation => {
+    const ui = await start({ stored: sessionId, api: request => request.path.startsWith('/api/sessions/')
+      ? reply({ request: { message: 'worker_connections', release }, currentSubject: { input: 'worker_connections', mode: 'single', release }, inputResolution: { action: 'directive', notice: '恢复说明' }, ...(validation === undefined ? {} : { validation }), messages: 2 }) : undefined });
+    await ui.click('agent-restore');
+    return ui;
+  };
+  const shown = await restoreWith(makeValidation('fail'));
+  const body = turnsOf(shown)[0].children.find(node => node.className === 'turn-body');
+  const block = validationBlock(shown.nodes.get('agent-result'));
+  assert.ok(block);
+  // 位于恢复卡最前面（先于恢复说明与配置折叠块），未通过默认展开。
+  assert.equal(body.children[0], block);
+  assert.equal(block.open, true);
+  assert.ok(block.textContent.includes('正确写法：worker_connections、worker_aio_requests'));
+  // 恢复数据没有 metrics.gate，恢复卡不写“没有继续查询知识字段”。
+  assert.ok(!anyCause(shown.nodes.get('agent-result').textContent));
+  for (const validation of [undefined, null, '字符串', { verdict: 'fail', checks: 'x' }]) {
+    const ui = await restoreWith(validation);
+    assert.equal(validationBlock(ui.nodes.get('agent-result')), undefined);
+    assert.ok(turnsOf(ui)[0].textContent.includes('恢复说明'));
+  }
+});

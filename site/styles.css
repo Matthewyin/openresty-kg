@@ -321,6 +321,27 @@ select:disabled, input:disabled { background: var(--paper-deep); color: var(--mu
 .turn-body { padding: 12px 14px 2px; }
 .turn-body > .notice { margin: 0 0 12px; }
 .turn-body > .verification-notes { margin: 6px 0; }
+/* 配置校验块：与 .resolved-input 同款的折叠卡片；颜色只用现有主题变量（--card/--line/--accent(-soft)/--amber(-soft)/--danger(-soft)/--muted/--ink-soft），
+   状态同时有符号与文字，不依赖颜色。 */
+.validation-block { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--line); border-left-width: 3px; border-radius: var(--radius); background: var(--card); }
+.validation-block summary { cursor: pointer; font-size: var(--fs-sm); font-weight: 600; }
+.validation-block.pass { border-left-color: var(--accent); }
+.validation-block.pass summary { color: var(--accent); }
+.validation-block.fail { border-color: var(--danger); background: var(--danger-soft); }
+.validation-block.fail summary { color: var(--danger); }
+.validation-block.needs_input { border-color: var(--amber); background: var(--amber-soft); }
+.validation-block.needs_input summary { color: var(--amber); }
+.validation-checks, .validation-issues { margin: 8px 0 0; padding: 0; list-style: none; }
+.validation-check { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 4px 0; font-size: var(--fs-sm); }
+.validation-mark { width: 1.2em; font-weight: 700; text-align: center; }
+.validation-check.pass .validation-mark { color: var(--accent); }
+.validation-check.fail .validation-mark { color: var(--danger); }
+.validation-check.needs_input .validation-mark { color: var(--amber); }
+.validation-check.skipped .validation-mark, .validation-check.skipped .validation-title { color: var(--muted); }
+.validation-issues { flex-basis: 100%; padding-left: calc(1.2em + 8px); color: var(--ink-soft); font-size: var(--fs-xs); }
+.validation-issues li { margin: 2px 0; overflow-wrap: anywhere; }
+.validation-suggest { display: block; font-family: var(--mono); }
+.validation-scope { margin: 8px 0 0; }
 /* 后端可能用换行合并多条提示：轮次卡内的说明文字按换行分行显示 */
 .agent-turn .verification-notes { white-space: pre-line; }
 /* 右侧保留的 Agent 结果在输入变化后的显式标注 */

@@ -90,16 +90,16 @@ function insideDataBlock(item, directives) {
   return false;
 }
 
-// 配置中指令名大小写提示：只提示，不替换任何内容，不改变匹配结果。
-// 仅当满足全部条件时返回提示文本，否则返回 null：
-// 1. 配置解析无语法错误（有错误时名称可能是被截断/误切的片段，提示易误报）；
-// 2. 某个指令匹配状态不是 matched / block_entry；
-// 3. 该指令名不在索引中（精确大小写）——若名称已在索引里，未匹配的原因是上下文或歧义，与大小写无关；
-// 4. 索引中存在与它仅大小写不同的名称（同一小写形式有多个规范名时全部列出）；
-// 5. 它不在 map/geo/types/split_clients/charset_map 等数据块内（块内条目是数据，不是指令）。
-// analysis 为 knowledgeTools 的 bundle.analysis（含 parsed 与 matches，按下标一一对应）；directives 为索引中的指令条目。
-export function caseMismatchNotice(analysis, directives) {
-  if (!analysis?.parsed || analysis.parsed.errors?.length) return null;
+// 大小写不符的指令名发现（“配置校验”与“大小写提示”共用的唯一判定，不要复制第二份）。
+// 返回数组，每项 { index, token, forms }：index 为 parsed.directives 的下标，token 为配置里的写法，forms 为索引中仅大小写不同的名称（字典序）。
+// 一个指令入选需同时满足：
+// 1. 匹配状态不是 matched / block_entry；
+// 2. 该指令名不在索引中（精确大小写）——若名称已在索引里，未匹配的原因是上下文或歧义，与大小写无关；
+// 3. 索引中存在与它仅大小写不同的名称（同一小写形式有多个规范名时全部列出）；
+// 4. 它不在 map/geo/types/split_clients/charset_map 等数据块内（块内条目是数据，不是指令）。
+// 这里不检查语法错误：调用方按各自语义决定（提示在有语法错误时不提示；校验在语法失败时整体跳过名称检查）。
+export function caseMismatchFindings(analysis, directives) {
+  if (!analysis?.parsed) return [];
   const exactNames = new Set();
   const byLower = new Map();
   for (const entry of directives ?? []) {
@@ -110,22 +110,36 @@ export function caseMismatchNotice(analysis, directives) {
     if (!byLower.has(lower)) byLower.set(lower, []);
     byLower.get(lower).push(name);
   }
-  // 配置里未匹配的写法（按首次出现顺序去重）与索引中对应的规范名（去重后按字典序）。
-  const tokens = [];
-  const indexNames = new Set();
+  const findings = [];
   const parsedDirectives = analysis.parsed.directives ?? [];
-  parsedDirectives.forEach((item, i) => {
-    const status = analysis.matches?.[i]?.status;
+  parsedDirectives.forEach((item, index) => {
+    const status = analysis.matches?.[index]?.status;
     const token = item?.name;
     if (typeof token !== 'string' || !token || ['matched', 'block_entry'].includes(status) || exactNames.has(token) || insideDataBlock(item, parsedDirectives)) return;
     const forms = byLower.get(token.toLowerCase());
-    if (!forms) return;
+    if (forms) findings.push({ index, token, forms: [...forms].sort(byName) });
+  });
+  return findings;
+}
+
+// 配置中指令名大小写提示：只提示，不替换任何内容，不改变匹配结果。
+// 配置解析有语法错误时返回 null（名称可能是被截断/误切的片段，提示易误报）；否则按 caseMismatchFindings 的结果生成文案，没有发现时返回 null。
+// analysis 为 knowledgeTools 的 bundle.analysis（含 parsed 与 matches，按下标一一对应）；directives 为索引中的指令条目。
+export function caseMismatchNotice(analysis, directives) {
+  if (!analysis?.parsed || analysis.parsed.errors?.length) return null;
+  // 配置里未匹配的写法（按首次出现顺序去重）与索引中对应的规范名（去重后按字典序）。
+  const tokens = [];
+  const indexNames = new Set();
+  for (const { token, forms } of caseMismatchFindings(analysis, directives)) {
     if (!tokens.includes(token)) tokens.push(token);
     for (const form of forms) indexNames.add(form);
-  });
+  }
   if (!tokens.length) return null;
   return `配置中的 ${listNames(tokens)} 未匹配。Nginx 指令名区分大小写；索引中有 ${listNames([...indexNames].sort(byName))}，未自动按其查询。`;
 }
+
+// 指令是否位于 map/geo 等数据块内，供配置校验判断“数据块内条目不算指令名检查对象”。
+export const isDataBlockEntry = insideDataBlock;
 
 // 把一条提示并入 inputResolution.notice：与已有提示（如 ignored 的固定句）换行合并，不覆盖、不丢失。
 // 不新增前端需要的字段，前端已显示 inputResolution.notice。

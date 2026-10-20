@@ -11,6 +11,7 @@ import { startMock } from './mock-provider.mjs';
 import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
+import { buildValidation } from './validation.mjs';
 import { INPUT_CONTRACT, INPUT_PROMPT, resolveInputDetailed, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
@@ -305,6 +306,8 @@ export class Spike {
     const started = performance.now();
     // webSearch 为本次请求的联网状态：results 只保存在宿主内存中，不出现在视图里。
     const job = { requestId: randomUUID(), sessionId: sessionId ?? randomUUID(), existingSession: sessionId !== undefined, mode: this.config.mode, state: 'running', cacheHit: false, trace: [], tools: [...toolNames(this.config)], cancelled: false, normalizedRequest: null, inputResolution: null,
+      // 配置校验结果（见 validation.mjs）：解析完成后由宿主确定性计算；无配置可校验时为 null。
+      validation: null,
       // attempts 只记录被拒原因（守卫给出的固定文字），不记录查询原文，供验证脚本做软观察。
       // enabled 只给报告校验区分“联网没开”和“开了但本次有结果”。视图不带出这个字段。
       webSearch: { enabled: this.config.webSearch, calls: 0, rejected: 0, queries: [], attempts: [], results: new Map() },
@@ -316,7 +319,8 @@ export class Spike {
       clearTimeout(timeout); job.metrics.totalMs = performance.now() - started; job.finishedAt = Date.now();
       // 日志只记录联网调用次数和错误类别，不记录查询词、结果正文或错误原文。
       // intent 为意图阶段诊断（固定枚举 + 字节数，见 resolveInputDetailed）；缓存命中或意图阶段未完成时为 null。
-      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls, intent: job.metrics.intent ?? null }));
+      // gate 为配置校验闸门记录（校验结论枚举 + 是否因校验失败跳过模型的布尔值）；没有校验结果时为 null。
+      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls, intent: job.metrics.intent ?? null, gate: job.metrics.gate ?? null }));
       if (this.running === job) this.running = null;
       this.pruneJobs();
     });
@@ -355,7 +359,7 @@ export class Spike {
       const manager = this.manager(meta.file);
       await utimes(metaPath, new Date(), new Date());
       const legacyConfig = !Object.hasOwn(meta, 'currentConfig') && meta.state === 'completed' && meta.request?.input ? { ...meta.request, release: meta.request.release ?? snapshot.index.release_id } : null;
-      return { sessionId: id, request: meta.request, normalizedRequest: Object.hasOwn(meta, 'normalizedRequest') ? meta.normalizedRequest : meta.request.input !== undefined ? meta.request : null, inputResolution: meta.inputResolution ?? null, currentConfig: meta.currentConfig ?? legacyConfig, currentSubject: meta.currentSubject ?? meta.currentConfig ?? legacyConfig, state: meta.state === 'running' ? 'cancelled' : meta.state, interrupted: meta.state === 'running', knowledgeChanged: meta.knowledgeHash !== snapshot.hash, contractChanged: meta.contract !== CONTRACT, messages: manager.buildSessionContext().messages.length };
+      return { sessionId: id, request: meta.request, normalizedRequest: Object.hasOwn(meta, 'normalizedRequest') ? meta.normalizedRequest : meta.request.input !== undefined ? meta.request : null, inputResolution: meta.inputResolution ?? null, validation: meta.validation ?? null, currentConfig: meta.currentConfig ?? legacyConfig, currentSubject: meta.currentSubject ?? meta.currentConfig ?? legacyConfig, state: meta.state === 'running' ? 'cancelled' : meta.state, interrupted: meta.state === 'running', knowledgeChanged: meta.knowledgeHash !== snapshot.hash, contractChanged: meta.contract !== CONTRACT, messages: manager.buildSessionContext().messages.length };
     })();
     this.restoreDone = operation;
     try { return await operation; } finally { this.restoring = false; this.restoreDone = null; }
@@ -558,7 +562,7 @@ export class Spike {
     check();
     let cached;
     await stage('cacheMs', async () => { try { cached = await readJson(cachePath); } catch (error) { if (error.code !== 'ENOENT') throw error; } });
-    const metaFields = () => ({ request: submittedRequest, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null,
+    const metaFields = () => ({ request: submittedRequest, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null, validation: job.validation ?? null,
       currentConfig, currentSubject, knowledgeHash: snapshot.hash, contract: CONTRACT, inputContract: INPUT_CONTRACT, cacheKeys: rememberCacheKeys(meta) });
     if (cached) {
       check();
@@ -585,17 +589,23 @@ export class Spike {
     let cacheWritten = false;
     // 选择阶段只有一次纠正名额，意图四键和无法解析共用。失败回滚和成功提交都要看到它，所以放在 finish 外面。
     let selectionRetried = false;
-    const decorate = report => ({ ...report, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null });
+    // validation 与 inputResolution 一样随报告写入 job、会话元数据与完成缓存；没有配置可校验时为 null。
+    const decorate = report => ({ ...report, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null, validation: job.validation ?? null });
     const finish = async (report, state) => stage('commitMs', async () => {
       check();
       report = decorate(report);
       const file = manager.getSessionFile();
       // 原文和语法已确定即可保存待补充配置；名称对象独立，不覆盖配置。
-      const parsedInput = bundle && !bundle.analysis.parsed.errors.length && bundle.analysis.parsed.directives.length > 0;
+      // 配置校验 fail（指令名不在索引、上下文不符等确定性错误）的本轮配置不能成为后续追问沿用的对象：
+      // 否则它会覆盖上一个通过的 currentConfig / currentSubject，之后的追问（如“默认值呢”）会一直被闸门拦下。
+      // 此时 currentConfig / currentSubject 保持上一个对象（没有则保持为空，追问按“没有上次对象”澄清）；
+      // 本轮真实情况仍写入元数据的 request / normalizedRequest / inputResolution / validation，右侧展示与恢复卡可以看到。
+      // needs_input 与 pass 行为不变；用户修正配置后重新提交，通过校验即正常覆盖。
+      const parsedInput = bundle && !bundle.analysis.parsed.errors.length && bundle.analysis.parsed.directives.length > 0 && job.validation?.verdict !== 'fail';
       const nextConfig = parsedInput && (!unified || job.inputResolution?.action === 'config') ? job.normalizedRequest : currentConfig;
       // 未收录指令只用于本次查询，不能成为后续“默认值呢”之类追问的对象。
       const nextSubject = parsedInput && (!unified || ['config', 'directive'].includes(job.inputResolution?.action)) && !job.inputResolution?.unindexed ? job.normalizedRequest : currentSubject;
-      const resolution = { normalizedRequest: job.normalizedRequest, inputResolution: job.inputResolution, currentConfig: nextConfig, currentSubject: nextSubject };
+      const resolution = { normalizedRequest: job.normalizedRequest, inputResolution: job.inputResolution, validation: job.validation ?? null, currentConfig: nextConfig, currentSubject: nextSubject };
       // 范围外、问候和联网结果不写精确缓存。可能写缓存时先把键算进 metadata，容量检查才能看到最终文件大小。
       // 发生过字段选择纠正的请求不写完成缓存：会话里带有一次错误输出，不能当成可复用的干净结果。
       const cacheable = state === 'completed' && !selectionRetried && !['out_of_scope', 'greeting'].includes(job.inputResolution?.action) && !job.webSearch.calls;
@@ -628,7 +638,7 @@ export class Spike {
         const file = manager.getSessionFile();
         if (file) await unlink(file).catch(error => { if (error.code !== 'ENOENT') throw error; });
       }
-      await atomicJson(metaPath, { ...metaFields(), normalizedRequest: null, inputResolution: null, file: previousFile, contract: meta?.contract ?? CONTRACT, state: job.state });
+      await atomicJson(metaPath, { ...metaFields(), normalizedRequest: null, inputResolution: null, validation: null, file: previousFile, contract: meta?.contract ?? CONTRACT, state: job.state });
     };
     const model = async (prompt, phase) => {
       check();
@@ -686,8 +696,25 @@ export class Spike {
       if (unified && ['config', 'followup'].includes(job.inputResolution?.action)) {
         job.inputResolution = appendResolutionNotice(job.inputResolution, caseMismatchNotice(bundle.analysis, snapshot.index.directives));
       }
+      // 配置校验：只对配置原文（config）及沿用配置的追问（followup）计算；名称查询、澄清等没有配置可校验，保持 null。
+      // 结果只依赖解析与匹配的确定性输出，不改变下面 pendingInput 的判定；其中 verdict === 'fail' 时由下面的闸门跳过模型选字段。
+      // 旧版（非统一入口）请求的 inputResolution 恒为 config，同样计算。
+      if (['config', 'followup'].includes(job.inputResolution?.action)) job.validation = buildValidation(bundle.analysis, snapshot.index.directives);
       Object.assign(job, decorate(await stage('basicReportMs', () => makeReport(null, bundle))), { phase: 'basic' });
       const pendingInput = bundle.analysis.questions.length || bundle.analysis.parsed.errors.length || !bundle.analysis.parsed.directives.length || bundle.analysis.matches.some(match => !['matched', 'block_entry'].includes(match.status));
+      // 配置校验闸门：先检查配置是否正确，正确才进入下一步（字段选择）。
+      // verdict === 'fail'（语法错、指令名不在索引、上下文不符等确定性错误）时不调用模型选字段：直接以 awaiting_input 结束，
+      // 报告里 modelSelection 为 null，仍带 validation 与既有 questions；awaiting_input 不写完成缓存；本轮模型往返只有意图阶段 1 次。
+      // 带问题或只有配置都适用（只有配置时原本会回填默认字段，现在也不回填，避免对错误配置展示知识字段）。
+      // needs_input（缺上下文/多个候选）不是配置错误，模型仍可按候选回答，保持原逻辑；pass 与 validation 为 null（名称查询等）同样不变。
+      // 追问沿用配置（followup）每次都会重新校验：沿用的配置本来有错时，追问同样被拦，与首轮一致。
+      // metrics.gate 只记录校验结论枚举与是否因此跳过模型的布尔值，不含任何内容；无校验结果时不写该字段。
+      if (job.validation) metrics.gate = { verdict: job.validation.verdict, modelSkipped: job.validation.verdict === 'fail' };
+      if (job.validation?.verdict === 'fail') {
+        check();
+        await finish(makeReport(null, bundle, job.webSearch), 'awaiting_input');
+        return;
+      }
       // phase 与 output 告诉模型这一轮不是意图提取。没有这两个字段时，系统提示开头的 input_resolution 规则会被当成当前任务。
       const prompt = { contract: CONTRACT, phase: FIELD_SELECTION_PHASE, output: FIELD_SELECTION_OUTPUT, request: { question: request.question, mode: request.mode, context: request.context, module: request.module, mockScenario: request.mockScenario }, manifest: bundle.manifest };
       if (Buffer.byteLength(JSON.stringify(previousHistory)) + Buffer.byteLength(JSON.stringify(prompt)) > config.maxHistoryBytes) throw requestError('history_limit', '本轮输入过大，请缩短问题', 413);

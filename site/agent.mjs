@@ -396,6 +396,61 @@ function externalReferences(parent, references) {
     if (ref.quote) node('blockquote', ref.quote, item, 'external-ref-quote');
   }
 }
+// ---------- 配置校验块 ----------
+// 后端 job.validation（或会话恢复返回的 validation）的形状固定，但前端不信任它：任何缺失或非法形状一律返回 null，整块不显示，也不抛错。
+// 所有文本只经 node() 的 textContent 写入。展示数量另有前端上限，避免异常数据撑破页面。
+const VALIDATION_VERDICTS = { pass: { symbol: '✓', title: '通过' }, fail: { symbol: '✗', title: '未通过' }, needs_input: { symbol: '…', title: '需要补充' } };
+const VALIDATION_STATUS = { pass: { symbol: '✓', label: '通过' }, fail: { symbol: '✗', label: '不通过' }, needs_input: { symbol: '…', label: '需要补充' }, skipped: { symbol: '–', label: '未检查' } };
+const MAX_VALIDATION_CHECKS = 10;
+const MAX_VALIDATION_ISSUES = 20; // 每项检查最多渲染的 issues 条数，超出只显示“另有 N 条”
+const MAX_VALIDATION_TEXT = 300; // 单条文本最大字符数（按码点），超出截断
+const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const clip = text => { const chars = Array.from(text); return chars.length > MAX_VALIDATION_TEXT ? `${chars.slice(0, MAX_VALIDATION_TEXT).join('')}…` : text; };
+// 校验并整理 validation；返回干净的副本或 null。要求：verdict 合法；checks 为数组且每项有字符串 title、合法 status、
+// issues（缺省视为空）为数组，其元素是对象且 line 为整数、message 为字符串，可选 suggestions 必须是字符串数组；notChecked 缺省视为空，出现时必须是字符串数组。
+function normalizeValidation(value) {
+  if (!isPlainObject(value) || !Object.hasOwn(VALIDATION_VERDICTS, value.verdict) || !Array.isArray(value.checks)) return null;
+  const checks = [];
+  for (const check of value.checks) {
+    if (!isPlainObject(check) || typeof check.title !== 'string' || !check.title.trim() || !Object.hasOwn(VALIDATION_STATUS, check.status)) return null;
+    const rawIssues = check.issues ?? [];
+    if (!Array.isArray(rawIssues)) return null;
+    const issues = [];
+    for (const issue of rawIssues) {
+      if (!isPlainObject(issue) || !Number.isInteger(issue.line) || typeof issue.message !== 'string') return null;
+      if (issue.suggestions !== undefined && (!Array.isArray(issue.suggestions) || issue.suggestions.some(item => typeof item !== 'string'))) return null;
+      issues.push({ line: issue.line, message: clip(issue.message), suggestions: (issue.suggestions ?? []).slice(0, 5).map(clip) });
+    }
+    checks.push({ title: clip(check.title), status: check.status, issues });
+  }
+  const notChecked = value.notChecked ?? [];
+  if (!Array.isArray(notChecked) || notChecked.some(item => typeof item !== 'string')) return null;
+  return { verdict: value.verdict, checks: checks.slice(0, MAX_VALIDATION_CHECKS), notChecked: notChecked.map(clip) };
+}
+// 渲染到 parent 的最前面（调用方保证先调用）。通过时折叠为一行摘要，未通过/需要补充时默认展开；状态用符号+文字，不只靠颜色。
+function renderValidation(parent, validation) {
+  const info = VALIDATION_VERDICTS[validation.verdict];
+  const block = node('details', undefined, parent, `validation-block ${validation.verdict}`);
+  block.open = validation.verdict !== 'pass';
+  node('summary', `${info.symbol} 配置校验：${info.title}`, block);
+  const list = node('ul', undefined, block, 'validation-checks');
+  for (const check of validation.checks) {
+    const status = VALIDATION_STATUS[check.status];
+    const row = node('li', undefined, list, `validation-check ${check.status}`);
+    node('span', status.symbol, row, 'validation-mark');
+    node('span', `${check.title}：${status.label}`, row, 'validation-title');
+    // 只有不通过/需要补充的项才列出具体问题；通过与未检查的项不展开。
+    if (['fail', 'needs_input'].includes(check.status) && check.issues.length) {
+      const issues = node('ul', undefined, row, 'validation-issues');
+      for (const issue of check.issues.slice(0, MAX_VALIDATION_ISSUES)) {
+        const item = node('li', `第 ${issue.line} 行：${issue.message}`, issues);
+        if (issue.suggestions.length) node('span', `正确写法：${issue.suggestions.join('、')}`, item, 'validation-suggest');
+      }
+      if (check.issues.length > MAX_VALIDATION_ISSUES) node('li', `另有 ${check.issues.length - MAX_VALIDATION_ISSUES} 条未显示`, issues, 'verification-notes');
+    }
+  }
+  if (validation.notChecked.length) node('p', `未校验：${validation.notChecked.join('、')}`, block, 'verification-notes validation-scope');
+}
 function render(job, task) {
   if (job.knowledgeVersion?.release && job.knowledgeVersion.release !== task.request.release) throw new Error('结果发布与当前请求不一致，请刷新知识站。');
   // 轮次卡在首次渲染时才创建：被服务端拒绝、发布不一致等尚无结果的失败不会留下空卡。
@@ -407,6 +462,9 @@ function render(job, task) {
   const state = labels[job.state] ?? job.state;
   const phase = job.state !== 'running' ? '' : job.phase === 'input_resolution' ? ' · 正在识别配置与问题' : job.summary ? ' · 基础匹配已就绪，等待模型选取' : ' · 正在准备知识与会话';
   note(`${state}${phase}${job.cacheHit ? ' · 历史精确缓存（本次未推理）' : ''}${job.error ? ` · ${job.error}` : ''}`, job.state === 'failed');
+  // 配置校验块放在本轮内容的最前面（先于识别配置折叠块、统计与模型选取）；形状非法时 validation 为 null，整块不显示。
+  const validation = normalizeValidation(job.validation);
+  if (validation) renderValidation(result, validation);
   if (job.inputResolution?.message) node('p', job.inputResolution.message, result, 'notice');
   // 消息中有未处理的跑题部分时，在结果区说明，避免用户误以为整条消息都已处理。
   if (job.inputResolution?.notice) node('p', job.inputResolution.notice, result, 'verification-notes');
@@ -460,7 +518,12 @@ function render(job, task) {
   if (unindexed) node('p', hasReferences ? '当前知识发布未收录该指令。下面是联网找到的外部参考。' : '当前知识发布未收录该指令。', result);
   else if (selection?.status === 'unsupported') node('p', hasReferences ? '当前知识字段无法回答此问题；下面是联网找到的外部参考。' : '当前知识字段无法回答此问题；未生成自由解释，请调整问题。', result);
   // 仅在确实没有任何可展示内容时提示；有外部参考时外部参考区块本身就是可读结果，不再显示此句。
-  if (noFacts && !unindexed && !NO_QUERY_ACTIONS.has(job.inputResolution?.action) && !hasReferences) node('p', '本次没有可展示的模型选取。可使用本地查询查看知识，或补充问题后重试。', result);
+  // 闸门拦截：只有后端确实跳过了模型（metrics.gate.modelSkipped === true，目前只有 verdict 为 fail 时），且任务已结束，才说明“没有继续查询”。
+  // needs_input 仍会调用模型，运行中 validation 已写入但选取尚空，两种情况都不能写这句；老数据没有 metrics.gate 时也不写。
+  const gateSkipped = job.state !== 'running' && validation?.verdict === 'fail' && job.metrics?.gate?.modelSkipped === true && noFacts;
+  // 闸门拦截时应改配置而不是“补充问题后重试”，因此压掉下面这句建议，避免与原因句叠加矛盾。
+  if (noFacts && !unindexed && !NO_QUERY_ACTIONS.has(job.inputResolution?.action) && !hasReferences && !gateSkipped) node('p', '本次没有可展示的模型选取。可使用本地查询查看知识，或补充问题后重试。', result);
+  if (gateSkipped) node('p', '配置校验未通过，没有继续查询知识字段。', result);
   // 按知识条目分组：同一指令的多个字段放进一张卡片，用户按“指令”而不是按“字段”阅读。
   // Map 保留模型返回的先后顺序，组内字段顺序也不变。
   const groups = new Map();
@@ -613,12 +676,17 @@ async function restore() {
     const restoredConfig = saved.currentSubject ?? saved.currentConfig ?? saved.normalizedRequest;
     // 后端恢复时返回的说明（如配置里指令名的大小写提示、未处理的无关部分）：只作为文本显示在恢复卡里。
     const restoredNotice = typeof saved.inputResolution?.notice === 'string' ? saved.inputResolution.notice.trim() : '';
-    if (!preserveInput && (restoredConfig?.input || restoredNotice)) {
+    // 后端 restore 若带回 validation，在恢复卡最前面同样展示；没有或形状非法则不显示。
+    const restoredValidation = normalizeValidation(saved.validation);
+    if (!preserveInput && (restoredConfig?.input || restoredNotice || restoredValidation)) {
       const turn = addTurn('会话已恢复（仅当前对象，不含历史轮次）');
       turn.state.textContent = '已恢复';
+      if (restoredValidation) renderValidation(turn.body, restoredValidation);
       if (restoredNotice) node('p', restoredNotice, turn.body, 'verification-notes');
       if (restoredConfig?.input) {
-        showConfiguration(turn.body, restoredConfig, '恢复的会话配置 / 指令（展开核对；不是历史完整报告）');
+        // 没有通过校验的当前对象、仅剩被拦下的错误配置时，标题如实说明，避免把错误配置当成会话配置。
+        const blockedOnly = !(saved.currentSubject ?? saved.currentConfig) && restoredValidation?.verdict === 'fail';
+        showConfiguration(turn.body, restoredConfig, blockedOnly ? '最近一次提交（校验未通过，未作为会话配置）' : '恢复的会话配置 / 指令（展开核对；不是历史完整报告）');
         if (restoredConfig.release === document.body.dataset.release) {
           shownAnalysisKey = analysisKey(restoredConfig);
           $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: restoredConfig }));
