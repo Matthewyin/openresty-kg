@@ -57,7 +57,7 @@ mock 是实验进程独立启动的本地 OpenAI-compatible HTTP SSE 服务，�
 - 自定义空 ResourceLoader；settings、credentials、modelsStore 全部显式内存实例。modelsPath 为 null，authPath/cwd/agentDir/SessionManager 目录均明确指定在实例状态目录。禁用压缩、重试、预热、目录发现和外部模型目录刷新。
 - 状态目录及其祖先/子目录禁止符号链接；服务端只接受会话 ID，不接受文件路径。仅监听回环地址，写入 API 只收 JSON 并拒绝跨站 Origin。
 - 知识加载复用原 validateIndex/getDetail，并读取所选发布全部索引内文件的实际内容计算 hash，不以 mtime 替代。内容未变时复用已解析快照与校验详情；请求期间固定同一内存快照。可指定当前或历史 release，不存在或不一致即拒绝，绝不回退当前发布。逻辑 HTTP 地址只映射受限本地快照，不发知识网络请求；未索引文件不影响摘要，越界路径及任意 URL 均拒绝。
-- 缓存键包含精确配置/问题/解析模式/上下文/模块、会话完整有效上下文、知识文件排序内容摘要、SDK 锁版本及实现内容、系统提示词/报告契约、模型/服务/输出限制及兼容设置。整条消息恰为一个能唯一对应索引规范名的标识符时，键使用索引中的规范名，命中后按本次写法重算规范名说明；带其他文字或配置语法的消息不折叠。只原子保存 completed 报告和完成会话快照；命中不调用 SDK/provider，追问会打开独立复制的真实 SDK 会话。awaiting_input、failed、cancelled 不写完成缓存。
+- 缓存键包含精确配置/问题/解析模式/上下文/模块、会话完整有效上下文、知识文件排序内容摘要、SDK 锁版本及实现内容、系统提示词/报告契约、模型/服务/输出限制及兼容设置。缓存键使用原消息，不同大小写写法不共用缓存。只原子保存 completed 报告和完成会话快照；命中不调用 SDK/provider，追问会打开独立复制的真实 SDK 会话。awaiting_input、failed、cancelled 不写完成缓存。
 - 页面按条目显示状态、功能、默认值、继承、限制与固定源码锚点；模型选择分区，完整 JSON 仅作调试。所有内容用 textContent，链接仅 HTTP(S)，详情导航携带 id 与 release。
 - 原始 SDK 会话和用户记录保留；`transformContext` 仅在模型侧压缩历史，将旧工具全文/事实正文替换为问题、身份和字段引用，不清空上下文。旧契约通过 `contractChanged` 明示，旧缓存由契约与代码 hash 失效；历史身份不作为当前发布事实。
 

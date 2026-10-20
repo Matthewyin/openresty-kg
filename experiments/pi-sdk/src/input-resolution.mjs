@@ -15,12 +15,8 @@ export const INPUT_PROMPT = `当当前用户JSON的phase为input_resolution时�
 
 export const clarification = message => ({ normalizedRequest: null, inputResolution: { action: 'clarify', message } });
 // 未收录指令的放行形状：小写蛇形且至少含一个下划线，与 OpenResty/Nginx 指令命名一致。
-// 调用前先把用户写法转成小写再测；大小写不同不单独构成“不像指令名”。
+// Nginx 指令名区分大小写：这里按用户写法原样测试，不做大小写转换。
 const UNINDEXED_NAME = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$/;
-// 整句只有一个标识符。
-const BARE_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
-// 用户写法与索引原名不同时追加的固定说明。Nginx 指令区分大小写，所以必须让用户看到采用了哪一个规范名。
-const canonicalNotice = (to, from) => `已按指令名 ${to} 理解（Nginx 指令名区分大小写，原写法 ${from}）。`;
 
 // 名称排序的比较函数：按 UTF-16 码元字典序，保证建议顺序稳定可复现。
 const byName = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
@@ -52,6 +48,7 @@ export function damerauLevenshtein(a, b) {
 // 2. 否则对小写名称计算 Damerau-Levenshtein 距离，要求 距离 ≤ max(2, floor(长度 × 0.2))，
 //    且 距离 < 名称长度的一半；后者避免短词被大量无关指令名“建议”。
 // 3. 按距离升序、再按名称字典序排序，最多返回 limit 个。
+// 规则 1 保证“仅大小写不同”的名称（如 Client_Max_Body_Size 对 client_max_body_size）一定能被建议出来。
 export function suggestNames(name, names, limit = 3) {
   if (typeof name !== 'string' || !name || !Array.isArray(names)) return [];
   const unique = [...new Set(names.filter(item => typeof item === 'string' && item))];
@@ -69,29 +66,6 @@ export function suggestNames(name, names, limit = 3) {
   }
   return scored.sort((a, b) => a.distance - b.distance || byName(a.item, b.item)).slice(0, limit).map(entry => entry.item);
 }
-
-// 索引里与 token 仅大小写不同的规范名，按名称字典序去重。token 必须原样比较之前先转小写。
-function nameForms(token, directives) {
-  if (typeof token !== 'string' || !token) return [];
-  const lower = token.toLowerCase();
-  const seen = new Set();
-  const forms = [];
-  for (const entry of directives ?? []) {
-    const name = entry?.name;
-    if (typeof name !== 'string' || !name || seen.has(name) || name.toLowerCase() !== lower) continue;
-    seen.add(name);
-    forms.push(name);
-  }
-  return forms.sort(byName);
-}
-
-// 判断消息中的某个词能否“计为一个指令名”（用于“多个指令名”澄清与 out_of_scope 降级）。
-// Nginx 指令名区分大小写，而 Set、Return、Root、If、Map、Include、Listen 等同时是常见英文词，
-// 句首大写或普通行文里的这类词不应被当成用户点名的指令。规则：
-// ① 与索引原名精确相同（大小写一致）——照常计入；
-// ② 仅大小写不同：只有它恰是模型返回的 input（用户最该查的对象），或含下划线（蛇形名几乎不可能是普通英文词）才计入。
-// exactNames 为索引原名集合；given 为模型返回的 input（out_of_scope 路径没有 input，传空串即可）。
-const countsAsDirective = (token, given, exactNames) => exactNames.has(token) || token === given || token.includes('_');
 
 // 提示中单个名称的展示上限（字符数）。名称只用于展示，前端以 textContent 渲染，这里仅防止异常长词撑爆提示。
 const NOTICE_NAME_MAX = 100;
@@ -153,47 +127,27 @@ export function caseMismatchNotice(analysis, directives) {
   return `配置中的 ${listNames(tokens)} 未匹配。Nginx 指令名区分大小写；索引中有 ${listNames([...indexNames].sort(byName))}，未自动按其查询。`;
 }
 
-// 把一条提示并入 inputResolution.notice：与已有提示（ignored、规范名说明）换行合并，不覆盖、不丢失。
+// 把一条提示并入 inputResolution.notice：与已有提示（如 ignored 的固定句）换行合并，不覆盖、不丢失。
 // 不新增前端需要的字段，前端已显示 inputResolution.notice。
 export function appendResolutionNotice(resolution, text) {
   if (!resolution || !text) return resolution;
   return { ...resolution, notice: [resolution.notice, text].filter(Boolean).join('\n') };
 }
 
-// 统一消息的缓存键用这份文本，而不是用户按下发送时的原始大小写。
-// 只折叠“整句恰好是一个标识符、且大小写不敏感地唯一对应索引里一个规范名”的消息（如 Client_Max_Body_Size）。
-// 带其他文字的自然语言（如“Return 是什么意思”“Set 之后会怎样”）不折叠：句中的普通英文词可能碰巧与某条指令同名，
-// 折叠会让语义不同的问法共用同一缓存。配置里的分号、花括号或围栏自然不是单个标识符，也保持原样。
-export function cacheMessage(message, directives) {
-  if (typeof message !== 'string') return message;
-  const token = message.trim();
-  if (!BARE_NAME.test(token)) return message;
-  const forms = nameForms(token, directives);
-  return forms.length === 1 ? forms[0] : message;
-}
-
-// 缓存命中时按“当前用户写法”重算规范名说明。
-// 缓存键折叠了大小写，命中的结果可能是另一种写法产生的：沿用旧 notice 会让小写输入也看到“已按 X 理解”，
-// 或让大写输入丢失这句说明。只处理 directive 动作且整句为单个唯一规范名的情形，其余原样返回。
-export function refreshCanonicalNotice(resolution, message, directives) {
-  if (!resolution || resolution.action !== 'directive' || typeof message !== 'string') return resolution;
-  const from = message.trim();
-  if (!BARE_NAME.test(from)) return resolution;
-  const forms = nameForms(from, directives);
-  if (forms.length !== 1) return resolution;
-  const to = forms[0];
-  const { notice, canonicalized, ...rest } = resolution;
-  // 去掉旧的规范名说明行，保留其他提示（例如 ignored 的固定句）。
-  const lines = String(notice ?? '').split('\n').filter(line => line && !line.startsWith('已按指令名 '));
-  if (from !== to) lines.push(canonicalNotice(to, from));
-  return { ...rest, ...(lines.length ? { notice: lines.join('\n') } : {}), ...(from !== to ? { canonicalized: { from, to } } : {}) };
-}
-
 // 未收录且需要澄清时的结果：有相近名称时文案附上建议并返回 suggestions；无建议时保持原文案，且不写 suggestions 键。
 // 文案中的“未自动替换”是硬性约定，向用户明确说明建议只是提示，测试也会校验这句话，不要省略。
+// 若建议中有与用户写法仅大小写不同的名称，文案先点明“Nginx 指令名区分大小写”，不把它说成普通的拼写相近。
+// 两种文案都只是澄清：不自动查询、不替换，用户重新发送正确写法即可。
 const unindexedClarification = (input, names) => {
   const suggestions = suggestNames(input, names);
   if (!suggestions.length) return clarification(`当前知识发布索引未收录指令 ${input}，请核对名称或提供配置。`);
+  const caseOnly = suggestions.filter(item => item.toLowerCase() === input.toLowerCase());
+  if (caseOnly.length) {
+    return { normalizedRequest: null, inputResolution: {
+      action: 'clarify',
+      message: `Nginx 指令名区分大小写，${input} 不是有效的指令名；你是否要查询 ${caseOnly.join('、')}？以上仅为提示，未自动替换，请确认后重新发送。`,
+      suggestions } };
+  }
   return { normalizedRequest: null, inputResolution: {
     action: 'clarify',
     message: `当前知识发布索引未收录指令 ${input}。你是否想查：${suggestions.join('、')}？以上仅为名称相近的提示，未自动替换，请确认后重新输入。`,
@@ -250,7 +204,6 @@ export const INTENT_REFUSAL_CODES = Object.freeze([
   'followup_no_subject',      // followup 带了 input，或会话没有可沿用对象
   'followup_release_mismatch',// followup 的上次对象属于另一个知识发布
   'directive_not_substring',  // directive 的 input 不是合法标识符或不在消息中
-  'directive_case_ambiguous', // 指令名在索引中有多种大小写写法
   'directive_unindexed',      // 指令名未被索引收录
   'directive_multiple',       // 消息含多个指令名
   'out_of_scope_mentions_directive', // 模型判 out_of_scope，但消息含已收录指令名，降级澄清
@@ -297,12 +250,9 @@ function resolveIntent(value, raw, snapshot, previous, options, envelope, refuse
   if (value.action === 'greeting') return { normalizedRequest: null, inputResolution: { action: 'greeting', message: THANKS.test(raw.message) ? THANKS_REPLY : GREETING_REPLY } };
   if (value.action === 'out_of_scope') {
     // 宿主只能放宽模型判定：消息含已收录指令名时不直接拒绝，降级为澄清，避免误伤“指令名+业务问题”。
-    // 比较不区分大小写。PROXY_PASS 与索引里的 proxy_pass 是同一条指令，不能因为写法不同就当成跑题。
-    // 但仅大小写不同的普通英文词（Return the weather 里的 Return）不算：只有精确大小写命中，或含下划线的蛇形名才降级。
-    const exactNames = new Set(snapshot.index.directives.map(entry => entry.name).filter(name => typeof name === 'string'));
-    const lowerNames = new Set([...exactNames].map(name => name.toLowerCase()));
-    const mentionsDirective = (raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []).some(token => lowerNames.has(token.toLowerCase()) && countsAsDirective(token, '', exactNames));
-    if (mentionsDirective) return refuse('out_of_scope_mentions_directive', clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。'));
+    // Nginx 指令名区分大小写，这里只按精确大小写比较：Return the weather 里的 Return 不是指令 return，自然不会降级。
+    const names = new Set(raw.message.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? []);
+    if (snapshot.index.directives.some(entry => names.has(entry.name))) return refuse('out_of_scope_mentions_directive', clarification('该请求超出服务范围，消息中出现了 OpenResty/Nginx 指令名。本服务只查询配置相关内容；请明确要查询的指令，或贴出配置。'));
     return { normalizedRequest: null, inputResolution: { action: 'out_of_scope', message: SCOPE_REPLY } };
   }
   // question 仍要求是消息的逐字子串（与是否由宿主取围栏原文无关）。
@@ -315,8 +265,6 @@ function resolveIntent(value, raw, snapshot, previous, options, envelope, refuse
   let context = '';
   let module = '';
   let unindexed = false;
-  // 仅 directive 分支会写入：大小写归一说明，以及与 ignored 提示合并后的 notice。
-  let directiveNotice = null;
   if (value.action === 'followup') {
     if (input || !previous?.input?.trim()) return refuse('followup_no_subject', clarification('当前会话没有可沿用的配置或指令名称，请先提供明确的查询对象。'));
     if (previous.release !== snapshot.index.release_id) return refuse('followup_release_mismatch', clarification('当前发布与上次配置的发布不同，请切回对应发布或重新提交配置。'));
@@ -326,46 +274,19 @@ function resolveIntent(value, raw, snapshot, previous, options, envelope, refuse
     // 模型返回的 input 必须是用户消息里的逐字片段。这里仍是精确比较，防止模型把名称改写成别的词。
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(input) || !explicit.has(input)) return rejected('directive_not_substring');
     const directives = snapshot.index.directives;
-    const forms = nameForms(input, directives);
-    // 索引里同一小写形式有多个规范名时不猜测。列出这些原名，让用户自己选。
-    if (forms.length > 1) return refuse('directive_case_ambiguous', clarification(`指令名 ${input} 在当前索引中有多种大小写写法：${forms.join('、')}。Nginx 指令名区分大小写，请改用其中一种完整写法后重新查询。`));
-    const given = input;
-    if (forms.length === 1) {
-      // 规范名永远取索引里的原名，不取用户的大小写。
-      input = forms[0];
-    } else {
-      const names = directives.map(entry => entry.name);
-      const lower = given.toLowerCase();
-      const suggestions = suggestNames(given, names);
-      // 已经是小写蛇形时，开启联网仍直接放行（即使附近有相近名称），与原先的未收录放行一致。
-      // 混合大小写如果能对上相近的已收录名，则继续给建议，不把拼写错误送去联网。
-      // 混合大小写、没有相近名称、小写后符合蛇形、且开启联网：按小写名称放行。Nginx 指令均为小写。
-      if (options.webSearch && UNINDEXED_NAME.test(lower) && (given === lower || suggestions.length === 0)) {
-        unindexed = true;
-        input = lower;
-      } else return refuse('directive_unindexed', unindexedClarification(given, names));
+    // Nginx 指令名区分大小写：只有与索引原名逐字相同才算已收录；Client_Max_Body_Size 不是 client_max_body_size，
+    // 宿主不做任何大小写归一，也不自动替换成相近名称。
+    if (!directives.some(entry => entry.name === input)) {
+      // 关闭联网时澄清；开启时仅放行形如 OpenResty 指令的小写蛇形名（含下划线）继续查询，名称保持用户原样。
+      // 普通单词（如 kubernetes）、大小写不符的写法（如 Client_Max_Body_Size）仍澄清，避免把无关或拼错的查询送入联网。
+      // 澄清分支附带相近名称建议（只提示、不替换；仅大小写不同时文案点明区分大小写）；联网放行分支保持不变。
+      if (!options.webSearch || !UNINDEXED_NAME.test(input)) return refuse('directive_unindexed', unindexedClarification(input, directives.map(entry => entry.name)));
+      unindexed = true;
     }
-    // 消息里其他标识符也按小写折到唯一规范名。Listen 与 listen 算同一条，不能当成“多个指令”。
-    const mentioned = new Set();
-    const exactNames = new Set(directives.map(entry => entry.name));
-    for (const token of explicit) {
-      // 仅大小写不同的普通英文词（Set proxy_pass 里的 Set）不计入，也不触发多写法澄清。
-      if (!countsAsDirective(token, given, exactNames)) continue;
-      const tokenForms = nameForms(token, directives);
-      if (tokenForms.length > 1 && token.toLowerCase() !== given.toLowerCase()) return refuse('directive_case_ambiguous', clarification(`消息中的指令名在当前索引里有多种大小写写法：${tokenForms.join('、')}。请明确要查询的名称。`));
-      if (tokenForms.length === 1) mentioned.add(tokenForms[0]);
-    }
+    // 消息里已收录的指令名（精确大小写）。普通英文词 Set、Return 与 set、return 大小写不同，自然不会被计入。
+    const indexedNames = [...explicit].filter(name => directives.some(entry => entry.name === name));
     // 未收录名称与已收录名称同时出现时同样澄清，不能只查询其中一个而静默丢弃另一个。
-    if (mentioned.size > 1 || (unindexed && mentioned.size > 0)) return refuse('directive_multiple', clarification('消息中包含多个指令名称，请分别查询或提供一段连续配置。'));
-    const notices = [];
-    if (value.ignored) notices.push('消息中与配置无关的部分未处理。');
-    // 只有用户写法和规范名不同才说明。完全一致时不额外打扰。
-    if (given !== input) notices.push(canonicalNotice(input, given));
-    directiveNotice = {
-      ...(value.ignored ? { ignored: true } : {}),
-      ...(notices.length ? { notice: notices.join('\n') } : {}),
-      ...(given !== input ? { canonicalized: { from: given, to: input } } : {}),
-    };
+    if (indexedNames.length > 1 || (unindexed && indexedNames.length > 0)) return refuse('directive_multiple', clarification('消息中包含多个指令名称，请分别查询或提供一段连续配置。'));
     mode = 'single';
   } else {
     if (hostInput) {
@@ -395,8 +316,8 @@ function resolveIntent(value, raw, snapshot, previous, options, envelope, refuse
   }
   // config 的起点已在分支内确定（围栏用精确边界，否则 indexOf）；其他动作没有 configRange。
   const start = value.action === 'config' ? configStart : -1;
-  // directive 的提示已经含大小写说明；其他动作仍只在模型标记 ignored 时追加原句，避免丢掉任一句。
-  const ignored = directiveNotice ?? (value.ignored ? { ignored: true, notice: '消息中与配置无关的部分未处理。' } : {});
+  // 仅模型标记 ignored 为 true 时才增加提示字段，未夹带时保持原结果形状。
+  const ignored = value.ignored ? { ignored: true, notice: '消息中与配置无关的部分未处理。' } : {};
   // unindexed 仅在未收录指令进入字段选择时出现，便于会话恢复与前端识别。
   const flags = unindexed ? { unindexed: true } : {};
   return { normalizedRequest: { input, mode, question, context, module, release: snapshot.index.release_id, mockScenario: raw.mockScenario,

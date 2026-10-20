@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Spike, ROOT, cacheKey, compactHistory } from '../src/session.mjs';
 import { serve } from '../server.mjs';
-import { configMode, resolveInput, resolveInputDetailed, INTENT_ACCEPTED, INTENT_REFUSAL_CODES, suggestNames, damerauLevenshtein, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
+import { configMode, resolveInput, resolveInputDetailed, INTENT_ACCEPTED, INTENT_REFUSAL_CODES, suggestNames, damerauLevenshtein, caseMismatchNotice, appendResolutionNotice, SCOPE_REPLY, GREETING_REPLY, THANKS_REPLY } from '../src/input-resolution.mjs';
 import { FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY } from '../src/report.mjs';
 import { UPSTREAM_MESSAGE, PARSE_MESSAGE } from '../src/errors.mjs';
 import { fixtures } from './fixtures/configs.mjs';
@@ -738,12 +738,12 @@ test('相近指令名建议：纯解析分支附带 suggestions 并保持原澄�
   assert.equal(near.normalizedRequest, null); assert.equal(near.inputResolution.action, 'clarify');
   assert.ok(near.inputResolution.suggestions.includes('client_max_body_size'));
   assert.equal(near.inputResolution.message, `当前知识发布索引未收录指令 cLient_mEX_oody_size。你是否想查：${near.inputResolution.suggestions.join('、')}？以上仅为名称相近的提示，未自动替换，请确认后重新输入。`);
-  // 大小写唯一命中时采用索引原名，并说明原写法。不再停在“未收录”澄清。
+  // 仅大小写不同：Nginx 指令名区分大小写，仍是澄清、不自动采用；文案点明区分大小写并给出正确写法，suggestions 只含它。
   const caseOnly = resolveInput(directive('Proxy_Pass'), { message: 'Proxy_Pass' }, snapshot);
-  assert.equal(caseOnly.inputResolution.action, 'directive');
-  assert.equal(caseOnly.normalizedRequest.input, 'proxy_pass');
-  assert.deepEqual(caseOnly.inputResolution.canonicalized, { from: 'Proxy_Pass', to: 'proxy_pass' });
-  assert.equal(caseOnly.inputResolution.notice, '已按指令名 proxy_pass 理解（Nginx 指令名区分大小写，原写法 Proxy_Pass）。');
+  assert.equal(caseOnly.normalizedRequest, null); assert.equal(caseOnly.inputResolution.action, 'clarify');
+  assert.deepEqual(caseOnly.inputResolution.suggestions, ['proxy_pass']);
+  assert.equal(caseOnly.inputResolution.message, 'Nginx 指令名区分大小写，Proxy_Pass 不是有效的指令名；你是否要查询 proxy_pass？以上仅为提示，未自动替换，请确认后重新发送。');
+  assert.equal(caseOnly.inputResolution.canonicalized, undefined); assert.equal(caseOnly.inputResolution.notice, undefined);
   // 无关名称：文案与改动前完全一致，且不写 suggestions 键。
   const plain = resolveInput(directive('zzzzzzzz_qqqq'), { message: 'zzzzzzzz_qqqq' }, snapshot);
   assert.equal(plain.inputResolution.message, '当前知识发布索引未收录指令 zzzzzzzz_qqqq，请核对名称或提供配置。');
@@ -752,7 +752,7 @@ test('相近指令名建议：纯解析分支附带 suggestions 并保持原澄�
   const web = resolveInput(directive('client_max_body_sise'), { message: 'client_max_body_sise' }, snapshot, null, { webSearch: true });
   assert.equal(web.inputResolution.unindexed, true); assert.equal(web.inputResolution.action, 'directive');
   assert.equal(Object.hasOwn(web.inputResolution, 'suggestions'), false); assert.equal(web.normalizedRequest.input, 'client_max_body_sise');
-  // 混合大小写的拼写错误仍有相近名称：即使开了联网，也给规范名建议，不把错名送去搜索。
+  // 混合大小写不符合小写蛇形的放行形状：即使开了联网也澄清并给建议，不把错名送去搜索。
   const upper = resolveInput(directive('cLient_mEX_oody_size'), { message: 'cLient_mEX_oody_size' }, snapshot, null, { webSearch: true });
   assert.equal(upper.inputResolution.action, 'clarify'); assert.ok(upper.inputResolution.suggestions.includes('client_max_body_size'));
 });
@@ -784,17 +784,22 @@ test('相近指令名建议：开启联网时蛇形未收录名仍进入字段�
   assert.ok(selectionCount(spike.mock.requests) > 0);
 });
 
-test('指令名大小写：全大写与混合大小写命中规范名并带说明，拼写错误仍建议规范名', async t => {
-  const { run } = await setup(t);
-  const upper = await run('CLIENT_MAX_BODY_SIZE 的默认值是什么');
-  assert.equal(upper.inputResolution.action, 'directive', upper.error);
-  assert.equal(upper.normalizedRequest.input, 'client_max_body_size');
-  assert.deepEqual(upper.inputResolution.canonicalized, { from: 'CLIENT_MAX_BODY_SIZE', to: 'client_max_body_size' });
-  assert.equal(upper.inputResolution.notice, '已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。');
-  const mixed = await run('Client_Max_Body_Size 的默认值是什么');
-  assert.equal(mixed.normalizedRequest.input, 'client_max_body_size', mixed.error);
-  assert.equal(mixed.inputResolution.canonicalized.from, 'Client_Max_Body_Size');
-  // 模型必须交回消息里的原词。宿主只在这之后做大小写归一，不接受模型改写后的小写名。
+test('指令名区分大小写：全大写与混合大小写不匹配索引，澄清并提示正确写法；不进入字段选择、不写缓存，拼写错误仍给相近建议', async t => {
+  const { spike, run } = await setup(t);
+  for (const [message, written] of [['CLIENT_MAX_BODY_SIZE 的默认值是什么', 'CLIENT_MAX_BODY_SIZE'], ['Client_Max_Body_Size 的默认值是什么', 'Client_Max_Body_Size']]) {
+    const job = await run(message);
+    assert.equal(job.inputResolution.action, 'clarify', job.error);
+    assert.equal(job.state, 'awaiting_input', job.error); assert.equal(job.normalizedRequest, null);
+    assert.deepEqual(job.inputResolution.suggestions, ['client_max_body_size']);
+    assert.equal(job.inputResolution.message, `Nginx 指令名区分大小写，${written} 不是有效的指令名；你是否要查询 client_max_body_size？以上仅为提示，未自动替换，请确认后重新发送。`);
+    // 不再有规范名说明与 canonicalized 字段。
+    assert.equal(job.inputResolution.canonicalized, undefined); assert.equal(job.inputResolution.notice, undefined);
+    assert.equal(job.cacheHit, false);
+  }
+  // 只发了意图阶段的请求：没有字段选择请求，也没有写任何完成缓存。
+  assert.equal(selectionCount(spike.mock.requests), 0);
+  assert.deepEqual(await readdir(join(spike.config.stateDir, 'cache')), []);
+  // 模型必须交回消息里的原词；它改写成小写的名称依然被拒（不是消息里的逐字标识符）。
   const rewritten = resolveInput({ action: 'directive', input: 'client_max_body_size', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 的默认值是什么' }, { index: { release_id: 'test', directives: [{ name: 'client_max_body_size' }] } });
   assert.equal(rewritten.normalizedRequest, null);
   const typo = await run('cLient_mEX_oody_size');
@@ -802,43 +807,57 @@ test('指令名大小写：全大写与混合大小写命中规范名并带说�
   assert.ok(typo.inputResolution.suggestions.includes('client_max_body_size'));
 });
 
-test('指令名大小写：索引里有多种大小写时澄清并列出，不自动选择', () => {
+test('指令名区分大小写：索引里 Listen 与 listen 并存时按精确写法收录，其他写法澄清并同时建议两者', () => {
   const snapshot = { index: { release_id: 'test', directives: [{ name: 'Listen' }, { name: 'listen' }, { name: 'proxy_pass' }] } };
-  const ambiguous = resolveInput({ action: 'directive', input: 'LISTEN', question: '', ignored: false }, { message: 'LISTEN 的默认值' }, snapshot);
-  assert.equal(ambiguous.normalizedRequest, null);
-  assert.equal(ambiguous.inputResolution.action, 'clarify');
-  assert.match(ambiguous.inputResolution.message, /Listen、listen/);
-  assert.doesNotMatch(ambiguous.inputResolution.message, /proxy_pass/);
+  const resolve = input => resolveInput({ action: 'directive', input, question: '', ignored: false }, { message: `${input} 的默认值` }, snapshot);
+  // 两种精确写法各自被收录。
+  assert.equal(resolve('Listen').normalizedRequest.input, 'Listen');
+  assert.equal(resolve('listen').normalizedRequest.input, 'listen');
+  // 其他大小写写法：澄清，建议两者（字典序），不自动选择。
+  const other = resolve('LISTEN');
+  assert.equal(other.normalizedRequest, null); assert.equal(other.inputResolution.action, 'clarify');
+  assert.deepEqual(other.inputResolution.suggestions, ['Listen', 'listen']);
+  assert.match(other.inputResolution.message, /区分大小写，LISTEN 不是有效的指令名；你是否要查询 Listen、listen？/);
 });
 
-test('指令名大小写：ignored 提示与规范名说明都保留；多个名称和跑题比较不区分大小写', () => {
+test('指令名区分大小写：ignored 提示保留；多个名称与跑题降级按精确大小写比较', () => {
   const snapshot = { index: { release_id: 'test', directives: [{ name: 'client_max_body_size' }, { name: 'proxy_pass' }] } };
-  const both = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: true }, { message: 'CLIENT_MAX_BODY_SIZE 的默认值，另外今天天气怎么样' }, snapshot);
+  const intent = (action, input, ignored = false) => ({ action, input, question: '', ignored });
+  const both = resolveInput(intent('directive', 'client_max_body_size', true), { message: 'client_max_body_size 的默认值，另外今天天气怎么样' }, snapshot);
   assert.equal(both.normalizedRequest.input, 'client_max_body_size');
   assert.equal(both.inputResolution.ignored, true);
-  assert.ok(both.inputResolution.notice.includes('消息中与配置无关的部分未处理。'));
-  assert.ok(both.inputResolution.notice.includes('已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。'));
-  const many = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 和 PROXY_PASS' }, snapshot);
+  assert.equal(both.inputResolution.notice, '消息中与配置无关的部分未处理。');
+  assert.equal(both.inputResolution.canonicalized, undefined);
+  const many = resolveInput(intent('directive', 'client_max_body_size'), { message: 'client_max_body_size 和 proxy_pass' }, snapshot);
   assert.equal(many.normalizedRequest, null);
   assert.match(many.inputResolution.message, /多个指令名称/);
-  const same = resolveInput({ action: 'directive', input: 'CLIENT_MAX_BODY_SIZE', question: '', ignored: false }, { message: 'CLIENT_MAX_BODY_SIZE 就是 client_max_body_size' }, snapshot);
+  // 另一种大小写写法不计为第二个指令名：只有精确写法的 client_max_body_size 被收录。
+  const same = resolveInput(intent('directive', 'client_max_body_size'), { message: 'CLIENT_MAX_BODY_SIZE 就是 client_max_body_size' }, snapshot);
   assert.equal(same.normalizedRequest.input, 'client_max_body_size');
-  const off = resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message: '今天天气怎么样 PROXY_PASS' }, snapshot);
+  // out_of_scope 降级只认精确写法：proxy_pass 降级为澄清，PROXY_PASS 不是指令，仍按范围外回复。
+  const off = resolveInput(intent('out_of_scope', ''), { message: '今天天气怎么样 proxy_pass' }, snapshot);
   assert.equal(off.inputResolution.action, 'clarify');
   assert.match(off.inputResolution.message, /指令名/);
-  const weather = resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message: '今天天气怎么样' }, snapshot);
+  assert.equal(resolveInput(intent('out_of_scope', ''), { message: '今天天气怎么样 PROXY_PASS' }, snapshot).inputResolution.action, 'out_of_scope');
+  const weather = resolveInput(intent('out_of_scope', ''), { message: '今天天气怎么样' }, snapshot);
   assert.equal(weather.inputResolution.action, 'out_of_scope');
 });
 
-test('指令名大小写：联网放行把混合大小写蛇形名收成小写，并带说明', async t => {
-  const { run } = await setup(t, { webSearch: true });
-  const job = await run('Ssl_Certificate_Cache 是做什么的');
-  assert.equal(job.inputResolution.action, 'directive', job.error);
-  assert.equal(job.inputResolution.unindexed, true);
-  assert.equal(job.normalizedRequest.input, 'ssl_certificate_cache');
-  assert.deepEqual(job.inputResolution.canonicalized, { from: 'Ssl_Certificate_Cache', to: 'ssl_certificate_cache' });
-  assert.match(job.inputResolution.notice, /已按指令名 ssl_certificate_cache 理解（Nginx 指令名区分大小写，原写法 Ssl_Certificate_Cache）。/);
-  assert.equal(job.state, 'awaiting_input', job.error);
+test('指令名区分大小写：联网开启时小写蛇形名按原样放行，混合大小写写法仍澄清、不联网', async t => {
+  const { spike, run } = await setup(t, { webSearch: true });
+  const lower = await run('ssl_certificate_cache 是做什么的');
+  assert.equal(lower.inputResolution.action, 'directive', lower.error);
+  assert.equal(lower.inputResolution.unindexed, true);
+  assert.equal(lower.normalizedRequest.input, 'ssl_certificate_cache');
+  assert.equal(lower.inputResolution.canonicalized, undefined); assert.equal(lower.inputResolution.notice, undefined);
+  assert.equal(lower.state, 'awaiting_input', lower.error);
+  const requests = selectionCount(spike.mock.requests);
+  assert.ok(requests > 0);
+  // 混合大小写不符合小写蛇形的放行形状：澄清，不改成小写、不进入字段选择。
+  const mixed = await run('Ssl_Certificate_Cache 是做什么的');
+  assert.equal(mixed.inputResolution.action, 'clarify', mixed.error);
+  assert.equal(mixed.normalizedRequest, null); assert.equal(mixed.inputResolution.unindexed, undefined);
+  assert.equal(selectionCount(spike.mock.requests), requests);
 });
 
 const userText = message => typeof message.content === 'string' ? message.content : (message.content ?? []).map(part => part.text ?? '').join('');
@@ -883,42 +902,6 @@ test('选择阶段两次都交回意图 JSON 时失败、不写缓存并回滚�
   assert.equal(restored.normalizedRequest, null);
   assert.equal(restored.currentConfig, null);
   assert.equal(restored.messages, 0);
-});
-
-test('缓存键折叠只发生在整句恰为一个规范名时；带其他文字或配置语法的消息保持原文', () => {
-  const names = [{ name: 'client_max_body_size' }, { name: 'return' }, { name: 'set' }];
-  // 整句恰为一个名称：大小写与首尾空白都折到索引原名。
-  assert.equal(cacheMessage('Client_Max_Body_Size', names), 'client_max_body_size');
-  assert.equal(cacheMessage('  CLIENT_MAX_BODY_SIZE\n', names), 'client_max_body_size');
-  // 带其他文字：句中的普通英文词（Return、Set）可能只是巧合同名，语义不同的问法不得共用缓存。
-  assert.equal(cacheMessage('Return 是什么意思', names), 'Return 是什么意思');
-  assert.equal(cacheMessage('Set the value', names), 'Set the value');
-  assert.equal(cacheMessage('Client_Max_Body_Size 的默认值是什么', names), 'Client_Max_Body_Size 的默认值是什么');
-  assert.equal(cacheMessage('events { Worker_Connections 1024; }', names), 'events { Worker_Connections 1024; }');
-  // 索引里同一小写形式有多个规范名时不猜测，保持原文。
-  assert.equal(cacheMessage('LISTEN', [{ name: 'Listen' }, { name: 'listen' }]), 'LISTEN');
-  // 未收录名称不折叠。
-  assert.equal(cacheMessage('Ssl_Certificate_Cache', names), 'Ssl_Certificate_Cache');
-});
-
-test('缓存命中时按当前写法重算规范名说明，不沿用另一种写法留下的 notice', () => {
-  const names = [{ name: 'client_max_body_size' }];
-  const upper = { action: 'directive', ignored: true, notice: '消息中与配置无关的部分未处理。\n已按指令名 client_max_body_size 理解（Nginx 指令名区分大小写，原写法 CLIENT_MAX_BODY_SIZE）。', canonicalized: { from: 'CLIENT_MAX_BODY_SIZE', to: 'client_max_body_size' } };
-  // 缓存来自大写写法，当前用户输入小写：说明与 canonicalized 都应去掉，ignored 提示保留。
-  const lower = refreshCanonicalNotice(upper, 'client_max_body_size', names);
-  assert.equal(lower.canonicalized, undefined);
-  assert.equal(lower.notice, '消息中与配置无关的部分未处理。');
-  assert.equal(lower.ignored, true);
-  // 缓存来自小写（无说明），当前输入混合大小写：补上说明。
-  const mixed = refreshCanonicalNotice({ action: 'directive' }, 'Client_Max_Body_Size', names);
-  assert.deepEqual(mixed.canonicalized, { from: 'Client_Max_Body_Size', to: 'client_max_body_size' });
-  assert.match(mixed.notice, /原写法 Client_Max_Body_Size/);
-  // 只含规范名说明时，去掉后不留空 notice 键。
-  assert.equal(Object.hasOwn(refreshCanonicalNotice({ action: 'directive', notice: upper.notice.split('\n')[1], canonicalized: upper.canonicalized }, 'client_max_body_size', names), 'notice'), false);
-  // 非 directive 或整句不是单个名称：原样返回。
-  const config = { action: 'config' };
-  assert.equal(refreshCanonicalNotice(config, 'client_max_body_size', names), config);
-  assert.equal(refreshCanonicalNotice(upper, 'Client_Max_Body_Size 的默认值', names), upper);
 });
 
 test('选择阶段首次输出不是 JSON：重试一次并完成，纠正句固定、不含原文、不写缓存', async t => {
@@ -1064,9 +1047,8 @@ test('普通词误判：Set proxy_pass 的作用按 proxy_pass 查询，Set 不�
   const resolved = resolveInput(directiveIntent('proxy_pass'), { message }, wordSnapshot);
   assert.equal(resolved.inputResolution.action, 'directive');
   assert.equal(resolved.normalizedRequest.input, 'proxy_pass');
-  // proxy_pass 已是索引原名，没有大小写说明，也没有澄清。
+  // proxy_pass 是索引原名，没有说明，也没有澄清。
   assert.equal(resolved.inputResolution.notice, undefined);
-  assert.equal(resolved.inputResolution.canonicalized, undefined);
   // 同类普通词：Return、Root、If、Map、Include、Listen 均不计入。
   for (const word of ['Return', 'Root', 'Listen', 'If', 'Map', 'Include']) {
     const one = resolveInput(directiveIntent('proxy_pass'), { message: `${word} proxy_pass 的作用` }, wordSnapshot);
@@ -1074,38 +1056,37 @@ test('普通词误判：Set proxy_pass 的作用按 proxy_pass 查询，Set 不�
   }
 });
 
-test('普通词误判：含下划线的蛇形名、精确大小写名称、模型 input 本身仍计入', () => {
-  // 蛇形名即使大小写不同也计入：Client_Max_Body_Size 与 Proxy_Pass 仍触发多名称澄清。
+test('精确大小写：写法不符的名称（含蛇形名与 Set）澄清并提示区分大小写；精确写法的多名称仍澄清', () => {
+  // 蛇形名大小写不符：Client_Max_Body_Size 不是索引里的名称，澄清并建议正确写法（不再算“多个指令名”）。
   const snake = resolveInput(directiveIntent('Client_Max_Body_Size'), { message: 'Client_Max_Body_Size 与 Proxy_Pass' }, wordSnapshot);
   assert.equal(snake.normalizedRequest, null);
-  assert.match(snake.inputResolution.message, /多个指令名称/);
-  // 精确大小写的 set 与 proxy_pass 仍澄清。
+  assert.match(snake.inputResolution.message, /区分大小写，Client_Max_Body_Size 不是有效的指令名；你是否要查询 client_max_body_size？/);
+  // 精确大小写的 set 与 proxy_pass 仍澄清为多个指令名。
   const exact = resolveInput(directiveIntent('proxy_pass'), { message: 'set 和 proxy_pass' }, wordSnapshot);
   assert.equal(exact.normalizedRequest, null);
   assert.match(exact.inputResolution.message, /多个指令名称/);
-  // 模型 input 恰是 Set（用户确实只问 Set）：按规范名处理并提示，且它与另一个精确名称同在时仍澄清。
+  // 模型 input 是 Set：与索引的 set 大小写不同，澄清并建议 set，不采用。
   const only = resolveInput(directiveIntent('Set'), { message: 'Set 是什么' }, wordSnapshot);
-  assert.equal(only.normalizedRequest.input, 'set');
-  assert.deepEqual(only.inputResolution.canonicalized, { from: 'Set', to: 'set' });
-  assert.match(only.inputResolution.notice, /已按指令名 set 理解/);
+  assert.equal(only.normalizedRequest, null);
+  assert.deepEqual(only.inputResolution.suggestions, ['set']);
+  assert.match(only.inputResolution.message, /区分大小写，Set 不是有效的指令名；你是否要查询 set？/);
+  // 与精确名称同在时仍是同样的未收录澄清（Set 本身未收录），不是“多个指令名”。
   const both = resolveInput(directiveIntent('Set'), { message: 'Set 和 proxy_pass 的区别' }, wordSnapshot);
   assert.equal(both.normalizedRequest, null);
-  assert.match(both.inputResolution.message, /多个指令名称/);
-  // 大小写不同且不含下划线的名称：既不是 input 也不是蛇形名，与 input 同在时不计入。
-  const word = resolveInput(directiveIntent('Client_Max_Body_Size'), { message: 'Client_Max_Body_Size 之后 Return 什么' }, wordSnapshot);
-  assert.equal(word.normalizedRequest.input, 'client_max_body_size');
+  assert.match(both.inputResolution.message, /区分大小写，Set 不是有效的指令名/);
 });
 
-test('普通词误判：out_of_scope 降级判断同样忽略普通词；精确大小写或蛇形名仍降级', () => {
+test('普通词误判：out_of_scope 降级只认精确大小写的指令名，大小写不同的写法不降级', () => {
   const scope = message => resolveInput({ action: 'out_of_scope', input: '', question: '', ignored: false }, { message }, wordSnapshot).inputResolution.action;
-  // 无任何指令名的跑题消息里出现大写开头的普通词：正常 out_of_scope。
+  // 无任何精确指令名的跑题消息里出现大写开头的普通词：正常 out_of_scope。
   assert.equal(scope('Return the weather'), 'out_of_scope');
   assert.equal(scope('Set the alarm and Root for me'), 'out_of_scope');
-  // 精确大小写的指令名（return）仍降级，原有语义不变。
+  // 精确大小写的指令名（return、proxy_pass）降级为澄清。
   assert.equal(scope('return the weather'), 'clarify');
-  // 蛇形名即使大小写不同也降级。
-  assert.equal(scope('今天天气怎么样 PROXY_PASS'), 'clarify');
-  assert.equal(scope('Client_Max_Body_Size 之后讲个笑话'), 'clarify');
+  assert.equal(scope('今天天气怎么样 proxy_pass'), 'clarify');
+  // 仅大小写不同的蛇形名同样不是指令名，按范围外处理。
+  assert.equal(scope('今天天气怎么样 PROXY_PASS'), 'out_of_scope');
+  assert.equal(scope('Client_Max_Body_Size 之后讲个笑话'), 'out_of_scope');
 });
 
 test('普通词误判：整条 session 路径，Set proxy_pass 按 proxy_pass 查询且不触发澄清', async t => {
@@ -1139,9 +1120,8 @@ test('配置大小写提示：Listen 80; 给出提示，但不改配置原文、
   const job = await run(message);
   assert.equal(job.inputResolution.action, 'config', job.error);
   assert.equal(job.inputResolution.notice, LISTEN_NOTICE);
-  // 只提示不替换：原文逐字保留，没有 canonicalized 字段，Listen 仍按精确大小写判为未收录。
+  // 只提示不替换：原文逐字保留，Listen 仍按精确大小写判为未收录。
   assert.equal(job.normalizedRequest.input, message);
-  assert.equal(job.inputResolution.canonicalized, undefined);
   const index = job.parsed.directives.findIndex(item => item.name === 'Listen');
   assert.ok(index >= 0);
   assert.equal(job.matches[index].status, 'unknown');

@@ -11,7 +11,7 @@ import { startMock } from './mock-provider.mjs';
 import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
-import { INPUT_CONTRACT, INPUT_PROMPT, resolveInputDetailed, cacheMessage, refreshCanonicalNotice, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
+import { INPUT_CONTRACT, INPUT_PROMPT, resolveInputDetailed, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
 // 工具结果统一形状（与 knowledge-tools 中的 result 一致），供联网工具复用。
@@ -551,9 +551,8 @@ export class Spike {
     const context = manager.buildSessionContext().messages;
     const previousHistory = budgetHistory(compactHistory([...context, { role: 'user', content: '' }]).slice(0, -1), config.compactHistoryBytes);
     if (Buffer.byteLength(JSON.stringify(previousHistory)) >= config.maxHistoryBytes) throw requestError('history_limit', '本轮输入过大，请缩短问题', 413);
-    // 指令名查询把唯一规范名折进消息后再做缓存键，因此 Client_Max_Body_Size 与 client_max_body_size 是同一次查询。
-    // 含配置语法的消息不折叠，避免两份大小写不同的配置共用结果。
-    const cacheRequest = unified ? { ...submittedRequest, message: cacheMessage(submittedRequest.message, snapshot.index.directives), currentConfig, currentSubject, inputContract: INPUT_CONTRACT } : request;
+    // 缓存键使用用户原消息：Nginx 指令名区分大小写，Client_Max_Body_Size 与 client_max_body_size 是不同的查询，不共用缓存。
+    const cacheRequest = unified ? { ...submittedRequest, currentConfig, currentSubject, inputContract: INPUT_CONTRACT } : request;
     const key = cacheKey({ request: cacheRequest, context, knowledgeHash: snapshot.hash, codeHash: this.codeHash, siteBase: config.siteBase, model: { mode: config.mode, id: config.modelId, baseUrl: config.mode === 'mock' ? 'local-mock' : config.baseUrl, reasoning: config.reasoning, thinkingLevel: config.thinkingLevel, maxTurns: config.maxTurns, contextWindow: config.contextWindow, maxTokens: config.maxTokens, compat: config.compat, webSearch: config.webSearch } });
     const cachePath = join(config.stateDir, 'cache', `${key}.json`);
     check();
@@ -564,13 +563,6 @@ export class Spike {
     if (cached) {
       check();
       const file = join(config.stateDir, 'sessions', `${randomUUID()}.jsonl`);
-      // 缓存键把“整句恰为一个指令名”的大小写折叠了，命中的结果可能来自另一种写法。
-      // 规范名说明依赖本次用户写法，所以按当前消息重算，不能沿用缓存里的 notice / canonicalized。
-      if (unified) {
-        const refresh = resolution => refreshCanonicalNotice(resolution, submittedRequest.message, snapshot.index.directives);
-        cached.report = { ...cached.report, inputResolution: refresh(cached.report.inputResolution) };
-        cached.resolution = { ...cached.resolution, inputResolution: refresh(cached.resolution.inputResolution) };
-      }
       const updatedMeta = { ...metaFields(), ...cached.resolution, file, state: 'completed', cacheKeys: rememberCacheKeys(meta, key) };
       if (maintenance.bytes + Buffer.byteLength(cached.session) + Buffer.byteLength(JSON.stringify(updatedMeta)) >= config.maxStateBytes) throw requestError('storage_limit', '服务端状态容量已达上限，请维护清理后重试', 503);
       await writeFile(file, cached.session, { mode: 0o600 });
@@ -688,9 +680,9 @@ export class Spike {
       await stage('preloadMs', () => bundle.prepare());
       check();
       // 配置里的指令名与索引仅大小写不同（如 Listen 80;）时给出提示：只提示，不替换配置原文、不改变匹配结果。
-      // 提示并入 inputResolution.notice（与 ignored、规范名说明换行合并），随 decorate/finish 写入报告、会话元数据与完成缓存，
+      // 提示并入 inputResolution.notice（与 ignored 的固定句换行合并），随 decorate/finish 写入报告、会话元数据与完成缓存，
       // 缓存键已含消息与知识哈希，命中缓存时由缓存的 report/resolution 原样恢复。
-      // 名称查询（directive）的规范名已由 resolveInput 说明，这里只处理配置原文（config）及沿用配置的追问（followup）。
+      // 名称查询（directive）不匹配时的大小写提示由 resolveInput 的澄清文案给出，这里只处理配置原文（config）及沿用配置的追问（followup）。
       if (unified && ['config', 'followup'].includes(job.inputResolution?.action)) {
         job.inputResolution = appendResolutionNotice(job.inputResolution, caseMismatchNotice(bundle.analysis, snapshot.index.directives));
       }

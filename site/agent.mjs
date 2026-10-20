@@ -548,16 +548,7 @@ async function finish(task) {
 async function followJob(task, job) {
   while (current(task)) {
     task.terminal = job.state !== 'running';
-    if (job.normalizedRequest) {
-      trackedSubject = job.normalizedRequest;
-      // 列表标题用索引规范名。提交当下还不知道归一化结果，等报告回来再替换用户的原始大小写。
-      const title = directiveName(job.normalizedRequest);
-      const id = task.sessionId || job.sessionId;
-      if (title && id) {
-        const existing = readSessions().find(item => item.id === id);
-        if (!existing || existing.title !== title) saveSession(id, title);
-      }
-    }
+    if (job.normalizedRequest) trackedSubject = job.normalizedRequest;
     if (task.showResults === false) {
       if (task.turn) task.turn.state.textContent = `原任务${labels[job.state] ?? job.state}（结果未回填）`;
       note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
@@ -620,7 +611,7 @@ async function restore() {
       $('configuration').dispatchEvent(new CustomEvent('agent-reset', { detail: '已恢复会话；右侧只显示恢复的当前对象，不含历史轮次。' }));
     }
     const restoredConfig = saved.currentSubject ?? saved.currentConfig ?? saved.normalizedRequest;
-    // 后端恢复时返回的说明（如指令名大小写规范化、未处理的无关部分）：只作为文本显示在恢复卡里。
+    // 后端恢复时返回的说明（如配置里指令名的大小写提示、未处理的无关部分）：只作为文本显示在恢复卡里。
     const restoredNotice = typeof saved.inputResolution?.notice === 'string' ? saved.inputResolution.notice.trim() : '';
     if (!preserveInput && (restoredConfig?.input || restoredNotice)) {
       const turn = addTurn('会话已恢复（仅当前对象，不含历史轮次）');
