@@ -13,6 +13,7 @@ import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, 
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
 import { buildValidation } from './validation.mjs';
+import { sessionTitle, listSessions } from './session-list.mjs';
 import { INPUT_CONTRACT, INPUT_PROMPT, resolveInputDetailed, caseMismatchNotice, appendResolutionNotice } from './input-resolution.mjs';
 import { WEB_TOOL, WEB_URL, WEB_SITES, WEB_PROMPT, WEB_PARAMETERS, WEB_NOTICE, WEB_MAX_CALLS, checkQuery, callWebSearch, filterResults } from './web-search.mjs';
 
@@ -361,6 +362,8 @@ export class Spike {
     await job.done;
     return this.view(job);
   }
+  // 历史会话列表：只读 metadata，不受 running/restoring/pruning 忙线状态限制，也不修改任何文件 mtime。
+  listSessions() { return listSessions(this.config, this.secrets()); }
   metadataPath(id) {
     if (!idValid(id)) throw new Error('会话 ID 无效');
     return join(this.config.stateDir, 'metadata', `${id}.json`);
@@ -588,12 +591,19 @@ export class Spike {
     check();
     let cached;
     await stage('cacheMs', async () => { try { cached = await readJson(cachePath); } catch (error) { if (error.code !== 'ENOENT') throw error; } });
+    // 标题计算：对象取最终生效的 currentSubject，消息取本次提交；已用 secrets() 隐藏模型/联网 Key。
+    const titleFor = subject => sessionTitle(subject, submittedRequest, this.secrets());
     const metaFields = () => ({ request: submittedRequest, normalizedRequest: job.normalizedRequest ?? null, inputResolution: job.inputResolution ?? null, validation: job.validation ?? null,
-      currentConfig, currentSubject, knowledgeHash: snapshot.hash, contract: CONTRACT, inputContract: INPUT_CONTRACT, cacheKeys: rememberCacheKeys(meta) });
+      currentConfig, currentSubject, knowledgeHash: snapshot.hash, contract: CONTRACT, inputContract: INPUT_CONTRACT, cacheKeys: rememberCacheKeys(meta),
+      // 历史会话标题：每条写 metadata 的路径都经由 metaFields，因此都会带上 title。
+      // 写入“当前对象”会在 finish / 缓存命中里被覆盖，这两处用 titleFor(最终对象) 重新计算。
+      title: titleFor(currentSubject) });
     if (cached) {
       check();
       const file = join(config.stateDir, 'sessions', `${randomUUID()}.jsonl`);
       const updatedMeta = { ...metaFields(), ...cached.resolution, file, state: 'completed', cacheKeys: rememberCacheKeys(meta, key) };
+      // cached.resolution 带来了缓存时的 currentSubject，标题要按它重新计算，不能沿用 metaFields 里旧对象的结果。
+      updatedMeta.title = titleFor(updatedMeta.currentSubject);
       if (maintenance.bytes + Buffer.byteLength(cached.session) + Buffer.byteLength(JSON.stringify(updatedMeta)) >= config.maxStateBytes) throw requestError('storage_limit', '服务端状态容量已达上限，请维护清理后重试', 503);
       await writeFile(file, cached.session, { mode: 0o600 });
       await atomicJson(metaPath, updatedMeta);
@@ -635,7 +645,7 @@ export class Spike {
       // 范围外、问候和联网结果不写精确缓存。可能写缓存时先把键算进 metadata，容量检查才能看到最终文件大小。
       // 发生过字段选择纠正的请求不写完成缓存：会话里带有一次错误输出，不能当成可复用的干净结果。
       const cacheable = state === 'completed' && !selectionRetried && !['out_of_scope', 'greeting'].includes(job.inputResolution?.action) && !job.webSearch.calls;
-      const completedMeta = { ...metaFields(), ...resolution, file, state, ...(cacheable ? { cacheKeys: rememberCacheKeys(meta, key) } : {}) };
+      const completedMeta = { ...metaFields(), ...resolution, file, state, title: titleFor(nextSubject), ...(cacheable ? { cacheKeys: rememberCacheKeys(meta, key) } : {}) };
       const projectedBytes = await stateBytes(config.stateDir) - (await lstat(metaPath)).size + Buffer.byteLength(JSON.stringify(completedMeta));
       if (projectedBytes >= config.maxStateBytes) throw requestError('storage_limit', '服务端状态容量已达上限，请维护清理后重试', 503);
       await atomicJson(metaPath, completedMeta);

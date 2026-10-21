@@ -33,6 +33,8 @@ export async function serve(overrides, { website = false } = {}) {
         if (job?.state === 'running' && url.searchParams.get('brief') === '1') for (const key of ['items', 'matches', 'parsed']) delete view[key];
         json(job ? 200 : 404, view); return;
       }
+      // 历史会话列表：路径精确匹配 /api/sessions（不含尾部斜杠与 id）；不走忙线检查，响应沿用 json() 的 no-store。
+      if (req.method === 'GET' && url.pathname === '/api/sessions') { json(200, { sessions: await spike.listSessions() }); return; }
       const sessionMatch = url.pathname.match(/^\/api\/sessions\/([0-9a-f-]{36})$/);
       if (req.method === 'GET' && sessionMatch) { json(200, await spike.restore(sessionMatch[1])); return; }
       if (req.method === 'DELETE' && sessionMatch) { json(200, await spike.deleteSession(sessionMatch[1])); return; }

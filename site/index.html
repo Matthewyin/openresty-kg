@@ -64,9 +64,10 @@
             <button id="agent-restore" class="text-button" type="button" disabled>恢复会话</button>
             <button id="agent-retry" class="text-button" type="button">重新检测服务</button>
           </div>
-          <!-- 历史会话只存在这台浏览器：标题用文本节点渲染，不把用户输入插进 HTML -->
+          <!-- 历史会话由服务端保存、所有访问者共用：标题用文本节点渲染，不把用户输入插进 HTML -->
           <details id="agent-history" class="session-history">
             <summary>历史会话</summary>
+            <p class="source-meta">列表由服务端保存，所有访问者共用；切换后的追问会写入该会话。</p>
             <ul id="agent-history-list"></ul>
           </details>
         </div>

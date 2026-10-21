@@ -56,7 +56,7 @@ function report(patch = {}) {
       citations: [{ entryId, field: 'defaults', sourceId: 'merge', quote: 'source code', revision: 'a'.repeat(40), file: 'src/test.c', start_line: 1, end_line: 1, url: `https://github.com/example/test/blob/${'a'.repeat(40)}/src/test.c#L1-L1` }] },
     metrics: { modelRoundTrips: 1, totalMs: 20, finalOutputBytes: 100 }, ...patch };
 }
-async function start({ api, stored = '', storedEntries = [], originalApp = false, initialRelease = release, basePath = '/' } = {}) {
+async function start({ api, stored = '', storedEntries = [], originalApp = false, initialRelease = release, basePath = '/', sessions = [] } = {}) {
   const requests = []; const observers = [];
   const nodes = new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(match => [match[1], new Node()]));
   nodes.get('agent-panel').dataset.probeTimeoutMs = '1000';
@@ -76,6 +76,8 @@ async function start({ api, stored = '', storedEntries = [], originalApp = false
       if (custom !== undefined) return custom;
       if (localPath === '/api/status') return reply({ mode: 'mock', unifiedInput: true, model: 'test', siteBase: `http://site.test${basePath}`, pollIntervalMs: 2, requestTimeoutMs: 1000 });
       if (localPath === '/api/run') return reply(report());
+      // 服务端历史会话列表：每次请求时现取，测试可在运行中改动返回内容。
+      if (localPath === '/api/sessions') return reply({ sessions: typeof sessions === 'function' ? sessions() : sessions });
       if (localPath === '/api/cancel') return reply({ state: 'cancelled' });
       if (localPath.startsWith('/api/jobs/')) return reply(report());
       return reply({ request: { input: 'multi_accept off;', mode: 'single', context: 'events', module: 'ngx_event_core_module', question: '继承？', release }, messages: 4 });
@@ -138,14 +140,17 @@ test('轮询结果已过期时释放页面操作，不陷入取消未确认', as
 
 test('只有明确提交才发送统一 message；本地解析选项不混入 Agent 请求，追问携带会话', async () => {
   const ui = await start();
-  assert.equal(ui.requests.length, 1); assert.equal(ui.requests[0].path, '/api/status'); assert.equal(ui.requests[0].body, undefined);
+  // 只有连接探测与连接后的列表拉取两个 GET，没有任何提交。
+  assert.deepEqual(ui.requests.map(request => request.path), ['/api/status', '/api/sessions']); assert.ok(ui.requests.every(request => request.method === 'GET' && request.body === undefined));
   await ui.change('query-module', 'ngx_event_core_module');
-  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.requests.length, 2);
   await ui.submit();
   const sent = ui.requests.find(request => request.path === '/api/run');
   assert.deepEqual(sent.body.request, { message: 'worker_connections', release });
   assert.equal(ui.saved.get(storageKey), sessionId);
-  assert.equal(JSON.parse(ui.saved.get(`${storageKey}:list`)).length, 1);
+  // 列表不再写本地键，改由服务端提供；提交被接受后会刷新一次。
+  assert.equal(ui.saved.has(`${storageKey}:list`), false);
+  assert.ok(ui.requests.filter(request => request.path === '/api/sessions').length >= 2);
   await ui.change('configuration', '继续问继承'); await ui.submit();
   assert.equal(ui.requests.filter(request => request.path === '/api/run').at(-1).body.sessionId, sessionId);
   for (const mode of ['config', 'main']) {
@@ -491,7 +496,7 @@ test('重登录后job已回收才恢复session，保留中断后编辑的输入�
   loggedIn = true;
   const before = ui.requests.length;
   await ui.click('agent-restore');
-  assert.deepEqual(ui.requests.slice(before).map(request => request.path), ['/api/status', `/api/jobs/${requestId}`, `/api/sessions/${sessionId}`]);
+  assert.deepEqual(ui.requests.slice(before).map(request => request.path).filter(path => path !== '/api/sessions'), ['/api/status', `/api/jobs/${requestId}`, `/api/sessions/${sessionId}`]);
   assert.equal(ui.nodes.get('configuration').value, '暂存的新问题');
   assert.equal(ui.saved.get(storageKey), sessionId);
   assert.match(ui.nodes.get('agent-status').textContent, /已恢复.*旧任务不可续传.*输入已保留/);
@@ -575,7 +580,7 @@ test('job丢失后session恢复再次401，下一次显式恢复仍保留输入�
   sessionAvailable = true;
   const before = ui.requests.length;
   await ui.click('agent-restore');
-  assert.deepEqual(ui.requests.slice(before).map(request => request.path), ['/api/status', `/api/jobs/${requestId}`, `/api/sessions/${sessionId}`]);
+  assert.deepEqual(ui.requests.slice(before).map(request => request.path).filter(path => path !== '/api/sessions'), ['/api/status', `/api/jobs/${requestId}`, `/api/sessions/${sessionId}`]);
   assert.equal(ui.nodes.get('configuration').value, '登录中断后的新草稿');
   assert.equal(ui.nodes.get('agent-submit').disabled, false);
   assert.equal(ui.requests.filter(request => request.method === 'POST').length, 1);
@@ -634,7 +639,7 @@ test('业务范围：范围外与问候只显示固定话术，不出现空模�
   }
 });
 
-test('inputResolution.notice 与被省略的外部参考都以文本显示固定文案；会话标题取提交时用户消息的原写法（不做规范名替换）', async () => {
+test('inputResolution.notice 与被省略的外部参考都以文本显示固定文案；列表标题由服务端计算，前端不再起标题', async () => {
   // 大小写提示由后端写进通用的 notice 字段，前端只按文本显示；没有专门的规范名字段或逻辑。
   const notice = '配置中的 Listen 未匹配。Nginx 指令名区分大小写；索引中有 listen，未自动按其查询。';
   const ui = await start({ api: request => request.path === '/api/run' ? reply(report({
@@ -648,8 +653,8 @@ test('inputResolution.notice 与被省略的外部参考都以文本显示固定
   const text = ui.nodes.get('agent-result').textContent;
   assert.ok(text.includes(notice));
   assert.ok(text.includes('部分外部参考未通过校验，已省略'));
-  // 会话标题回到提交时按用户消息取的原写法（不在报告返回后再替换成规范名），也没有“已按 X 理解”之类的说明。
-  assert.equal(JSON.parse(ui.saved.get(`${storageKey}:list`))[0].title, 'client_max_body_size 的默认值是什么');
+  // 前端不再自己起标题、也不写本地列表键；也没有“已按 X 理解”之类的说明。
+  assert.equal(ui.saved.has(`${storageKey}:list`), false);
   assert.ok(!text.includes('已按指令名'));
 });
 
@@ -833,98 +838,183 @@ test('外部参考：未收录且无参考时，不出现“没有可展示的�
   }
 });
 
-test('历史会话列表：新增、更新、上限 20、删除、过期与标题只走文本', async t => {
-  const pages = [];
-  // 页面沙箱会留住知识索引；测完放开引用，避免和同文件其他用例叠在一起。
-  t.after(() => { pages.length = 0; });
-  const keep = page => { pages.push(page); return page; };
-  const listKey = `${storageKey}:list`;
-  const buttons = (root, label) => descendants(root).filter(node => node.tagName === 'button' && node.textContent === label);
-  const baseStatus = { mode: 'mock', unifiedInput: true, model: 'test', siteBase: 'http://site.test/', pollIntervalMs: 2, requestTimeoutMs: 1000, retentionEnabled: true, sessionTtlMs: 259200000 };
-  const added = keep(await start());
-  await added.submit();
-  const created = JSON.parse(added.saved.get(listKey));
-  assert.equal(created.length, 1); assert.equal(created[0].id, sessionId); assert.equal(created[0].title, 'worker_connections');
-  const titled = keep(await start());
-  await titled.change('configuration', `${'字'.repeat(40)}\n第二行不进标题`);
-  await titled.submit();
-  assert.equal(JSON.parse(titled.saved.get(listKey))[0].title, '字'.repeat(30));
-  const named = keep(await start({ stored: sessionId, api: request => {
-    if (request.path === '/api/status') return reply(baseStatus);
-    if (request.path.startsWith('/api/sessions/')) return reply({ request: { message: 'worker_connections 的默认值', release }, currentSubject: { input: 'worker_connections', mode: 'single', release }, messages: 2 });
-  } }));
-  await named.click('agent-restore');
-  await named.change('configuration', '默认值呢');
-  await named.submit();
-  assert.equal(JSON.parse(named.saved.get(listKey))[0].title, 'worker_connections');
-  const previous = [{ id: sessionId, title: '旧标题', updatedAt: 10 }];
-  const updated = keep(await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify(previous)]] }));
-  await updated.submit();
-  const touched = JSON.parse(updated.saved.get(listKey))[0];
-  assert.equal(touched.title, 'worker_connections'); assert.ok(touched.updatedAt > 10);
-  const seeded = Array.from({ length: 20 }, (_, index) => ({ id: `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`, title: `旧${index}`, updatedAt: 1000 + index }));
-  const capped = keep(await start({ storedEntries: [[listKey, JSON.stringify(seeded)]] }));
-  await capped.submit();
-  const limited = JSON.parse(capped.saved.get(listKey));
-  assert.equal(limited.length, 20);
-  assert.equal(limited.some(item => item.id === sessionId), true);
-  assert.equal(limited.some(item => item.id === seeded[0].id), false);
+const otherId = '44444444-4444-4444-8444-444444444444';
+const listOf = page => page.nodes.get('agent-history-list');
+const listRequests = page => page.requests.filter(request => request.method === 'GET' && request.path === '/api/sessions').length;
+const buttonsIn = (root, label) => descendants(root).filter(node => node.tagName === 'button' && node.textContent === label);
+const item = (id, title, updatedAt = Date.now()) => ({ id, title, updatedAt });
+
+test('历史会话（服务端）：连接后渲染、高亮当前会话、不再写 :list 键且加载时清理旧键', async () => {
+  const ui = await start({ stored: sessionId, storedEntries: [[`${storageKey}:list`, '[{"stale":1}]']], sessions: [item(sessionId, '当前会话'), item(otherId, '另一会话', Date.now() - 1000)] });
+  await until(() => listOf(ui).children.length === 2);
+  // 旧版本留下的本地列表键被清掉；当前会话 ID 键不动。
+  assert.equal(ui.saved.has(`${storageKey}:list`), false);
+  assert.equal(ui.saved.get(storageKey), sessionId);
+  const rows = listOf(ui).children;
+  assert.equal(rows[0].className, 'is-current'); assert.notEqual(rows[1].className, 'is-current');
+  assert.ok(rows[0].textContent.includes('当前会话') && rows[1].textContent.includes('另一会话'));
+  // 提交、恢复等操作之后也不会写回本地列表键。
+  await ui.submit();
+  assert.equal(ui.saved.has(`${storageKey}:list`), false);
+  // HTML 里有一句共用说明。
+  assert.match(html, /列表由服务端保存，所有访问者共用/);
+});
+
+test('历史会话（服务端）：提交、任务完成、删除、展开都会刷新列表', async () => {
+  let current = [item(otherId, '第一版')];
+  const ui = await start({ stored: sessionId, sessions: () => current, api: request => request.method === 'DELETE' ? reply({}) : undefined });
+  await until(() => listOf(ui).children.length === 1);
+  // 提交：服务端接受后刷新，任务结束后再刷新，至少多出两次请求。
+  current = [item(sessionId, '新会话'), item(otherId, '第一版')];
+  let before = listRequests(ui);
+  await ui.submit();
+  await until(() => listOf(ui).children.length === 2);
+  assert.ok(listRequests(ui) - before >= 2);
+  // 展开：其他访问者新建的会话在展开时出现；折叠不请求。
+  const third = '55555555-5555-4555-8555-555555555555';
+  current = [item(third, '别人建的'), ...current];
+  before = listRequests(ui);
+  ui.nodes.get('agent-history').open = false;
+  await ui.nodes.get('agent-history').dispatchEvent({ type: 'toggle' });
+  assert.equal(listRequests(ui), before);
+  ui.nodes.get('agent-history').open = true;
+  await ui.nodes.get('agent-history').dispatchEvent({ type: 'toggle' });
+  await until(() => listOf(ui).children.length === 3);
+  // 删除成功后刷新。
+  current = [item(third, '别人建的'), item(sessionId, '新会话')];
+  before = listRequests(ui);
+  const row = listOf(ui).children.find(node => node.textContent.includes('第一版'));
+  await buttonsIn(row, '删除')[0].dispatchEvent({ type: 'click' });
+  assert.ok(ui.requests.some(request => request.method === 'DELETE' && request.path === `/api/sessions/${otherId}`));
+  await until(() => listOf(ui).children.length === 2);
+  assert.ok(listRequests(ui) > before);
+});
+
+test('历史会话（服务端）：非法条目丢弃、整表形状非法为空、标题截断且只走文本', async () => {
   const malicious = '<img src=x onerror=alert(1)>';
-  const staleId = '33333333-3333-4333-8333-333333333333';
-  const expired = keep(await start({ storedEntries: [[listKey, JSON.stringify([{ id: staleId, title: malicious, updatedAt: Date.now() - 10000 }])]], api: request => request.path === '/api/status' ? reply({ ...baseStatus, sessionTtlMs: 1000 }) : undefined }));
-  const expiredText = expired.nodes.get('agent-history-list').textContent;
-  assert.match(expiredText, /已过期/); assert.ok(expiredText.includes(malicious));
-  assert.ok(!descendants(expired.nodes.get('agent-history-list')).some(node => node.tagName === 'img'));
-  assert.equal(expired.requests.some(request => request.method === 'DELETE'), false);
-  await buttons(expired.nodes.get('agent-history-list'), '移除')[0].dispatchEvent({ type: 'click' });
-  assert.equal(JSON.parse(expired.saved.get(listKey)).length, 0);
-  const otherId = '44444444-4444-4444-8444-444444444444';
-  const removable = keep(await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]] }));
-  const otherRow = removable.nodes.get('agent-history-list').children.find(node => node.textContent.includes('另一会话'));
-  await otherRow.children.find(node => node.tagName === 'button' && node.textContent === '切换').dispatchEvent({ type: 'click' });
-  assert.equal(removable.saved.get(storageKey), otherId);
-  assert.ok(removable.requests.some(request => request.method === 'GET' && request.path === `/api/sessions/${otherId}`));
-  const currentRow = removable.nodes.get('agent-history-list').children.find(node => node.className === 'is-current');
-  await currentRow.children.find(node => node.textContent === '删除').dispatchEvent({ type: 'click' });
-  assert.ok(removable.requests.some(request => request.method === 'DELETE' && request.path === `/api/sessions/${otherId}`));
-  assert.equal(removable.saved.has(storageKey), false);
-  assert.match(removable.nodes.get('agent-status').textContent, /已删除当前会话/);
-  const broken = keep(await start({ storedEntries: [[listKey, '{']] }));
-  assert.equal(broken.nodes.get('agent-history-list').children.length, 0);
+  const long = '字'.repeat(150);
+  const emoji = '😀'.repeat(120); // 码点截断：不能切出半个代理对
+  const ui = await start({ api: request => request.path === '/api/sessions' ? reply({ sessions: [
+    item(sessionId, malicious), item(otherId, long), item('55555555-5555-4555-8555-555555555555', emoji),
+    { id: 'bad', title: 'x', updatedAt: 1 }, { id: otherId, title: 1, updatedAt: 1 }, { id: otherId, title: 'x', updatedAt: '1' },
+    { id: otherId, title: 'x', updatedAt: Infinity }, null, 'str', [],
+  ] }) : undefined });
+  await until(() => listOf(ui).children.length === 3);
+  const text = listOf(ui).textContent;
+  assert.ok(text.includes(malicious));
+  assert.ok(!descendants(listOf(ui)).some(node => node.tagName === 'img'));
+  const titles = descendants(listOf(ui)).filter(node => node.className === 'session-title').map(node => node.textContent);
+  assert.ok(titles.includes(long.slice(0, 100)));
+  assert.ok(titles.includes('😀'.repeat(100)));
+  // 超过 50 条只显示 50 条。
+  const many = await start({ sessions: Array.from({ length: 60 }, (_, index) => item(`00000000-0000-4000-8000-${String(index).padStart(12, '0')}`, `会话${index}`, 1000 + index)) });
+  await until(() => listOf(many).children.length === 50);
+  // 整表形状非法（顶层数组 / sessions 不是数组）一律为空列表。
+  // 先有一份合法列表，再让下一次刷新返回非法形状：必须清空，而不是沿用旧表（沿用只用于“请求失败”）。
+  for (const bad of [[], { sessions: 'x' }, { sessions: { 0: 1 } }, null, 'oops']) {
+    let payload = { sessions: [item(sessionId, '旧')] };
+    const broken = await start({ api: request => request.path === '/api/sessions' ? reply(payload) : undefined });
+    await until(() => listOf(broken).children.length === 1);
+    payload = bad;
+    broken.nodes.get('agent-history').open = true;
+    await broken.nodes.get('agent-history').dispatchEvent({ type: 'toggle' });
+    await until(() => listOf(broken).children.length === 0);
+  }
+});
+
+test('历史会话（服务端）：刷新失败保留旧列表且不弹错误；过期响应不覆盖新响应', async () => {
+  let fail = false; const gates = [];
+  let current = [item(sessionId, '旧列表')];
+  const ui = await start({ api: request => {
+    if (request.path !== '/api/sessions') return undefined;
+    if (fail) return reply({ error: '坏了' }, 500);
+    const snapshot = current;
+    if (gates.length) { const gate = gates.shift(); return gate.promise.then(() => reply({ sessions: snapshot })); }
+    return reply({ sessions: snapshot });
+  } });
+  await until(() => listOf(ui).children.length === 1);
+  const statusBefore = ui.nodes.get('agent-status').textContent;
+  // 失败（HTTP 500 / 网络异常）：旧列表还在，状态栏不变，也不标红。
+  fail = true;
+  ui.nodes.get('agent-history').open = true;
+  await ui.nodes.get('agent-history').dispatchEvent({ type: 'toggle' }); await tick();
+  assert.equal(listOf(ui).children.length, 1);
+  assert.equal(ui.nodes.get('agent-status').textContent, statusBefore);
+  fail = false;
+  // 乱序：先发出的请求（旧数据）后返回，不能覆盖后发出的请求（新数据）。
+  const slow = deferred(); const fast = deferred();
+  gates.push(slow, fast);
+  current = [item(sessionId, '旧数据')];
+  const first = ui.nodes.get('agent-history').dispatchEvent({ type: 'toggle' });
+  await tick();
+  current = [item(sessionId, '新数据'), item(otherId, '新增')];
+  const second = ui.nodes.get('agent-history').dispatchEvent({ type: 'toggle' });
+  await tick();
+  fast.resolve(); await second; await until(() => listOf(ui).children.length === 2);
+  slow.resolve(); await first; await tick(); await tick();
+  assert.equal(listOf(ui).children.length, 2);
+  assert.ok(listOf(ui).textContent.includes('新数据') && !listOf(ui).textContent.includes('旧数据'));
+});
+
+test('历史会话（服务端）：剩余天数按保留期显示；忙碌时切换/删除禁用', async () => {
+  const baseStatus = { mode: 'mock', unifiedInput: true, model: 'test', siteBase: 'http://site.test/', pollIntervalMs: 2, requestTimeoutMs: 1000, retentionEnabled: true, sessionTtlMs: 259200000 };
   const held = deferred();
-  const busy = keep(await start({ storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }])]], api: request => {
+  const ui = await start({ sessions: [item(sessionId, '当前')], api: request => {
+    if (request.path === '/api/status') return reply(baseStatus);
     if (request.path === '/api/run') return reply(report({ state: 'running', modelSelection: null }));
     if (request.path.startsWith('/api/jobs/')) return held.promise;
-  } }));
-  const pending = busy.submit();
-  await until(() => busy.nodes.get('agent-submit').disabled);
-  assert.equal(buttons(busy.nodes.get('agent-history-list'), '切换')[0].disabled, true);
-  assert.equal(buttons(busy.nodes.get('agent-history-list'), '删除')[0].disabled, true);
+  } });
+  await until(() => listOf(ui).children.length === 1);
+  assert.match(listOf(ui).textContent, /剩余 3 天/);
+  assert.doesNotMatch(listOf(ui).textContent, /已过期|移除/);
+  const pending = ui.submit();
+  await until(() => ui.nodes.get('agent-submit').disabled);
+  assert.equal(buttonsIn(listOf(ui), '切换')[0].disabled, true);
+  assert.equal(buttonsIn(listOf(ui), '删除')[0].disabled, true);
   held.resolve(reply(report()));
   await pending;
 });
 
-test('切换失败回滚到旧会话标识，删除当前会话清空结果', async t => {
-  const pages = [];
-  t.after(() => { pages.length = 0; });
-  const listKey = `${storageKey}:list`;
-  const otherId = '44444444-4444-4444-8444-444444444444';
-  const switched = await start({ stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]], api: request => request.path === `/api/sessions/${otherId}` ? reply({ error: '服务故障', code: 'request_failed' }, 500) : undefined });
-  pages.push(switched);
-  const otherRow = switched.nodes.get('agent-history-list').children.find(node => node.textContent.includes('另一会话'));
-  await otherRow.children.find(node => node.textContent === '切换').dispatchEvent({ type: 'click' });
+test('历史会话（服务端）：切换失败回滚旧会话，切换成功更新当前会话，删除当前会话清空结果', async () => {
+  const sessions = [item(sessionId, '当前'), item(otherId, '另一会话', Date.now() - 1000)];
+  const switched = await start({ stored: sessionId, sessions, api: request => request.path === `/api/sessions/${otherId}` ? reply({ error: '服务故障', code: 'request_failed' }, 500) : undefined });
+  await until(() => listOf(switched).children.length === 2);
+  const otherRow = listOf(switched).children.find(node => node.textContent.includes('另一会话'));
+  await buttonsIn(otherRow, '切换')[0].dispatchEvent({ type: 'click' });
   assert.equal(switched.saved.get(storageKey), sessionId);
-  assert.equal(switched.nodes.get('agent-session').textContent, sessionId);
   assert.match(switched.nodes.get('agent-status').textContent, /恢复未完成/);
-  const removed = await start();
-  pages.push(removed);
+  const removed = await start({ sessions: [item(sessionId, '当前')], api: request => request.method === 'DELETE' ? reply({}) : undefined });
   await removed.submit();
   assert.match(removed.nodes.get('agent-result').textContent, /默认 512/);
-  const currentRow = removed.nodes.get('agent-history-list').children.find(node => node.className === 'is-current');
-  await currentRow.children.find(node => node.textContent === '删除').dispatchEvent({ type: 'click' });
+  await until(() => listOf(removed).children.some(node => node.className === 'is-current'));
+  const currentRow = listOf(removed).children.find(node => node.className === 'is-current');
+  await buttonsIn(currentRow, '删除')[0].dispatchEvent({ type: 'click' });
   assert.equal(removed.nodes.get('agent-result').textContent, '');
   assert.match(removed.nodes.get('agent-status').textContent, /已删除当前会话/);
   assert.equal(removed.saved.has(storageKey), false);
+});
+
+test('历史会话（服务端）：恢复遇 session_unavailable 清除当前会话并刷新；登录失效走登录流程', async () => {
+  // 恢复 404：当前会话 ID 被清除，列表重新拉取（服务端已不含该项）。
+  let current = [item(sessionId, '将过期')];
+  const ui = await start({ stored: sessionId, sessions: () => current, api: request => request.path === `/api/sessions/${sessionId}` ? reply({ error: '会话已过期', code: 'session_unavailable' }, 404) : undefined });
+  await until(() => listOf(ui).children.length === 1);
+  current = [];
+  const before = listRequests(ui);
+  await ui.click('agent-restore');
+  assert.equal(ui.saved.has(storageKey), false);
+  assert.match(ui.nodes.get('agent-status').textContent, /会话已过期/);
+  await until(() => listOf(ui).children.length === 0);
+  assert.ok(listRequests(ui) > before);
+  // 刷新时 401：进入登录流程，提示重新登录。
+  let loggedIn = true;
+  const auth = await start({ sessions: [item(sessionId, 'x')], api: request => request.path === '/api/sessions' && !loggedIn ? { ok: false, status: 401, json: async () => { throw new Error('html'); } } : undefined });
+  await until(() => listOf(auth).children.length === 1);
+  loggedIn = false;
+  auth.nodes.get('agent-history').open = true;
+  await auth.nodes.get('agent-history').dispatchEvent({ type: 'toggle' }); await tick();
+  assert.match(auth.nodes.get('agent-environment').textContent, /重新登录/);
+  assert.match(auth.nodes.get('agent-status').textContent, /登录已失效/);
 });
 
 test('外部参考：无参考或空数组时不出现区块与参考文案', async () => {
@@ -1117,13 +1207,14 @@ test('对话流：本地解析结果在输入变化后仍被清除，不会显�
 test('对话流：新会话、切换会话、删除当前会话完全清空对话流与右侧，恢复只显示当前对象', async () => {
   const published = publishedRelease();
   const otherId = '44444444-4444-4444-8444-444444444444';
-  const listKey = `${storageKey}:list`;
   const subject = { input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: published };
   const restored = { input: 'http { gzip on; }', mode: 'fragment', question: '功能？', release: published };
-  const ui = await start({ originalApp: true, stored: sessionId, storedEntries: [[listKey, JSON.stringify([{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }])]], api: request => {
+  const ui = await start({ originalApp: true, stored: sessionId, sessions: [{ id: sessionId, title: '当前', updatedAt: Date.now() }, { id: otherId, title: '另一会话', updatedAt: Date.now() - 1000 }], api: request => {
+    if (request.method === 'DELETE') return reply({});
     if (request.path === `/api/sessions/${otherId}`) return reply({ request: { message: 'gzip 的功能', release: published }, currentSubject: restored, messages: 2 });
     if (request.path === '/api/run') return reply(report({ knowledgeVersion: { release: published }, normalizedRequest: subject, inputResolution: { action: 'config' } }));
   } });
+  await until(() => ui.nodes.get('agent-history-list').children.length === 2);
   const pending = async () => { await until(() => ui.nodes.get('query-status').textContent.includes('已提取 2 项')); };
   // 先产生两轮，右侧显示 worker_connections。
   await ui.change('configuration', '第一问'); await ui.submit(); await pending();

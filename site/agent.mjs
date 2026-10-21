@@ -13,8 +13,13 @@ let authDraftProtected = false;
 let generation = 0;
 let sessionId = '';
 let release = document.body.dataset.release ?? '';
-// 最近一次可沿用的对象，只用来给本机列表起标题；不写入服务端。
-let trackedSubject = null;
+// 历史会话列表：服务端保存、所有访问者共用；这里只缓存最近一次成功拉取并通过校验的结果供渲染。
+let sessionList = [];
+// 每次发起刷新递增；响应回来时序号落后就说明已有更新的请求，丢弃旧响应，防止旧数据覆盖新数据。
+let refreshSeq = 0;
+// 旧版本把列表存在浏览器 localStorage（`:list` 键），现已改为服务端存储，加载时顺手清掉残留。
+// 注意：`${storageKey}` 本身（当前会话 ID）不动，它表示“这台浏览器当前在用哪个会话”。
+try { localStorage.removeItem(`${storageKey}:list`); } catch {}
 try { sessionId = localStorage.getItem(storageKey) ?? ''; } catch {}
 if (!/^[0-9a-f-]{36}$/.test(sessionId)) sessionId = '';
 
@@ -105,45 +110,34 @@ function remember(id) {
   try { if (id) localStorage.setItem(storageKey, id); else localStorage.removeItem(storageKey); } catch {}
   controls();
 }
-// 列表键与当前会话 ID 分开。解析失败、不是数组或条目缺字段时整表视为空，避免坏数据撑破界面。
-function readSessions() {
+// 列表条目上限与标题长度上限（按码点）。服务端同样限制 50 条，这里再兜底一次。
+const LIST_LIMIT = 50;
+const TITLE_LIMIT = 100;
+// 严格校验服务端返回：顶层必须是对象且 sessions 为数组，否则整表视为空；
+// 单项 id 须为 36 位 uuid 形态、title 为字符串、updatedAt 为有限数字，不合格的项直接丢弃。
+// 只复制这三个字段，服务端多给的字段一律忽略。
+function parseSessions(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data.sessions)) return [];
+  const items = [];
+  for (const item of data.sessions) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    if (typeof item.id !== 'string' || !/^[0-9a-f-]{36}$/.test(item.id) || typeof item.title !== 'string' || typeof item.updatedAt !== 'number' || !Number.isFinite(item.updatedAt)) continue;
+    // 按码点截断，不会把代理对（如 emoji）切成半个字符。
+    items.push({ id: item.id, title: Array.from(item.title).slice(0, TITLE_LIMIT).join(''), updatedAt: item.updatedAt });
+  }
+  return items.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, LIST_LIMIT);
+}
+// 从服务端拉取列表并渲染。失败静默：保留上一份列表、不弹提示；唯一例外是登录失效，走登录流程。
+async function refreshSessions() {
+  const seq = ++refreshSeq;
   try {
-    const value = JSON.parse(localStorage.getItem(`${storageKey}:list`) ?? '[]');
-    if (!Array.isArray(value)) return [];
-    const items = [];
-    for (const item of value) {
-      if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
-      if (typeof item.id !== 'string' || !/^[0-9a-f-]{36}$/.test(item.id) || typeof item.title !== 'string' || !Number.isFinite(item.updatedAt)) continue;
-      items.push({ id: item.id, title: item.title, updatedAt: item.updatedAt });
-    }
-    return items.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20);
-  } catch { return []; }
-}
-function writeSessions(items) {
-  try { localStorage.setItem(`${storageKey}:list`, JSON.stringify(items.slice(0, 20))); } catch {}
-  renderSessions();
-}
-// 纯指令名才作为标题；整段配置含空格或符号时改用用户消息，避免把配置原文放进浏览器列表。
-function directiveName(subject) {
-  const input = typeof subject?.input === 'string' ? subject.input.trim() : '';
-  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(input) ? input : '';
-}
-function listTitle(message) {
-  const name = directiveName(trackedSubject);
-  if (name) return name;
-  const line = String(message ?? '').split(/\r?\n/).map(item => item.trim()).find(Boolean) ?? '';
-  return line.slice(0, 30) || '未命名会话';
-}
-// 最多 20 条，按 updatedAt 倒序。传入 title 时替换，否则保留原标题，只刷新时间。
-function saveSession(id, title) {
-  if (!/^[0-9a-f-]{36}$/.test(id)) return;
-  const items = readSessions();
-  const previous = items.find(item => item.id === id);
-  const next = { id, title: title || previous?.title || '未命名会话', updatedAt: Date.now() };
-  writeSessions([next, ...items.filter(item => item.id !== id)].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 20));
-}
-function dropSession(id) {
-  writeSessions(readSessions().filter(item => item.id !== id));
+    const data = await api('/api/sessions');
+    if (seq !== refreshSeq) return; // 已有更新的刷新发出，这份响应过期
+    sessionList = parseSessions(data);
+    renderSessions();
+  } catch (error) {
+    if (error.code === 'auth_required') requireLogin();
+  }
 }
 function formatTime(value) {
   const date = new Date(value);
@@ -157,13 +151,14 @@ function renderSessions() {
   list.replaceChildren();
   const ttl = service?.retentionEnabled === true && Number.isFinite(service.sessionTtlMs) ? service.sessionTtlMs : 0;
   const now = Date.now();
-  for (const item of readSessions()) {
+  for (const item of sessionList) {
     const row = node('li', undefined, list, item.id === sessionId ? 'is-current' : '');
+    // 标题来自服务端（含用户输入），只能走 textContent，绝不当 HTML 解析。
     node('span', item.title, row, 'session-title');
     node('time', formatTime(item.updatedAt), row);
+    // 服务端已排除过期项；这里只按保留期与 updatedAt 估算剩余天数，算出已不足时不显示。
     const remain = ttl ? ttl - (now - item.updatedAt) : 0;
-    const expired = Boolean(ttl) && remain <= 0;
-    if (ttl) node('span', expired ? '已过期' : `剩余 ${Math.ceil(remain / 86400000)} 天`, row, expired ? 'expired' : '');
+    if (ttl && remain > 0) node('span', `剩余 ${Math.ceil(remain / 86400000)} 天`, row);
     const switchButton = node('button', '切换', row, 'text-button');
     switchButton.type = 'button';
     switchButton.disabled = Boolean(active || interrupted);
@@ -172,25 +167,16 @@ function renderSessions() {
     deleteButton.type = 'button';
     deleteButton.disabled = Boolean(active || interrupted);
     deleteButton.addEventListener('click', () => deleteListed(item.id));
-    // 按本机时间已过期的项可以只从列表拿掉，不必再等服务端清理。
-    if (expired) {
-      const removeButton = node('button', '移除', row, 'text-button');
-      removeButton.type = 'button';
-      removeButton.addEventListener('click', () => dropSession(item.id));
-    }
   }
 }
 async function openSession(id) {
   if (active || interrupted || !/^[0-9a-f-]{36}$/.test(id)) return;
   const previousId = sessionId;
-  const previousSubject = trackedSubject;
   authDraftProtected = false;
-  // 切换尚未成功时不能沿用上一个会话的对象，否则标题和追问会串会话。
-  trackedSubject = null;
   remember(id);
   const outcome = await restore();
   if (outcome === 'expired') return;
-  if (outcome !== 'ok') { trackedSubject = previousSubject; remember(previousId); }
+  if (outcome !== 'ok') remember(previousId);
 }
 async function deleteListed(id) {
   if (active || interrupted || !/^[0-9a-f-]{36}$/.test(id)) return;
@@ -200,11 +186,11 @@ async function deleteListed(id) {
     note(`删除未完成：${error.message}`, true);
     return;
   }
-  dropSession(id);
+  // 删除成功后以服务端列表为准重新拉取。
+  void refreshSessions();
   if (sessionId !== id) return;
   interrupted = null;
   authDraftProtected = false;
-  trackedSubject = null;
   invalidate('已删除当前会话，输入框内容保留，提交后开始新会话。');
   remember('');
   resetShownAnalysis();
@@ -270,6 +256,8 @@ async function probe() {
       else environment(`真实模型 · ${status.model}`, 'ready');
     }
     else environment('模拟模式 · 不代表真实模型', 'mock');
+    // 服务连接成功：拉取一次服务端历史会话（失败静默，不影响连接状态）。
+    void refreshSessions();
     note(interrupted ? 'Agent 已连接；请点击“恢复会话”检查中断任务，不会自动重新提交。' : document.body.dataset.release ? 'Agent 已就绪；输入配置、问题或追问后提交。' : 'Agent 已连接，等待知识发布加载。');
   } catch (error) {
     if (error.code === 'auth_required') { requireLogin(); return false; }
@@ -597,7 +585,8 @@ async function submit(event) {
     task.sessionId = job.sessionId;
     if (!current(task)) { task.cancelled = true; await stop(task); return; }
     remember(job.sessionId);
-    saveSession(job.sessionId, listTitle(request.message));
+    // 提交已被服务端接受：会话已落盘（标题由服务端计算），刷新列表。
+    void refreshSessions();
     await followJob(task, job);
     if (!current(task) && !task.terminal) task.cancelled = true;
   } catch (error) {
@@ -611,13 +600,14 @@ async function finish(task) {
     catch (error) { if (error.code !== 'auth_required' && active === task) note('取消尚未确认，请再次点击取消或检查服务。', true); }
   }
   if ((task.cancelConfirmed || task.terminal) && interrupted?.requestId === task.requestId) interrupted = null;
+  // 运行任务结束（完成、失败、取消）后刷新列表，标题和更新时间以服务端为准。
+  if (task.kind === 'run') void refreshSessions();
   if (active === task && (!task.cancelled || !task.requestId || task.cancelConfirmed || task.terminal || task.authPaused)) active = null;
   controls();
 }
 async function followJob(task, job) {
   while (current(task)) {
     task.terminal = job.state !== 'running';
-    if (job.normalizedRequest) trackedSubject = job.normalizedRequest;
     if (task.showResults === false) {
       if (task.turn) task.turn.state.textContent = `原任务${labels[job.state] ?? job.state}（结果未回填）`;
       note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
@@ -669,8 +659,8 @@ async function restore() {
     interrupted = null;
     authDraftProtected = false;
     active = null;
-    trackedSubject = saved.currentSubject ?? saved.currentConfig ?? null;
-    if (sessionId) saveSession(sessionId, directiveName(trackedSubject) || undefined);
+    // 恢复成功：会话的更新时间可能变化，刷新列表。
+    void refreshSessions();
     if (!preserveInput) {
       $('configuration').value = saved.request.message ?? [saved.request.input, saved.request.question].filter(Boolean).join('\n\n');
       $('configuration').dispatchEvent(new Event('input'));
@@ -704,9 +694,9 @@ async function restore() {
   } catch (error) {
     if (error.code === 'auth_required' && active === task) { requireLogin(task); return 'failed'; }
     if (task.kind === 'restore' && error.code === 'session_unavailable' && current(task)) {
-      const expiredId = sessionId;
-      dropSession(expiredId);
+      // 会话已过期/不存在：清除当前会话 ID，并以服务端列表为准刷新（过期项已被服务端排除）。
       remember('');
+      void refreshSessions();
       note('会话已过期', true);
       return 'expired';
     }
@@ -731,8 +721,10 @@ $('agent-cancel').addEventListener('click', () => {
   invalidate('正在确认取消；已有轮次保留，本轮不再更新…', { keepConversation: true });
   if (task?.requestId) void stop(task).then(() => { if (task.authPaused) return; if (interrupted?.requestId === task.requestId) interrupted = null; if (active === task) { active = null; controls(); } if (task.generation + 1 === generation) note('已取消；基础查询仍可使用。'); }).catch(() => {});
 });
-$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; trackedSubject = null; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); resetShownAnalysis(); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
+$('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); resetShownAnalysis(); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
 $('agent-restore').addEventListener('click', restore);
+// 展开“历史会话”时刷新，这样能看到其他访问者新建的会话；折叠时不请求。
+$('agent-history')?.addEventListener('toggle', () => { if ($('agent-history').open) void refreshSessions(); });
 $('agent-retry').addEventListener('click', probe);
 $('configuration').addEventListener('input', inputHint);
 new MutationObserver(() => {
