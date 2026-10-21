@@ -8,7 +8,7 @@
     "inventory": "node scripts/inventory.mjs --config project.config.json",
     "build": "node scripts/build.mjs --config project.config.json",
     "preview": "node scripts/preview.mjs --config project.config.json",
-    "agent": "node experiments/pi-sdk/run.mjs website --env-file .env",
+    "agent": "node experiments/pi-sdk/run.mjs website --env-file .env --model-file config/configuration.json",
     "test": "node --test test/*.test.mjs",
     "mcp": "node mcp/server.mjs --config project.config.json"
   },

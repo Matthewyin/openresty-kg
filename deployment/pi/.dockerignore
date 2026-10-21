@@ -14,5 +14,7 @@
 !experiments/pi-sdk/server.mjs
 !experiments/pi-sdk/src/**
 **/.env
+**/configuration.json
+config/**
 **/.state/**
 **/node_modules/**

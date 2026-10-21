@@ -269,6 +269,19 @@ test('页面只有一个配置消息框，空输入不提交，旧服务能力�
   assert.match(old.nodes.get('agent-status').textContent, /重启.*npm run agent/);
 });
 
+test('真实模型标签：modelConfig 为 ok / 缺失保持原样，invalid 显示警示并沿用 mock 样式', async () => {
+  const live = modelConfig => start({ api: request => request.path === '/api/status' ? reply({ mode: 'live', unifiedInput: true, model: 'GLM-5.3-flash', ...(modelConfig ? { modelConfig } : {}), pollIntervalMs: 2, requestTimeoutMs: 1000 }) : undefined });
+  const ok = await live({ state: 'ok' });
+  assert.equal(ok.nodes.get('agent-environment').textContent, '真实模型 · GLM-5.3-flash');
+  assert.equal(ok.nodes.get('agent-environment').dataset.state, 'ready');
+  const missing = await live();
+  assert.equal(missing.nodes.get('agent-environment').textContent, '真实模型 · GLM-5.3-flash');
+  assert.equal(missing.nodes.get('agent-environment').dataset.state, 'ready');
+  const invalid = await live({ state: 'invalid', reason: 'parse' });
+  assert.equal(invalid.nodes.get('agent-environment').textContent, '真实模型 · GLM-5.3-flash（配置文件无效，仍用上一份有效配置）');
+  assert.equal(invalid.nodes.get('agent-environment').dataset.state, 'mock');
+});
+
 test('Agent 规范化配置复用原目录和解析，消息原文不变；追问显示沿用对象', async () => {
   const published = JSON.parse(read('dist/knowledge/index.json')).release_id;
   const normalizedRequest = { input: 'events { worker_connections 1024; }', mode: 'fragment', question: '默认值？', release: published };

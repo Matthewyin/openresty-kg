@@ -15,4 +15,4 @@ COPY manifest.json ./manifest.json
 RUN mkdir -p /app/experiments/pi-sdk/.state/container && chown -R node:node /app/experiments/pi-sdk/.state
 USER node
 STOPSIGNAL SIGTERM
-CMD ["node", "experiments/pi-sdk/run.mjs", "website", "--env-file", "/run/secrets/model.env"]
+CMD ["node", "experiments/pi-sdk/run.mjs", "website", "--env-file", "/run/secrets/model.env", "--model-file", "/run/config/configuration.json"]

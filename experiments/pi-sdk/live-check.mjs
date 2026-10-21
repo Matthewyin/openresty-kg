@@ -65,10 +65,12 @@ try {
   await spike.close();
   await mkdir(join(ROOT, 'artifacts'), { recursive: true });
   const config = JSON.parse(await readFile(join(ROOT, 'live.config.json'), 'utf8'));
+  // 模型字段来自 --model-file 指向的模型配置（启动时的初始值）；验收产物只记录非秘密字段。
+  const model = spike.modelSource.initial;
   await writeFile(join(ROOT, 'artifacts/live-verification.json'), JSON.stringify({
-    at: new Date().toISOString(), mode: 'live', provider: process.env.PI_SPIKE_PROVIDER,
-    model: process.env.PI_SPIKE_MODEL, endpoint: process.env.PI_SPIKE_BASE_URL,
-    limits: { contextWindow: config.contextWindow, maxTokens: config.maxTokens, timeoutMs: config.timeoutMs },
+    at: new Date().toISOString(), mode: 'live', provider: model.provider,
+    model: model.id, endpoint: model.baseUrl,
+    limits: { contextWindow: model.contextWindow, maxTokens: model.maxTokens, timeoutMs: config.timeoutMs },
     status: process.exitCode ? 'failed' : 'passed', records,
   }, null, 2));
 }

@@ -4,10 +4,11 @@ import { join } from 'node:path';
 import { Spike, ROOT } from './src/session.mjs';
 import { fixtures } from './test/fixtures/configs.mjs';
 import { CONTRACT } from './src/report.mjs';
+import { createModelConfigSource } from './src/model-config.mjs';
 
 if (process.env.PI_SPIKE_MODE !== 'live') throw new Error('速度验收必须使用真实模型');
 const baseline = JSON.parse(await readFile(join(ROOT, '../../analysis/PI_AGENT_SPEED_BASELINE.json'), 'utf8'));
-const output = { at: new Date().toISOString(), model: process.env.PI_SPIKE_MODEL, baseline, samples: [], status: 'running' };
+const output = { at: new Date().toISOString(), model: process.env.PI_SPIKE_MODEL_FILE ? (await createModelConfigSource({ file: process.env.PI_SPIKE_MODEL_FILE })).initial.id : undefined, baseline, samples: [], status: 'running' };
 const artifact = join(ROOT, 'artifacts/speed-verification.json');
 await mkdir(join(ROOT, '.state'), { recursive: true });
 await mkdir(join(ROOT, 'artifacts'), { recursive: true });

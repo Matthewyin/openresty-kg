@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { mkdir, mkdtemp, readdir, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Spike, ROOT, loadConfig } from '../src/session.mjs';
@@ -128,21 +128,29 @@ test('结果过滤伪装与边界：端口、用户信息、伪装域名、opm �
 test('密钥与开关配置：联网 Key 独立设置并固定地址；非智谱模型地址缺少独立 Key 时报错；旧式取值被拒绝', async () => {
   const saved = { ...process.env };
   const setEnv = env => { for (const key of Object.keys(process.env)) if (key.startsWith('PI_SPIKE_')) delete process.env[key]; Object.assign(process.env, env); };
-  const live = { PI_SPIKE_MODE: 'live', PI_SPIKE_BASE_URL: 'https://model.invalid/v1', PI_SPIKE_API_KEY: 'model-secret-value', PI_SPIKE_MODEL: 'synthetic-model', PI_SPIKE_CONTEXT_WINDOW: '131072', PI_SPIKE_MAX_TOKENS: '8192', PI_SPIKE_STATE_DIR: '.state/web-config-test', PI_SPIKE_WEB_SEARCH: 'true' };
+  await mkdir(join(ROOT, '.state'), { recursive: true });
+  const dir = await mkdtemp(join(ROOT, '.state/web-config-'));
+  // 模型字段现在来自模型配置文件；这里按 baseUrl 写出不同的文件。
+  const modelFile = async baseUrl => { const file = join(dir, 'model.json'); await writeFile(file, JSON.stringify({ model: { provider: 'GLM', id: 'synthetic-model', baseUrl, contextWindow: 131072, maxTokens: 8192, thinkingLevel: 'low' } })); return file; };
+  const live = { PI_SPIKE_MODE: 'live', PI_SPIKE_API_KEY: 'model-secret-value', PI_SPIKE_STATE_DIR: '.state/web-config-test', PI_SPIKE_WEB_SEARCH: 'true' };
   try {
-    setEnv({ ...live, PI_SPIKE_WEB_SEARCH_API_KEY: 'search-secret-value', PI_SPIKE_WEB_SEARCH_URL: 'https://evil.invalid/mcp' });
+    setEnv({ ...live, PI_SPIKE_MODEL_FILE: await modelFile('https://model.invalid/v1'), PI_SPIKE_WEB_SEARCH_API_KEY: 'search-secret-value', PI_SPIKE_WEB_SEARCH_URL: 'https://evil.invalid/mcp' });
     const config = await loadConfig();
     assert.equal(config.webSearch, true); assert.equal(config.webSearchUrl, WEB_URL); assert.equal(config.webSearchApiKey, 'search-secret-value');
     // 模型地址不是智谱时，不能把模型 Key 发给联网服务。
-    setEnv(live);
+    setEnv({ ...live, PI_SPIKE_MODEL_FILE: await modelFile('https://model.invalid/v1') });
     await assert.rejects(loadConfig(), /PI_SPIKE_WEB_SEARCH_API_KEY/);
     // 模型地址是智谱开放平台时才回退到模型 Key。
-    setEnv({ ...live, PI_SPIKE_BASE_URL: 'https://open.bigmodel.cn/api/paas/v4' });
+    setEnv({ ...live, PI_SPIKE_MODEL_FILE: await modelFile('https://open.bigmodel.cn/api/paas/v4') });
     assert.equal((await loadConfig()).webSearchApiKey, 'model-secret-value');
-    setEnv({ ...live, PI_SPIKE_WEB_SEARCH: 'on', PI_SPIKE_WEB_SEARCH_API_KEY: 'x' });
+    // live 没有模型文件必须报错。
+    setEnv(live);
+    await assert.rejects(loadConfig(), /--model-file/);
+    setEnv({ ...live, PI_SPIKE_MODEL_FILE: await modelFile('https://open.bigmodel.cn/api/paas/v4'), PI_SPIKE_WEB_SEARCH: 'on', PI_SPIKE_WEB_SEARCH_API_KEY: 'x' });
     await assert.rejects(loadConfig(), /PI_SPIKE_WEB_SEARCH|webSearch/);
   } finally {
     setEnv(Object.fromEntries(Object.entries(saved).filter(([key]) => key.startsWith('PI_SPIKE_'))));
+    await rm(dir, { recursive: true, force: true });
   }
   assert.throws(() => applyRuntimeEnv({}, { PI_SPIKE_WEB_SEARCH: 'on' }), /true 或 false/);
   assert.equal(applyRuntimeEnv({}, { PI_SPIKE_WEB_SEARCH: 'false' }).webSearch, false);

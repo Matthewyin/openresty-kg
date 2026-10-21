@@ -35,11 +35,11 @@ PI_SPIKE_PORT=51807 PI_SPIKE_SITE_BASE=http://127.0.0.1:51795/ npm start
 用户明确指定的项目根 `.env` 可通过以下入口读取；不会自动寻找其他环境文件，不依赖本机全局 Pi：
 
 ```sh
-npm run live:check -- --env-file ../../.env
-npm run live -- --env-file ../../.env
+npm run live:check -- --env-file ../../.env --model-file ../../config/configuration.json
+npm run live -- --env-file ../../.env --model-file ../../config/configuration.json
 ```
 
-第一条执行真实模型验收，第二条打开真实模型验证服务（默认 `http://127.0.0.1:51807/`）。`live.config.json` 映射 `base-url`、`MODEL`、`PROVIDER`、`GLM_API_KEY` 到专用环境变量，并配置独立 `.state/live`、端口、超时和输出预算。密钥只在服务进程内使用，不作为命令参数、API 响应或验收产物写出；外部错误文本统一替换已知密钥。`npm test` 始终强制 mock，不读取真实 `.env`。
+第一条执行真实模型验收，第二条打开真实模型验证服务（默认 `http://127.0.0.1:51807/`）。密钥只在 `.env`（变量 `GLM_API_KEY`，由 `live.config.json.envKeys.apiKey` 指定）；模型 id、地址、供应商、上下文窗口、输出上限和思考级别在 `--model-file` 指定的 JSON（示例见 `config/configuration.example.json`）中，运行中每次请求和 `/api/status` 都会重读，改文件后刷新页面即生效。`live.config.json` 仍配置独立 `.state/live`、端口和超时。密钥只在服务进程内使用，不作为命令参数、API 响应或验收产物写出；外部错误文本统一替换已知密钥。`npm test` 始终强制 mock，不读取真实 `.env`。
 
 真实运行结果见 `artifacts/live-verification.json`；失败记录也保留失败状态，不能把有文件理解为通过。GLM 首次实际返回完整 JSON Markdown 围栏，因此解码器只兼容裸 JSON 或完整单个 `json` 围栏，仍拒绝前后解释、多个围栏、坏 JSON 和无效引用。所有 live 输入均为合成脱敏样例，不读取用户原始配置。
 
@@ -49,7 +49,7 @@ mock 是实验进程独立启动的本地 OpenAI-compatible HTTP SSE 服务，�
 
 以下专用变量是 live 接口，启动器按显式文件映射。代码只实现 `openai-completions` 兼容接入；其他协议不在本轮内。兼容字段在 `config.json` 的 `compat` 中按实际服务调整。不要从个人 Pi 设置补凭据。
 
-需要显式提供：`PI_SPIKE_MODE=live`、`PI_SPIKE_BASE_URL`（服务要求的基路径）、`PI_SPIKE_API_KEY`、`PI_SPIKE_MODEL`、`PI_SPIKE_CONTEXT_WINDOW`、`PI_SPIKE_MAX_TOKENS`。live 模式缺少任何一项就拒绝启动；不会自动请求模型列表或扫描凭据。输出预算不是对服务最大能力的承诺；本轮只检验固定小样例的接入与事实引用，不代表自由问答质量全面通过。
+需要显式提供：`PI_SPIKE_MODE=live`、`PI_SPIKE_API_KEY` 与 `PI_SPIKE_MODEL_FILE`（模型配置 JSON 的绝对路径，由启动器按 `--model-file` 传入）。live 模式缺少任何一项就拒绝启动；不会自动请求模型列表或扫描凭据。输出预算不是对服务最大能力的承诺；本轮只检验固定小样例的接入与事实引用，不代表自由问答质量全面通过。
 
 ## 实现与隔离
 

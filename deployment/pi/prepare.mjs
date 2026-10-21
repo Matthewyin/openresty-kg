@@ -5,6 +5,8 @@ import { createHash } from 'node:crypto';
 import { validateIndex, isSafeId } from '../../src/query/knowledge.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
+// 禁止进入运行包的文件名（模型配置真实文件；.env 另由后缀与点前缀规则拒绝）。
+export const forbiddenNames = new Set(['configuration.json']);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export async function prepare(destination, { releases = [] } = {}) {
   const target = resolve(destination);
@@ -19,6 +21,8 @@ export async function prepare(destination, { releases = [] } = {}) {
       return;
     }
     if (!stat.isFile() || relative.split('/').some(part => part.startsWith('.'))) throw new Error('打包范围包含非公开文件');
+    // 模型配置与密钥只能通过运行时挂载提供，任何情况下都不得进入运行包或镜像。
+    if (forbiddenNames.has(relative.split('/').pop()) || relative.endsWith('.env')) throw new Error('打包范围包含模型配置或密钥文件');
     const bytes = await readFile(source);
     const output = join(target, relative);
     await mkdir(dirname(output), { recursive: true });

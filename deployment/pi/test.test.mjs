@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderLocations, candidate } from './openresty.mjs';
-import { prepare } from './prepare.mjs';
+import { prepare, forbiddenNames } from './prepare.mjs';
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -50,8 +50,28 @@ test('打包按显式清单保留历史发布，拒绝非法或缺失发布并�
   assert.deepEqual((await readdir(join(destination, 'dist/knowledge/releases'))).sort(), [current, historic].sort());
   assert.ok(manifest.entries.Dockerfile && manifest.entries['.dockerignore']);
   assert.ok(Object.keys(manifest.entries).every(path => !path.includes('.state') && !path.endsWith('.env') && !path.includes('node_modules')));
+  // 运行包不得含模型配置真实文件（仅允许示例以外的任何 configuration.json 都不出现）。
+  assert.ok(forbiddenNames.has('configuration.json'));
+  assert.ok(Object.keys(manifest.entries).every(path => !path.endsWith('configuration.json')));
+  assert.deepEqual((await readdir(destination, { recursive: true })).filter(path => path.endsWith('configuration.json')), []);
   for (const [path, hash] of Object.entries(manifest.entries)) assert.equal(createHash('sha256').update(await readFile(join(destination, path))).digest('hex'), hash);
   await assert.rejects(prepare(destination));
   await assert.rejects(prepare(join(temp, 'invalid'), { releases: ['../private'] }), /不合法/);
   await assert.rejects(prepare(join(temp, 'absent'), { releases: ['not-a-published-release'] }), /ENOENT/);
+});
+test('Compose 以只读目录挂载模型配置，Dockerfile 启动参数含 --model-file，.dockerignore 排除真实配置', async () => {
+  const compose = await readFile(new URL('./compose.yaml', import.meta.url), 'utf8');
+  // 目录挂载块：source 为必填变量，target 为 /run/config，只读且不自动创建宿主目录。
+  assert.match(compose, /source: \$\{PI_MODEL_CONFIG_DIR:\?[^}]+\}\n\s+target: \/run\/config\n\s+read_only: true\n\s+bind:\n\s+create_host_path: false/);
+  // 不得单文件挂载 configuration.json（编辑器整体替换保存时容器会看到旧内容）。
+  assert.doesNotMatch(compose, /target: \/run\/config\/configuration\.json/);
+  assert.match(compose, /target: \/run\/secrets\/model\.env/);
+  const dockerfile = await readFile(new URL('./Dockerfile', import.meta.url), 'utf8');
+  assert.match(dockerfile, /"--model-file", "\/run\/config\/configuration\.json"/);
+  assert.match(dockerfile, /"--env-file", "\/run\/secrets\/model\.env"/);
+  assert.doesNotMatch(dockerfile, /COPY[^\n]*(configuration\.json|config\/)/);
+  const ignore = await readFile(new URL('./.dockerignore', import.meta.url), 'utf8');
+  assert.match(ignore, /^\*\*\/configuration\.json$/m);
+  const example = await readFile(new URL('./example.env', import.meta.url), 'utf8');
+  assert.match(example, /^PI_MODEL_CONFIG_DIR=/m);
 });

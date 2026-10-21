@@ -24,7 +24,7 @@ export async function serve(overrides, { website = false } = {}) {
         catch { json(503, { ready: false, error: '服务尚未就绪，请稍后重试', code: 'not_ready' }); }
         return;
       }
-      if (req.method === 'GET' && url.pathname === '/api/status') { json(200, { unifiedInput: true, mode: spike.config.mode, model: spike.config.modelId, tools: toolNames(spike.config), webSearch: spike.config.webSearch, siteBase: spike.config.siteBase, mockDelayMs: spike.config.mockDelayMs, website, pollIntervalMs: spike.config.pollIntervalMs, requestTimeoutMs: spike.config.timeoutMs, sessionTtlMs: spike.config.sessionTtlMs, retentionEnabled: spike.config.retentionEnabled }); return; }
+      if (req.method === 'GET' && url.pathname === '/api/status') { const { model, modelConfig } = await spike.modelStatus(); json(200, { unifiedInput: true, mode: spike.config.mode, model, modelConfig, tools: toolNames(spike.config), webSearch: spike.config.webSearch, siteBase: spike.config.siteBase, mockDelayMs: spike.config.mockDelayMs, website, pollIntervalMs: spike.config.pollIntervalMs, requestTimeoutMs: spike.config.timeoutMs, sessionTtlMs: spike.config.sessionTtlMs, retentionEnabled: spike.config.retentionEnabled }); return; }
       const jobMatch = url.pathname.match(/^\/api\/jobs\/([0-9a-f-]{36})$/);
       if (req.method === 'GET' && jobMatch) {
         spike.pruneJobs();

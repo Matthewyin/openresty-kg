@@ -22,6 +22,16 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      # 模型配置（模型 id、上下文窗口、baseUrl 等）以“目录”只读挂载，而不是单文件挂载：
+      # 编辑器保存常用“写临时文件再整体替换”，单文件绑定挂载会继续指向旧 inode，
+      # 容器内读到旧内容；挂载目录则每次按路径重新解析，修改后刷新页面即可热生效。
+      # 目录内需有 configuration.json；真实文件不入镜像、不入运行包，只靠此挂载提供。
+      - type: bind
+        source: ${PI_MODEL_CONFIG_DIR:?请指定模型配置目录绝对路径}
+        target: /run/config
+        read_only: true
+        bind:
+          create_host_path: false
     networks:
       existing:
         aliases: [pi-agent]

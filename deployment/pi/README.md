@@ -64,7 +64,7 @@ Pi不存在、重建或换IP时入口无需重载；Docker DNS缓存到期及服
 
 1. 当前局域网IPv4、可用账号/设备、已获准依赖；核对Docker DNS对存在及缺失Pi名称的结果，不将隔离DNS设置直接套入原站。地址仅用于访问和记录，不填入Pi公开origin。换网后用户使用新IP，可能需重新登录，网络仍须允许设备互访。
 2. 将同一运行包的 `dist` 发布到原数据挂载中的独立目录；原配置只加经过审查的片段，原全站登录和审计不改。
-3. 从 `example.env` 创建专用非敏感参数文件：镜像、固定容器名、`basePath`、内部端口、网络、模型文件绝对路径。Compose 必须显式传 `--env-file`，不要将模型 `.env` 当作 Compose 参数文件。
+3. 从 `example.env` 创建专用非敏感参数文件：镜像、固定容器名、`basePath`、内部端口、网络、仅含 API 密钥的文件绝对路径（`PI_MODEL_ENV_FILE`）以及含 `configuration.json` 的目录绝对路径（`PI_MODEL_CONFIG_DIR`，只读目录挂载到容器 `/run/config`）。修改该目录里的 `configuration.json` 后刷新页面即生效，无需重建容器；`baseUrl` 换主机仍需重建。Compose 必须显式传 `--env-file`，不要将模型 `.env` 当作 Compose 参数文件。
 4. 模型文件只读挂载，必须能被容器 UID 1000 读取；切换前做不输出内容的可读性检查，不自动更改原文件权限。Compose不设置API密钥环境值，镜像也不含凭据。
 5. 联网参考由参数文件的 `PI_WEB_SEARCH=true` 开启（默认 `false`），Compose 传为 `PI_SPIKE_WEB_SEARCH`。开启后用户问题相关的查询词会发往智谱联网搜索；Key 沿用模型文件中的智谱 Key，非智谱模型须在模型文件外另行提供 `PI_SPIKE_WEB_SEARCH_API_KEY`。开启属于部署变更，需单独确认。本机容器已经用户确认开启。
 6. `PI_SPIKE_HOST` 非回环时仍须配置 `PI_SPIKE_PUBLIC_ORIGIN`，Compose已固定为内部origin；`PI_SPIKE_RELATIVE_LINKS=true` 时以 `PI_SPIKE_BASE_PATH=/pi/` 作为根相对详情基址。不要取消Host/Origin检查，也不要把容器内部origin当作用户访问地址。

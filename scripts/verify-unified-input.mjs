@@ -10,11 +10,14 @@ const project = fileURLToPath(new URL('../', import.meta.url));
 if (!process.argv.includes('--child')) {
   const at = process.argv.indexOf('--env-file');
   if (at < 0 || !process.argv[at + 1]) throw new Error('请显式指定 --env-file，不读取个人 Pi 设置');
+  // 模型配置已从 .env 拆到独立 JSON，启动器要求同时显式指定 --model-file。
+  const modelAt = process.argv.indexOf('--model-file');
+  if (modelAt < 0 || !process.argv[modelAt + 1]) throw new Error('请显式指定 --model-file（模型配置 JSON）');
   // --web 专项需要打开联网参考开关。开关只从这里显式写入，不依赖个人 .env 中是否已有该变量。
   // 联网 Key 与模型 Key 同属秘密，只从调用者环境透传；不写入结果文件，也不打印。
   const web = process.argv.includes('--web');
   const webEnv = web ? { PI_SPIKE_WEB_SEARCH: 'true', ...(process.env.PI_SPIKE_WEB_SEARCH_API_KEY ? { PI_SPIKE_WEB_SEARCH_API_KEY: process.env.PI_SPIKE_WEB_SEARCH_API_KEY } : {}) } : {};
-  const launch = await launchConfig(['website', '--env-file', resolve(process.argv[at + 1])], { env: { PATH: process.env.PATH, PI_SPIKE_PORT: '0', ...webEnv } });
+  const launch = await launchConfig(['website', '--env-file', resolve(process.argv[at + 1]), '--model-file', resolve(process.argv[modelAt + 1])], { env: { PATH: process.env.PATH, PI_SPIKE_PORT: '0', ...webEnv } });
   const child = spawn(process.execPath, [fileURLToPath(import.meta.url), '--child', ...['--serve', '--edge', '--scope', '--web'].filter(flag => process.argv.includes(flag))], { cwd: project, env: launch.env, stdio: 'inherit' });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
   child.on('exit', code => { process.exitCode = code ?? 1; });

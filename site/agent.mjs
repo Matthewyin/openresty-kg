@@ -262,7 +262,13 @@ async function probe() {
     }
     service = status;
     needsLogin = false;
-    if (status.mode === 'live') environment(`真实模型 · ${status.model}`, 'ready');
+    if (status.mode === 'live') {
+      // modelConfig.state 为 invalid：配置文件当前不可用，服务端仍在用上一份有效配置；
+      // 状态类型只有 ready/mock/off/login，沿用最接近的警示类型 mock（橙色）。缺失或 ok 时行为不变。
+      // 模型名仅通过 textContent 写入，不作为 HTML 解析。
+      if (status.modelConfig?.state === 'invalid') environment(`真实模型 · ${status.model}（配置文件无效，仍用上一份有效配置）`, 'mock');
+      else environment(`真实模型 · ${status.model}`, 'ready');
+    }
     else environment('模拟模式 · 不代表真实模型', 'mock');
     note(interrupted ? 'Agent 已连接；请点击“恢复会话”检查中断任务，不会自动重新提交。' : document.body.dataset.release ? 'Agent 已就绪；输入配置、问题或追问后提交。' : 'Agent 已连接，等待知识发布加载。');
   } catch (error) {

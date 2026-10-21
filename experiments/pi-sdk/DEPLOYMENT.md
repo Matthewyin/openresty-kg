@@ -4,11 +4,11 @@
 
 ## 配置与启动
 
-复用现有入口：在项目根运行 `node experiments/pi-sdk/run.mjs website --env-file <显式模型文件绝对路径> --config-file <非敏感运行配置绝对路径>`。此命令会启动真实模型服务，本批未执行；本地测试使用mock专用入口，不需要真实凭据。
+复用现有入口：在项目根运行 `node experiments/pi-sdk/run.mjs website --env-file <仅含 API 密钥的文件绝对路径> --model-file <模型配置 JSON 绝对路径> --config-file <非敏感运行配置绝对路径>`。此命令会启动真实模型服务，本批未执行；本地测试使用mock专用入口，不需要真实凭据。
 
 [deployment.example.json](deployment.example.json)仅为参数模板，域名不可直接使用，数值是本地默认/示例而非已确认服务器容量。不得把本机`.env`或历史`.state`直接复制成部门初始数据。Node要求>=22.19.0，依赖以项目锁文件为准，当前Pi包1.2.0，没有升级。
 
-启动配置优先级：`config.json`默认 → live入口读取的`live.config.json`及指定模型文件 → 显式运行JSON → 调用者显式`PI_SPIKE_*`环境变量。模型地址/凭据不接受通过运行JSON设置；测试入口忽略外部真实配置并强制mock，真实website/live入口不能被环境变量切为mock。模型文件字段映射仍以`live.config.json.envKeys`为准。
+启动配置优先级：`config.json`默认 → live入口读取的`live.config.json`及指定模型文件 → 显式运行JSON → 调用者显式`PI_SPIKE_*`环境变量。模型地址/凭据不接受通过运行JSON设置；测试入口忽略外部真实配置并强制mock，真实website/live入口不能被环境变量切为mock。`--env-file` 只读取`live.config.json.envKeys.apiKey`指定的密钥变量；模型 id、地址、窗口、输出上限与思考级别来自`--model-file`。运行中每次请求与`/api/status`重读该文件：改 id、窗口、输出上限、思考级别无需重建；`baseUrl`只允许同一 origin（协议、主机、端口）内变化，换主机会被拒绝并保持上一份有效配置，因为密钥只在启动时读取且与启动时的地址绑定。文件无效时保持上一份有效配置，`/api/status` 的`modelConfig.state`为`invalid`。容器必须以目录而非单文件挂载该文件，编辑器整体替换文件时单文件挂载会让容器看到旧内容。
 
 所有可覆盖字段及环境变量见[src/runtime-config.mjs](src/runtime-config.mjs)。启动器只转发列出的变量，不继承个人Pi目录或其他模型密钥。新增代理/证书等环境需求须明确接线，不应假设系统环境全部透传。未知JSON字段、非法origin、预算或回环地址会被拒绝。
 

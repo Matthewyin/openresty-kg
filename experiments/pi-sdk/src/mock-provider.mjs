@@ -190,7 +190,7 @@ export async function startMock(config) {
       const prompt = JSON.parse(typeof raw === 'string' ? raw : raw.map(item => item.text ?? '').join(''));
       const messageText = message => typeof message.content === 'string' ? message.content : (message.content ?? []).map(item => item.text ?? '').join('');
       const results = body.messages.slice(lastUser + 1).filter(message => message.role === 'tool');
-      const record = { phase: prompt.phase ?? 'selection', tools: (body.tools ?? []).map(item => item.function.name), userTurns: body.messages.filter(item => item.role === 'user').length, resultCount: results.length, inputBytes: Buffer.concat(chunks).length, thinking: body.thinking, messages: body.messages };
+      const record = { phase: prompt.phase ?? 'selection', tools: (body.tools ?? []).map(item => item.function.name), userTurns: body.messages.filter(item => item.role === 'user').length, resultCount: results.length, inputBytes: Buffer.concat(chunks).length, thinking: body.thinking, model: body.model, maxTokens: body.max_tokens ?? body.max_completion_tokens, messages: body.messages };
       requests.push(record);
       const controller = new AbortController();
       res.on('close', () => controller.abort());

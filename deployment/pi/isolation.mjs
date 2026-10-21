@@ -75,7 +75,7 @@ function startPi() {
     '-e', 'PI_OFFLINE=1', '-e', 'PI_SPIKE_MODE=mock', '-e', 'PI_SPIKE_WEBSITE=1',
     '-e', 'PI_SPIKE_HOST=0.0.0.0', '-e', 'PI_SPIKE_PORT=51808', '-e', 'PI_SPIKE_BASE_PATH=/pi/',
     '-e', `PI_SPIKE_PUBLIC_ORIGIN=${dynamic ? 'http://pi-agent:51808' : origin}`, '-e', `PI_SPIKE_RELATIVE_LINKS=${dynamic}`, '-e', 'PI_SPIKE_STATE_DIR=.state/container',
-    '-v', `${join(work, 'model.env')}:/run/secrets/model.env:ro`,
+    '-v', `${join(work, 'model.env')}:/run/secrets/model.env:ro`, '-v', `${join(work, 'config')}:/run/config:ro`,
     '-v', `${names.volume}:/app/experiments/pi-sdk/.state/container`, image, 'node', 'experiments/pi-sdk/server.mjs');
 }
 function startGateway(config, name = names.gateway, gatewayPort = port) {
@@ -104,6 +104,9 @@ try {
   port = await freePort(); origin = `http://127.0.0.1:${port}`;
   for (const path of ['data/auth', 'data/work-counts', 'data/lldp', 'data/html', 'logs', 'gemini']) await mkdir(join(work, path), { recursive: true });
   await writeFile(join(work, 'data/auth/users.json'), JSON.stringify([{ username: 'pi-isolation', password: fixturePassword }]));
+  // 模型配置目录：与正式 Compose 一致以只读目录挂载到 /run/config（内容为隔离占位值）。
+  await mkdir(join(work, 'config'), { recursive: true });
+  await writeFile(join(work, 'config/configuration.json'), JSON.stringify({ model: { provider: 'isolation-fixture', id: 'isolation-placeholder', baseUrl: 'http://model-fixture:51900/v1', contextWindow: 100000, maxTokens: 1024, thinkingLevel: 'low' } }), { mode: 0o644 });
   await writeFile(join(work, 'model.env'), 'base-url=http://model-fixture:51900/v1\nMODEL=isolation-placeholder\nPROVIDER=isolation-fixture\nGLM_API_KEY=synthetic-isolation-only\n', { mode: 0o644 });
   const loginHtml = '<!doctype html><meta charset="utf-8"><title>隔离测试登录</title><h1>隔离测试登录（非原站页面）</h1><form><input name="username" aria-label="用户名"><input name="password" type="password" aria-label="密码"><button>登录</button></form><p id="status"></p><script>document.querySelector("form").onsubmit=async e=>{e.preventDefault(); const data=Object.fromEntries(new FormData(e.target)); const r=await fetch("/api/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)}); if(r.ok)location.href="/pi/";else document.querySelector("#status").textContent="登录失败";}</script>';
   await writeFile(join(work, 'data/work-counts/index.html'), loginHtml);
@@ -123,7 +126,7 @@ try {
   try {
     execFileSync('docker', ['compose', '--env-file', new URL('./example.env', import.meta.url).pathname, '-f', new URL('./compose.yaml', import.meta.url).pathname, '-p', `${id}-scale`, 'up', '--no-start', '--scale', 'pi-agent=2'], {
       encoding: 'utf8', timeout: 20000,
-      env: { ...process.env, PI_IMAGE: image, PI_CONTAINER_NAME: `${id}-scale-agent`, PI_NETWORK: names.network, PI_PUBLIC_ORIGIN: origin, PI_MODEL_ENV_FILE: join(work, 'model.env') }, stdio: 'pipe',
+      env: { ...process.env, PI_IMAGE: image, PI_CONTAINER_NAME: `${id}-scale-agent`, PI_NETWORK: names.network, PI_PUBLIC_ORIGIN: origin, PI_MODEL_ENV_FILE: join(work, 'model.env'), PI_MODEL_CONFIG_DIR: join(work, 'config') }, stdio: 'pipe',
     });
   } catch (error) { scalingRejected = /container_name|custom name|cannot scale/i.test(error.stderr ?? ''); }
   assert.ok(scalingRejected, 'Compose必须拒绝同卷多副本'); record('Compose固定容器名拒绝扩容');
@@ -288,7 +291,7 @@ try {
   docker('network', 'create', names.composeNetwork);
   docker('run', '-d', '--name', names.model, '--network', names.composeNetwork, '--network-alias', 'model-fixture', image,
     'node', '--input-type=module', '-e', 'import {startMock} from "./experiments/pi-sdk/src/mock-provider.mjs"; await startMock({host:"0.0.0.0",mockPort:51900,mockDelayMs:1});');
-  const composeEnv = { ...process.env, PI_IMAGE: image, PI_CONTAINER_NAME: names.composePi, PI_NETWORK: names.composeNetwork, PI_PUBLIC_ORIGIN: origin, PI_MODEL_ENV_FILE: join(work, 'model.env') };
+  const composeEnv = { ...process.env, PI_IMAGE: image, PI_CONTAINER_NAME: names.composePi, PI_NETWORK: names.composeNetwork, PI_PUBLIC_ORIGIN: origin, PI_MODEL_ENV_FILE: join(work, 'model.env'), PI_MODEL_CONFIG_DIR: join(work, 'config') };
   execFileSync('docker', ['compose', '--env-file', new URL('./example.env', import.meta.url).pathname, '-f', new URL('./compose.yaml', import.meta.url).pathname, '-p', `${id}-formal`, 'up', '-d', '--wait', '--wait-timeout', '45'], { encoding: 'utf8', env: composeEnv, timeout: 60000, stdio: 'pipe' });
   let healthy = false;
   for (let i = 0; i < 100; i++) {

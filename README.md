@@ -68,17 +68,17 @@ npm run preview
 
 ### 可选的服务端 Pi
 
-先构建网站，再在项目根运行 `npm run agent`，打开输出的本机地址（默认 `http://127.0.0.1:51808/`）。Pi SDK 仅安装在 `experiments/pi-sdk/node_modules`；重新安装使用 `npm ci --prefix experiments/pi-sdk --ignore-scripts`，不安装全局 Pi。模型服务由根目录 `.env` 提供，映射和本机端口见 `experiments/pi-sdk/live.config.json`；不会读取个人 Pi 设置。
+先构建网站，再在项目根运行 `npm run agent`，打开输出的本机地址（默认 `http://127.0.0.1:51808/`）。Pi SDK 仅安装在 `experiments/pi-sdk/node_modules`；重新安装使用 `npm ci --prefix experiments/pi-sdk --ignore-scripts`，不安装全局 Pi。API 密钥由根目录 `.env` 提供，模型 id、地址与上下文限制在 `config/configuration.json`（示例见 `config/configuration.example.json`，运行中改文件后刷新页面即生效），映射和本机端口见 `experiments/pi-sdk/live.config.json`；不会读取个人 Pi 设置。
 
 页面只保留一个消息框，直接粘贴配置、写指令问题，或把配置和问题写在一起，然后点“提交给 Agent”。纯配置默认查看功能、限制及实现；后续在同一框写“刚才这份配置的默认值呢？”即可追问。换独立话题用“新会话”；刷新后用“恢复会话”。结果中的“本次识别的配置 / 指令”或“本次沿用的配置”可展开核对。
 
 配置与问题混合时，建议把一份完整配置放在一个 Markdown 代码块中；多个独立代码块会要求合并或分别提交。没有 `events/http/stream` 等根块、但确实属于 main 顶层的配置，可在配置前单独写“这是完整主配置。”或“按 main 模式解析。”；仅声明时仍展示默认知识，不要求另问问题。孤立 server/location 仍需提供真实外层，不自动补造。一次自然语言名称查询支持一个指令，多个名称可分别查询或提供连续配置。
 
-提交会把完整消息（含配置原文）交给服务端 Pi，并可能发送给 `.env` 指定的模型，输入未自动脱敏。Pi 先理解意图，再复用现有解析与固定发布知识；事实和源码由服务端补齐，不由模型自由生成。纯配置通常一次意图调用后展示默认字段，有问题通常为意图及字段选择两次调用；精确缓存命中不调用模型，旧 API 无问题路径仍为零模型。支持取消与恢复。当前真实服务采用 `live.config.json` 的 `thinkingLevel: low`，可用 `PI_SPIKE_THINKING_LEVEL` 覆盖为供应端支持的级别。
+提交会把完整消息（含配置原文）交给服务端 Pi，并可能发送给 `config/configuration.json` 指定的模型，输入未自动脱敏。Pi 先理解意图，再复用现有解析与固定发布知识；事实和源码由服务端补齐，不由模型自由生成。纯配置通常一次意图调用后展示默认字段，有问题通常为意图及字段选择两次调用；精确缓存命中不调用模型，旧 API 无问题路径仍为零模型。支持取消与恢复。当前真实服务的思考级别取自 `config/configuration.json` 的 `model.thinkingLevel`（现为 `low`），改成供应端支持的级别后刷新页面即可。
 
 不需要 Agent 时，展开“仅本地查询 / 手动指定解析方式”，使用同一框输入纯配置或指令名称，再点“仅本地识别并查询”；这条路径不发送配置到服务端。折叠选项只影响本地查询。Agent 不可用时目录、知识详情、参考浏览和本地查询仍可用。若页面提示“Agent 需要更新”，停止旧的本地进程后重新运行 `npm run agent`。
 
-真实模型专项验证：`node scripts/verify-unified-input.mjs --env-file .env`。它只使用合成配置和独立临时状态目录，完成后清理测试会话，结果写入 `analysis/PI_UNIFIED_INPUT_LIVE_RESULTS.json`。追加 `--edge` 验证主配置声明、原文保真、多围栏及配置注释边界，记录到独立的 EDGE_RESULTS 文件。追加 `--scope` 验证跑题、问候与混合问题的分支（误拒与漏拦分开计数），追加 `--web` 打开联网参考并验证防泄露与结果白名单，结果分别写入 SCOPE_RESULTS 与 `PI_WEB_SEARCH_LIVE_RESULTS.json`。追加 `--serve` 可启动随机回环端口用于隔离桌面验收，按 Ctrl+C 清理并停止；不占用正常的51808端口或用户会话。
+真实模型专项验证：`node scripts/verify-unified-input.mjs --env-file .env --model-file config/configuration.json`。它只使用合成配置和独立临时状态目录，完成后清理测试会话，结果写入 `analysis/PI_UNIFIED_INPUT_LIVE_RESULTS.json`。追加 `--edge` 验证主配置声明、原文保真、多围栏及配置注释边界，记录到独立的 EDGE_RESULTS 文件。追加 `--scope` 验证跑题、问候与混合问题的分支（误拒与漏拦分开计数），追加 `--web` 打开联网参考并验证防泄露与结果白名单，结果分别写入 SCOPE_RESULTS 与 `PI_WEB_SEARCH_LIVE_RESULTS.json`。追加 `--serve` 可启动随机回环端口用于隔离桌面验收，按 Ctrl+C 清理并停止；不占用正常的51808端口或用户会话。
 
 默认服务仅绑定本机，同源提供 `dist` 与 API，不公开项目目录、`.env` 或会话文件。容器候选可以显式配置host、publicOrigin和basePath，但不等于已经开放原内网入口；见[容器适配说明](deployment/pi/README.md)。共享检索成果库和多用户管理不属于本次接入范围。
 

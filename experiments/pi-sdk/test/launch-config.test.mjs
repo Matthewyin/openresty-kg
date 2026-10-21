@@ -42,28 +42,32 @@ test('部署配置仅映射运行字段，调用者显式变量优先且子进�
 test('website：live 默认与显式模型文件低于部署 JSON，显式环境最高', async t => {
   const { root, file } = await fixture(t);
   const modelFile = join(root, 'synthetic-model.txt');
-  await writeFile(modelFile, 'URL=https://model.invalid/v1\nMODEL=synthetic-model\nPROVIDER=synthetic-provider\nKEY=synthetic-secret\n');
+  // 现在 env 文件只含密钥；模型字段来自 --model-file（这里只检查路径解析与传递，不读取内容）。
+  await writeFile(modelFile, 'KEY=synthetic-secret\n');
+  const modelJson = join(root, 'configuration.json');
   await writeFile(join(root, 'live.config.json'), JSON.stringify({
-    port: 51990, stateDir: '.state/live', timeoutMs: 180000, contextWindow: 131072, maxTokens: 8192,
-    website: { port: 51992, stateDir: '.state/website' }, envKeys: { baseUrl: 'URL', model: 'MODEL', provider: 'PROVIDER', apiKey: 'KEY' },
+    port: 51990, stateDir: '.state/live', timeoutMs: 180000,
+    website: { port: 51992, stateDir: '.state/website' }, envKeys: { apiKey: 'KEY' },
   }));
-  const args = ['website', '--env-file', modelFile];
+  const args = ['website', '--env-file', modelFile, '--model-file', modelJson];
   const defaults = await launchConfig(args, { root, env: {} });
   assert.equal(defaults.env.PI_SPIKE_PORT, '51992');
   assert.equal(defaults.env.PI_SPIKE_STATE_DIR, '.state/website');
   const deployed = await launchConfig([...args, '--config-file', file], { root, env: {} });
   assert.equal(deployed.env.PI_SPIKE_PORT, '51991');
   assert.equal(deployed.env.PI_SPIKE_TIMEOUT_MS, '21000');
-  assert.equal(deployed.env.PI_SPIKE_MODEL, 'synthetic-model');
+  assert.equal(deployed.env.PI_SPIKE_MODEL_FILE, modelJson);
+  assert.equal(deployed.env.PI_SPIKE_API_KEY, 'synthetic-secret');
+  // 模型字段不再经环境变量传递。
+  for (const key of ['PI_SPIKE_MODEL', 'PI_SPIKE_BASE_URL', 'PI_SPIKE_PROVIDER', 'PI_SPIKE_CONTEXT_WINDOW', 'PI_SPIKE_MAX_TOKENS']) assert.equal(deployed.env[key], undefined, key);
   assert.equal(deployed.env.PI_SPIKE_HOST, '0.0.0.0');
   assert.equal(deployed.env.PI_SPIKE_BASE_PATH, '/pi/');
   assert.equal(deployed.env.PI_SPIKE_RELATIVE_LINKS, 'true');
   const explicit = await launchConfig([...args, '--config-file', file], { root, env: {
-    PI_SPIKE_PORT: '0', PI_SPIKE_STATE_DIR: '.state/explicit', PI_SPIKE_MODEL: 'explicit-model', PI_SPIKE_API_KEY: 'explicit-secret', PI_SPIKE_HOST: '127.0.0.1', PI_SPIKE_BASE_PATH: '/tools/', PI_SPIKE_RELATIVE_LINKS: 'false',
+    PI_SPIKE_PORT: '0', PI_SPIKE_STATE_DIR: '.state/explicit', PI_SPIKE_API_KEY: 'explicit-secret', PI_SPIKE_HOST: '127.0.0.1', PI_SPIKE_BASE_PATH: '/tools/', PI_SPIKE_RELATIVE_LINKS: 'false',
   } });
   assert.equal(explicit.env.PI_SPIKE_PORT, '0');
   assert.equal(explicit.env.PI_SPIKE_STATE_DIR, '.state/explicit');
-  assert.equal(explicit.env.PI_SPIKE_MODEL, 'explicit-model');
   assert.equal(explicit.env.PI_SPIKE_API_KEY, 'explicit-secret');
   assert.equal(explicit.env.PI_SPIKE_HOST, '127.0.0.1');
   assert.equal(explicit.env.PI_SPIKE_BASE_PATH, '/tools/');
@@ -82,6 +86,20 @@ test('部署 JSON 拒绝秘密、未知字段、嵌套对象及无效文件选�
     await assert.rejects(launchConfig(args, { root, env: {} }), /必须指定/);
   }
   for (const command of ['website', 'live', 'live-check', 'live-speed']) await assert.rejects(launchConfig([command], { root, env: {} }), /显式指定 --env-file/);
+  // 有 --env-file 但缺 --model-file：同样必须报错；相对路径解析为绝对路径。
+  const envFile = join(root, 'only-key.env');
+  await writeFile(envFile, 'GLM_API_KEY=synthetic-secret\n');
+  await writeFile(join(root, 'live.config.json'), JSON.stringify({ port: 1, stateDir: '.state/live', timeoutMs: 1000, website: { port: 2, stateDir: '.state/website' }, envKeys: { apiKey: 'GLM_API_KEY' } }));
+  for (const command of ['website', 'live', 'live-check', 'live-speed']) {
+    await assert.rejects(launchConfig([command, '--env-file', envFile], { root, env: {} }), /显式指定 --model-file/);
+    await assert.rejects(launchConfig([command, '--env-file', envFile, '--model-file'], { root, env: {} }), /必须指定/);
+  }
+  const relative = await launchConfig(['live', '--env-file', envFile, '--model-file', 'sub/model.json'], { root, env: {} });
+  assert.equal(relative.env.PI_SPIKE_MODEL_FILE, resolve('sub/model.json'));
+  assert.equal(relative.env.PI_SPIKE_API_KEY, 'synthetic-secret');
+  // 调用者环境里的 PI_SPIKE_MODEL_FILE 不能压过命令行参数。
+  const override = await launchConfig(['live', '--env-file', envFile, '--model-file', '/a/b.json'], { root, env: { PI_SPIKE_MODEL_FILE: '/other.json' } });
+  assert.equal(override.env.PI_SPIKE_MODEL_FILE, '/a/b.json');
 });
 
 test('所有 RUNTIME_ENV 字段均贯通，包括布尔值；数值范围留给 loadConfig 校验', async t => {

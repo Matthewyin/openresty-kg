@@ -34,24 +34,27 @@ test('外部错误回显凭据时统一脱敏，空消息和路径改为固定�
   assert.equal(safeError(Object.assign(new Error('模型输出无法解析'), { category: 'parse' })), '模型输出无法解析');
 });
 
-test('专用 env 仅映射选定字段，缺失与含凭据 URL 拒绝', async () => {
+test('专用 env 只读取 API 密钥，模型字段不再来自 env 文件；缺少密钥拒绝', async () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   await mkdir(join(root, '.state'), { recursive: true });
   const dir = await mkdtemp(join(root, '.state/env-test-'));
   const file = join(dir, 'fixture.env');
   const config = JSON.parse(await readFile(join(root, 'live.config.json'), 'utf8'));
+  // 随仓库的 live.config.json 只映射密钥，模型字段已移到模型配置文件。
+  assert.deepEqual(config.envKeys, { apiKey: 'GLM_API_KEY' });
+  for (const key of ['contextWindow', 'maxTokens', 'thinkingLevel']) assert.ok(!(key in config), key);
   try {
-    await writeFile(file, 'base-url=https://model.invalid/v1\nMODEL=example-model\nPROVIDER=example\nGLM_API_KEY=synthetic-secret\nUNRELATED_KEY=must-not-copy\n');
+    // .env 里只有密钥即可。
+    await writeFile(file, 'GLM_API_KEY=synthetic-secret\nUNRELATED_KEY=must-not-copy\n');
     const env = await loadLiveEnv(file, config);
     assert.equal(env.PI_SPIKE_MODE, 'live');
     assert.equal(env.PI_SPIKE_API_KEY, 'synthetic-secret');
-    assert.equal(env.PI_SPIKE_MODEL, 'example-model');
     assert.equal(env.PI_SPIKE_STATE_DIR, '.state/live');
-    assert.equal(env.PI_SPIKE_THINKING_LEVEL, 'low');
-    assert.ok(!('UNRELATED_KEY' in env));
+    for (const key of ['PI_SPIKE_MODEL', 'PI_SPIKE_BASE_URL', 'PI_SPIKE_PROVIDER', 'PI_SPIKE_CONTEXT_WINDOW', 'PI_SPIKE_MAX_TOKENS', 'PI_SPIKE_THINKING_LEVEL']) assert.ok(!(key in env), key);
+    assert.ok(!Object.values(env).includes('must-not-copy'));
     await writeFile(file, 'MODEL=example-model\n');
     await assert.rejects(loadLiveEnv(file, config), /缺少/);
-    await writeFile(file, 'base-url=https://user:synthetic-secret@model.invalid/v1\nMODEL=m\nPROVIDER=p\nGLM_API_KEY=synthetic-secret\n');
-    await assert.rejects(loadLiveEnv(file, config), error => /不带凭据/.test(error.message) && !error.message.includes('synthetic-secret'));
+    await writeFile(file, 'GLM_API_KEY=   \n');
+    await assert.rejects(loadLiveEnv(file, config), /缺少/);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });

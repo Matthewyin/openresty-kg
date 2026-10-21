@@ -8,6 +8,7 @@ import { createAgentSession, createExtensionRuntime, ModelRuntime, SessionManage
 import { loadSnapshot, knowledgeTools, toolNames, digest, within } from './knowledge-tools.mjs';
 import { SYSTEM_PROMPT, CONTRACT, FIELD_SELECTION_PHASE, FIELD_SELECTION_OUTPUT, FIELD_SELECTION_RETRY_PHASE, FIELD_SELECTION_RETRY, FIELD_SELECTION_PARSE_RETRY, isIntentResolutionShape, parseModelReportText, validateModelReport, makeReport } from './report.mjs';
 import { startMock } from './mock-provider.mjs';
+import { createModelConfigSource } from './model-config.mjs';
 import { safeError, errorCategory, requestError, taggedError, UPSTREAM_MESSAGE, PARSE_MESSAGE } from './errors.mjs';
 import { applyRuntimeEnv } from './runtime-config.mjs';
 import { pruneState, stateBytes } from './state-retention.mjs';
@@ -66,18 +67,23 @@ export async function loadConfig(overrides = {}) {
   if (config.retentionEnabled && config.cacheTtlMs > config.sessionTtlMs) throw new Error('启用保留期限时 cacheTtlMs 不得大于 sessionTtlMs');
   if (!['off', 'minimal', 'low', 'medium', 'high', 'xhigh'].includes(config.thinkingLevel)) throw new Error('思考级别无效');
   if (!Number.isInteger(config.port) || config.port < 0 || config.port > 65535) throw new Error('监听端口无效');
+  // 模型配置文件：live 必须提供；mock 可选（测试热读取用）。路径由启动器以绝对路径经 PI_SPIKE_MODEL_FILE 传入。
+  const modelFile = overrides.modelFile ?? process.env.PI_SPIKE_MODEL_FILE;
+  if (config.mode === 'live' && !modelFile) throw new Error('live 必须通过 --model-file（PI_SPIKE_MODEL_FILE）指定模型配置文件');
+  if (modelFile) {
+    // 启动时读取并校验一次，失败即启动失败。来源对象以不可枚举属性挂在 config 上，随后由 Spike 持有并在每次请求时热读取。
+    // 日志回调只输出 state/reason，不含文件内容；是否输出由 logRequests 在调用时决定。
+    const source = await createModelConfigSource({ file: resolve(modelFile), log: entry => { if (config.logRequests) console.log(JSON.stringify(entry)); } });
+    Object.defineProperty(config, 'modelSource', { value: source, enumerable: false });
+    // 启动时的初始值同步到 config，供联网密钥规则与 live-check 等使用；请求期间以每次请求的快照为准。
+    Object.assign(config, { baseUrl: source.initial.baseUrl, modelId: source.initial.id, contextWindow: source.initial.contextWindow, maxTokens: source.initial.maxTokens, thinkingLevel: source.initial.thinkingLevel });
+  }
   if (config.mode === 'live') {
-    config.baseUrl = process.env.PI_SPIKE_BASE_URL;
     config.apiKey = process.env.PI_SPIKE_API_KEY;
-    config.modelId = process.env.PI_SPIKE_MODEL;
-    if (!config.baseUrl || !config.apiKey || !config.modelId) throw new Error('live 需要三个 PI_SPIKE 专用模型环境变量');
-    const modelUrl = new URL(config.baseUrl);
-    if (!['http:', 'https:'].includes(modelUrl.protocol) || modelUrl.username || modelUrl.password || modelUrl.search || modelUrl.hash) throw new Error('模型地址必须是不带凭据或查询参数的 HTTP(S) 地址');
-    config.contextWindow = Number(process.env.PI_SPIKE_CONTEXT_WINDOW);
-    config.maxTokens = Number(process.env.PI_SPIKE_MAX_TOKENS);
-    if (!Number.isInteger(config.contextWindow) || !Number.isInteger(config.maxTokens) || config.maxTokens < 1 || config.maxTokens >= config.contextWindow) throw new Error('live 必须显式提供模型上下文与输出限制');
+    if (!config.apiKey) throw new Error('live 需要专用环境变量 PI_SPIKE_API_KEY');
     if (config.webSearch) {
       // 联网 Key 优先取独立变量；只有模型地址是智谱开放平台时才回退到模型 Key，否则把模型 Key 发给其他服务是泄露。
+      // 这里按启动时的 baseUrl 判断；热读取时 origin 被固定为启动值，因此该判断在运行期间始终有效。
       const bigmodel = new URL(config.baseUrl).hostname === 'open.bigmodel.cn';
       if (!process.env.PI_SPIKE_WEB_SEARCH_API_KEY && !bigmodel) throw new Error('开启联网搜索时需要 PI_SPIKE_WEB_SEARCH_API_KEY（模型地址不是智谱开放平台时不回退到模型 Key）');
       config.webSearchApiKey = process.env.PI_SPIKE_WEB_SEARCH_API_KEY || config.apiKey;
@@ -256,7 +262,22 @@ export class Spike {
     spike.pruneTimer.unref();
     return spike;
   }
-  constructor(config) { this.config = config; this.jobs = new Map(); }
+  constructor(config) { this.config = config; this.jobs = new Map(); this.modelSource = config.modelSource ?? null; }
+  // 本次请求使用的模型快照（不含密钥）：有模型文件时取热读取结果，否则按 config 当前值现取（mock 与旧测试路径）。
+  // 每次请求只取一次，存入 job.model；意图、字段选择、纠正重试与联网都用这一份。
+  async modelSnapshot() {
+    const config = this.config;
+    if (this.modelSource) {
+      const { model, state, reason } = await this.modelSource.current();
+      return { model: { id: model.id, provider: model.provider, baseUrl: model.baseUrl, contextWindow: model.contextWindow, maxTokens: model.maxTokens, thinkingLevel: model.thinkingLevel }, state, reason };
+    }
+    return { model: { id: config.modelId, provider: config.mode === 'mock' ? 'mock' : 'live', baseUrl: config.baseUrl, contextWindow: config.contextWindow, maxTokens: config.maxTokens, thinkingLevel: config.thinkingLevel }, state: 'ok' };
+  }
+  // /api/status 用：当前有效模型 id 与配置状态。不返回 baseUrl 或密钥。
+  async modelStatus() {
+    const { model, state, reason } = await this.modelSnapshot();
+    return { model: model.id, modelConfig: { state: state === 'invalid' ? 'invalid' : 'ok', ...(reason ? { reason } : {}) } };
+  }
   // 所有对外错误都要隐藏的秘密：模型 Key 与联网搜索 Key（二者可能不同）。
   secrets() { return [this.config.apiKey, this.config.webSearchApiKey]; }
   pruneJobs(now = Date.now()) {
@@ -320,14 +341,15 @@ export class Spike {
       // 日志只记录联网调用次数和错误类别，不记录查询词、结果正文或错误原文。
       // intent 为意图阶段诊断（固定枚举 + 字节数，见 resolveInputDetailed）；缓存命中或意图阶段未完成时为 null。
       // gate 为配置校验闸门记录（校验结论枚举 + 是否因校验失败跳过模型的布尔值）；没有校验结果时为 null。
-      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls, intent: job.metrics.intent ?? null, gate: job.metrics.gate ?? null }));
+      if (this.config.logRequests) console.log(JSON.stringify({ event: 'agent_request_end', requestId: job.requestId, release: job.knowledgeVersion?.release ?? null, mode: job.mode, state: job.state, model: job.model?.id ?? null, modelConfigState: job.modelConfigState ?? null, cacheHit: job.cacheHit, totalMs: job.metrics.totalMs, modelRoundTrips: job.metrics.modelRoundTrips, usage: job.metrics.usage, errorCode: job.errorCode ?? null, errorCategory: job.error ? (job.errorCategory ?? 'unknown') : null, webSearchCalls: job.webSearch.calls, intent: job.metrics.intent ?? null, gate: job.metrics.gate ?? null }));
       if (this.running === job) this.running = null;
       this.pruneJobs();
     });
     return job;
   }
   view(job) {
-    const { done, session, cancelled, timedOut, existingSession, finishedAt, webSearch, ...view } = job;
+    // model 快照含模型地址，不对前端暴露。
+    const { done, session, cancelled, timedOut, existingSession, finishedAt, webSearch, model, ...view } = job;
     // 视图只暴露调用次数、被拒次数与已执行的查询词；外部结果正文不返回给前端。
     return { ...view, webSearch: { calls: webSearch.calls, rejected: webSearch.rejected, queries: [...webSearch.queries], attempts: webSearch.attempts.map(item => ({ ...item })) } };
   }
@@ -413,8 +435,8 @@ export class Spike {
     const runtime = await ModelRuntime.create({ credentials: new InMemoryCredentialStore(), authPath: join(config.stateDir, 'agent', 'unused-auth.json'), modelsPath: null, modelsStore: new InMemoryModelsStore(), allowModelNetwork: false, refreshOnCreate: false });
     const provider = 'pi-spike-isolated';
     runtime.registerProvider(provider, {
-      api: 'openai-completions', baseUrl: this.mock?.baseUrl ?? config.baseUrl, apiKey: config.mode === 'mock' ? 'local-mock-no-secret' : config.apiKey,
-      models: [{ id: config.modelId, name: config.modelId, api: 'openai-completions', reasoning: config.reasoning, input: ['text'], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: config.contextWindow, maxTokens: config.maxTokens, compat: config.compat }],
+      api: 'openai-completions', baseUrl: this.mock?.baseUrl ?? job.model.baseUrl, apiKey: config.mode === 'mock' ? 'local-mock-no-secret' : config.apiKey,
+      models: [{ id: job.model.id, name: job.model.id, api: 'openai-completions', reasoning: config.reasoning, input: ['text'], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: job.model.contextWindow, maxTokens: job.model.maxTokens, compat: config.compat }],
     });
     const customTools = knowledgeTools(this.snapshot, () => ({ input: '', mode: 'fragment' }), []).tools.map(tool => ({ ...tool, execute: (...args) => {
       check();
@@ -427,7 +449,7 @@ export class Spike {
     // 字段选择阶段追加联网规则；意图阶段也共用这段系统提示，但 web_search 在意图阶段没有活动权限。
     const systemPrompt = [unified ? INPUT_PROMPT : null, SYSTEM_PROMPT, config.webSearch ? WEB_PROMPT : null].filter(Boolean).join('\n');
     const { session } = await createAgentSession({
-      cwd: join(config.stateDir, 'cwd'), agentDir: join(config.stateDir, 'agent'), modelRuntime: runtime, model: runtime.getModel(provider, config.modelId), thinkingLevel: config.thinkingLevel,
+      cwd: join(config.stateDir, 'cwd'), agentDir: join(config.stateDir, 'agent'), modelRuntime: runtime, model: runtime.getModel(provider, job.model.id), thinkingLevel: job.model.thinkingLevel,
       resourceLoader: emptyLoader(systemPrompt), sessionManager: manager, noTools: 'builtin', tools: toolNames(config), customTools,
       settingsManager: SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: false, provider: { maxRetries: 0, timeoutMs: config.timeoutMs } }, cacheWarming: 'off', enableInstallTelemetry: false, mcpServers: {} }),
     });
@@ -523,6 +545,10 @@ export class Spike {
   async execute(job, submittedRequest) {
     const config = this.config;
     const metrics = job.metrics;
+    // 请求开始时固定模型快照：之后无论模型文件如何变化，本次请求的所有阶段都用这一份。
+    const modelSnapshot = await this.modelSnapshot();
+    job.model = modelSnapshot.model;
+    job.modelConfigState = modelSnapshot.state;
     const unified = Object.hasOwn(submittedRequest, 'message');
     let request = submittedRequest;
     let bundle;
@@ -557,7 +583,7 @@ export class Spike {
     if (Buffer.byteLength(JSON.stringify(previousHistory)) >= config.maxHistoryBytes) throw requestError('history_limit', '本轮输入过大，请缩短问题', 413);
     // 缓存键使用用户原消息：Nginx 指令名区分大小写，Client_Max_Body_Size 与 client_max_body_size 是不同的查询，不共用缓存。
     const cacheRequest = unified ? { ...submittedRequest, currentConfig, currentSubject, inputContract: INPUT_CONTRACT } : request;
-    const key = cacheKey({ request: cacheRequest, context, knowledgeHash: snapshot.hash, codeHash: this.codeHash, siteBase: config.siteBase, model: { mode: config.mode, id: config.modelId, baseUrl: config.mode === 'mock' ? 'local-mock' : config.baseUrl, reasoning: config.reasoning, thinkingLevel: config.thinkingLevel, maxTurns: config.maxTurns, contextWindow: config.contextWindow, maxTokens: config.maxTokens, compat: config.compat, webSearch: config.webSearch } });
+    const key = cacheKey({ request: cacheRequest, context, knowledgeHash: snapshot.hash, codeHash: this.codeHash, siteBase: config.siteBase, model: { mode: config.mode, id: job.model.id, baseUrl: config.mode === 'mock' ? 'local-mock' : job.model.baseUrl, reasoning: config.reasoning, thinkingLevel: job.model.thinkingLevel, maxTurns: config.maxTurns, contextWindow: job.model.contextWindow, maxTokens: job.model.maxTokens, compat: config.compat, webSearch: config.webSearch } });
     const cachePath = join(config.stateDir, 'cache', `${key}.json`);
     check();
     let cached;
