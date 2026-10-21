@@ -53,7 +53,7 @@ try {
   await page.click('#query-submit');
   await page.waitForFunction(() => document.querySelector('#query-status').textContent.includes('知识暂不可用'));
   assert.equal(await page.evaluate(() => document.querySelector('.detail-title')?.textContent ?? null), null);
-  assert.equal(await page.evaluate(() => document.querySelectorAll('.catalog-entry').length), 1);
+  assert.equal(await page.evaluate(() => document.querySelectorAll('#input-tree .tree-main').length), 1);
   console.log('通过：真实浏览器拒绝 availability={}，撤销旧详情并保留当前候选。');
 
   await page.evaluate(() => { window.__accuracyMode = 'normal'; });

@@ -21,10 +21,12 @@ try {
   assert.equal(overview.count, '1041');
   assert.ok(overview.groups.includes('固定发行版：1017'));
   assert.ok(overview.groups.includes('部门扩展：24'));
+  // 全部目录的计数写在标签上；收起的分组不构建按钮，所以数计数而不是数按钮。
   await page.selectOption('#catalog-source', 'department_extension');
-  assert.equal(await page.evaluate(() => document.querySelectorAll('.catalog-entry').length), 24);
+  assert.equal(await page.evaluate(() => document.querySelector('#catalog-count').textContent), '24');
   await page.fill('#catalog-search', 'vhost_traffic_status_zone');
-  assert.equal(await page.evaluate(() => document.querySelectorAll('.catalog-entry').length), 1);
+  // 搜索防抖 120ms：等计数落地后再点击（命中组自动展开并构建按钮）。
+  await page.waitForFunction(() => document.querySelector('#catalog-count').textContent === '1');
   await page.click('.catalog-entry[data-id="nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_zone"]');
   await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'vhost_traffic_status_zone');
   const detail = await page.evaluate(() => document.querySelector('#detail-panel').textContent);
@@ -39,29 +41,32 @@ try {
     } }
   }`);
   await page.click('#query-submit');
-  await page.waitForFunction(() => document.querySelectorAll('.parsed-row').length === 7);
+  await page.waitForFunction(() => document.querySelectorAll('#input-tree .tree-main').length === 7);
   const sample = await page.evaluate(() => ({
     status: document.querySelector('#query-status').textContent,
-    rows: [...document.querySelectorAll('.parsed-row')].filter(row => row.querySelector('.parsed-name').textContent.startsWith('vhost_traffic_status')).map(row => row.textContent),
-    ids: [...document.querySelectorAll('.catalog-entry')].map(node => node.dataset.id),
+    rows: [...document.querySelectorAll('#input-tree .tree-main')].filter(main => main.querySelector('.tree-name').textContent.startsWith('vhost_traffic_status')).map(main => main.textContent),
+    tree: document.querySelector('#input-tree').textContent,
   }));
   assert.ok(!sample.status.includes('解析失败'));
   assert.equal(sample.rows.length, 4);
-  assert.ok(sample.rows.every(text => text.includes('唯一匹配') && text.includes('部门扩展')));
-  assert.ok(!sample.ids.some(id => id.includes('lua_load_resty_core')));
-  await page.click('.parsed-row .candidate-button[data-id="nginx-module-vts--ngx_http_vhost_traffic_status_module--vhost_traffic_status_display_format"]');
+  // 行内只显示状态；来源（部门扩展）在打开的详情里核对，前面已断言。
+  assert.ok(sample.rows.every(text => text.includes('唯一匹配')));
+  assert.ok(!sample.tree.includes('lua_load_resty_core'));
+  // display_format 是唯一候选：行内“详情”按钮直接打开它的详情。
+  await page.click('#input-tree .tree-row:has-text("vhost_traffic_status_display_format") .tree-expand');
   await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'vhost_traffic_status_display_format');
   assert.ok((await page.evaluate(() => document.querySelector('#detail-panel').textContent)).includes('prometheus'));
   await page.fill('#configuration', 'http { future_extension_probe on; }');
   await page.click('#query-submit');
-  await page.waitForFunction(() => document.querySelectorAll('.parsed-row').length === 2);
-  assert.ok((await page.evaluate(() => document.querySelector('#parsed-results').textContent)).includes('当前索引未收录'));
+  await page.waitForFunction(() => document.querySelectorAll('#input-tree .tree-main').length === 2);
+  assert.ok((await page.evaluate(() => document.querySelector('#input-tree').textContent)).includes('当前索引未收录'));
   assert.ok(!(await page.evaluate(() => document.querySelector('#query-status').textContent)).includes('解析失败'));
   assert.equal(await page.evaluate(() => document.querySelector('.detail-title')?.textContent ?? null), null);
   await page.fill('#configuration', 'http { vhost_traffic_status_zone;');
   await page.click('#query-submit');
   await page.waitForFunction(() => document.querySelector('#query-status').textContent.includes('解析失败'));
-  assert.equal(await page.evaluate(() => document.querySelectorAll('.catalog-entry').length), 0);
+  // 解析错误不改变全部目录（搜索与来源筛选仍只剩 1 条）。
+  assert.equal(await page.evaluate(() => document.querySelector('#catalog-count').textContent), '1');
   assert.equal(await page.evaluate(() => document.querySelector('.detail-title')?.textContent ?? null), null);
   const requests = await page.evaluate(() => window.__extensionRequests);
   assert.ok(requests.every(request => request.method === 'GET' && request.body === undefined));

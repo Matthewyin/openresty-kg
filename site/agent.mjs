@@ -1,4 +1,7 @@
 import { FIELD_PENDING_LABEL, FIELD_PENDING_NOTE } from './src/query/knowledge.mjs';
+import { needsAttention } from './src/query/config-results.mjs';
+import { getSelectedEntryId, selectDirective } from './selection.mjs';
+import { analysisKey, attentionNamed } from './analysis-state.mjs';
 
 const $ = id => document.getElementById(id);
 const appBase = new URL('./', import.meta.url);
@@ -38,13 +41,16 @@ function environment(text, state) {
 }
 function note(text, error = false) { $('agent-status').textContent = text; $('agent-status').classList.toggle('error', error); }
 // ---------- 对话流 ----------
-// #agent-result 是对话流容器：每次被服务端接受的提交对应一个「轮次卡」（details/summary），
-// 新轮追加在下方；只有最新一轮默认展开，旧轮折叠成摘要行。历史轮只是已渲染好的 DOM，不再发起任何网络请求。
-// 最多保留 MAX_TURNS 轮，超出时从最旧一轮开始移除，保证页面节点数有界。
+// #agent-turn-tabs 是横向标签栏，#agent-result 里每个轮次一个面板。
+// 同一时刻只显示一轮（其余面板 hidden，DOM 仍在，迟到响应还能写回它自己的那一轮）。
+// 新轮在 addTurn 时自动选中；之后的轮询渲染不再改选中项，所以用户点过旧轮后不会被后台刷新抢走。
+// 最多保留 MAX_TURNS 轮，超出时从最旧一轮开始移除。历史轮不再发起任何网络请求。
 const MAX_TURNS = 20;
 const SUMMARY_LIMIT = 60;
-let turns = []; // [{ root, body, state, number }]，按时间从旧到新
+const BLURB_LIMIT = 80;
+let turns = []; // [{ root, body, state, tab, dot, attention, number, cards, ... }]，按时间从旧到新
 let turnNumber = 0; // 单调递增的轮次号；被裁掉的旧轮不会让编号回退
+let selectedTurn = null;
 
 // 用户输入摘要：取第一行非空文本、折叠空白、按码点截断（不会截断代理对）。只作为文本节点内容，不当 HTML 解析。
 function summarizeInput(message) {
@@ -52,47 +58,144 @@ function summarizeInput(message) {
   const chars = Array.from(line);
   return chars.length > SUMMARY_LIMIT ? `${chars.slice(0, SUMMARY_LIMIT).join('')}…` : line;
 }
-// 追加一个轮次卡并返回它；旧轮全部折叠，新轮展开。
+// 折叠行里的一句话：折叠连续空白，按码点截到 80，超出加省略号。纯文本，不解析标签。
+function clipBlurb(text) {
+  const collapsed = String(text ?? '').replace(/\s+/g, ' ').trim();
+  if (!collapsed) return '';
+  const chars = Array.from(collapsed);
+  return chars.length > BLURB_LIMIT ? `${chars.slice(0, BLURB_LIMIT).join('')}…` : collapsed;
+}
+// 状态点只用三档，大纲和卡片共用同一套 class。
+function setDot(dot, tone) {
+  const name = tone === 'good' ? 'good' : tone === 'warn' ? 'warn' : 'muted';
+  dot.className = `status-dot status-dot-${name}`;
+  dot.dataset.tone = name;
+}
+// 把标签栏和面板按 turns 重新挂上。裁掉旧轮时两处一起换，避免标签和面板错位。
+function mountTurns() {
+  const tabs = $('agent-turn-tabs');
+  const result = $('agent-result');
+  if (!tabs || !result) return;
+  tabs.replaceChildren(...turns.map(item => item.tab));
+  result.replaceChildren(...turns.map(item => item.root));
+  tabs.hidden = turns.length === 0;
+}
+// 只切换可见面板和 aria，不滚动、不重建内容。渲染函数不要调用它。
+function selectTurn(turn) {
+  if (!turn || !turns.includes(turn)) return;
+  selectedTurn = turn;
+  for (const item of turns) {
+    const on = item === turn;
+    item.root.hidden = !on;
+    item.tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    item.tab.tabIndex = on ? 0 : -1;
+  }
+  const tabs = $('agent-turn-tabs');
+  if (tabs) tabs.hidden = false;
+  revealTab(turn);
+}
+// 窄屏标签栏横向溢出时，把选中标签横向滚进可视区。只改标签栏自身的 scrollLeft，不触发页面纵向滚动。
+// 标签宽度会在“待处理 N”出现后变宽，所以 finishChrome 里对选中轮再调一次。
+function revealTab(turn) {
+  const tabs = $('agent-turn-tabs');
+  const tab = turn?.tab;
+  if (!tabs || !tab || !(tabs.clientWidth > 0) || !Number.isFinite(tab.offsetLeft)) return;
+  const left = tab.offsetLeft - tabs.offsetLeft;
+  // 右侧留出淡出遮罩的宽度，选中标签不会落在遮罩下面。
+  if (left < tabs.scrollLeft) tabs.scrollLeft = left;
+  else if (left + tab.offsetWidth > tabs.scrollLeft + tabs.clientWidth - 24) tabs.scrollLeft = left + tab.offsetWidth - tabs.clientWidth + 28;
+}
+// 追加一轮并立刻切过去。调用方是“这一轮刚被服务端接受”，所以即使用户正在看旧轮也要切到新轮。
 function addTurn(label) {
-  const root = node('details');
-  root.className = 'agent-turn';
-  const head = node('summary', undefined, root);
   const number = ++turnNumber;
-  node('span', `第 ${number} 轮`, head, 'turn-no');
-  node('span', label, head, 'turn-summary');
-  const state = node('span', '', head, 'turn-state');
+  const tabId = `agent-turn-tab-${number}`;
+  const panelId = `agent-turn-panel-${number}`;
+  const tab = node('button');
+  tab.type = 'button';
+  tab.className = 'agent-tab';
+  tab.id = tabId;
+  tab.setAttribute('role', 'tab');
+  tab.setAttribute('aria-controls', panelId);
+  tab.setAttribute('aria-selected', 'false');
+  tab.tabIndex = -1;
+  const dot = node('span', undefined, tab, 'status-dot status-dot-muted');
+  dot.dataset.tone = 'muted';
+  node('span', `第 ${number} 轮`, tab, 'turn-no');
+  node('span', label, tab, 'turn-summary');
+  const attention = node('span', '', tab, 'turn-attention');
+  attention.hidden = true;
+  const root = node('div');
+  root.className = 'agent-turn';
+  root.id = panelId;
+  root.setAttribute('role', 'tabpanel');
+  root.setAttribute('aria-labelledby', tabId);
+  root.hidden = true;
+  // 状态文字留在面板里（测试和读屏都能读到）；“完成 / 运行中”收成仅供读屏，避免占一行。
+  const state = node('p', '', root, 'turn-state sr-only');
+  state.setAttribute('data-quiet', 'true');
   const body = node('div', undefined, root, 'turn-body');
-  for (const turn of turns) turn.root.open = false;
-  root.open = true;
-  const turn = { root, body, state, number };
+  const turn = {
+    root, body, state, tab, dot, attention, number,
+    cards: [], outlineItems: [], directiveQuery: '', attentionOnly: false, layoutTouched: false, spy: null,
+  };
+  tab.addEventListener('click', () => selectTurn(turn));
   turns.push(turn);
   if (turns.length > MAX_TURNS) {
-    turns = turns.slice(turns.length - MAX_TURNS);
-    $('agent-result').replaceChildren(...turns.map(item => item.root));
-  } else $('agent-result').append(root);
+    for (const dropped of turns.splice(0, turns.length - MAX_TURNS)) dropped.spy?.disconnect?.();
+  }
+  mountTurns();
+  selectTurn(turn);
   return turn;
 }
 // 清空整个对话流：只用于新会话、切换/恢复会话、删除当前会话、知识发布变化这类有意的边界。
 function clearConversation() {
+  for (const turn of turns) turn.spy?.disconnect?.();
   turns = [];
   turnNumber = 0;
-  $('agent-result').replaceChildren();
+  selectedTurn = null;
+  $('agent-result')?.replaceChildren();
+  const tabs = $('agent-turn-tabs');
+  if (tabs) { tabs.replaceChildren(); tabs.hidden = true; }
 }
-// 轮次未正常结束（取消、登录失效、请求失败）时：移除“运行中”占位，把原因写在摘要行；已展示的内容保留。
+// 标签栏键盘：左右键只移动焦点，Enter / 空格才真正切换轮次。
+function focusTurnTab(index) {
+  if (!turns.length) return;
+  const next = turns[(index + turns.length) % turns.length];
+  for (const item of turns) item.tab.tabIndex = item === next ? 0 : -1;
+  next.tab.focus();
+}
+function currentTurnTabIndex() {
+  const focused = turns.findIndex(item => item.tab === document.activeElement);
+  if (focused >= 0) return focused;
+  const selected = turns.findIndex(item => item.tab.getAttribute('aria-selected') === 'true');
+  return selected >= 0 ? selected : 0;
+}
+// “完成 / 运行中 / 已恢复”不占阅读行，其余状态（已取消、失败、等待补充）留在面板顶部。
+function setTurnState(turn, text) {
+  if (!turn) return;
+  const value = text ?? '';
+  turn.state.textContent = value;
+  const quiet = !value || value === '完成' || value === '运行中' || value === '已恢复';
+  turn.state.className = quiet ? 'turn-state sr-only' : 'turn-state';
+  if (quiet) turn.state.setAttribute('data-quiet', 'true');
+  else turn.state.removeAttribute('data-quiet');
+}
+// 轮次未正常结束（取消、登录失效、请求失败）时：移除“运行中”占位，把原因写在本轮面板上；已展示的内容保留。
 function settleTurn(turn, text) {
   if (!turn) return;
   turn.body.replaceChildren(...Array.from(turn.body.children).filter(child => child.className !== 'agent-pending'));
-  turn.state.textContent = text;
+  setTurnState(turn, text);
+  if (text && text !== '完成' && text !== '运行中') setDot(turn.dot, 'warn');
 }
 // 右侧候选/详情当前对应的 Agent 对象键。追问没有新对象时据此跳过派发，让右侧保持不动。
 let shownAnalysisKey = null;
-function resetShownAnalysis() { shownAnalysisKey = null; }
-// 键只取右侧候选/详情实际读取的字段（与 app.mjs 的 submit(request) 一致：input/mode/context/module，release 用于校验发布）。
+// 资料库“本次输入”的识别结果（analysis-state 快照）对应的对象键，来自 app 的 agent-parsed 事件。
+// 快照被清空、改为本地查询或对象失效时为 null。卡片只在自己轮次的对象键与它相等时才参考识别结果。
+let parsedKey = null;
+function resetShownAnalysis() { shownAnalysisKey = null; parsedKey = null; }
+// analysisKey 定义在 analysis-state.mjs，与 app.mjs 共用同一口径：只取右侧候选/详情实际读取的字段（input/mode/context/module，release 用于校验发布）。
 // 不能用整个 normalizedRequest：首轮带 inputSource/configRange 且 question 是用户问题，追问是 inputSource:'meta'、无 configRange、question 是追问句，
-// 这些字段不影响右侧，却会让键每次都不同。提交路径与恢复路径共用本函数。
-function analysisKey(request) {
-  return JSON.stringify([request.input ?? null, request.mode ?? null, request.context || null, request.module || null, request.release ?? null]);
-}
+// 这些字段不影响右侧，却会让键每次都不同。提交路径与恢复路径共用该键。
 
 function controls() {
   const ready = Boolean(service && !needsLogin && document.body.dataset.release);
@@ -103,6 +206,8 @@ function controls() {
   $('agent-retry').disabled = Boolean(active);
   $('agent-session').textContent = sessionId || '未创建';
   $('agent-result').setAttribute('aria-busy', String(Boolean(active)));
+  // 菜单收起时，登录失效或任务中断仍要让用户看见：“会话 ▾”按钮加提示色（样式见 styles.css 的 needs-attention）。
+  $('session-menu-toggle')?.classList.toggle('needs-attention', Boolean(interrupted || needsLogin));
   renderSessions();
 }
 function remember(id) {
@@ -127,17 +232,35 @@ function parseSessions(data) {
   }
   return items.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, LIST_LIMIT);
 }
+// 会话列表刷新的节流状态：最近一次真正发出的刷新请求（promise）与发起时间（毫秒）。
+// 只给“打开会话菜单 / 展开历史会话”这类随手触发的刷新用（见 refreshSessionsOnOpen），其余刷新不受影响。
+const SESSION_LIST_MIN_INTERVAL_MS = 1000;
+let sessionListInFlight = null;
+let sessionListStartedAt = -Infinity;
 // 从服务端拉取列表并渲染。失败静默：保留上一份列表、不弹提示；唯一例外是登录失效，走登录流程。
 async function refreshSessions() {
   const seq = ++refreshSeq;
-  try {
-    const data = await api('/api/sessions');
-    if (seq !== refreshSeq) return; // 已有更新的刷新发出，这份响应过期
-    sessionList = parseSessions(data);
-    renderSessions();
-  } catch (error) {
-    if (error.code === 'auth_required') requireLogin();
-  }
+  sessionListStartedAt = Date.now();
+  const pending = (async () => {
+    try {
+      const data = await api('/api/sessions');
+      if (seq !== refreshSeq) return; // 已有更新的刷新发出，这份响应过期
+      sessionList = parseSessions(data);
+      renderSessions();
+    } catch (error) {
+      if (error.code === 'auth_required') requireLogin();
+    }
+  })();
+  sessionListInFlight = pending;
+  try { await pending; }
+  finally { if (sessionListInFlight === pending) sessionListInFlight = null; }
+}
+// 打开“会话 ▾”菜单或展开“历史会话”时的刷新，做节流：已有请求在途时复用它（不再发第二个）；
+// 否则距离上一次发起刷新不足 SESSION_LIST_MIN_INTERVAL_MS 时不重复请求。提交、恢复、删除后的刷新仍直接调用 refreshSessions，必须拿到变化后的列表。
+function refreshSessionsOnOpen() {
+  if (sessionListInFlight) return sessionListInFlight;
+  if (Date.now() - sessionListStartedAt < SESSION_LIST_MIN_INTERVAL_MS) return Promise.resolve();
+  return refreshSessions();
 }
 function formatTime(value) {
   const date = new Date(value);
@@ -145,7 +268,25 @@ function formatTime(value) {
   const pad = number => String(number).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
+// 菜单按钮旁一行内显示的当前会话标题：最多显示这么多码点，超出加省略号（按码点截，不切开代理对）。
+const TITLE_SHOW_LIMIT = 36;
+// 当前会话标题取自服务端列表（已清洗）。没有会话时显示“未开始”；有会话但列表尚未刷新到时显示“标题待刷新”。
+// 完整标题放在 title 提示里，鼠标悬停可看全文。只用 textContent 写入。
+function renderSessionTitle() {
+  const el = $('session-title');
+  if (!el) return;
+  let text;
+  if (!sessionId) text = '未开始';
+  else {
+    const item = sessionList.find(entry => entry.id === sessionId);
+    text = item ? (item.title.trim() || '未命名会话') : '标题待刷新';
+  }
+  const chars = Array.from(text);
+  el.textContent = chars.length > TITLE_SHOW_LIMIT ? `${chars.slice(0, TITLE_SHOW_LIMIT).join('')}…` : text;
+  el.title = text;
+}
 function renderSessions() {
+  renderSessionTitle();
   const list = $('agent-history-list');
   if (!list) return;
   list.replaceChildren();
@@ -167,6 +308,40 @@ function renderSessions() {
     deleteButton.type = 'button';
     deleteButton.disabled = Boolean(active || interrupted);
     deleteButton.addEventListener('click', () => deleteListed(item.id));
+  }
+}
+// ---------- 会话菜单（“会话 ▾”） ----------
+// 新会话、恢复会话、当前会话 ID 与历史会话列表收进非模态弹层。按钮、弹层与 id 保持原样，
+// 各控件的事件仍由下方原有的 addEventListener 绑定；这里只管开关、焦点与关闭条件。
+let sessionMenuOpen = false;
+// 判断 target 是否位于 root 之内：沿 parentNode 向上走，不依赖 Node.contains，测试用的假 DOM 同样可用。
+function insideNode(root, target) {
+  for (let node = target; node; node = node.parentNode) if (node === root) return true;
+  return false;
+}
+// 点菜单以外的任何位置都收起。监听只在打开期间挂载，关闭时摘除，反复开关不会堆积。
+function onSessionMenuPointer(event) {
+  if (!insideNode($('session-bar'), event.target)) setSessionMenu(false);
+}
+// open=true：挂载外部点击监听，把焦点移到“新会话”（菜单内第一个控件）。
+// open=false：摘除监听；restoreFocus 只在 Esc 时为 true，焦点回到“会话 ▾”按钮，点外部关闭时不抢焦点。
+// 重复调用同一状态只同步属性，不重复挂载监听。
+function setSessionMenu(open, { restoreFocus = false } = {}) {
+  const toggle = $('session-menu-toggle');
+  const panel = $('session-menu');
+  if (!toggle || !panel) return;
+  const was = sessionMenuOpen;
+  sessionMenuOpen = open;
+  panel.hidden = !open;
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open && !was) {
+    document.addEventListener?.('pointerdown', onSessionMenuPointer);
+    $('agent-new')?.focus?.();
+    // 每次打开都刷新一次服务端列表，能看到其他访问者新建的会话（失败静默；1 秒内的重复打开走节流，见 refreshSessionsOnOpen）。
+    void refreshSessionsOnOpen();
+  } else if (!open && was) {
+    document.removeEventListener?.('pointerdown', onSessionMenuPointer);
+    if (restoreFocus) toggle.focus?.();
   }
 }
 async function openSession(id) {
@@ -204,7 +379,8 @@ const fingerprint = () => JSON.stringify(currentRequest());
 // 唯一例外是“恢复会话”：它会把服务端内容回填输入框，期间用户编辑输入就必须放弃恢复，避免覆盖用户输入。
 const current = task => active === task && !task.cancelled && task.generation === generation && (task.kind !== 'restore' || task.fingerprint === fingerprint());
 function loginNote() {
-  note(`登录已失效，请重新登录后点击“${sessionId || interrupted ? '恢复会话' : '重新检测服务'}”；输入已保留。${interrupted ? '任务标识已保留，后端任务可能仍在运行，未确认取消。' : ''}`, true);
+  // 恢复会话在“会话 ▾”菜单里，提示语据此指路；重新检测服务仍在状态行旁边。
+  note(`登录已失效，请重新登录后${sessionId || interrupted ? '打开“会话 ▾”菜单点击“恢复会话”' : '点击“重新检测服务”'}；输入已保留。${interrupted ? '任务标识已保留，后端任务可能仍在运行，未确认取消。' : ''}`, true);
   link($('agent-status'), new URL('/login', appBase).href, '打开登录页');
 }
 function requireLogin(task) {
@@ -258,7 +434,7 @@ async function probe() {
     else environment('模拟模式 · 不代表真实模型', 'mock');
     // 服务连接成功：拉取一次服务端历史会话（失败静默，不影响连接状态）。
     void refreshSessions();
-    note(interrupted ? 'Agent 已连接；请点击“恢复会话”检查中断任务，不会自动重新提交。' : document.body.dataset.release ? 'Agent 已就绪；输入配置、问题或追问后提交。' : 'Agent 已连接，等待知识发布加载。');
+    note(interrupted ? 'Agent 已连接；请打开“会话 ▾”菜单点击“恢复会话”检查中断任务，不会自动重新提交。' : document.body.dataset.release ? 'Agent 已就绪；输入配置、问题或追问后提交。' : 'Agent 已连接，等待知识发布加载。');
   } catch (error) {
     if (error.code === 'auth_required') { requireLogin(); return false; }
     service = null;
@@ -322,6 +498,7 @@ function link(parent, href, text) {
   if (!['http:', 'https:'].includes(url.protocol)) return;
   const el = node('a', text, parent);
   el.href = url.href; el.target = '_blank'; el.rel = 'noopener noreferrer';
+  return el;
 }
 function evidence(parent, ids, fact, citations) {
   if (!ids?.length) { node('p', '尚未记录该项字段级来源；不借用其他源码作为证明。', parent, 'verification-notes'); return; }
@@ -334,6 +511,14 @@ function evidence(parent, ids, fact, citations) {
     link(block, citation.url, '查看固定源码锚点');
     node('pre', citation.quote, block);
   }
+}
+// 源码证据默认收在字段面板里，标题带条数。没有 id 时条数为 0，里面仍是“尚未记录”的说明。
+function evidenceFold(parent, ids, fact, citations) {
+  const count = Array.isArray(ids) ? ids.length : 0;
+  const fold = node('details', undefined, parent, 'evidence-fold');
+  fold.open = false;
+  node('summary', `源码证据 (${count})`, fold);
+  evidence(fold, ids, fact, citations);
 }
 // 核实状态映射到徽标色调：已核实为绿色，不适用为中性灰，其余（含未知状态）一律按待核实的琥珀色处理。
 const statusTone = status => status === 'verified' ? 'verified' : status === 'not_applicable' ? 'neutral' : 'pending';
@@ -355,7 +540,7 @@ function factBody(parent, value, fact, citations) {
   if (value?.note) node('p', value.note, parent, 'verification-notes');
   const ids = value?.source_ids ?? fact.source_ids;
   if (pending && !ids?.length) node('p', FIELD_PENDING_NOTE, parent, 'verification-notes');
-  else evidence(parent, ids, fact, citations);
+  else evidenceFold(parent, ids, fact, citations);
 }
 function showConfiguration(parent, request, title) {
   const preview = node('details', undefined, parent, 'resolved-input');
@@ -445,39 +630,415 @@ function renderValidation(parent, validation) {
   }
   if (validation.notChecked.length) node('p', `未校验：${validation.notChecked.join('、')}`, block, 'verification-notes validation-scope');
 }
+// 字段状态：缺省按未核实。数组（限制列表）看每一项。
+function factStatuses(fact) {
+  if (Array.isArray(fact?.value)) return fact.value.map(item => item?.status ?? 'unverified');
+  return [fact?.value?.status ?? fact?.status ?? 'unverified'];
+}
+function factNeedsAttention(fact) {
+  return factStatuses(fact).some(status => status === 'unverified');
+}
+// 识别结果里的“需关注”沿用 config-results 的 needsAttention：不是唯一匹配，或带了未分析的外部引用。
+function directiveMatchNeedsAttention(name, job) {
+  const directives = job?.parsed?.directives;
+  const matches = job?.matches;
+  if (!Array.isArray(directives) || !Array.isArray(matches)) return false;
+  for (let index = 0; index < directives.length && index < matches.length; index++) {
+    const item = directives[index];
+    const match = matches[index];
+    if (!item || item.name !== name || !match || !Array.isArray(item.external_references)) continue;
+    if (needsAttention(item, match)) return true;
+  }
+  return false;
+}
+// 资料库识别结果是后到的：卡片先按事实状态画，识别结果写完后再补一次。
+// 识别结果只描述“当前识别对象”，因此只有本轮对象键与它的对象键一致时才读取，旧轮的同名指令不受新识别影响。
+// 数据直接来自 analysis-state 快照（与左栏“本次输入”同源），不再从 DOM 反推。
+function parsedRowNeedsAttention(name, turn) {
+  if (!turn?.analysisKey || turn.analysisKey !== parsedKey) return false;
+  return attentionNamed(name);
+}
+function firstFactText(facts) {
+  for (const fact of facts ?? []) {
+    const value = fact?.value;
+    if (typeof value === 'string' && value.trim()) return value;
+    if (Array.isArray(value)) {
+      const hit = value.find(item => typeof item?.text === 'string' && item.text.trim());
+      if (hit) return hit.text;
+    } else if (typeof value?.text === 'string' && value.text.trim()) return value.text;
+    if (typeof fact?.text === 'string' && fact.text.trim()) return fact.text;
+  }
+  return '';
+}
+// 不看“需关注”时的底色：全是不适用为灰，有已核实为绿，其余为琥珀。
+function cardTone(facts) {
+  const statuses = facts.flatMap(factStatuses);
+  if (statuses.length && statuses.every(status => status === 'not_applicable')) return 'muted';
+  if (statuses.some(status => status === 'verified')) return 'good';
+  return 'warn';
+}
+function scrollBehavior() {
+  return typeof matchMedia === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto';
+}
+// ≤2 张全部展开；更多时只展开需关注的；一张都不需关注则全部折叠。
+function applyDefaultOpen(cards) {
+  const flagged = cards.some(card => card.dataset.attention === 'true');
+  const expandAll = cards.length <= 2;
+  for (const card of cards) card.open = expandAll || (flagged && card.dataset.attention === 'true');
+}
+function applyDirectiveFilter(turn) {
+  const query = String(turn.directiveQuery ?? '').trim().toLowerCase();
+  const attentionOnly = Boolean(turn.attentionOnly);
+  let visible = 0;
+  const shown = new Set();
+  for (const card of turn.cards ?? []) {
+    const name = String(card.dataset.name ?? '').toLowerCase();
+    const show = (!query || name.includes(query)) && (!attentionOnly || card.dataset.attention === 'true');
+    card.hidden = !show;
+    if (show) { visible += 1; shown.add(card.dataset.entryId); }
+  }
+  for (const item of turn.outlineItems ?? []) item.hidden = !shown.has(item.dataset.entryId);
+  if (turn.emptyNote) turn.emptyNote.hidden = visible > 0;
+}
+// 卡片口径叫“待处理”：含未核实字段，或在识别结果里需关注（非唯一匹配、带未分析外部引用）的指令。
+// 统计 chip 里的“需关注”是服务端 summary.attention 的匹配口径，两者不混用。
+const PENDING_SCOPE = '待处理 = 含未核实字段或识别需关注的指令';
+function updateTabChrome(turn, tone, attentionCount) {
+  setDot(turn.dot, tone);
+  if (attentionCount > 0) {
+    turn.attention.hidden = false;
+    turn.attention.textContent = `待处理 ${attentionCount}`;
+    turn.attention.title = `${PENDING_SCOPE}，本轮 ${attentionCount} 条`;
+    turn.attention.setAttribute('aria-label', `待处理 ${attentionCount} 条（含未核实字段或识别需关注）`);
+  } else {
+    turn.attention.hidden = true;
+    turn.attention.textContent = '';
+    turn.attention.removeAttribute('aria-label');
+    turn.attention.title = '';
+  }
+}
+// 只数卡片；没有卡片时不拿服务端 summary.attention 冒充“待处理”。
+function attentionCountFor(cards) {
+  return (cards ?? []).filter(card => card.dataset.attention === 'true').length;
+}
+function toneForTurn(job, cards, count) {
+  if (count > 0) return 'warn';
+  // 还没有卡片（如运行中只到 summary）时，服务端匹配需关注仍让状态点显示琥珀。
+  if (!cards?.length && Number(job?.summary?.attention) > 0) return 'warn';
+  if (job?.inputResolution?.unindexed) return 'muted';
+  if (job?.state === 'failed' || job?.state === 'cancelled') return 'muted';
+  if (job?.state === 'running' || job?.state === 'awaiting_input') return 'warn';
+  if (cards?.length) return cards.every(card => card.dataset.tone === 'good') ? 'good' : 'muted';
+  return job?.state === 'completed' ? 'good' : 'muted';
+}
+function finishChrome(turn, job) {
+  const cards = turn.cards ?? [];
+  const count = attentionCountFor(cards);
+  updateTabChrome(turn, toneForTurn(job, cards, count), count);
+  if (turn === selectedTurn) revealTab(turn);
+}
+function paintCardAttention(card, attention) {
+  card.dataset.attention = String(Boolean(attention));
+  const tone = attention ? 'warn' : (card.dataset.baseTone || 'good');
+  card.dataset.tone = tone;
+  setDot(card.dot, tone);
+}
+// 资料库的识别结果晚于回答卡写完。只改与它对象相同的轮次；用户还没手动展开/折叠时，按新的待处理结果重算默认展开。
+function refreshParsedAttention() {
+  if (!parsedKey) return;
+  for (const turn of turns) {
+    if (!turn.cards?.length || turn.analysisKey !== parsedKey) continue;
+    let changed = false;
+    for (const card of turn.cards) {
+      // 三个来源取并集：字段未核实、回答自带的识别结果（job.matches）、资料库里的识别结果（analysis-state）。
+      const next = card.dataset.factAttention === 'true' || card.dataset.matchAttention === 'true' || parsedRowNeedsAttention(card.dataset.name, turn);
+      if ((card.dataset.attention === 'true') !== next) {
+        paintCardAttention(card, next);
+        const item = (turn.outlineItems ?? []).find(entry => entry.dataset.entryId === card.dataset.entryId);
+        if (item?.dot) setDot(item.dot, card.dataset.tone);
+        changed = true;
+      }
+    }
+    if (changed && !turn.layoutTouched) applyDefaultOpen(turn.cards);
+    finishChrome(turn, turn.job);
+    applyDirectiveFilter(turn);
+  }
+}
+function bindScrollspy(turn) {
+  turn.spy?.disconnect?.();
+  turn.spy = null;
+  // 测试用的假 DOM 和很旧的浏览器都没有 IntersectionObserver，大纲点击不依赖它。
+  if (typeof IntersectionObserver !== 'function' || (turn.cards?.length ?? 0) < 2) return;
+  const pane = document.getElementById('pane-right');
+  // 窄屏下 .pane 是 overflow:visible，滚动的是整页；仍以 pane 为 root 会让交叉判断失真、高亮乱跳。
+  // 只有 pane 自己是滚动容器时才用它作 root，否则用视口（null）。拿不到 getComputedStyle（测试假 DOM）时沿用 pane。
+  // 这个判断依赖断点，窗口尺寸变化后要重算，见下方 scheduleScrollspyRebind。
+  let root = pane || null;
+  if (pane && typeof getComputedStyle === 'function') {
+    try {
+      const overflowY = getComputedStyle(pane).overflowY;
+      if (!['auto', 'scroll', 'overlay'].includes(overflowY)) root = null;
+    } catch { root = pane; }
+  }
+  let observer;
+  try {
+    observer = new IntersectionObserver(entries => {
+      const hit = entries.filter(entry => entry.isIntersecting).sort((a, b) => (a.boundingClientRect?.top ?? 0) - (b.boundingClientRect?.top ?? 0))[0];
+      if (!hit) return;
+      const id = hit.target?.dataset?.entryId;
+      for (const item of turn.outlineItems ?? []) item.classList.toggle('is-spy', item.dataset.entryId === id);
+    }, { root, rootMargin: '0px 0px -55% 0px', threshold: [0, 0.25, 0.6] });
+  } catch { return; }
+  for (const card of turn.cards) {
+    try { observer.observe(card); } catch { /* 观察失败时保留点击定位 */ }
+  }
+  turn.spy = observer;
+}
+// 窗口尺寸变化时重新绑定滚动观察。跨过 960px 断点后 .pane 可能从滚动容器变成非滚动容器（或反过来），root 必须跟着换。
+// 同一帧内多次 resize 只重算一次（按 requestAnimationFrame 节流）；没有 requestAnimationFrame 的环境（测试假 DOM）直接同步执行。
+let scrollspyRebindFrame = null;
+function rebindScrollspies() {
+  scrollspyRebindFrame = null;
+  // 所有有卡片的轮次都重绑，而不只是当前选中轮：切换到旧轮时它的观察器不会残留旧的 root。隐藏轮次的观察器没有高亮副作用。
+  for (const turn of turns) if (turn.cards?.length) bindScrollspy(turn);
+}
+function scheduleScrollspyRebind() {
+  if (scrollspyRebindFrame !== null) return;
+  if (typeof requestAnimationFrame === 'function') scrollspyRebindFrame = requestAnimationFrame(rebindScrollspies);
+  else rebindScrollspies();
+}
+// 测试假环境没有 addEventListener 全局，这里做存在性判断（与 app.mjs 的 resize 监听写法一致）。
+if (typeof addEventListener === 'function') addEventListener('resize', scheduleScrollspyRebind);
+function flashCard(card) {
+  card.classList.remove('is-flash');
+  const add = () => card.classList.add('is-flash');
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(add);
+  else add();
+  clearTimeout(card.flashTimer);
+  // 浏览器里到点摘掉高亮；Node 测试里 unref，避免每个点击把用例拖住 1 秒。
+  const timer = setTimeout(() => card.classList.remove('is-flash'), 1200);
+  timer.unref?.();
+  card.flashTimer = timer;
+}
+function activateFieldTab(tabs, tab) {
+  for (const item of tabs) {
+    const on = item === tab;
+    item.setAttribute('aria-selected', on ? 'true' : 'false');
+    item.tabIndex = on ? 0 : -1;
+    if (item.panel) item.panel.hidden = !on;
+  }
+}
+function bindFieldKeys(tablist, tabs) {
+  tablist.addEventListener('keydown', event => {
+    const index = tabs.findIndex(item => item === document.activeElement);
+    if (index < 0) return;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault?.();
+      const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      for (const item of tabs) item.tabIndex = item === next ? 0 : -1;
+      next.focus();
+    } else if (event.key === 'Home' || event.key === 'End') {
+      // 与轮次标签栏一致：Home/End 只把焦点移到首/末个字段，Enter / 空格才切换。
+      event.preventDefault?.();
+      const next = tabs[event.key === 'Home' ? 0 : tabs.length - 1];
+      for (const item of tabs) item.tabIndex = item === next ? 0 : -1;
+      next.focus();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault?.();
+      activateFieldTab(tabs, document.activeElement);
+    }
+  });
+}
+function renderFactPanel(panel, fact, citations) {
+  node('h4', labels[fact.field] ?? fact.field, panel, 'agent-fact-label');
+  if (Array.isArray(fact.value)) {
+    if (!fact.value.length) node('p', '尚未记录限制，不代表没有限制。', panel, 'fact-text');
+    for (const value of fact.value) factBody(node('div', undefined, panel, 'agent-subfact'), value, fact, citations);
+  } else {
+    factBody(panel, fact.value, fact, citations);
+    if (fact.field === 'runtime' && fact.value) {
+      for (const [stepIndex, step] of (fact.value.steps ?? []).entries()) {
+        const item = node('div', undefined, panel, 'agent-subfact');
+        node('h5', `步骤 ${stepIndex + 1} · ${step.condition}`, item);
+        node('p', step.action, item, 'fact-text');
+        evidenceFold(item, step.source_ids, fact, citations);
+      }
+      if (fact.value.corroboration_source_ids?.length) {
+        node('h5', '交叉印证', panel);
+        evidenceFold(panel, fact.value.corroboration_source_ids, fact, citations);
+      }
+    }
+  }
+}
+function renderDirectiveCard(turn, entryId, facts, citations, releaseId, index) {
+  const { name, module } = entryParts(entryId);
+  const factAttention = facts.some(factNeedsAttention);
+  const matchAttention = directiveMatchNeedsAttention(name, turn.job);
+  const attention = factAttention || matchAttention || parsedRowNeedsAttention(name, turn);
+  const card = node('details');
+  card.className = 'agent-entry';
+  card.dataset.entryId = entryId;
+  card.dataset.name = name;
+  card.dataset.factAttention = String(factAttention);
+  card.dataset.matchAttention = String(matchAttention);
+  card.dataset.baseTone = cardTone(facts);
+  const summary = node('summary', undefined, card, 'agent-entry-summary');
+  card.dot = node('span', undefined, summary, 'status-dot');
+  paintCardAttention(card, attention);
+  node('span', name, summary, 'agent-entry-name');
+  if (module) node('span', module, summary, 'agent-entry-module').setAttribute('title', entryId);
+  const blurb = clipBlurb(firstFactText(facts));
+  if (blurb) node('span', blurb, summary, 'agent-entry-blurb');
+  node('span', `字段 ${facts.length}`, summary, 'agent-entry-count');
+  // 点折叠行只选中并交给浏览器切换 open，不打开抽屉。
+  summary.addEventListener('click', () => {
+    turn.layoutTouched = true;
+    selectDirective(entryId, 'card');
+  });
+  const actions = node('div', undefined, card, 'agent-entry-actions');
+  const openButton = node('button', '查看完整详情', actions, 'secondary-button detail-open');
+  openButton.type = 'button';
+  openButton.addEventListener('click', event => {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    selectDirective(entryId, 'card');
+    document.dispatchEvent(new CustomEvent('directive-open-detail', { detail: { entryId, source: 'card' } }));
+  });
+  const url = new URL(appBase);
+  url.searchParams.set('id', entryId);
+  url.searchParams.set('release', releaseId);
+  // link() 拒绝非 http(s) 地址时返回 undefined，此时不加样式。直接拿返回的元素加类，不靠 tagName 猜（浏览器里是大写 'A'）。
+  link(actions, url.href, '完整知识详情 ↗')?.classList.add('text-button', 'detail-link');
+  const tablist = node('div', undefined, card, 'field-tabs');
+  tablist.setAttribute('role', 'tablist');
+  tablist.setAttribute('aria-label', `${name} 的字段`);
+  const tabs = [];
+  facts.forEach((fact, fieldIndex) => {
+    const tabId = `agent-field-${turn.number}-${index}-${fieldIndex}`;
+    const panelId = `agent-field-panel-${turn.number}-${index}-${fieldIndex}`;
+    const tab = node('button', labels[fact.field] ?? fact.field, tablist, 'field-tab');
+    tab.type = 'button';
+    tab.id = tabId;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', panelId);
+    tab.setAttribute('aria-selected', fieldIndex === 0 ? 'true' : 'false');
+    tab.tabIndex = fieldIndex === 0 ? 0 : -1;
+    const panel = node('div', undefined, card, 'field-panel');
+    panel.id = panelId;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', tabId);
+    panel.hidden = fieldIndex !== 0;
+    tab.panel = panel;
+    renderFactPanel(panel, fact, citations);
+    tab.addEventListener('click', () => activateFieldTab(tabs, tab));
+    tabs.push(tab);
+  });
+  bindFieldKeys(tablist, tabs);
+  return card;
+}
+// 两张及以上才出现。大纲在工具行上面，点击只定位卡片。
+function renderOutline(turn, cards) {
+  if (cards.length < 2) return;
+  const nav = node('div', undefined, turn.body, 'answer-nav');
+  const outline = node('nav', undefined, nav, 'directive-outline');
+  outline.setAttribute('aria-label', '本轮指令');
+  const list = node('ol', undefined, outline);
+  // 超过三行时大纲内部滚动；样式据 data-overflow 加底部淡出遮罩，并显示“共 N 条”。
+  if (cards.length > 3) {
+    nav.dataset.overflow = 'true';
+    node('p', `共 ${cards.length} 条，大纲内可滚动`, nav, 'outline-total');
+  }
+  turn.outlineItems = [];
+  for (const card of cards) {
+    const item = node('li', undefined, list, 'outline-entry');
+    item.dataset.entryId = card.dataset.entryId;
+    const button = node('button', undefined, item);
+    button.type = 'button';
+    item.dot = node('span', undefined, button, 'status-dot');
+    setDot(item.dot, card.dataset.tone || 'muted');
+    node('span', card.dataset.name || card.dataset.entryId, button, 'outline-name');
+    button.addEventListener('click', () => {
+      turn.layoutTouched = true;
+      selectDirective(card.dataset.entryId, 'outline');
+      // 大纲与卡片用同一套筛选（applyDirectiveFilter），能点到的条目对应的卡片一定可见，这里不改筛选状态。
+      card.open = true;
+      flashCard(card);
+      card.scrollIntoView?.({ behavior: scrollBehavior(), block: 'nearest' });
+    });
+    turn.outlineItems.push(item);
+  }
+  const tools = node('div', undefined, nav, 'directive-tools');
+  const search = node('input', undefined, tools);
+  search.type = 'search';
+  search.className = 'directive-search';
+  search.placeholder = '按指令名搜索';
+  search.setAttribute('aria-label', '按指令名搜索');
+  search.value = turn.directiveQuery ?? '';
+  search.addEventListener('input', () => {
+    turn.directiveQuery = search.value;
+    applyDirectiveFilter(turn);
+  });
+  const attentionLabel = node('label', undefined, tools, 'checkbox-label');
+  const attentionInput = node('input', undefined, attentionLabel);
+  attentionInput.type = 'checkbox';
+  attentionInput.className = 'attention-only';
+  attentionInput.checked = Boolean(turn.attentionOnly);
+  node('span', '只看待处理', attentionLabel);
+  attentionLabel.title = PENDING_SCOPE;
+  attentionInput.setAttribute('aria-label', '只看待处理（含未核实字段或识别需关注）');
+  attentionInput.addEventListener('change', () => {
+    turn.attentionOnly = attentionInput.checked;
+    applyDirectiveFilter(turn);
+  });
+  // 两个批量按钮包成一组，窄屏时整组换行。
+  const bulk = node('span', undefined, tools, 'directive-bulk');
+  const expand = node('button', '全部展开', bulk, 'text-button');
+  expand.type = 'button';
+  expand.addEventListener('click', () => {
+    turn.layoutTouched = true;
+    for (const card of turn.cards) card.open = true;
+  });
+  const collapse = node('button', '全部折叠', bulk, 'text-button');
+  collapse.type = 'button';
+  collapse.addEventListener('click', () => {
+    turn.layoutTouched = true;
+    for (const card of turn.cards) card.open = false;
+  });
+  turn.emptyNote = node('p', '没有符合的指令', nav, 'verification-notes directive-empty');
+  turn.emptyNote.hidden = true;
+}
+function highlightSelected() {
+  const entryId = getSelectedEntryId();
+  const root = $('agent-result');
+  if (!root || typeof root.querySelectorAll !== 'function') return;
+  for (const card of root.querySelectorAll('.agent-entry')) card.classList.toggle('is-selected', Boolean(entryId) && card.dataset.entryId === entryId);
+  for (const item of root.querySelectorAll('.outline-entry')) item.classList.toggle('is-selected', Boolean(entryId) && item.dataset.entryId === entryId);
+}
 function render(job, task) {
   if (job.knowledgeVersion?.release && job.knowledgeVersion.release !== task.request.release) throw new Error('结果发布与当前请求不一致，请刷新知识站。');
   // 轮次卡在首次渲染时才创建：被服务端拒绝、发布不一致等尚无结果的失败不会留下空卡。
   task.turn ??= addTurn(summarizeInput(task.request?.message));
+  // 重绘会换掉卡片节点。先丢掉上一份滚动观察，避免观察已经脱离文档的节点。
+  task.turn.spy?.disconnect?.();
+  task.turn.spy = null;
+  task.turn.cards = [];
+  task.turn.outlineItems = [];
+  task.turn.emptyNote = null;
+  task.turn.job = job;
   const result = task.turn.body; result.replaceChildren();
-  task.turn.state.textContent = labels[job.state] ?? job.state ?? '';
-  // 每个任务首次出结果时把本轮卡滚入视野，告诉用户“接下来看这里”；后续轮询不再打断阅读。
-  if (!task.revealed) { task.revealed = true; task.turn.root.scrollIntoView?.({ behavior: 'smooth', block: 'start' }); }
+  setTurnState(task.turn, labels[job.state] ?? job.state ?? '');
+  // 只在这一轮正被看着时才滚动。用户已经点到旧轮时，迟到响应写回自己的面板，不把视线拽走。
+  if (!task.revealed) {
+    task.revealed = true;
+    if (task.turn === selectedTurn) task.turn.root.scrollIntoView?.({ behavior: scrollBehavior(), block: 'nearest' });
+  }
   const state = labels[job.state] ?? job.state;
   const phase = job.state !== 'running' ? '' : job.phase === 'input_resolution' ? ' · 正在识别配置与问题' : job.summary ? ' · 基础匹配已就绪，等待模型选取' : ' · 正在准备知识与会话';
   note(`${state}${phase}${job.cacheHit ? ' · 历史精确缓存（本次未推理）' : ''}${job.error ? ` · ${job.error}` : ''}`, job.state === 'failed');
-  // 配置校验块放在本轮内容的最前面（先于识别配置折叠块、统计与模型选取）；形状非法时 validation 为 null，整块不显示。
+  // 配置校验块放在本轮内容的最前面；紧接着是统计标签。形状非法时 validation 为 null，整块不显示。
   const validation = normalizeValidation(job.validation);
   if (validation) renderValidation(result, validation);
-  if (job.inputResolution?.message) node('p', job.inputResolution.message, result, 'notice');
-  // 消息中有未处理的跑题部分时，在结果区说明，避免用户误以为整条消息都已处理。
-  if (job.inputResolution?.notice) node('p', job.inputResolution.notice, result, 'verification-notes');
-  // 本轮是否“拥有”右侧：渲染了 normalizedRequest 且不是澄清/范围外/问候这类不更新右侧的动作。
-  // 下面的块执行后，右侧要么已被本轮替换，要么与 shownAnalysisKey 一致（本轮对象与已显示对象相同）。
-  task.ownsRight = Boolean(job.normalizedRequest) && !NO_QUERY_ACTIONS.has(job.inputResolution?.action);
-  if (job.normalizedRequest && !NO_QUERY_ACTIONS.has(job.inputResolution?.action)) {
-    const request = job.normalizedRequest;
-    showConfiguration(result, request, job.inputResolution?.action === 'followup' ? '本次沿用的配置（展开核对）' : '本次识别的配置 / 指令（展开核对）');
-    // 右侧候选/详情只在对象真的变化时替换：追问沿用同一对象时不重置，也不让本任务“拥有”右侧（取消追问不应清掉上一轮的对象）。
-    const key = analysisKey(request);
-    if (key !== shownAnalysisKey) {
-      shownAnalysisKey = key;
-      task.analysisKey = key;
-      $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: request }));
-    }
-  }
   if (job.summary) {
-    // 识别统计改为一排标签：唯一匹配用绿色，需关注与未分析的外部引用在非零时用琥珀色提醒。
     const chips = node('p', undefined, result, 'agent-summary');
     const s = job.summary;
     for (const [label, value, tone] of [
@@ -488,10 +1049,33 @@ function render(job, task) {
       ['外部引用未分析', s.external_references, s.external_references ? 'warn' : ''],
     ]) node('span', `${label} ${value}`, chips, `chip ${tone}`.trim());
   }
+  if (job.inputResolution?.message) node('p', job.inputResolution.message, result, 'notice');
+  // 消息中有未处理的跑题部分时，在结果区说明，避免用户误以为整条消息都已处理。
+  if (job.inputResolution?.notice) node('p', job.inputResolution.notice, result, 'verification-notes');
+  // 本轮是否“拥有”右侧：渲染了 normalizedRequest 且不是澄清/范围外/问候这类不更新右侧的动作。
+  // 下面的块执行后，右侧要么已被本轮替换，要么与 shownAnalysisKey 一致（本轮对象与已显示对象相同）。
+  task.ownsRight = Boolean(job.normalizedRequest) && !NO_QUERY_ACTIONS.has(job.inputResolution?.action);
+  if (!task.ownsRight) task.turn.analysisKey = null;
+  if (job.normalizedRequest && !NO_QUERY_ACTIONS.has(job.inputResolution?.action)) {
+    const request = job.normalizedRequest;
+    showConfiguration(result, request, job.inputResolution?.action === 'followup' ? '本次沿用的配置（展开核对）' : '本次识别的配置 / 指令（展开核对）');
+    // 右侧候选/详情只在对象真的变化时替换：追问沿用同一对象时不重置，也不让本任务“拥有”右侧（取消追问不应清掉上一轮的对象）。
+    const key = analysisKey(request);
+    // 记在轮次上：识别结果回来时按它判断这份结果属于哪一轮。
+    task.turn.analysisKey = key;
+    if (key !== shownAnalysisKey) {
+      shownAnalysisKey = key;
+      // 右侧即将被清空重新识别，旧网格不再对应任何轮次。
+      parsedKey = null;
+      task.analysisKey = key;
+      $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: request }));
+    }
+  }
   for (const question of job.questions ?? []) if (question !== job.inputResolution?.message) node('p', question, result, 'verification-notes');
   if (job.state === 'running') {
-    // 运行中给出占位，让“第 2 步”有明确的等待反馈；最终结果到达时整个区域会被重绘。
+    // 运行中给出占位，让“看回答”有明确的等待反馈；最终结果到达时整个区域会被重绘。
     node('p', job.phase === 'input_resolution' ? '正在识别配置与问题…' : job.summary ? '基础匹配已完成，正在挑选回答要点…' : '正在准备知识与会话…', result, 'agent-pending');
+    finishChrome(task.turn, job);
     return;
   }
   for (const error of job.parsed?.errors ?? []) node('p', `解析诊断：${error.message}（${error.line}:${error.column}）`, result, 'query-message error');
@@ -526,40 +1110,21 @@ function render(job, task) {
     groups.get(fact.entryId).push(fact);
   }
   const citations = selection?.citations ?? [];
+  const cards = [];
+  let cardIndex = 0;
   for (const [entryId, facts] of groups) {
-    const card = node('article', undefined, result, 'agent-entry');
-    const head = node('header', undefined, card, 'agent-entry-head');
-    const { name, module } = entryParts(entryId);
-    node('h3', name, head);
-    // 副标题只显示模块；完整条目 ID 放进悬停提示，供需要核对时查看。
-    node('p', module || entryId, head, 'agent-identity').setAttribute('title', entryId);
-    // 详情链接绑定本次请求的发布，避免跳到最新发布后内容不一致。
-    const url = new URL(appBase); url.searchParams.set('id', entryId); url.searchParams.set('release', task.request.release);
-    link(head, url.href, '完整知识详情 ↗');
-    for (const fact of facts) {
-      // 每个字段一行：左列字段名，右列状态徽标、正文与源码证据。
-      const row = node('section', undefined, card, 'agent-fact');
-      node('h4', labels[fact.field] ?? fact.field, row, 'agent-fact-label');
-      const body = node('div', undefined, row, 'agent-fact-body');
-      if (Array.isArray(fact.value)) {
-        if (!fact.value.length) node('p', '尚未记录限制，不代表没有限制。', body, 'fact-text');
-        for (const value of fact.value) factBody(node('div', undefined, body, 'agent-subfact'), value, fact, citations);
-      } else {
-        factBody(body, fact.value, fact, citations);
-        if (fact.field === 'runtime' && fact.value) {
-          for (const [i, step] of (fact.value.steps ?? []).entries()) {
-            const item = node('div', undefined, body, 'agent-subfact');
-            node('h5', `步骤 ${i + 1} · ${step.condition}`, item); node('p', step.action, item, 'fact-text');
-            evidence(item, step.source_ids, fact, citations);
-          }
-          if (fact.value.corroboration_source_ids?.length) {
-            node('h5', '交叉印证', body);
-            evidence(body, fact.value.corroboration_source_ids, fact, citations);
-          }
-        }
-      }
-    }
+    cards.push(renderDirectiveCard(task.turn, entryId, facts, citations, task.request.release, cardIndex));
+    cardIndex += 1;
   }
+  task.turn.cards = cards;
+  // 同一轮被整页重绘时，若用户已经手动展开或折叠过，就不再套用默认展开，避免把正在看的卡片收回去。
+  if (!task.turn.layoutTouched) applyDefaultOpen(cards);
+  renderOutline(task.turn, cards);
+  for (const card of cards) result.append(card);
+  applyDirectiveFilter(task.turn);
+  bindScrollspy(task.turn);
+  finishChrome(task.turn, job);
+  highlightSelected();
   // 外部参考位于模型事实卡片之后，与源码证据区分；仅在存在有效参考时渲染。
   if (hasReferences) externalReferences(result, references);
   for (const text of job.limitations ?? []) node('p', text, result, 'verification-notes');
@@ -609,7 +1174,7 @@ async function followJob(task, job) {
   while (current(task)) {
     task.terminal = job.state !== 'running';
     if (task.showResults === false) {
-      if (task.turn) task.turn.state.textContent = `原任务${labels[job.state] ?? job.state}（结果未回填）`;
+      if (task.turn) setTurnState(task.turn, `原任务${labels[job.state] ?? job.state}（结果未回填）`);
       note(`原任务${labels[job.state] ?? job.state}；当前输入已保留，未回填旧结果。`);
     }
     else {
@@ -625,7 +1190,7 @@ async function followJob(task, job) {
 }
 // 恢复被“用户编辑输入”放弃时写明原因，避免状态栏停在“正在恢复…”；其他放弃原因（新会话、发布变化等）各自已有提示。
 function abandonRestore(task) {
-  if (task.kind === 'restore' && active === task && !task.cancelled && task.generation === generation && task.fingerprint !== fingerprint()) note('输入已变化，已放弃本次恢复回填；输入已保留，可重新点击“恢复会话”。');
+  if (task.kind === 'restore' && active === task && !task.cancelled && task.generation === generation && task.fingerprint !== fingerprint()) note('输入已变化，已放弃本次恢复回填；输入已保留，可在“会话 ▾”菜单中重新点击“恢复会话”。');
   return 'aborted';
 }
 async function restore() {
@@ -676,7 +1241,8 @@ async function restore() {
     const restoredValidation = normalizeValidation(saved.validation);
     if (!preserveInput && (restoredConfig?.input || restoredNotice || restoredValidation)) {
       const turn = addTurn('会话已恢复（仅当前对象，不含历史轮次）');
-      turn.state.textContent = '已恢复';
+      setTurnState(turn, '已恢复');
+      setDot(turn.dot, 'good');
       if (restoredValidation) renderValidation(turn.body, restoredValidation);
       if (restoredNotice) node('p', restoredNotice, turn.body, 'verification-notes');
       if (restoredConfig?.input) {
@@ -685,6 +1251,8 @@ async function restore() {
         showConfiguration(turn.body, restoredConfig, blockedOnly ? '最近一次提交（校验未通过，未作为会话配置）' : '恢复的会话配置 / 指令（展开核对；不是历史完整报告）');
         if (restoredConfig.release === document.body.dataset.release) {
           shownAnalysisKey = analysisKey(restoredConfig);
+          turn.analysisKey = shownAnalysisKey;
+          parsedKey = null;
           $('configuration').dispatchEvent(new CustomEvent('agent-analysis', { detail: restoredConfig }));
         }
       }
@@ -712,8 +1280,6 @@ async function restore() {
 $('agent-form').addEventListener('submit', submit);
 // 本地查询会替换右侧候选/详情：先让“已显示的 Agent 对象”失效，之后的追问即使对象相同也要重新派发。
 $('query-form').addEventListener('submit', () => { resetShownAnalysis(); if (active) invalidate('已切换到本地查询，正在取消之前的 Agent 请求。', { keepConversation: true }); }, { capture: true });
-// “浏览全部目录”同样会清掉右侧的 Agent 对象。
-$('browse-all')?.addEventListener('click', resetShownAnalysis);
 // 右侧没有采用本次 Agent 对象（查询失败、发布不一致被忽略）：已显示对象失效，下一次同对象提交要重新派发。
 $('configuration').addEventListener('agent-analysis-failed', resetShownAnalysis);
 $('agent-cancel').addEventListener('click', () => {
@@ -723,10 +1289,68 @@ $('agent-cancel').addEventListener('click', () => {
 });
 $('agent-new').addEventListener('click', () => { interrupted = null; authDraftProtected = false; invalidate('已开启新会话，不再沿用之前的配置；输入框内容保留，提交后开始处理。'); remember(''); resetShownAnalysis(); $('configuration').dispatchEvent(new CustomEvent('agent-reset')); });
 $('agent-restore').addEventListener('click', restore);
-// 展开“历史会话”时刷新，这样能看到其他访问者新建的会话；折叠时不请求。
-$('agent-history')?.addEventListener('toggle', () => { if ($('agent-history').open) void refreshSessions(); });
+// 展开“历史会话”时刷新，这样能看到其他访问者新建的会话；折叠时不请求。与打开菜单共用节流。
+$('agent-history')?.addEventListener('toggle', () => { if ($('agent-history').open) void refreshSessionsOnOpen(); });
 $('agent-retry').addEventListener('click', probe);
+// “会话 ▾”按钮：点击切换开关；打开时焦点进入菜单，关闭时由 setSessionMenu 按原因决定是否还原焦点。
+$('session-menu-toggle')?.addEventListener('click', () => setSessionMenu(!sessionMenuOpen));
+// 菜单内按 Esc：收起并把焦点还给按钮。阻止冒泡，免得同一次 Esc 也关掉右侧详情抽屉（app.mjs 在 document 上监听 Esc）。
+$('session-bar')?.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !sessionMenuOpen) return;
+  event.preventDefault?.();
+  event.stopPropagation?.();
+  setSessionMenu(false, { restoreFocus: true });
+});
+// 窗口尺寸变化时收起菜单，不留下位置已经错位的半开弹层；收起时摘除外部点击监听。
+if (typeof addEventListener === 'function') addEventListener('resize', () => setSessionMenu(false));
+// 初始化：显式同步 hidden 与 aria-expanded，不依赖 HTML 属性（测试假 DOM 不解析属性）。
+setSessionMenu(false);
 $('configuration').addEventListener('input', inputHint);
+// 左右键移动标签焦点，Enter / 空格才切换可见轮次。点击标签则直接切换。
+$('agent-turn-tabs')?.addEventListener('keydown', event => {
+  if (!turns.length) return;
+  if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+    event.preventDefault?.();
+    focusTurnTab(currentTurnTabIndex() + (event.key === 'ArrowRight' ? 1 : -1));
+  } else if (event.key === 'Home') {
+    event.preventDefault?.();
+    focusTurnTab(0);
+  } else if (event.key === 'End') {
+    event.preventDefault?.();
+    focusTurnTab(turns.length - 1);
+  } else if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault?.();
+    const turn = turns.find(item => item.tab === document.activeElement);
+    if (turn) selectTurn(turn);
+  }
+});
+// 大纲、卡片、详情预览与资料库“本次输入”都通过 selection.mjs 广播；这里改回答区的高亮，
+// 来自资料库的点击还要把对应卡片展开并定位（大纲与卡片自己已处理定位，不重复）。
+document.addEventListener('directive-select', event => {
+  highlightSelected();
+  if (event.detail?.source === 'library' && event.detail?.entryId) locateLibraryCard(event.detail.entryId);
+});
+// 资料库点选的指令：切到持有该卡片的那一轮（即右栏当前对象所在轮），展开卡片、闪烁提示并滚动到可见位置。
+// 只在右栏对象与资料库对象一致时定位；找不到卡片（例如回答没有覆盖该指令）时什么也不做，高亮仍由 highlightSelected 保持。
+function locateLibraryCard(entryId) {
+  const holders = turns.filter(turn => turn.analysisKey && turn.analysisKey === shownAnalysisKey && (turn.cards ?? []).some(card => card.dataset.entryId === entryId));
+  if (!holders.length) return false;
+  const turn = holders.includes(selectedTurn) ? selectedTurn : holders[holders.length - 1];
+  if (turn !== selectedTurn) selectTurn(turn);
+  const card = turn.cards.find(item => item.dataset.entryId === entryId);
+  turn.layoutTouched = true;
+  card.open = true;
+  flashCard(card);
+  card.scrollIntoView?.({ behavior: scrollBehavior(), block: 'nearest' });
+  return true;
+}
+// 资料库的识别结果可能比回答卡晚到。补上“这条指令在识别结果里需关注”。
+// 事件带回本次识别的请求；本地查询为 null，此时网格不属于任何轮次。
+$('configuration').addEventListener('agent-parsed', event => {
+  const request = event?.detail?.request;
+  parsedKey = request ? analysisKey(request) : null;
+  refreshParsedAttention();
+});
 new MutationObserver(() => {
   const next = document.body.dataset.release ?? '';
   if (next !== release) {

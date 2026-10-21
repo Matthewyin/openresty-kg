@@ -51,7 +51,7 @@ try {
   await page.click('#query-submit');
   await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'content_by_lua_block');
   const before = await page.evaluate(() => ({input: document.querySelector('#configuration').value, status: document.querySelector('#query-status').textContent,
-    parsed: document.querySelector('#parsed-results').textContent, ids: [...document.querySelectorAll('.catalog-entry')].map(node => node.dataset.id)}));
+    parsed: document.querySelector('#input-tree').textContent, ids: [...document.querySelectorAll('.catalog-entry')].map(node => node.dataset.id)}));
   const relatedIds = await page.evaluate(() => [...document.querySelectorAll('.related-entry')].map(node => node.dataset.id));
   assert.ok(relatedIds.includes('nginx--ngx_http_proxy_module--proxy_pass'));
   assert.ok(relatedIds.includes('nginx--ngx_stream_proxy_module--proxy_pass'));
@@ -59,15 +59,16 @@ try {
   await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'proxy_pass');
   assert.ok((await page.evaluate(() => document.querySelector('#detail-panel').textContent)).includes('关联知识预览，不代表当前输入匹配'));
   const after = await page.evaluate(() => ({input: document.querySelector('#configuration').value, status: document.querySelector('#query-status').textContent,
-    parsed: document.querySelector('#parsed-results').textContent, ids: [...document.querySelectorAll('.catalog-entry')].map(node => node.dataset.id)}));
+    parsed: document.querySelector('#input-tree').textContent, ids: [...document.querySelectorAll('.catalog-entry')].map(node => node.dataset.id)}));
   assert.deepEqual(after, before);
   for (const fail of [false, true]) {
-    await page.click('.catalog-entry[data-id="lua-nginx-module--ngx_http_lua_module--content_by_lua_block"]');
+    // 单项查询的唯一候选在本次输入树的行上有“详情”按钮，重选即点它。
+    await page.click('#input-tree .tree-row:has-text("content_by_lua_block") .tree-expand');
     await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'content_by_lua_block');
     await page.evaluate(fail => { window.__websiteHeld = false; window.__websiteFinished = false; window.__websiteHold = {suffix:'ngx_stream_proxy_module--proxy_pass.json', fail}; }, fail);
     await page.click('.related-entry[data-id="nginx--ngx_stream_proxy_module--proxy_pass"]');
     await page.waitForFunction(() => window.__websiteHeld);
-    await page.click('.catalog-entry[data-id="lua-nginx-module--ngx_http_lua_module--content_by_lua_block"]');
+    await page.click('#input-tree .tree-row:has-text("content_by_lua_block") .tree-expand');
     await page.waitForFunction(() => document.querySelector('.detail-title')?.textContent === 'content_by_lua_block');
     await page.evaluate(() => window.__websiteRelease());
     await page.waitForFunction(() => window.__websiteFinished);

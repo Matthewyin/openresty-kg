@@ -91,12 +91,6 @@ addEventListener('resize', () => {
   resizeFrame = requestAnimationFrame(restore);
 });
 
-// 在左栏目录或右栏识别结果中选择指令后，把右栏滚动到第 3 步详情，让用户看到选择的结果。
-// 关联指令按钮本身就在详情里，不需要滚动。延后一帧，等原有点击逻辑先渲染“正在读取”状态。
-document.addEventListener('click', event => {
-  const target = event.target instanceof Element ? event.target.closest('.catalog-entry, .candidate-button') : null;
-  if (!target || target.classList.contains('related-entry')) return;
-  requestAnimationFrame(() => document.getElementById('detail-panel')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-});
+// 选中指令后的详情展示由 app.mjs 的详情抽屉负责（盖在右栏可视区上），布局层不再滚动右栏。
 
 restore();

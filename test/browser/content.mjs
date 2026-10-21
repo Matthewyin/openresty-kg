@@ -18,12 +18,12 @@ try {
   await page.selectOption('#input-mode','config');
   await page.fill('#configuration','events { multi_accept on; worker_connections 65535; }');
   await page.click('#query-submit');
-  await page.waitForFunction(()=>document.querySelectorAll('.parsed-row').length===3);
-  await page.click('.catalog-entry[data-id="nginx--ngx_event_core_module--multi_accept"]');
+  await page.waitForFunction(()=>document.querySelectorAll('#input-tree .tree-main').length===3);
+  await page.click('#input-tree .tree-row:has-text("multi_accept") .tree-expand');
   await page.waitForFunction(()=>document.querySelector('.detail-title')?.textContent==='multi_accept');
   const multi=await page.evaluate(()=>document.querySelector('#detail-panel').textContent);
   for(const text of ['基础内容已核对','off','ENOSYS','ECONNABORTED','已核对补丁影响']) assert.ok(multi.includes(text),text);
-  await page.click('.catalog-entry[data-id="nginx--ngx_event_core_module--worker_connections"]');
+  await page.click('#input-tree .tree-row:has-text("worker_connections") .tree-expand');
   await page.waitForFunction(()=>document.querySelector('.detail-title')?.textContent==='worker_connections');
   const connections=await page.evaluate(()=>document.querySelector('#detail-panel').textContent);
   for(const text of ['基础内容已核对','512','上游','文件描述符']) assert.ok(connections.includes(text),text);
